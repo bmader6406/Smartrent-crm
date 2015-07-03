@@ -1,0 +1,59 @@
+<%= form_for @user_session, :html => {:class => "form-auth"} do |f| %>
+  <h2>Log in</h2>
+  
+  <% if @invite %>
+    <div class="alert alert-info">
+      You (<%= @invite.user.email %>) already have a CRM account.  Please login with your existing email and password.
+      <br/><br/>
+      The invite token "<%= params[:token] %>" has already been used to create an account.
+      Please login using the account previously created using this token. 
+      Or, you can click <%= link_to "here", forgot_password_path %> to retrieve the password.
+    </div>
+  <% end %>
+  
+  <%= flash_messages %>
+  <%= render "layouts/error_messages", :target => @user_session, :header_message => "Login Failed!" %>
+  
+  <div class="divider"><h4>Log in with</h4></div>
+  <div class="providers">
+		<%= link_to image_tag("auth/facebook_64.png"), "#", :id => "fb-login" %>
+		<%= link_to image_tag("auth/twitter_64.png"), "/auth/twitter" %>
+		<%= link_to image_tag("auth/google_64.png"), "/auth/google_oauth2" %>
+		<%= link_to image_tag("auth/linkedin_64.png"), "/auth/linkedin" %>
+	</div>
+	
+	<div class="divider or"><h4>Or</h4></div>
+  <%= f.text_field :email, "placeholder" => "Email", :class => "form-control", "autocorrect" => "off", "autocapitalize" => "off" %>
+  <%= f.password_field :password, "placeholder" => "Password", :class => "form-control" %>
+
+  <%= f.button "Login", :class => "btn btn-primary btn-lg btn-block" %>
+<% end %>
+
+<div class="footer">
+  <%= link_to "Forgot your password?", forgot_password_path, :class => "pull-right" %>
+</div>
+
+
+<script type="text/javascript">
+	$(function(){
+	  $('#fb-login').click(function(){    
+	    FB.login(function(response) {
+	      if (response.authResponse) {
+					window.location = '/auth/facebook/callback';
+	      }else{
+	        alert("Please authorize CRM to login.");
+	      }
+	    }, {scope:'email,manage_pages'}); 
+	    return false;
+	  });
+		
+		<% if session[:fb_logout] %>
+			setTimeout(function(){
+				try{ FB.logout(); }catch(ex){};
+			}, 4000)
+	  <% end %>
+		<% session[:fb_logout] = nil %>
+		
+		$.cookie('provider_tos', "0");
+	});
+</script>

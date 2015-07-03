@@ -1,0 +1,7 @@
+resque_pool_pid_file: /var/run/crm-resque-pool.pid
+
+# list of workers with the queues to be run on each - on each worker instance,
+# a worker is run for each item in this list to handle the queues specified
+#
+
+gems: [yajl-ruby, resque, resque-pool]

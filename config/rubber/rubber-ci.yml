@@ -1,0 +1,3 @@
+db_user: "#{env_name[0,16]}"
+db_pass:
+db_name: "#{app_name}_#{RUBBER_ENV}"

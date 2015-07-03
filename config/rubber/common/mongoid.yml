@@ -1,0 +1,14 @@
+<%
+  @path = "#{Rubber.root}/config/mongoid.yml"
+%>
+  
+<%= Rubber.env %>:
+  sessions:
+    default:
+      database: <%= rubber_env.db_name %>
+      hosts: 
+        - <%= rubber_instances.for_role('db', 'primary' => true).first.full_name %>:27017
+      options:
+        consistency: :strong
+        max_retries: 30
+        retry_interval: 1

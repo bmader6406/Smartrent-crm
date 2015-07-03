@@ -1,0 +1,104 @@
+<form class="form-horizontal">
+  <div class="panel-group accordion">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+          <a data-toggle="collapse" data-parent=".accordion" href="#basic-info"> User Information </a>
+        </h4>
+      </div>
+      <div id="basic-info" class="panel-collapse collapse">
+        <div class="panel-body">
+          
+          <div class="form-group">
+            <label class="control-label col-sm-3"> First Name: </label>
+            <div class="col-sm-9" data-editors="first_name"> </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-sm-3"> Last Name: </label>
+            <div class="col-sm-9" data-editors="last_name"> </div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-sm-3"> Email: </label>
+            <div class="col-sm-9" data-editors="email"> </div>
+          </div>
+          
+          <% if (App.vars.ability.can("cud", "User")) { %>
+            <!-- user has only one role for now (backend can support multiple roles) -->
+            <div class="form-group">
+              <label class="control-label col-sm-3"> Role: </label>
+              <div class="col-sm-9" data-editors="role"> </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="control-label col-sm-3"> Authorized For: </label>
+              <div class="col-sm-9">
+                
+                <div id="region-select" style="<%= role != "regional_manager" ? "display:none" : "" %>;">
+                  <span>Select Region:</span>
+                  <div>
+                    <% for (var i=0, region; region=App.vars.propertyRegions[i]; i++) { %>
+              	      <label>
+              	        <input type="checkbox" value="<%= region.val %>" name="authorized_region_ids[]" <%= Helpers.isChecked(authorized_region_ids, region.val) %> >
+              	        <%= region.label %>
+              	      </label>
+                    <% } %>
+                    
+                    <% if(App.vars.propertyRegions.length == 0) { %>
+                      No Region Found!
+                    <% } %>
+                  </div>
+                </div>
+                
+                <div id="property-select" style="<%= _.include(["admin", "regional_manager"], role) ? "display:none" : "" %>;">
+                  <span>
+                    <i class="prop-count badge"><%= authorized_property_ids.length %></i>
+                    Select Property:
+                  </span>
+                  <div class="list-filter">
+                	  <div class="filter-box">
+                      <input type="text" class="form-control input-lg" placeholder="Start typing property name...">
+                    </div>
+
+                	  <div class="scroller">
+                  	  <div class="list-group">
+                  	    <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+                  	      <label>
+                  	        <input type="checkbox" value="<%= property.val %>" name="authorized_property_ids[]" <%= Helpers.isChecked(authorized_property_ids, property.val) %> >
+                  	        <%= property.label %>
+                  	      </label>
+                        <% } %>
+                        
+                        <% if(App.vars.properties.length == 0) { %>
+                          No Property Found!
+                        <% } %>
+                      </div>
+                    </div>
+                	</div> <!-- /.list-filter -->
+                </div>
+                
+              </div>
+            </div>
+          <% } %>
+          
+          <% if(isCreateNew ){ %> <!-- for user create only -->
+            <div class="form-group">
+              <label class="control-label col-sm-3"> Password: </label>
+              <div data-editors="password" class="col-sm-9"> </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3"> Confirm Password: </label>
+              <div data-editors="password_confirmation" class="col-sm-9"> </div>
+            </div>
+          <% } %>
+          
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</form>

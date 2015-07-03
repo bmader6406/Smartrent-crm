@@ -1,0 +1,4 @@
+# Stub for running in development
+# edit config/rubber/role/resque_worker/resque-pool.yml for production/staging
+# don't use *:2 (buffer queue will not work correctly)
+'crm_*': 1

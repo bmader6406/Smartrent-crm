@@ -1,0 +1,20 @@
+<% content_for :header do %>
+  Manager Invite
+<% end %>
+
+<% content_for :body do %>
+  Hi,
+  <br>
+  <br>
+  You have been invited to manage the <b>"<%= @property.name %>'s CRM"</b>.
+
+	<br>
+	<br>
+	<%= link_to "Join Property", @invite.join_url, :style => "text-decoration: none; color: #157efb", :target => "_blank" %>
+	
+	<br>
+	<br>
+	<%= render "notifier/signature.html.erb"%>	
+<% end %>
+
+<%= render :file => 'layouts/mailer' %>

@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1> Profile </h1>      
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <%= render "form" %>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card auth-list">
+      <% unless current_user.authentications.empty? %>
+  	    <h4>You have signed in with these services:</h4>
+  	    
+  	    <ul class="list-group">
+  	      <% current_user.authentications.each do |authentication| %>
+  	        <li class="list-group-item">
+  	          <%= image_tag authentication.icon, :size => "32x32" %>
+  	          <%= authentication.name %>
+						
+  						<%= link_to raw('<i class="fa fa-trash-o fa-lg"></i>'), authentication, 
+      							:data => {:confirm => 'Are you sure?'}, :method => :delete, :class => "remove" %>
+  	        </li>
+  	      <% end %>
+        </ul>
+  	  <% end %>
+		
+  		<h4> Add another service to sign in with:</h4>
+		
+  		<div class="providers">
+  			<%= link_to image_tag("auth/facebook_64.png"), "#", :id => "fb-login" %>
+  			<%= link_to image_tag("auth/twitter_64.png"), "/auth/twitter" %>
+  			<%= link_to image_tag("auth/google_64.png"), "/auth/google_oauth2" %>
+  			<%= link_to image_tag("auth/linkedin_64.png"), "/auth/linkedin" %>
+  		</div>
+  	</div>
+  </div>
+</div>
+
+
+<%= render "layouts/facebook_sdk" %>
+
+<script type="text/javascript">
+	$(function(){  
+		$('#fb-login').click(function(){    
+	    FB.login(function(response) {
+	      if (response.authResponse) {
+					window.location = '/auth/facebook/callback';
+	      }else{
+	        alert("Please authorize CRM to login.");
+	      }
+	    }, {scope:'email,manage_pages'}); 
+	    return false;
+	  });
+	});
+</script>

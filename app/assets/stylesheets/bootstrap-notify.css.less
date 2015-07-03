@@ -1,0 +1,38 @@
+#notify {
+  position: fixed;
+  z-index: 99999;
+  
+  /* Positioning */ 
+  &.top-right {
+    right: 10px;
+    top: 25px;
+  }
+
+  &.top-left {
+    left: 10px;
+    top: 25px;
+  }
+
+  &.bottom-left {
+    left: 10px;
+    bottom: 25px;
+  }
+
+  &.bottom-right {
+    right: 15px;
+    bottom: 25px;
+  }
+
+  /* Notification Element */
+  & > div {
+    margin: 5px 0;
+    padding: 8px 15px;
+    position: relative;
+    z-index: 9999;
+  }
+  .close {
+    margin-left: 10px;
+    position: relative;
+    top: -3px;
+  }
+}

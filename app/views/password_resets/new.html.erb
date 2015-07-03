@@ -1,0 +1,9 @@
+<%= form_tag password_resets_path, :class => "form-auth" do %>
+  <h2>Password Recovery</h2>
+	<p> Fill out the form below and instructions to reset your password will be emailed to you: </p>
+	<%= flash_messages %>
+	<div class="form-group">
+    <%= text_field_tag :email, nil, "placeholder" => "Email", :class => "form-control", "autocorrect" => "off", "autocapitalize" => "off" %>
+  </div>
+	<%= button_tag "Reset Password", :class => "btn btn-primary btn-lg btn-block" %>
+<% end %>

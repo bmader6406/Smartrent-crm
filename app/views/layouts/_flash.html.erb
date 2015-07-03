@@ -1,0 +1,13 @@
+<% if notice %>
+  <div id="notice" class="alert alert-success alert-dismissable">
+    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+    <%= raw notice  %>
+  </div>
+<% end %>
+
+<% if alert %>
+  <div id="notice" class="alert alert-danger alert-dismissable">
+    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+    <%= raw alert  %>
+  </div>
+<% end %>

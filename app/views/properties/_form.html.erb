@@ -1,0 +1,12 @@
+<%= form_for(@property, :as => "property", :url => @property.new_record? ? properties_path : property_path(@property)) do |f| %>
+  <%= render "layouts/error_messages", :target => @property %>
+  
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, :class => "form-control" %>
+  </div>
+  <div class="actions">
+    <%= f.submit @property.new_record? ? "Create" : "Update", :class => "btn btn-primary" %>
+    <%= link_to 'Cancel', properties_path, :class => "btn btn-default" %>
+  </div>
+<% end %>

@@ -1,0 +1,10 @@
+<%
+  @path = "#{Rubber.root}/config/resque-pool.yml"
+%>
+<% if Rubber.env == "production" %>
+'crm_immediate,crm_medium': 1
+
+<% else %>
+'crm_immediate,crm_medium': 1
+
+<% end %>

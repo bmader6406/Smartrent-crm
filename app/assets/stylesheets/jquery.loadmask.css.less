@@ -1,0 +1,40 @@
+.loadmask {
+  z-index: 900;
+  position: absolute;
+  top:0;
+  left:0;
+  -moz-opacity: 0.5;
+  opacity: .50;
+  filter: alpha(opacity=50);
+  background-color: #CCC;
+  width: 100%;
+  height: 100%;
+  zoom: 1;
+}
+
+.loadmask-msg {
+  background: none repeat scroll 0 0 #c4bfb9;
+  border: 1px solid #807e7b;
+  left: 0;
+  padding: 2px;
+  position: absolute;
+  top: 0;
+  z-index: 20001;
+}
+.loadmask-msg div {
+  padding:5px 10px 5px 25px;
+  background: image-url("circle_loading.gif") no-repeat 5px 5px #f6f4f2;
+  line-height: 16px;
+  border:1px solid #c4bfb9;
+  font:normal 11px tahoma, arial, helvetica, sans-serif;
+  cursor:wait;
+}
+.masked {
+  overflow: hidden !important;
+}
+.masked-relative {
+  position: relative !important;
+}
+.masked-hidden {
+  visibility: hidden !important;
+}

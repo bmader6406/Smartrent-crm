@@ -1,0 +1,3 @@
+hourly_job:
+  cron: "0 * * * *"
+  class: HourlyJob

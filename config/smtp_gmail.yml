@@ -1,0 +1,18 @@
+:alerts:
+  :user_name: alerts@hy.ly
+  :password: 1qaz@WSX
+:renewals:
+  :user_name: renewals@hy.ly
+  :password: 1qaz@WSX
+:help:
+  :user_name: help@hy.ly
+  :password: 1qaz@WSX
+:reports:
+  :user_name: reports@hy.ly
+  :password: 1qaz@WSX
+:reports2:
+  :user_name: reports2@hy.ly
+  :password: 1qaz@WSX
+:notifications:
+  :user_name: notifications@hy.ly
+  :password: 1qaz@WSX

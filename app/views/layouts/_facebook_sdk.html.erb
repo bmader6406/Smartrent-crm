@@ -1,0 +1,22 @@
+<div id="fb-root"></div>
+<script type="text/javascript">
+	var loggedInName = "";
+	//facebook connect
+	window.fbAsyncInit = function() {
+	  FB.init({
+      appId  : '<%= FACEBOOK_ID %>',
+      apiKey : '<%= FACEBOOK_KEY %>',
+	    status: true,
+			cookie: true,
+			xfbml: true,
+			oauth: true 
+		});
+	};
+	(function() {
+	  var e = document.createElement('script');
+	  e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+	  e.type = 'text/javascript';
+	  e.async = true;
+	  document.getElementById('fb-root').appendChild(e);
+	}());
+</script>
