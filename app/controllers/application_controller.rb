@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   
   helper :all # include all helpers, all the time
-  helper_method :current_user_session, :current_user, :accept_invite_and_redirect
+  helper_method :current_user_session, :current_user, :accept_invite_and_redirect, :conversion, :avg, :age
   
   before_action :set_user_time_zone
   
@@ -97,10 +97,6 @@ class ApplicationController < ActionController::Base
   
   
   # helpers
-  def conversion(num, total)
-    (total.to_i.zero? ? 0 : num.to_f*100/total.to_f).round(2)
-  end
-  
   def ppp(*args)
     pp ">>>>>>>>>>>>"
     pp ">>>>>>>>>>>>"
@@ -108,4 +104,24 @@ class ApplicationController < ActionController::Base
     pp ">>>>>>>>>>>>"
     pp ">>>>>>>>>>>>"
   end
+  
+  def age(dob)
+    if (dob.year rescue false)
+      today = Date.today
+      age = today.year - dob.year
+      age -= 1 if dob.strftime("%m%d").to_i > today.strftime("%m%d").to_i
+      age
+    else
+      "N/A"
+    end
+  end
+  
+  def conversion(num, total)
+    (total.to_i.zero? ? 0 : num.to_f*100/total.to_f).round(1)
+  end
+  
+  def avg(total, count)
+    count.to_i.zero? ? 0 : total.to_i/count.to_i
+  end
+  
 end

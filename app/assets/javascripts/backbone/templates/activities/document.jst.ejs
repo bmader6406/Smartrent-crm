@@ -1,0 +1,21 @@
+<div class="document-act resident-box">
+  <i class="fa fa-upload"></i>
+  <div class="author">
+    <% if (author) { %>
+      <a href="#"><%= author.full_name %></a>
+    <% } %>
+    
+    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
+      <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
+    <% } %>
+  </div>
+  
+  <div class="message">
+    <%= document.message %>
+  </div>
+  
+  <div class="assets">
+    <%= JST['backbone/templates/assets/list']({assets: document.assets}) %>
+  </div>
+</div>

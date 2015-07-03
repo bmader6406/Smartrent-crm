@@ -1,0 +1,9 @@
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "Resident") && App.vars.isPropertyPage) { %>
+    <a href="<%= App.vars.residentsPath %>/new" class="btn btn-primary add-new"> Add New Resident </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div class="grid"></div>
+  <div class="paginator"></div>
+</div>
+<div class="create-update"></div>

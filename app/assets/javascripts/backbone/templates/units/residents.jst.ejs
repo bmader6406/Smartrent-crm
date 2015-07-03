@@ -1,0 +1,18 @@
+<% if (residents.length == 0) { %>
+  <br>
+  No Residents Found!
+<% } else { %>
+  <ul class="list-group">
+    <% for (var i=0, r; r=residents[i]; i++) { %>
+      <li class="list-group-item">
+        <% if (r.property.roommate){ %>
+          <span class="badge">roommate</span>
+        <% } %>
+        <a href="<%= r.show_path %>" target="_blank"> <%= r.full_name || r.email %> </a> <br>
+        Email: <%= r.email %> <br>
+        Move In: <%= r.property.move_in %> <br>
+        Move Out: <%= r.property.move_out %>
+      </li>
+    <% } %>
+  </ul>
+<% } %>

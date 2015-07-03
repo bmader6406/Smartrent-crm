@@ -1,0 +1,222 @@
+<h3> Reports </h3>
+<br>
+<% 
+  var statuses = ["Current", "Future", "Notice", "Past"],
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    rentalTypes = ["Residential", "Affordable"]; 
+%>
+<div>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active">
+      <a href="#report-emails" data-toggle="tab">Email List</a>
+    </li>
+    <li>
+      <a href="#report-birthday" data-toggle="tab">Birthday</a>
+    </li>
+    <li>
+      <a href="#report-details" data-toggle="tab">Demographic Detail</a>
+    </li>
+    <li>
+      <a href="#report-summary" data-toggle="tab">Demographic Summary</a>
+    </li>
+    <li>
+      <a href="#report-comparison" data-toggle="tab">Demographic Comparison</a>
+    </li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="tab-pane active" id="report-emails">
+      <form class="form-horizontal" onsubmit="return false;">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Property</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
+              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+        	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Resident Status</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="status" multiple title='Select Status'>
+              <% for (var i=0, s; s=statuses[i]; i++) { %>
+        	      <option value="<%= s %>"> <%= s %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Move In Dates</label>
+          <div class="col-sm-8">
+            <button class="btn btn-default dropdown-toggle report-range" type="button">
+              <i class="fa fa-calendar"></i>
+              <span style="margin:0 5px;">
+                <%= moment().subtract(30, 'days').format('MMM D, YYYY') %> - <%= moment().subtract(1, 'days').format('MMM D, YYYY') %>
+              </span>
+              <b class="caret"></b>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-8">
+            <a href="#" class="btn btn-primary export-residents" data-type="emails">Export</button>
+            <a href="#" class="btn btn-default view-residents" data-type="emails"> View </a>
+          </div>
+        </div>
+      </form>
+      <div class="list-view"></div>
+    </div>
+    
+    <div class="tab-pane" id="report-birthday">
+      <form class="form-horizontal" onsubmit="return false;">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Property</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
+              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+        	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Month</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="month" multiple title='Select Month'>
+              <% for (var i=0, m; m=months[i]; i++) { %>
+        	      <option value="<%= i+1 %>"> <%= m %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-8">
+            <a href="#" class="btn btn-primary export-residents" data-type="birthday">Export</button>
+            <a href="#" class="btn btn-default view-residents" data-type="birthday"> View </a>
+          </div>
+        </div>
+      </form>
+      <div class="list-view"></div>
+    </div>
+    
+    <div class="tab-pane" id="report-details">
+      <form class="form-horizontal" onsubmit="return false;">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Property</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
+              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+        	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Resident Status</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="status" multiple title='Select Status'>
+              <% for (var i=0, s; s=statuses[i]; i++) { %>
+        	      <option value="<%= s %>"> <%= s %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Rental Type</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="rental_type" multiple title='Select Type'>
+              <% for (var i=0, t; t=rentalTypes[i]; i++) { %>
+        	      <option value="<%= t %>"> <%= t %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-8">
+            <a href="#" class="btn btn-primary export-residents" data-type="details">Export</button>
+            <a href="#" class="btn btn-default view-residents" data-type="details"> View </a>
+          </div>
+        </div>
+      </form>
+      <div class="list-view"></div>
+    </div>
+    
+    <div class="tab-pane" id="report-summary">
+      <form class="form-horizontal" onsubmit="return false;">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Property</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
+              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+        	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Resident Status</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="status" multiple title='Select Status'>
+              <% for (var i=0, s; s=statuses[i]; i++) { %>
+        	      <option value="<%= s %>"> <%= s %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Rental Type</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="rental_type" multiple title='Select Type'>
+              <% for (var i=0, t; t=rentalTypes[i]; i++) { %>
+        	      <option value="<%= t %>"> <%= t %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-8">
+            <a href="#" class="btn btn-primary export-metrics" data-type="summary">Export</button>
+            <a href="#" class="btn btn-default view-metrics" data-type="summary"> View </a>
+          </div>
+        </div>
+      </form>
+      <div class="list-view" style="overflow-x: hidden;"></div>
+    </div>
+    
+    <div class="tab-pane" id="report-comparison">
+      <form class="form-horizontal" onsubmit="return false;">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Property</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
+              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+        	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Resident Status</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="status" multiple title='Select Status'>
+              <% for (var i=0, s; s=statuses[i]; i++) { %>
+        	      <option value="<%= s %>"> <%= s %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-8">
+            <a href="#" class="btn btn-primary export-metrics" data-type="comparison">Export</button>
+            <a href="#" class="btn btn-default view-metrics" data-type="comparison"> View </a>
+          </div>
+        </div>
+      </form>
+      <div class="list-view"></div>
+    </div>
+  </div>
+</div>

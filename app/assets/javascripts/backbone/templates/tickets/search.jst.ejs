@@ -1,0 +1,33 @@
+<div id="ticket-search">
+  <h3> Ticket Search </h3>
+  <form action="<%= App.vars.ticketsPath %>" id="ticket-search-form">
+    <div class="form-group">
+      <input type="text" class="form-control" name="resident_id" value="" placeholder="Resident ID"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="id" value="" placeholder="Ticket ID"/>
+    </div>
+    <div class="form-group">
+      <select class="form-control" name="status">
+        <option value=""> Select Status </option>
+        <option value="open"> Open </option>
+        <option value="closed"> Closed </option>
+        <option value="on hold"> On Hold </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="first_name" value="" placeholder="First Name"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="last_name" value="" placeholder="Last Name"/>
+    </div>
+    <div class="form-group date-field">
+      <input type="text" class="form-control" name="start_date" value="" placeholder="Request Date Start"/>
+    </div>
+    <div class="form-group date-field">
+      <input type="text" class="form-control" name="end_date" value="" placeholder="Request Date End"/>
+    </div>
+    
+    <button type="submit" class="btn btn-default btn-block search">SEARCH</button>
+  </form>
+</div>

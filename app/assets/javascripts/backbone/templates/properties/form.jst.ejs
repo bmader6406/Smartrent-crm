@@ -1,0 +1,132 @@
+<form class="form-horizontal">
+  <div class="panel-group accordion">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+          <a data-toggle="collapse" data-parent=".accordion" href="#basic-info"> Basic Information </a>
+        </h4>
+      </div>
+      <div id="basic-info" class="panel-collapse collapse">
+        <div class="panel-body">
+          <div data-fields="name,address_line1,city,state,zip,phone"> </div>
+          
+           <span style="color: #aaa; display: block; font-size: 16px; margin: 20px 0;"> HOURS </span>
+           <div class="form-group">
+             <label for="employer_city" class="col-sm-3 control-label">
+               Monday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="monday_open_time"></div>
+                 <div class="col-sm-6" data-editors="monday_close_time"></div>
+               </div>
+             </div>
+           </div>
+
+           <div class="form-group">
+             <label for="tuesday_open_time" class="col-sm-3 control-label">
+               Tuesday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="tuesday_open_time"></div>
+                 <div class="col-sm-6" data-editors="tuesday_close_time"></div>
+               </div>
+             </div>
+           </div>
+
+           <div class="form-group">
+             <label for="wednesday_open_time" class="col-sm-3 control-label">
+               Wednesday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="wednesday_open_time"></div>
+                 <div class="col-sm-6" data-editors="wednesday_close_time"></div>
+               </div>
+             </div>
+           </div>
+
+           <div class="form-group">
+             <label for="thursday_open_time" class="col-sm-3 control-label">
+               Thursday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="thursday_open_time"></div>
+                 <div class="col-sm-6" data-editors="thursday_close_time"></div>
+               </div>
+             </div>
+           </div>
+
+           <div class="form-group">
+             <label for="friday_open_time" class="col-sm-3 control-label">
+               Friday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="friday_open_time"></div>
+                 <div class="col-sm-6" data-editors="friday_close_time"></div>
+               </div>
+             </div>
+           </div>
+
+           <div class="form-group">
+             <label for="saturday_open_time" class="col-sm-3 control-label">
+               Saturday
+             </label>      
+             <div class="col-sm-9">
+               <div class="row">
+                 <div class="col-sm-6" data-editors="saturday_open_time"></div>
+                 <div class="col-sm-6" data-editors="saturday_close_time"></div>
+               </div>
+             </div>
+           </div>
+           
+           <div class="form-group">
+              <label for="sunday_open_time" class="col-sm-3 control-label">
+                Sunday
+              </label>      
+              <div class="col-sm-9">
+                <div class="row">
+                  <div class="col-sm-6" data-editors="sunday_open_time"></div>
+                  <div class="col-sm-6" data-editors="sunday_close_time"></div>
+                </div>
+              </div>
+            </div>
+           
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+          <a data-toggle="collapse" data-parent=".accordion" href="#details"> Details </a>
+        </h4>
+      </div>
+      <div id="details" class="panel-collapse collapse">
+        <div class="panel-body" data-fields="email,webpage_url,website_url,status,property_number,l2l_property_id,yardi_property_id,date_opened,date_closed">
+        </div>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+          <a data-toggle="collapse" data-parent=".accordion" href="#management"> Management </a>
+        </h4>
+      </div>
+      <div id="management" class="panel-collapse collapse">
+        <div class="panel-body" data-fields="region,region_manager,svp,owner_group">
+          
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</form>

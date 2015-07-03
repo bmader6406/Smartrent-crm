@@ -1,0 +1,9 @@
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "Unit")) { %>
+    <a href="<%= App.vars.unitsPath %>/new" class="btn btn-primary add-new"> Add New Unit </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div class="grid"></div>
+  <div class="paginator"></div>
+</div>
+<div class="create-update"></div>

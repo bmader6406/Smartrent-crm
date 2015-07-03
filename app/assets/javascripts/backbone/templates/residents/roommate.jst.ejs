@@ -1,0 +1,34 @@
+<div class="resident-box">
+  <i class="fa fa-building-o"></i>
+  
+  <ul class="list-unstyled">
+    <li>
+      Full Name: <span><%= first_name %> <%= last_name %></span>
+    </li>
+    <li>
+      Email: <span><%= email %></span>
+    </li>
+    <li>
+      Lessee: <span><%= property.lessee ? "Yes" : "No" %></span>
+    </li>
+    <li>
+      Occupant Type: <span><%= property.occupant_type %></span>
+    </li>
+    <li>
+      Relationship: <span><%= property.relationship %></span>
+    </li>
+    <li>
+      SSN#: <span><%= property.ssn %></span>
+    </li>
+    <li>
+      Move In: <span><%= property.move_in %></span>
+    </li>
+    <li>
+      Move Out: <span><%= property.move_out %></span>
+    </li>
+  </ul>
+  
+  <% if (App.vars.ability.can("cud", "Resident")) { %>
+    <a href="#" data-id="<%= id %>" class="edit-roommate"> More </a>
+  <% } %>
+</div>

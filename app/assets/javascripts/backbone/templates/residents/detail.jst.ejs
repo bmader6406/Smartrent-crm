@@ -1,0 +1,46 @@
+<% if(App.vars.isPropertyPage) { %>
+  <% if (App.vars.ability.can("cud", "Resident")) { %>
+    <div id="toolbar">
+      <table>
+        <tr>
+        <td width="20%">
+          <a href="#" class="btn btn-primary btn-lg new-call"> Call </a>
+        </td>
+        <td width="20%">
+          <a href="#" class="btn btn-primary btn-lg new-email"> Email </a>
+        </td>
+        <td width="20%">
+          <a href="#" class="btn btn-primary btn-lg new-note"> + Note </a>
+        </td>
+        <td width="20%">
+          <a href="#" class="btn btn-primary btn-lg new-upload"> + Document </a>
+        </td>
+        <td width="20%">
+          <a href="#" class="btn btn-primary btn-lg new-ticket"> + Ticket </a>
+        </td>
+        </tr>
+      </table>
+      <div id="form-wrap"> <!-- call/note/... form goes here --> </div>
+    </div>
+  <% } %>
+  
+  <div class="tab-content">
+    <div class="tab-pane history active" id="resident-history">Loading...</div>
+    <div class="tab-pane history" id="marketing-history">Loading...</div>
+    <div class="tab-pane" id="resident-roommates">
+      <% if (App.vars.ability.can("cud", "Resident")) { %>
+        <a href="#" class="btn btn-primary pull-right new-roommate">Add New Roommate</a>
+      <% } %>
+      <h3> Roommates</h3>
+      <div> Loading...</div>
+    </div>
+    <div class="tab-pane" id="resident-tickets">Loading...</div>
+  </div>
+
+<% } else { %>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="resident-properties">Loading...</div>
+    <div class="tab-pane" id="resident-tickets">Loading...</div>
+  </div>
+<% } %>

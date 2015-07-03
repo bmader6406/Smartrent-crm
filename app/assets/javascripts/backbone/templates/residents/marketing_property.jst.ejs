@@ -1,0 +1,60 @@
+<div class="resident-box">
+  <i class="fa fa-building-o"></i>
+  <div class="prop-header">
+    <div class="badges">
+      <% if (subscribed) { %>
+        <span class="subscribed">Subscribed</span>
+      <% } else { %>
+        <span class="unsubscribed">Not Subscribed</span>
+      <% } %>
+      
+      <% if (resident_status) { %>
+        <span class="<%= resident_status.toLowerCase().replace(/\//g, "") + "-resident" %> status-popover">
+          <%= resident_status  %> Resident
+        </span>
+      <% } else { %>
+        <span class="non-resident">
+          Non Resident
+        </span>
+      <% } %>
+    </div>
+    
+    <b><%= name %></b>
+  </div>
+  <div class="prop-metric">
+    <div class="lead-source">
+      <b>
+        Lead Activity
+      </b>
+      <ul class="list-unstyled">
+        <li style="text-transform: capitalize;">
+          Type: <%= lead_type %>
+        </li>
+        <li>
+          Source: <%= lead_source %>
+        </li>
+        <li>
+          Joined: <%= created_at %>
+        </li>
+      </ul>
+    </div>
+    <div class="counters">
+      <a href="#" class="view-history btn btn-primary btn-sm">
+        Show Property Marketing Activity <i class="fa fa-angle-down"></i>
+      </a>
+      <b>
+        Marketing Activity
+      </b>
+      <ul class="list-unstyled">
+        <li title="Total newsletters"> 
+          Newsletters: <%= sends_count %>
+        </li>
+        <li title="Total unique clicks">
+          Click-thrus: <%= clicks_count %>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="list-unstyled prop-history"></div>
+</div>

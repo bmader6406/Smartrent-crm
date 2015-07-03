@@ -1,0 +1,282 @@
+<div class="crud-buttons">
+  <table>
+    <tr>
+      <% if (App.vars.ability.can("cud", "Resident")) { %>
+        <td>
+          <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+        </td>
+        <td>
+          <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
+        </td>
+
+      <% } else if (App.vars.ability.can("read", "Resident")) { %>
+        <td>
+          <!-- placeholder -->
+        </td>
+      <% } %>
+    </tr>
+  </table>
+</div>
+
+<div class="card">
+  <b href="#" class="blue-text">#<%= id %></b>
+  <h3> <a href="<%= show_path %>" class="default-view"><%= full_name %></a> </h3>
+  <ul class="list-unstyled">
+    <li class="blue-text" style="word-break: break-all;">
+      <%= email %>
+    </li>
+    <li>
+      Primary Contact: <span class="blue-text"><%= primary_phone %></span>
+    </li>
+  </ul>
+</div>
+
+<% if( !property ){ %>
+  <div class="card collapsible">
+    <h4>
+      <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+      Contact Info
+    </h4>
+    <ul class="list-unstyled">
+      <li>
+        <label>Address:</label>
+        <%= street %> <%= city %>, <%= state %> <%= zip %>
+      </li>
+      <li>
+        <label>Gender:</label>
+        <%= gender %>
+      </li>
+      <li>
+        <label>Birthday:</label>
+        <%= birthday %>
+      </li>
+      <li>
+        <label>SSN#:</label>
+        <%= last4_ssn %>
+      </li>
+      <li>
+        <label>Cell Phone:</label>
+        <%= cell_phone %>
+      </li>
+      <li>
+        <label>Home Phone:</label>
+        <%= home_phone %>
+      </li>
+      <li>
+        <label>Work Phone:</label>
+        <%= work_phone %>
+      </li>
+    </ul>
+  </div>
+
+<% } else { %>
+  <div class="card collapsible">
+    <h4>
+      <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+      Contact Info
+    </h4>
+    <ul class="list-unstyled">
+      <li>
+        <label>Address:</label>
+        <%= street %> <%= city %>, <%= state %> <%= zip %>
+      </li>
+      <li>
+        <label>Cell Phone:</label>
+        <%= cell_phone %>
+      </li>
+      <li>
+        <label>Home Phone:</label>
+        <%= home_phone %>
+      </li>
+      <li>
+        <label>Work Phone:</label>
+        <%= work_phone %>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="card collapsible">
+    <h4>
+      <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+      Lease Info
+    </h4>
+    <ul class="list-unstyled">
+      <li>
+        <label>Unit Number:</label>
+        <% var unit = _.find(App.vars.propertyUnits, function(u) { return u["val"] == property.unit_id }) %>
+        <%= unit ? unit.label : "" %>
+      </li>
+      <li>
+        <label>Contract Signing Date:</label>
+        <%= property.signing_date %>
+      </li>
+      <li>
+        <label>Move-in Date:</label>
+        <%= property.move_in %>
+      </li>
+      <li>
+        <label>Move-out Date:</label>
+        <%= property.move_out %>
+      </li>
+      <li>
+        <label>Rent:</label>
+        <%= property.rent %>
+      </li>
+      <li>
+        <label>Status:</label>
+        <%= property.status %>
+      </li>
+      <li>
+        <label>Type:</label>
+        <%= property.type %>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card collapsible">
+    <h4>
+      <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+      Demographics
+    </h4>
+    <ul class="list-unstyled">
+      <li class="heading"> Occupant </li>
+      <li>
+        <label>Gender:</label>
+        <%= gender %>
+      </li>
+      <li>
+        <label>Birthday:</label>
+        <%= birthday %>
+      </li>
+      <li>
+        <label>SSN:</label>
+        <%= ssn %>
+      </li>
+      <li>
+        <label>Household Size:</label>
+        <%= property.household_size %>
+      </li>
+      <li>
+        <label>Household Status:</label>
+        <%= property.household_status %>
+      </li>
+      
+      <li class="heading"> Previous Residence</li>
+      <li>
+        <label>Moving From:</label>
+        <%= property.moving_from %>
+      </li>
+      
+      <li class="heading"> Pet Information</li>
+      <li>
+        <label>Pets Count:</label>
+        <%= property.pets_count %>
+      </li>
+      <li>
+        <label>Pet Type:</label>
+        <%= property.pet_type %>
+      </li>
+      <li>
+        <label>Pet Breed:</label>
+        <%= property.pet_breed %>
+      </li>
+      <li>
+        <label>Pet Name:</label>
+        <%= property.pet_name %>
+      </li>
+      
+      <li class="heading"> Employment</li>
+      <li>
+        <label>Occupation Type:</label>
+        <%= property.occupation_type %>
+      </li>
+      <li>
+        <label>Employer:</label>
+        <%= property.employer %>
+      </li>
+      <li>
+        <label>Employer City:</label>
+        <%= property.employer_city %>
+      </li>
+      <li>
+        <label>Employer State:</label>
+        <%= property.employer_state %>
+      </li>
+      <li>
+        <label>Annual Income:</label>
+        <%= property.annual_income %>
+      </li>
+      <li>
+        <label>Minutes to Work:</label>
+        <%= property.minutes_to_work %>
+      </li>
+      <li>
+        <label>Transportation to Work:</label>
+        <%= property.transportation_to_work %>
+      </li>
+      <% if(property.vehicle1) { %>
+        <li>
+          <label>V1. Make/Model/Year:</label>
+          <%= property.vehicle1 %>
+        </li>
+        <li>
+          <label>License Plate 1:</label>
+          <%= property.license1 %>
+        </li>
+      <% } %>
+      
+      <% if(property.vehicle2) { %>
+        <li>
+          <label>V2. Make/Model:</label>
+          <%= property.vehicle2 %>
+        </li>
+        <li>
+          <label>License Plate 1:</label>
+          <%= property.license2 %>
+        </li>
+      <% } %>
+      <li>
+        <label>Badge #:</label>
+        <%= property.badge_number %>
+      </li>
+      <li>
+        <label>Number of Vehicles:</label>
+        <%= property.vehicles_count %>
+      </li>
+    </ul>
+  </div>
+<% } %>
+
+
+<% if(App.vars.isPropertyPage) { %>
+  <div class="nav-details">
+    <a href="#resident-history" class="btn btn-lg btn-default tab-nav">
+      <i class="fa fa-angle-right"></i>
+      Resident Activity 
+    </a>
+    <a href="#marketing-history" class="btn btn-lg btn-default tab-nav">
+      <i class="fa fa-angle-right"></i>
+      Marketing History
+    </a>
+    <a href="#resident-roommates" class="btn btn-lg btn-default tab-nav">
+      <i class="fa fa-angle-right"></i>
+      Roommates
+    </a>
+    <a href="<%= tickets_path %>" class="btn btn-lg btn-default ticket-nav">
+      <i class="fa fa-angle-right"></i>
+      Tickets
+    </a>
+  </div>
+<% } else { %>
+  <div class="nav-details">
+    <a href="#resident-properties" class="btn btn-lg btn-primary tab-nav">
+      <i class="fa fa-angle-right"></i>
+      Resident Properties
+    </a>
+    <a href="<%= tickets_path %>" class="btn btn-lg btn-default ticket-nav">
+      <i class="fa fa-angle-right"></i>
+      Tickets
+    </a>
+  </div>
+<% } %>
+

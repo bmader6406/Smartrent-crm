@@ -1,26 +1,27 @@
 class DashboardsController < ApplicationController
   before_action :require_user
-  before_action :set_page_title
+  before_action :set_property, :except => [:start]
+  
+  def index
+    @page_title = "CRM - #{@property.name}"
+  end
   
   def start #root
-    if current_user.managed_properties.first
-      redirect_to property_url(current_user.managed_properties.first) and return
+    if current_user.has_role? :admin, Property
+      redirect_to properties_url and return
       
-    elsif current_user.properties.first
-      redirect_to property_url(current_user.properties.first) and return
-      
+    elsif current_user.managed_properties.first
+      redirect_to residents_url(current_user.managed_properties.first) and return
+
     else
       redirect_to profile_url and return
     end
-    
-    #show Property screen
-    @page_title = "Select Property"
-    render :layout => "login"
   end
-
-  private
   
-    def set_page_title
-      @page_title = "CRM - Dashboard"
+  private
+    
+    def set_property
+      @property = current_user.managed_properties.find(params[:property_id])
+      Time.zone = @property.setting.time_zone
     end
 end

@@ -1,0 +1,142 @@
+class ResidentSource
+  
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  field :property_id, :type => String
+  field :status, :type => String
+  field :status_date, :type => DateTime #don't change to date, property iq require datetime
+  
+  # property/source info
+  # source keeps the history of changes
+  # property keeps the last changes
+  field :type, :type => String
+  field :signing_date, :type => Date
+  field :move_in, :type => Date
+  field :move_out, :type => Date
+  field :rent, :type => Integer
+  
+  # extra
+  field :unit_id, :type => String
+  
+  # demographics
+  field :household_size, :type => String
+  field :household_status, :type => String
+  field :moving_from, :type => String
+  field :pets_count, :type => Integer
+  field :pet_type, :type => String
+  field :pet_breed, :type => String
+  field :pet_name, :type => String
+  field :occupation_type, :type => String
+  field :employer, :type => String
+  field :employer_city, :type => String
+  field :employer_state, :type => String
+  field :annual_income, :type => Float
+  
+  #vehicle info
+  field :minutes_to_work, :type => String
+  field :transportation_to_work, :type => String
+  field :vehicle1, :type => String
+  field :license1, :type => String
+  field :vehicle2, :type => String
+  field :license2, :type => String
+  field :vehicles_count, :type => Integer
+  field :badge_number, :type => String
+  field :rental_type, :type => String
+  
+  # roommates
+  field :lessee, :type => Boolean
+  field :roommate, :type => Boolean
+  field :arc_check, :type => Boolean
+  field :occupant_type, :type => String
+  field :relationship, :type => String
+  field :office_phone, :type => String
+  field :fax, :type => String
+  field :work_hour, :type => String
+  field :other1, :type => String
+  field :other2, :type => String
+  field :other3, :type => String
+  field :other4, :type => String
+  field :other5, :type => String
+  
+
+  embedded_in :resident
+
+  # because mongoid 2.4.12 does not support cascading callback on parent object
+  # so make sure we make changes to the embedded document directly to trigger the callbacks
+  after_create :create_property, :if => lambda { |s| s.property_id }
+  after_create :increase_counter_cache, :if => lambda { |s| !s.unify_resident }
+  after_create :create_activity, :if => lambda { |s| !s.unify_resident }
+
+  after_destroy :decrease_counter_cache
+  after_destroy :destroy_dependent
+
+  attr_accessor :unify_resident
+
+  def property
+    @property ||= Property.find_by_id(property_id)
+  end
+
+  def property=(prop) #eager load
+    @property = prop
+  end
+
+  private
+
+    def create_activity
+      #pp ">>>>> create_activity"
+      resident.activities.create(:action => "add_new") if resident.activities_count.zero? #if must be here
+    end
+    
+    def create_property
+      #pp ">>> create_property"
+      attrs = { :property_id => property_id }
+      
+      # save & update sub-org fields only
+      Resident::PROPERTY_FIELDS.each do |f|
+        if self[f].kind_of?(String) && !self[f].blank?
+          attrs[f] = self[f]
+          
+        else
+          attrs[f] = self[f]
+        end
+      end
+    
+      if !status_date.blank? && !status.blank?
+        attrs[:status] = status
+        attrs[:status_date] = status_date
+      end
+    
+      existing = resident.properties.detect{|p| p.property_id == property_id}
+
+      if existing
+        existing.update_attributes(attrs)
+      else
+        resident.properties.create(attrs)
+      end
+    end
+  
+    def increase_counter_cache
+      #pp ">>>>> increase_counter_cache"
+      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"sources_count" => 1}}, {:multi => true})
+    end
+
+    def decrease_counter_cache
+      #pp ">>>>> decrease_counter_cache"
+      if resident #when delete all sources, resident will be nil
+        Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"sources_count" => -1}}, {:multi => true})
+      end
+    end
+  
+    def destroy_dependent
+      #pp ">>>>> destroy_dependent"
+      if property_id
+        if !resident.sources.where(:property_id => property_id, :_id.ne => id.to_s).first
+          ep = resident.properties.where(:property_id => property_id).first
+          ep.destroy if ep
+        end
+      end
+    
+    end
+  
+end

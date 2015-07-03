@@ -1,303 +1,3 @@
-// App is defined in backbone-setup
-// App functions can be overriden or resused in engines
-
-App.initialize = function() {
-  //app router
-  var router = new App.Router(),
-    self = this;
-
-  $(document).on("click", "a[href^='/']", function(event){
-    var link = $(event.currentTarget),
-      href = link.attr('href'),
-      target = link.attr('target'),
-      sameProp = href.indexOf(App.vars.routeRoot) > -1,
-      passThrough = href.indexOf('sign_out') > -1 || target // chain 'or's for other black list routes
-    
-    if( !link.parents('#viewport')[0] ){
-      return true; // ignore link outside viewport
-    }
-    
-    // Allow shift+click for new tabs, etc.
-    if (sameProp && !passThrough && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
-      // Remove leading slashes and hash bangs (backward compatablility)
-      //var url = href.replace(/\/\d+\//, '').replace(/^\//,'').replace('\#\!\/','');
-      
-      var url = href.replace(/^\//,'').replace('\#\!\/',''); //routeRoot is /, need to remove the / of the target url
-
-      // Instruct Backbone to trigger routing events
-      router.navigate(url, true);
-      
-      return false
-    }
-  });
-  
-  //accounts
-  App.collInst.users = new App.Collections.Users();
-
-  router.on('route:showUsers', function() {
-    if(!App.vars.ability.can("read", "User")){
-      App.unauthorizedAlert();
-      return false;
-    }
-    
-    var userSearch = new App.Views.UserSearch(),
-      usersList = new App.Views.UsersList({
-        collection: App.collInst.users
-      });
-
-    $('#west').show().html(userSearch.render().$el);
-    $('#center').attr('class', 'col-md-9').html(usersList.render().$el);
-  });
-
-  router.on('route:showUser', function(id) {
-    if(!App.vars.ability.can("read", "User")){
-      App.unauthorizedAlert();
-      return false;
-    }
-    
-    var user = App.collInst.users.get(id);
-
-    if(!user && App.vars.userObj){
-      user = new App.Models.User( App.vars.userObj );
-      //manual set url if model not found in collection
-      user.url = App.collInst.users.url + '/' + user.get('id');
-    }
-
-    if(user){
-      var userInfo = new App.Views.UserInfo({
-        model: user
-      });
-
-      $('#west').hide();
-      $('#center').attr('class', 'col-md-12').html(userInfo.render().$el);
-
-    } else {
-      window.location.reload();
-    }
-  });
-
-  router.on('route:newUser', function() {
-    if(!App.vars.ability.can("cud", "User")){
-      App.unauthorizedAlert();
-      return false;
-    }
-    
-    var usersList = new App.Views.UsersList({
-        collection: App.collInst.users
-      });
-
-    $('#west').hide();
-    $('#center').attr('class', 'col-md-12').html(usersList.render().$el);
-
-    new App.Views.UserNew({
-      collection: App.collInst.users
-    }).render();
-
-  });
-
-  router.on('route:editUser', function(id) {
-    if(! (App.vars.ability.can("cud", "User") || Helpers.editProfile(id)) ){
-      App.unauthorizedAlert();
-      return false;
-    }
-    
-    var user = App.collInst.users.get(id),
-      editUserForm;
-
-    if(!user && App.vars.userObj){
-      user = new App.Models.User( App.vars.userObj );
-      //manual set url if model not found in collection
-      user.url = App.collInst.users.url + '/' + user.get('id');
-    }
-    
-    if (user) {
-      editUserForm = new App.Views.UserEdit({
-        model: user
-      });
-      
-      $('#west').hide();
-      $('#center').attr('class', 'col-md-12').html(editUserForm.render().$el);
-    } else {
-      window.location.reload();
-    }
-    
-  });
-  
-  //access later
-  App.routerInst = router;
-  
-  // trigger route matching
-  Backbone.history.start({pushState: true, root: App.vars.routeRoot + "/"});
-}
-
-App.unauthorizedAlert = function (){
-  msgbox("You are not authorized to access this page", "danger");
-  //window.location.href = App.vars.unauthorizedPath;
-}
-
-App.setupDropdownNav = function() {
-  var body = $('body');
-  
-  $('#top-nav .navbar-brand, #left-nav .app-name, #mask').on('click', function(){
-    if( body.hasClass('left-expanded') ) {
-      body.removeClass('left-expanded');
-
-    } else {
-      body.addClass('left-expanded');
-    }
-    
-    return false;
-  });
-  
-  //prop filter
-  var propertyDd = $('#prop-dd-nav'),
-    listGroup = propertyDd.find('.list-group');
-
-  propertyDd.find('.form-inline :text').fastLiveFilter(propertyDd.find('.items'), {
-    timeout: 200
-  });
-
-  propertyDd.on('shown.bs.dropdown', function () {
-    setTimeout(function(){
-      propertyDd.find('.form-inline :text').focus();
-    }, 100);
-
-  }).on('click', '.dropdown-menu', function(e){
-    e.stopPropagation();
-
-  });
-  
-  // if( propertyDd.find('.list-group-item').length == 1){ //LM or PM
-  //   propertyDd.find('.list-filter, .fa-angle-down').hide();
-  // }
-
-  var scrolling = false;
-
-  propertyDd.find('.scroller').mCustomScrollbar({
-    autoHideScrollbar:true,
-    autoDraggerLength: false,
-    scrollInertia: 1500,
-    advanced:{
-      updateOnContentResize: true
-    },
-    theme:"light-thin",
-    callbacks:{
-      onScroll: function(){
-        scrolling = false;
-      },
-      whileScrolling: function(){
-        scrolling = true;
-      }
-    }
-  });
-}
-
-App.showMask = function(el) {
-  $("#spinner").show();
-}
-
-App.hideMask = function() {
-  if (!App.maskTimeout) {
-    $("#spinner").hide();
-  } else {
-    clearTimeout(App.maskTimeout);
-  }
-  
-  App.maskTimeout = setTimeout(function () {
-    App.maskTimeout = null;
-    $("#spinner").hide();
-  }, 500);
-}
-
-//Backbone View Helpers
-var Helpers = {
-  timeOrTimeAgo: function(str){
-    var time = moment(str),
-      timeStr = time.format("MMM Do YYYY <br> h:mm a");
-    
-    if((moment().diff(time, 'day') >= 2)){
-      return '<span>'+ timeStr +'</span>';
-      
-    } else {
-      return '<span title="'+ timeStr +'">'+ time.fromNow() +'</span>';
-    }
-  },
-  prettyDuration: function(secs) {
-    var hr = Math.floor(secs / 3600);
-  	var min = Math.floor((secs - (hr * 3600))/60);
-  	var sec = secs - (hr * 3600) - (min * 60);
-
-  	while (min.length < 2) {min = '0' + min;}
-  	while (sec.length < 2) {sec = '0' + min;}
-  	if (hr) hr += ':';
-  	return hr + min + ':' + sec;
-  },
-  
-  truncate: function(str, length) {
-    if(str.length > length){
-      return $.trim(str).substring(0, length).split(" ").slice(0, -1).join(" ") + "...";
-    } else {
-      return str;
-    }
-  },
-  
-  sanitize: function(str){
-    App.vars.tempDiv.html(str);
-    App.vars.tempDiv.find('style, script, link').remove();
-    return App.vars.tempDiv.html();
-  },
-  
-  formatMarketingNote: function(note) {
-    return note ? note.replace("</b>", "</b><p>")  + "</p>" : "";
-  },
-  
-  isSelected: function (val1, val2) {
-    return val1 == val2 ? "selected" : ""
-  },
-
-  isChecked: function (val1, val2) {
-    if( _.isArray(val1) ){
-      return _.contains(val1, val2) ? "checked" : "";
-
-    } else {
-      return val1 == val2 ? "checked" : "";
-
-    }
-  },
-
-  nFormatter: function (num) {
-    if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(1) + 'G';
-    }
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
-    }
-    return num;
-  },
-
-  lineBreakAndLink: function (text) {
-    return text.replace(/[\r\n]{1}/g, " <br/> ").replace(/href=/g, "target='_blank' href=")
-      .replace(/(http?:\/\/\S*)/g, '<a href="$1" target="_blank">$1</a>');
-  },
-  
-  editProfile: function(id){
-    return App.vars.userId == id;
-  }
-  
-} // /Helpers
-
-
-function msgbox(msg, type){
-  $('#notify').notify({
-    type: type || "success",
-    message: { html: msg }
-  }).show();
-};
-
-
 var HtmlCell = Backgrid.HtmlCell = Backgrid.Cell.extend({
   /** @property */
   className: "html-cell",
@@ -313,3 +13,176 @@ var HtmlCell = Backgrid.HtmlCell = Backgrid.Cell.extend({
     return this;
   }
 });
+
+var App = {
+  vars: {},
+  
+  initPageLayout: function(eastSize, westSize, resizeFunc, hideWest, showEast){
+    var viewport = $('#viewport'),
+      body = viewport.parent(),
+      opts = {
+    	  resizable: false,
+    	  closable: false,
+    	  east__size: eastSize || 356,
+    	  west__size: westSize || 305,
+    	  west__initClosed: hideWest,
+    	  east__initClosed: !showEast,
+    	  spacing_open: 0,
+        spacing_closed: 0,
+        center__onresize: function(){
+          if(resizeFunc) resizeFunc();
+        },
+        fxName: 'none',
+  			togglerContent_open:	'<div class="ui-icon"></div>',
+        togglerContent_closed:	'<div class="ui-icon"></div>'
+    	},
+      leftExpanded = true;
+    
+    this.viewport = viewport;
+    this.layout = viewport.layout(opts);
+  	
+  	//left-nav expand/collapse
+  	viewport.on('click', '#hamburger', function(){
+  	  var t = $(this);
+  	  
+  	  if(t.attr('data-expanded')){
+  	    body.removeClass('left-expanded');
+  	    t.removeAttr('data-expanded');
+  	    t.find('i').attr('class', 'fa fa-bars');
+  	    leftExpanded = false;
+  	  } else {
+  	    body.addClass('left-expanded');
+  	    t.attr('data-expanded', 1);
+  	    t.find('i').attr('class', 'fa fa-angle-left');
+  	    leftExpanded = true;
+  	  }
+  	  
+  	  return false;
+  	});
+  	
+  	//prop filter
+  	var propertyDd = $('#property-dd'),
+      listGroup = propertyDd.find('.list-group');
+
+    propertyDd.find('.form-inline :text').fastLiveFilter(propertyDd.find('.items'), {
+      timeout: 200
+    });
+
+    propertyDd.on('shown.bs.dropdown', function () {
+      setTimeout(function(){
+        propertyDd.find('.form-inline :text').focus();
+      }, 100);
+
+    }).on('click', '.dropdown-menu', function(e){
+      e.stopPropagation();
+
+    });
+    
+    var scrolling = false;
+    
+    propertyDd.find('.scroller').mCustomScrollbar({
+      autoHideScrollbar:true,
+      autoDraggerLength: false,
+      scrollInertia: 1500,
+      advanced:{
+        updateOnContentResize: true
+      },
+      theme:"light-thin",
+      callbacks:{
+        onScroll: function(){
+          scrolling = false;
+        },
+        whileScrolling: function(){
+          scrolling = true;
+        }
+      }
+    });
+    
+    Crm.initialize();
+    
+    // close left nav on escape, viewport click
+    $(document).on('keydown', function(e) {
+      if(leftExpanded && e.which == 27) {
+        $('#hamburger[data-expanded=1]').click();
+      }
+    }).on('click', function(e){
+      if(leftExpanded && $(e.target).parents('#viewport')[0]){
+        $('#hamburger[data-expanded=1]').click();
+      }
+    });
+  },
+  
+  initAssetManager: function(){
+    this.assetDialog = $('#asset-dialog');
+    
+    this.assetDialog.on('show.bs.modal', function (e) {
+      if(!App.assetDialog.find('#gallery')[0]){ //first load
+        App.assetDialog.mask('loading...');
+
+        $.get(App.pageAssetUrl, function(){
+          App.assetDialog.unmask();
+        }, 'script');
+      }
+      
+    }).on('hide.bs.modal', function (e) {
+      App.vars.uploadTarget = "";
+    });
+    
+  },
+  
+  initExportDialog: function(){
+    if(!this.exportDialog) {
+      this.exportDialog = $('#export-dialog');
+      
+      this.exportDialog.on('show.bs.modal', function (e) {
+        // do something
+      }).on('hide.bs.modal', function (e) {
+        // do something
+      });
+
+      this.exportDialog.on('click', '#download-btn', function(){
+        var btn = $(this),
+    	    email = btn.prev().val(),
+    	    dialog = $("#alert");
+
+        App.exportDialog.mask("Please wait...");
+
+        if(App.validateEmail(email) ){
+          $.get(App.exportDialog.attr("data-url"), {recipient: email}, function(){
+      	    App.exportDialog.unmask();
+      	  }, 'script');
+
+        }else {
+          msgbox("Please enter a valid email");
+          App.exportDialog.unmask();
+        }
+
+    	  return false;
+      }).on('keyup', 'input:text', function(ev){
+
+        if(ev.which == 13){
+          $(this).next().click();
+          return false;
+        }
+      });
+    }
+  },
+  
+  validateEmail: function(email){
+    return /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i.test(email);
+  },
+
+  validateUrl: function(url){
+    var reg = /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;
+		return reg.test(url);
+  }
+}
+
+//global functions
+
+function msgbox(msg, type){
+  $('#notify').notify({
+    type: type || "success",
+    message: { html: msg }
+  }).show();
+};

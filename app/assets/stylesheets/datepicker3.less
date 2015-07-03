@@ -1,21 +1,8 @@
-/*!
- * Datepicker for Bootstrap
- *
- * Copyright 2012 Stefan Petre
- * Improvements by Andrew Rowls
- * Licensed under the Apache License v2.0
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- */
-@import "twitter/bootstrap/variables";
-@import "twitter/bootstrap/mixins";
-
 .datepicker {
-	padding: 4px;
-
-/*  &-inline {
-    width: 220px;
-  }*/
+	border-radius: 4px;
+	&-inline {
+		width: 220px;
+	}
 	direction: ltr;
 	&&-rtl {
 		direction: rtl;
@@ -24,9 +11,9 @@
 		}
 	}
 	&-dropdown {
-	  border: 1px solid #fff;
 		top: 0;
 		left: 0;
+		padding: 4px;
 		&:before {
 			content: '';
 			display: inline-block;
@@ -63,19 +50,15 @@
 			border-top:    6px solid #fff;
 		}
 	}
-	>div {
+	> div {
 		display: none;
 	}
-	&.days div.datepicker-days {
+	&.days .datepicker-days,
+	&.months .datepicker-months,
+	&.years .datepicker-years {
 		display: block;
 	}
-	&.months div.datepicker-months {
-		display: block;
-	}
-	&.years div.datepicker-years {
-		display: block;
-	}
-	table{
+	table {
 		margin: 0;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
@@ -88,6 +71,7 @@
 				text-align: center;
 				width: 30px;
 				height: 30px;
+				border-radius: 4px;
 				border: none;
 			}
 		}
@@ -96,11 +80,12 @@
 	// border and background colors.
 	.table-striped & table tr {
 		td, th {
-			background-color:transparent;
+			background-color: transparent;
 		}
 	}
 	table tr td {
-		&.day:hover, &.day.focused {
+		&.day:hover,
+		&.day.focused {
 			background: @gray-lighter;
 			cursor: pointer;
 		}
@@ -110,15 +95,19 @@
 		}
 		&.disabled,
 		&.disabled:hover {
-			background: none;
+			background: none !important;
 			color: @btn-link-disabled-color;
 			cursor: default;
+		}
+		&.highlighted {
+			background: @state-info-bg;
+			border-radius: 0;
 		}
 		&.today,
 		&.today:hover,
 		&.today.disabled,
 		&.today.disabled:hover {
-			@today-bg: lighten(orange, 42%);
+			@today-bg: lighten(orange, 30%);
 			.button-variant(#000, @today-bg, darken(@today-bg, 20%));
 		}
 		&.today:hover:hover { // Thank bootstrap 2.0 for this selector...
@@ -132,7 +121,7 @@
 		&.range:hover,
 		&.range.disabled,
 		&.range.disabled:hover {
-			background:@gray-lighter;
+			background: @gray-lighter;
 			border-radius: 0;
 		}
 		&.range.today,
@@ -165,7 +154,7 @@
 			float: left;
 			margin: 1%;
 			cursor: pointer;
-
+			border-radius: 4px;
 			&:hover {
 				background: @gray-lighter;
 			}
@@ -189,20 +178,17 @@
 		}
 	}
 
-	th.datepicker-switch {
+	.datepicker-switch {
 		width: 145px;
 	}
 
 	thead tr:first-child th,
 	tfoot tr th {
 		cursor: pointer;
-		&:hover{
+		&:hover {
 			background: @gray-lighter;
 		}
 	}
-	/*.dow {
-		border-top: 1px solid #ddd !important;
-	}*/
 
 	// Basic styling for calendar-week cells
 	.cw {
@@ -211,26 +197,24 @@
 		padding: 0 2px 0 5px;
 		vertical-align: middle;
 	}
-	thead tr:first-child th.cw {
+	thead tr:first-child .cw {
 		cursor: default;
 		background-color: transparent;
 	}
-	.next, .prev {
-	  font-size: 16px;
-	}
 }
-.input-group {
-	&.date {
-		.input-group-addon i {
-			cursor: pointer;
-			width: 16px;
-			height: 16px;
-		}
-	}
+.input-group.date .input-group-addon {
+	cursor: pointer;
 }
 .input-daterange {
+	width: 100%;
 	input {
-		text-align:center;
+		text-align: center;
+	}
+	input:first-child {
+		border-radius: 3px 0 0 3px;
+	}
+	input:last-child {
+		border-radius: 0 3px 3px 0;
 	}
 	.input-group-addon {
 		width: auto;
@@ -244,7 +228,7 @@
 		background-color: @input-group-addon-bg;
 		border: solid @input-group-addon-border-color;
 		border-width: 1px 0;
-		margin-left:-5px;
-		margin-right:-5px;
+		margin-left: -5px;
+		margin-right: -5px;
 	}
 }

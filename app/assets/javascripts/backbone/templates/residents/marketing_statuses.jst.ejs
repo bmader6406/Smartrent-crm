@@ -1,0 +1,21 @@
+<ul class="list-unstyled">
+  <% for (var i=0, s; s=statuses[i]; i++) { %>
+    <li>
+      <b><%= s.status %></b>
+      <br>
+      <small>
+        Status Date: <%= s.status_date %>
+        <% if (s.move_in) { %>
+          <br> Move-in: <%= s.move_in %>
+        <% } %>
+        <% if (s.move_out) { %>
+          <br> Move-out: <%= s.move_out %>
+        <% } %>
+      </small>
+    </li>
+  <% } %>
+  
+  <% if (statuses.length == 0) { %>
+    <li> No Status History Found</li>
+  <% } %>
+</ul>

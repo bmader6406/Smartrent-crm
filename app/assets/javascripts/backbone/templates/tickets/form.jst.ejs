@@ -1,0 +1,100 @@
+<form class="ticket-form" onsubmit="return false;">
+  <div class="row">
+    <div class="col-sm-12">
+      <div data-editors="resident_id" class="form-group"></div>
+      
+      <table style="width:100%">
+        <tr>
+          <td style="width:120px">
+            <div class="status-dd <%= status.replace(" ", "-") %>">
+              <span class="capitalize"><%= status %></span>
+              <div class="dropdown">
+                <a href="#" data-toggle="dropdown">
+                  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#" data-status="open">Open</a>
+                  </li>
+                  <li>
+                    <a href="#" data-status="on hold">On Hold</a>
+                  </li>
+                  <li>
+                    <a href="#" data-status="closed">Closed</a>
+                  </li>
+                </ul>
+              </div>
+              <div data-editors="status" class="form-group" style="display:none"></div>
+            </div>
+          </td>
+          <td>
+            <div data-editors="description" class="form-group"></div>
+          </td>
+        </tr>
+      </table>
+      
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div data-editors="category_id" class="form-group">
+        <label class="control-label small"> Maintenance Category: </label>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div data-editors="assignee_id" class="form-group">
+        <label class="control-label small"> Assign To: </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div data-editors="urgency" class="form-group">
+        <label class="control-label"> Urgency: </label>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div data-editors="can_enter" class="form-group">
+        <label class="control-label"> Permission to Enter? </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12"> 
+      <div data-editors="entry_instruction" class="form-group">
+        <label class="control-label small"> Entry Instruction: </label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <a href="#" class="show-options"> + Additional Options</a>
+      <div class="options well">
+        <h4> Additional Options</h4>
+        <ul class="list-unstyled">
+          <li data-editors="additional_emails" class="form-group">
+            <label class="control-label small"> Additional Emails (separate by comma): </label>
+          </li>
+          <li data-editors="additional_phones" class="form-group">
+            <label class="control-label small"> Additional Contact Numbers (separate by comma): </label>
+          </li>
+          <li class="ticket-upload">
+            <b> Upload Photos or Documents:</b>
+            
+            <div class="assets">
+              <%= JST['backbone/templates/assets/list']({assets: assets}) %>
+            </div>
+            
+            <!-- <div> upload form inserted here </div> -->
+            <a class="add-file" href="#">
+              <i class="fa fa-plus"></i>
+            </a>
+          </li>
+        </ul>
+      </dov>
+    </div>
+  </div>
+  
+  <input type="hidden" id="asset-ids" name="asset_ids" value="" /> <!-- "sub-form" file upload -->
+  <input type="hidden" id="remove-asset-ids" name="remove_asset_ids" value="" />
+</form>

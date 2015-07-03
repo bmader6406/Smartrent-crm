@@ -1,0 +1,9 @@
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "Ticket")) { %>
+    <a href="<%= App.vars.ticketsPath %>/new" class="btn btn-primary add-new"> Add New Ticket </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div class="grid"></div>
+  <div class="paginator"></div>
+</div>
+<div class="create-update"></div>

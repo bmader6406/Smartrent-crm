@@ -1,0 +1,33 @@
+<div id="unit-search">
+  <h3> Unit Search </h3>
+  <form action="<%= App.vars.unitsPath %>" id="unit-search-form">
+    <div class="form-group">
+      <input type="text" class="form-control" name="id" placeholder="Unit ID"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="code" placeholder="Unit Code"/>
+    </div>
+    <div class="form-group">
+      <select class="form-control" name="status">
+        <option value=""> Select Status </option>
+        <option value="Active"> Active </option>
+        <option value="Inactive"> Inactive </option>
+      </select>
+    </div>
+    <!-- 
+    <div class="form-group">
+      <input type="text" class="form-control" name="resident_id" placeholder="Resident ID"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="first_name" placeholder="First Name"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="last_name" placeholder="Last Name"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="email" placeholder="Email"/>
+    </div>
+    -->
+    <button type="submit" class="btn btn-default btn-block search">SEARCH</button>
+  </form>
+</div>

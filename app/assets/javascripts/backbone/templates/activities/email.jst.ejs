@@ -1,0 +1,27 @@
+<div class="email-act resident-box">
+  <i class="fa fa-envelope-o"></i>
+  <div class="author">
+    <% if (typeof(author) != "undefined") { %>
+      <a href="#"><%= author.full_name %></a>
+    <% } else { %>
+      <a href="#"><%= email.from %></a>
+    <% } %>
+    
+    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
+      <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
+    <% } %>
+  </div>
+  
+  <div class="subject">
+    <%= email.subject %>
+  </div>
+  <div class="message">
+    <%= Crm.Helpers.sanitize(email.message) %>
+  </div>
+  <% if (typeof(author) != "undefined" && author.type == "Resident" && App.vars.ability.can("cud", "ResidentActivity")) { %>
+    <a href="#" class="reply-email">
+      <i class="fa fa-reply"></i> Reply
+    </a>
+  <% } %>
+</div>

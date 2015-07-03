@@ -1,30 +1,40 @@
-<!-- alert/confirm -->
-<div class="modal" id="alert">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button class="close" data-dismiss="modal">×</button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body"> </div>
-    </div><!-- /.modal-content -->
-  </div>
-</div>
+<!-- bootstrap notify -->
+<div id="notify" class='bottom-right'></div>
 
-<div class="modal" id="confirm">
+<div class="modal modal-sm" id="new-ticket-modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button class="close" data-dismiss="modal">×</button>
-        <h4 class="modal-title"></h4>
+        <h4 class="modal-title">Add New Ticket</h4>
       </div>
-      <div class="modal-body"> </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" type="button">Yes</button>
-        <button class="btn btn-default cancel" type="button">No</button>
+      <div class="modal-body">
+        <form action="<%= search_residents_path(@property) %>" method="GET">
+        Enter resident ID or resident email:
+          <div class="input-group">
+            <input type="text" class="form-control">
+            <span class="input-group-btn">
+              <button class="btn btn-default search" style="width: 100px;" type="button">Search</button>
+            </span>
+          </div>
+        </form>
       </div>
     </div><!-- /.modal-content -->
   </div>
 </div>
 
-<div id="notify" class='bottom-right'></div>
+<div class="modal modal-sm" id="export-dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="jqmClose close">×</button>
+        <h4 class="modal-title">Large Data Download</h4>
+      </div>
+      <div class="modal-body">
+        Please enter your email, we will email you once the file is exported <br><br>
+        <input type="text" class="form-control" value="<%= current_user ? current_user.email : nil %>" />
+        <a href="#" id="download-btn" class="btn btn-primary"> Download </a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div>
+</div>

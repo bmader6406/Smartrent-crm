@@ -1,76 +1,107 @@
 class PropertiesController < ApplicationController
   before_action :require_user
-  before_action :set_property, only: [:show, :edit, :update, :destroy]
+  before_action :set_property, :except => [:index, :new, :create, :info]
   before_action :set_page_title
   
-  # GET /properties
-  # GET /properties.json
   def index
-    @properties = current_user.managed_properties
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {
+        filter_properties(params[:per_page])
+      }
+    end
   end
 
-  # GET /properties/1
-  # GET /properties/1.json
   def show
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {}
+    end
   end
-
-  # GET /properties/new
+  
+  def info
+    @property = current_user.managed_properties.find(params[:id])
+    
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {
+        render(template: "properties/show.json.rabl")
+      }
+    end
+  end
+  
   def new
-    @property = Property.new
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {}
+    end
   end
-
-  # GET /properties/1/edit
+  
   def edit
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {}
+    end
   end
-
-  # POST /properties
-  # POST /properties.json
+  
   def create
     @property = Property.new(property_params)
-
+    
     respond_to do |format|
       if @property.save
-        format.html { redirect_to property_url(@property), notice: 'Property was successfully created.' }
-        format.json { render :show, status: :created, location: @property }
+        format.json { render template: "properties/show.json.rabl", status: :created }
       else
-        format.html { render :new }
-        format.json { render json: @property.errors, status: :unprocessable_entity }
+        format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
       end
     end
+    
   end
 
-  # PATCH/PUT /properties/1
-  # PATCH/PUT /properties/1.json
   def update
     respond_to do |format|
-      if @property.update(property_params)
-        format.html { redirect_to property_url(@property), notice: 'Property was successfully updated.' }
-        format.json { render :show, status: :ok, location: @property }
+      if @property.update_attributes(property_params)
+        format.json { head :no_content }
       else
-        format.html { render :edit }
-        format.json { render json: @property.errors, status: :unprocessable_entity }
+        format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
       end
     end
   end
-
-  # DELETE /properties/1
-  # DELETE /properties/1.json
+  
   def destroy
-    @property.destroy
+    @property.update_attribute(:deleted_at, Time.now)
+    
     respond_to do |format|
-      format.html { redirect_to properties_url, notice: 'Property was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
-
+  
   private
-    # Use callbacks to share common setup or constraints between actions.
+    def property_params
+      params.require(:property).permit!
+    end
+    
     def set_property
-      @property = current_user.managed_properties.find(params[:id])
+      @property = current_user.managed_properties.find(params[:property_id])
+      
+      Time.zone = @property.setting.time_zone
+    end
+
+    def set_property
+      @property = Property.find(params[:id])
       
       case action_name
         when "create"
-          authorize! :cud, @property
+          authorize! :cud, ::Property
           
         when "edit", "update", "destroy"
           authorize! :cud, @property
@@ -81,11 +112,20 @@ class PropertiesController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name}" if @property
+      @page_title = "CRM - #{@property.name} - Properties" 
     end
-
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def property_params
-      params.require(:property).permit!
+    
+    def filter_properties(per_page = 15)
+      arr = []
+      hash = {}
+      
+      ["name", "city", "state", "zip", "property_number", "l2l_property_id", "yardi_property_id"].each do |k|
+        next if params[k].blank?
+        
+        arr << "name LIKE :#{k}"
+        hash[k.to_sym] = "%#{params[k]}%"
+      end
+      
+      @properties = Property.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
     end
 end

@@ -1,9 +1,9 @@
-App.Models.User = Backbone.Model.extend({
+Crm.Models.User = Backbone.Model.extend({
   
   defaults: {
     role: '',
-    authorized_property_ids: [],
-    authorized_region_ids: []
+    authorized_regions: [],
+    authorized_property_ids: []
   },
   
   initialize: function() {

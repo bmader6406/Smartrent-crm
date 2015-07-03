@@ -1,0 +1,28 @@
+<div id="resident-search">
+  <h3> Resident Search </h3>
+  <form action="<%= App.vars.residentsPath %>" id="resident-search-form">
+    <div class="form-group">
+      <input type="text" class="form-control" name="resident_id" value="" placeholder="Resident ID"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="first_name" value="" placeholder="First Name"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="last_name" value="" placeholder="Last Name"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="email" value="" placeholder="Email"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="primary_phone" value="" placeholder="Phone"/>
+    </div>
+    
+    <% if(App.vars.isPropertyPage) { %>
+      <div class="form-group">
+        <input type="text" class="form-control" name="unit_id" value="" placeholder="Unit ID or Code"/>
+      </div>
+    <% } %>
+    
+    <button type="submit" class="btn btn-default btn-block search">SEARCH</button>
+  </form>
+</div>

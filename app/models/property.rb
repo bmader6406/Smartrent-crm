@@ -5,11 +5,19 @@ class Property < ActiveRecord::Base
   
   has_one :property_setting
   
+  has_many :tickets
+  has_many :categories
+  
+  has_many :units
+  has_many :notifications
+  has_many :assets
+  
+  has_many :campaigns
+  has_many :audiences
+  
   validates :name, :presence => true
   
   resourcify
-  
-  after_create :create_admin_role
   
   def setting
     @setting ||= begin
@@ -17,12 +25,12 @@ class Property < ActiveRecord::Base
     end
   end
   
-  private
-  
-    def create_admin_role
-      # if user
-      #   user.add_role :admin, Property
-      # end
-    end
+  # use persona.residents.with(:consistency => :strong) to switch to primary for action that requires no lag
+  #   such as: showing entry after submit, check if entry have been imported or not
+
+  # for mongoid, no need to cache the query result because, it does not query the db if call .where only
+  def residents
+    Resident.with(:consistency => :eventual).where(:deleted_at => nil)
+  end
   
 end

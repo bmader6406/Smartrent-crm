@@ -33,7 +33,22 @@ TMP_DIR = "/tmp/"
 # remove soon
 MULTI_SENDS_ENABLED_TS = Time.parse("2013-12-09 11:00:00 UTC").to_i
 DEPLOYED_AT = Time.now.to_i
+
+
 VERIFIED_DOMAINS = "hy.ly bozzuto.com"
+
+###
+
+TWILIO_SID = "AC98548e50553210aa39deb89e6a8ffb1b"
+TWILIO_TOKEN = "643e67e6da78361b3436d7781d78f5cb"
+TWILIO_NUMBER = "+1 260-535-0148"
+
+TWILIO_P2P_SID = Rails.env.production? ? "APf050c35b938ebb859aa802e25f7f7d71" : "AP9bebd11d0f668dd667158695dea83119"
+TWILIO_W2P_SID = Rails.env.production? ? "AP619d8d6bbadf103902cf8c550c1448b7" : "AP6343c3b276cf4da851ceeb07e0ab0438"
+TWILIO_W2P_CLIENT = "Web"
+
+CONVO_EMAIL = "conversation@hy.ly"
+CONVO_PWD = "C0nversation"
 
 # Initialize the Rails application.
 Rails.application.initialize!

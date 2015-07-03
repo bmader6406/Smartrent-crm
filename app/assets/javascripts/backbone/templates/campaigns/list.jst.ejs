@@ -1,0 +1,8 @@
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "Campaign")) { %>
+    <a href="<%= App.vars.campaignsUrl %>/new" class="btn btn-primary add-new"> Send a New Notice </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div class="grid"></div>
+  <div class="paginator"></div>
+</div>

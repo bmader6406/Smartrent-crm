@@ -1,0 +1,62 @@
+<form id="file-upload" action="<%= App.vars.assetsPath %>"  method="POST" enctype="multipart/form-data">
+  <div class="drop-zone">
+    <i class="fa fa-cloud-upload"></i>
+    <span>Drop files from your computer here.</span>
+  </div>
+
+  <div class="fileupload-buttonbar">
+    <a href="#" class="btn btn-default browse">
+      <span class="fileinput-button">
+        Browse Files
+        <input type="file" name="files[]" multiple>
+      </span>
+    </a>
+    <a href="#" class="btn btn-default dropbox"> Import from Dropbox </a>
+    <a href="#" class="btn btn-default ggdrive"> Import from Google Drive </a>
+
+    <button type="submit" class="upload-local-files start" style="display:none"></button>
+    <p> 
+      File must be smaller than 10MB.
+      JPG, JPEG, PNG, GIF, ICO, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT
+    </p>
+  </div>
+
+  <span class="fileupload-loading"></span>
+
+  <div id="upload-list" class="well">
+    <table class="table">
+      <tbody class="files"></tbody>
+    </table>
+  </div>
+</form>
+
+<form id="file-import" class="well" action="<%= App.vars.importAssetsPath %>"  method="POST">
+  <input type="hidden" name="target" />
+  <input type="hidden" name="source" />
+  <input type="hidden" name="access_token" />
+
+  <ul class="nav nav-tabs" style="display:none">
+		<li>
+		  <a href="#import-dropbox" data-toggle="tab"> Dropbox </a>
+		</li>
+		<li>
+		  <a href="#import-ggdrive" data-toggle="tab"> Google Drive</a>
+		</li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="import-dropbox" class="tab-pane" data-source="dropbox">
+      <label>Import files from Dropbox</label>
+      <table class="table import-files"> </table>
+    </div>
+
+    <div id="import-ggdrive" class="tab-pane"  data-source="ggdrive"> 
+      <label>Import files from Google Drive</label>
+      <table class="table import-files"> </table>
+    </div>
+  </div>
+</form>
+
+<div class="upload-buttons" style="display:none"> <!-- use ticketFormView create/update button -->
+  <button type="submit" class="btn btn-lg btn-success upload">Upload</button> 
+</div>

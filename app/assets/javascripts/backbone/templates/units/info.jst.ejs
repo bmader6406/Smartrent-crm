@@ -1,0 +1,23 @@
+<% if (App.vars.ability.can("cud", "Unit")) { %>
+  <div class="crud-buttons">
+    <table>
+      <tr>
+        <td>
+          <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+        </td>
+        <td>
+          <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+<% } %>
+
+<div class="card">
+  <h3> Unit #<%= code %> </h3>
+  <ul class="list-unstyled">
+    <li>
+      <b>ID:</b> <%= id %>
+    </li>
+  </ul>
+</div>

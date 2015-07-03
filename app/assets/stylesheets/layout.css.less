@@ -1,0 +1,384 @@
+html, body {
+	width:		100%;
+	height:		100%;					
+	padding:	0 !important;
+	margin:		0;
+}
+body {
+  overflow: hidden;
+}
+#left-nav {
+  background: #4a4a4a;
+  color: #eee;
+  display: block;
+  height: 100%;
+  position: fixed;
+	top: 0;
+	left: 0;
+  width: 265px;
+  z-index: 1;
+  
+  a {
+    color: #ccc;
+  }
+  p {
+    opacity: 0.5;
+    padding: 15px;
+    font-size: 12px;
+  }
+  
+  .divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px 15px 10px;
+    
+    a {
+      margin-left: 5px;
+    }
+    span {
+      color: #999;
+      display: block;
+      margin-top: 5px;
+    }
+  }
+}
+
+#left-menu {
+  padding: 0;
+  margin: 30px 0 0 0;
+  list-style-type: none;
+  
+  li {
+    a {
+      display: block;
+      border: 0 none;
+      padding: 10px 15px;
+      font-size: 18px;
+      text-shadow: 0 1px 0 #000;
+      text-decoration: none;
+    }
+    i {
+      color: #999;
+      font-size: 24px;
+      margin-right: 5px;
+      position: relative;
+      top: 2px;
+    }
+  }
+  .active, li:hover {
+    a, i {
+      color: #7ccddc;
+    }
+  }
+}
+
+#viewport {
+  background: #fff;
+	position:	absolute;
+	top:		50px;
+	bottom:		0;
+	left:		0;
+	right:		0;
+	padding: 0;
+	overflow: visible !important;
+	z-index: 2;
+	
+	-ms-transform: translate(0px, 0);
+  -moz-transform: translate(0px, 0);
+  -webkit-transform: translate3d(0px, 0, 0);
+  transform: translate(0px, 0);
+  -ms-transition: -ms-transform 0.28s ease-in-out;
+  -moz-transition: -moz-transform 0.28s ease-in-out;
+  -webkit-transition: -webkit-transform 0.28s ease-in-out;
+  transition: transform 0.28s ease-in-out;
+	
+	.left-expanded & {
+    -ms-transform: translate(265px, 0);
+    -moz-transform: translate(265px, 0);
+    -webkit-transform: translate3d(265px, 0, 0);
+    transform: translate(265px, 0);
+  }
+  
+  .hidden-pane {
+  	display:	none;
+  	overflow: visible !important;
+  }
+  
+  .ui-layout-west {
+    background: #f2f2f2;
+  }
+
+  .ui-layout-content > div {
+    padding: 15px;
+  }
+}
+#mask {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  
+  .left-expanded & {
+    display: block;
+  }
+}
+#top-nav {
+  background: #565a5d;
+  border: 0 none;
+  position: absolute;
+  left: 0;
+  top: -50px;
+  width: 100%;
+  
+  .logo {
+    font-size: 20px;
+    left: 50%;
+    margin-left: -85px;
+    position: absolute;
+    text-decoration: none;
+    top: 12px;
+    width: 170px;
+
+    img {
+      position: relative;
+      top: -1px;
+    }
+  }
+  .logo, .dropdown-toggle {
+    color: #ffffff !important;
+  }
+  .open .dropdown-toggle {
+    background: #585858 !important;
+  }
+  .navbar-right {
+    margin-right: 10px;
+  }
+  
+  #hamburger {
+    color: #fff;
+    font-size: 26px;
+    height: 50px;
+    left: 5px;
+    line-height: 50px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 50px;
+    
+    .fa-angle-left {
+      font-size: 35px;
+      position: relative;
+      top: 4px;
+    }
+  }
+  .user-info {
+    color: #fff;
+    margin: 15px 10px 0 0;
+    
+    a {
+      color: #fff;
+      margin-left: 2px;
+    }
+    span {
+      color: #999;
+      margin-right: 2px;
+    }
+  }
+}
+
+#property-dd {
+  position: relative;
+  
+  .dropdown-toggle {
+    font-size: 15px;
+    text-decoration: none;
+  }
+  
+  .list-filter {
+    background: #4a4a4a;
+    padding: 0;
+    width: 320px;
+
+    .form-inline {
+      background: #4a4a4a;
+      padding: 8px 10px;
+    }
+    .form-control {
+      font-size: 15px;
+      padding: 1px 8px;
+    }
+    
+    b {
+      display: block;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 8px 20px;
+    }
+    a {
+      background: none;
+      border-radius: 0;
+      border-width: 0;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 300;
+      padding: 8px 20px 8px 35px;
+      
+      &:hover, &.active {
+        color: #7ccddc;
+      }
+    }
+  }
+  .divider {
+    border-bottom: 1px solid #888;
+    height: 1px;
+    margin: 5px 10px;
+  }
+  .scroller {
+    min-height: 100px;
+    max-height: 400px;
+    overflow: auto;
+  }
+}
+
+
+/*
+ *	PANES & CONTENT-DIVs
+ */
+.ui-layout-pane {
+  /* all 'panes' */
+
+  background-color: transparent;
+  border: 0 none;
+  padding: 0;
+  overflow: auto;
+  /* DO NOT add scrolling (or padding) to 'panes' that have a content-div,
+	   otherwise you may get double-scrollbars - on the pane AND on the content-div
+	   - use ui-layout-wrapper class if pane has a content-div
+	   - use ui-layout-container if pane has an inner-layout
+	*/
+
+}
+/* (scrolling) content-div inside pane allows for fixed header(s) and/or footer(s) */
+.ui-layout-content {
+  padding: 0;
+  background: transparent;
+  position: relative;
+  /* contain floated or positioned elements */
+
+  overflow: auto;
+  /* add scrolling to content-div */
+
+}
+/*
+ *	RESIZER-BARS
+ */
+.ui-layout-resizer {
+  /* all 'resizer-bars' */
+
+  border: 1px solid #807e7b;
+  border-width: 0;
+}
+/*
+ *	TOGGLER-BUTTONS
+ */
+.ui-layout-toggler {
+  border: 1px solid #807e7b;
+  /* match pane-border */
+
+  background-color: #807e7b;
+}
+.ui-layout-resizer-hover .ui-layout-toggler {
+  opacity: .60;
+  filter: alpha(opacity=60);
+}
+.ui-layout-toggler-north,
+.ui-layout-toggler-south {
+  border-width: 0 1px;
+  /* left/right borders */
+
+}
+.ui-layout-toggler-west,
+.ui-layout-toggler-east {
+  border-width: 1px 0;
+  /* top/bottom borders */
+
+}
+/* hide the toggler-button when the pane is 'slid open' */
+.ui-layout-resizer-sliding .ui-layout-toggler {
+  display: none;
+}
+/*
+ *	style the text we put INSIDE the togglers
+ */
+.ui-layout-toggler .content {
+  font-size: 12px;
+  font-weight: bold;
+  width: 100%;
+  padding-bottom: 0.35ex;
+  /* to 'vertically center' text inside text-span */
+
+}
+/*
+ *	PANE-MASKS
+ *	these styles are hard-coded on mask elems, but are also 
+ *	included here as !important to ensure will overrides any generic styles
+ */
+.ui-layout-mask {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  filter: alpha(opacity=0) !important;
+}
+.ui-layout-mask-inside-pane {
+  /* masks always inside pane EXCEPT when pane is an iframe */
+
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.ui-layout-toggler {
+  background-color: #ffffff;
+  opacity: 0.6;
+}
+.ui-layout-resizer-open-hover .ui-layout-toggler,
+.ui-layout-toggler-hover {
+  opacity: 1;
+}
+.ui-layout-toggler .ui-icon {
+  margin: 0 auto;
+}
+.ui-layout-toggler-west .ui-icon,
+.ui-layout-toggler-east .ui-icon {
+  margin-left: -4px;
+}
+.ui-layout-toggler-west-closed .ui-icon,
+.ui-layout-toggler-east-open .ui-icon {
+  background-position: -32px -16px;
+}
+.ui-layout-toggler-east-closed .ui-icon,
+.ui-layout-toggler-west-open .ui-icon {
+  background-position: -96px -16px;
+}
+.ui-layout-toggler-north-closed .ui-icon,
+.ui-layout-toggler-south-open .ui-icon {
+  background-position: -64px -18px;
+}
+.ui-layout-toggler-south-closed .ui-icon,
+.ui-layout-toggler-north-open .ui-icon {
+  background-position: 0 -18px;
+}
+.ui-layout-toggler-west {
+  display: none !important;
+}

@@ -6,16 +6,96 @@ Rails.application.routes.draw do
     # placeholder
   end
   
-  resources :properties
+  # base
+  resources :properties do
+    member do
+      get :info
+    end
+  end
+  
   resources :users, :path => :accounts
   
-  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
-  
-  # profile
   resource :profile
   resources :authentications
   resources :user_sessions
   resources :password_resets
+  
+  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
+  
+  # crm
+  scope  "/:property_id" do
+    resources :residents do
+      member do 
+        get :tickets
+        get :roommates
+        get :properties
+        
+        get :marketing_properties
+        get :marketing_statuses
+      end
+      
+      collection do
+        get :search
+      end
+      
+      resources :activities
+    end
+    
+    resources :roommates
+    resources :tickets
+    
+    resources :units do
+      member do
+        get :residents
+      end
+    end
+    
+    
+    resources :notifications
+    
+    resources :reports do
+      collection do
+        get :residents
+        get :export_residents
+        
+        get :metrics
+        get :export_metrics
+      end
+    end
+    
+    resources :notices, :as => "campaigns", :controller => "campaigns" do
+      member do
+        get :preview
+        post :abort
+      end
+      
+      collection do
+        get :preview_template
+      end
+    end
+    
+    resources :assets do
+      member do
+        post :select
+      end
+      
+      collection  do
+        post :import
+      end
+    end
+  end
+  
+  resource :twilio, :controller => :twilio do
+    get :usage
+    
+    post :p2p_connect
+    post :p2p_fallback
+    post :p2p_status
+    
+    post :w2p_connect
+    post :w2p_fallback
+    post :w2p_status
+  end
   
   # name route
   get 'login', :to => 'user_sessions#new', :as => :login

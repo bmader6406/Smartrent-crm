@@ -1,0 +1,71 @@
+<div class="ticket resident-box">
+  <i class="fa fa-wrench"></i>
+  <div class="author">
+    <% if (assigner) { %>
+      <a href="#"><%= assigner.full_name %></a>
+    <% } else { %>
+      <a href="#">Archived Assigner</a>
+    <% } %>
+    
+    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+  </div>
+  
+  <div class="status-dd <%= status.replace(" ", "-") %>">
+    <span class="capitalize"><%= status %></span>
+    <div class="dropdown">
+      <a href="#" data-toggle="dropdown">
+        <i class="fa fa-caret-down"></i>
+      </a>
+      <ul class="dropdown-menu">
+        <li>
+          <a href="#" data-status="open">Open</a>
+        </li>
+        <li>
+          <a href="#" data-status="on hold">On Hold</a>
+        </li>
+        <li>
+          <a href="#" data-status="closed">Closed</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="desc">
+    <%= description %>
+  </div>
+  
+  <ul class="list-unstyled">
+    <li>
+      Urgency: <span class="capitalize"><%= urgency %></span>
+    </li>
+    <li>
+      Category: <%= category %>
+    </li>
+    <li>
+      Assigned To:
+      <% if (assignee) { %>
+        <a href="#"><%= assignee.full_name %></a>
+      <% } else { %>
+        <a href="#">Archived Assignee</a>
+      <% } %>
+    </li>
+    
+    <% if (typeof(property) != "undefined") { %>
+      <li>
+        Property: <%= property.name %>
+      </li>
+    <% } %>
+    
+    <% if (assets.length > 0) { %>
+      <li>
+        Document:
+        <div class="assets">
+          <%= JST['backbone/templates/assets/list']({assets: assets}) %>
+        </div>
+      </li>
+    <% } %>
+  </ul>
+  
+  <% if (App.vars.ability.can("cud", "Ticket")) { %>
+    <a href="#" data-id="<%= id %>" class="edit-ticket"> More </a>
+  <% } %>
+</div>

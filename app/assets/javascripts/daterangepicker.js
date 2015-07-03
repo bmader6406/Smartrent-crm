@@ -1,6 +1,6 @@
 /**
 * @version: 1.3.13
-* @hylyor: Dan Grossman http://www.dangrossman.info/
+* @author: Dan Grossman http://www.dangrossman.info/
 * @date: 2014-09-04
 * @copyright: Copyright (c) 2012-2014 Dan Grossman. All rights reserved.
 * @license: Licensed under Apache License v2.0. See http://www.apache.org/licenses/LICENSE-2.0
@@ -965,7 +965,7 @@
                 html += '<th></th>';
 
             if (!minDate || minDate.isBefore(calendar.firstDay)) {
-                html += '<th class="prev available"><i class="fa fa-arrow-left icon-arrow-left glyphicon glyphicon-arrow-left"></i></th>';
+                html += '<th class="prev available"><i class="fa fa-arrow-left icon-arrow-left glyphicon glyphicon-arrow-left ion-chevron-left"></i></th>';
             } else {
                 html += '<th></th>';
             }
@@ -978,7 +978,7 @@
 
             html += '<th colspan="5" class="month">' + dateHtml + '</th>';
             if (!maxDate || maxDate.isAfter(calendar.lastDay)) {
-                html += '<th class="next available"><i class="fa fa-arrow-right icon-arrow-right glyphicon glyphicon-arrow-right"></i></th>';
+                html += '<th class="next available"><i class="fa fa-arrow-right icon-arrow-right glyphicon glyphicon-arrow-right ion-chevron-right"></i></th>';
             } else {
                 html += '<th></th>';
             }
