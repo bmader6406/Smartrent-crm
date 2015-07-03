@@ -93,6 +93,10 @@ class User < ActiveRecord::Base
     "#"
   end
   
+  def role
+    Role::DICT[ (roles.detect{|r| r.resource_type == "Property" && r.resource_id.blank? }.name rescue nil) ]
+  end
+  
   # helpers
   
   def managed_property_ids

@@ -11,7 +11,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150629163555) do
+ActiveRecord::Schema.define(version: 20150703180858) do
+
+  create_table "assets", force: :cascade do |t|
+    t.integer  "comment_id",        limit: 4
+    t.string   "type",              limit: 255
+    t.string   "file_file_name",    limit: 255
+    t.string   "file_content_type", limit: 255
+    t.integer  "file_file_size",    limit: 4
+    t.datetime "file_updated_at"
+    t.string   "dimensions",        limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "property_id",       limit: 4
+    t.integer  "ticket_id",         limit: 4
+    t.string   "location",          limit: 255
+  end
+
+  add_index "assets", ["comment_id"], name: "index_assets_on_comment_id", using: :btree
+  add_index "assets", ["property_id"], name: "index_assets_on_property_id", using: :btree
+  add_index "assets", ["ticket_id"], name: "index_assets_on_ticket_id", using: :btree
+
+  create_table "audiences", force: :cascade do |t|
+    t.integer  "property_id",   limit: 4
+    t.text     "name",          limit: 65535
+    t.string   "resident_type", limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "audiences", ["property_id"], name: "index_audiences_on_property_id", using: :btree
 
   create_table "authentications", force: :cascade do |t|
     t.integer  "user_id",          limit: 4
@@ -26,6 +55,70 @@ ActiveRecord::Schema.define(version: 20150629163555) do
   end
 
   add_index "authentications", ["user_id"], name: "index_authentications_on_user_id", using: :btree
+
+  create_table "calls", force: :cascade do |t|
+    t.integer  "comment_id",         limit: 4
+    t.string   "from",               limit: 255
+    t.string   "to",                 limit: 255
+    t.integer  "recording_duration", limit: 4,   default: 0
+    t.string   "recording_url",      limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "origin_id",          limit: 255
+  end
+
+  add_index "calls", ["comment_id"], name: "index_calls_on_comment_id", using: :btree
+  add_index "calls", ["origin_id"], name: "index_calls_on_origin_id", using: :btree
+
+  create_table "campaigns", force: :cascade do |t|
+    t.integer  "property_id", limit: 4
+    t.text     "name",        limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  add_index "campaigns", ["property_id"], name: "index_campaigns_on_property_id", using: :btree
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "abbr",       limit: 255
+    t.integer  "position",   limit: 4,   default: 0
+    t.boolean  "active",     limit: 1,   default: true
+    t.datetime "deleted_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer  "property_id", limit: 4
+    t.string   "resident_id", limit: 255
+    t.string   "type",        limit: 255
+    t.text     "message",     limit: 65535
+    t.string   "ancestry",    limit: 255
+    t.integer  "author_id",   limit: 4
+    t.string   "author_type", limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+  end
+
+  add_index "comments", ["ancestry"], name: "index_comments_on_ancestry", using: :btree
+  add_index "comments", ["property_id"], name: "index_comments_on_property_id", using: :btree
+
+  create_table "emails", force: :cascade do |t|
+    t.integer  "comment_id", limit: 4
+    t.string   "subject",    limit: 255
+    t.string   "from",       limit: 255
+    t.string   "to",         limit: 255
+    t.text     "message",    limit: 65535
+    t.string   "token",      limit: 255
+    t.string   "message_id", limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "emails", ["comment_id"], name: "index_emails_on_comment_id", using: :btree
+  add_index "emails", ["token"], name: "index_emails_on_token", using: :btree
 
   create_table "invites", force: :cascade do |t|
     t.string   "email",       limit: 255
@@ -102,6 +195,19 @@ ActiveRecord::Schema.define(version: 20150629163555) do
     t.datetime "updated_at",             null: false
   end
 
+  create_table "resident_metrics", force: :cascade do |t|
+    t.integer  "property_id", limit: 4
+    t.string   "type",        limit: 255
+    t.string   "status",      limit: 255
+    t.string   "rental_type", limit: 255
+    t.string   "dimension",   limit: 255
+    t.integer  "total",       limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "resident_metrics", ["property_id", "type"], name: "index_resident_metrics_on_property_id_and_type", using: :btree
+
   create_table "roles", force: :cascade do |t|
     t.string   "name",          limit: 255
     t.string   "resource_type", limit: 255
@@ -112,6 +218,43 @@ ActiveRecord::Schema.define(version: 20150629163555) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
+
+  create_table "tickets", force: :cascade do |t|
+    t.integer  "property_id",       limit: 4
+    t.integer  "resident_id",       limit: 4
+    t.string   "title",             limit: 255
+    t.text     "description",       limit: 65535
+    t.string   "status",            limit: 255
+    t.string   "urgency",           limit: 255
+    t.integer  "category_id",       limit: 4
+    t.integer  "assigner_id",       limit: 4
+    t.integer  "assignee_id",       limit: 4
+    t.boolean  "can_enter",         limit: 1,     default: false
+    t.string   "entry_instruction", limit: 255
+    t.string   "additional_emails", limit: 255
+    t.string   "additional_phones", limit: 255
+    t.datetime "deleted_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "tickets", ["property_id"], name: "index_tickets_on_property_id", using: :btree
+
+  create_table "units", force: :cascade do |t|
+    t.integer  "property_id", limit: 4
+    t.integer  "bed",         limit: 4
+    t.integer  "bath",        limit: 4
+    t.float    "sq_ft",       limit: 24
+    t.string   "status",      limit: 255
+    t.text     "description", limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "code",        limit: 255
+    t.datetime "deleted_at"
+    t.string   "rental_type", limit: 255
+  end
+
+  add_index "units", ["property_id"], name: "index_units_on_property_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",             limit: 255

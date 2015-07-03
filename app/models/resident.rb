@@ -74,7 +74,7 @@ class Resident
   index({ "properties.property_id" => 1, "properties.unit_id" => 1 })
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
-  scope :unify_ordered, order_by({:created_at => :asc})
+  scope :unify_ordered, -> { order_by({:created_at => :asc}) }
   
   attr_accessor :curr_property_id, :property_id, :from_import
   

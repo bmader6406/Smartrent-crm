@@ -13,13 +13,14 @@ class Role < ActiveRecord::Base
 
   scopify
   
-  LIST = ["admin", "regional_manager", "property_manager", "marketing_coordinator"]
+  LIST = ["admin", "regional_manager", "property_manager", "leasing_staff", "marketing_coordinator"]
   
   DICT = {
     "admin" => "Corporate Administrator",
     "regional_manager" => "Regional Manager & SVP",
     "property_manager" => "Property Manager",
-    "marketing_coordinator" => "Marketing Co-ordinator"
+    "marketing_coordinator" => "Marketing Co-ordinator",
+    "leasing_staff" => "Leasing Staff"
   }
   
   def pretty_name

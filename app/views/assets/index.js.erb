@@ -1,0 +1,7 @@
+<% if params[:init] %>
+  <% params.delete(:init) %>
+  $('#asset-manager').html("<%= j(render 'index')%>");
+  
+<% else %>
+  $('#gallery .list').html("<%= j(render 'assets')%>");    
+<% end %>

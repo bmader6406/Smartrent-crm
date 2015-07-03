@@ -1,0 +1,12 @@
+<% if params[:recipient] %>
+  msgbox("Your data is being exported... We will email you shortly");
+  
+  App.exportDialog.modal('hide');
+  
+<% elsif @sendible %>
+	window.location.href = "<%= raw request.fullpath %>";
+	
+<% else %>
+	App.exportDialog.attr("data-url", "<%= raw request.fullpath %>").modal('show');
+	
+<% end %>

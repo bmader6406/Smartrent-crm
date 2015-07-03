@@ -16,7 +16,7 @@
 //= require jquery.layout
 //= require jquery.form
 //= require jquery.tojson
-//= require jquery.cookie
+//= require jquery.cookie-1.4.1.min
 //= require jquery.loadmask.min
 //= require jquery.scrollTo-min
 //= require jquery.hoverIntent.js
@@ -34,11 +34,11 @@
 //= require backbone/backgrid-paginator
 //= require backbone/cancan-backbone
 //= require backbone/crm
-//= require_tree ../backbone/templates/
-//= require_tree ../backbone/models/
-//= require_tree ../backbone/collections/
-//= require_tree ../backbone/views/
-//= require_tree ../backbone/routers/
+//= require_tree ./backbone/templates/
+//= require_tree ./backbone/models/
+//= require_tree ./backbone/collections/
+//= require_tree ./backbone/views/
+//= require_tree ./backbone/routers/
 //
 //= require upload/jquery.ui.widget
 //= require upload/tmpl.min

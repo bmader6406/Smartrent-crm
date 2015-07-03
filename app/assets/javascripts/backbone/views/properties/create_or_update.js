@@ -109,7 +109,11 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
         phone: {
           title: 'Phone Number'
         },
-        
+        region_id: {
+          type: 'Select',
+          title: 'Region',
+          options: App.vars.regions
+        },
         monday_open_time: {
           title: 'Monday Open Time',
           type: 'Select',
@@ -234,7 +238,7 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
         },
 
         region: 'Text',
-        region_manager: {
+        regional_manager: {
           title: 'Regional Manager'
         },
         svp: {

@@ -11,16 +11,16 @@ window.Crm = {
     
     this.leftMenu = $('#left-menu');
     
-    $(document).on("click", "a[href^='/crm']", function(event){
+    $(document).on("click", "a[href^='/']", function(event){
       var href = $(event.currentTarget).attr('href'),
         target = $(event.currentTarget).attr('target'),
-        sameProp = href.indexOf(App.vars.routeRoot) > -1,
+        sameProp = !App.vars.isPropertyPage || href.indexOf(App.vars.propertyId) > -1,
         passThrough = href.indexOf('sign_out') > -1 || target // chain 'or's for other black list routes
 
       // Allow shift+click for new tabs, etc.
       if (sameProp && !passThrough && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
         // Remove leading slashes and hash bangs (backward compatablility)
-        var url = href.replace(/crm\/\d+\//, '').replace(/^\//,'').replace('\#\!\/','');
+        var url = href.replace(/^\//,'').replace('\#\!\/','');
 
         // Instruct Backbone to trigger routing events
         router.navigate(url, true);
@@ -32,7 +32,7 @@ window.Crm = {
     //residents
     Crm.collInst.residents = new Crm.Collections.Residents();
 
-    router.on('route:showResidents', function() {
+    router.on('route:showResidents', function(propertyId) {
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -51,7 +51,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showResident', function(id) {
+    router.on('route:showResident', function(propertyId, id) {
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -94,7 +94,7 @@ window.Crm = {
       App.layout.show('west');
     });
     
-    router.on('route:showResidentTickets', function(id, tid) {
+    router.on('route:showResidentTickets', function(propertyId, id, tid) {
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -250,7 +250,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:newResident', function() {
+    router.on('route:newResident', function(propertyId) {
       if(!App.vars.ability.can("cud", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -271,7 +271,7 @@ window.Crm = {
       self.highlightNav("residents");
     });
 
-    router.on('route:editResident', function(id) {
+    router.on('route:editResident', function(propertyId, id) {
       if(!App.vars.ability.can("cud", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -406,7 +406,7 @@ window.Crm = {
     //tickets
     Crm.collInst.tickets = new Crm.Collections.Tickets();
 
-    router.on('route:showTickets', function() {
+    router.on('route:showTickets', function(propertyId) {
       if(!App.vars.ability.can("read", "Ticket")){
         Crm.unauthorizedAlert();
         return false;
@@ -424,7 +424,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showTicket', function(id) {
+    router.on('route:showTicket', function(propertyId, id) {
       if(!App.vars.ability.can("read", "Ticket")){
         Crm.unauthorizedAlert();
         return false;
@@ -455,7 +455,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:newTicket', function() {
+    router.on('route:newTicket', function(propertyId) {
       if(!App.vars.ability.can("cud", "Ticket")){
         Crm.unauthorizedAlert();
         return false;
@@ -475,7 +475,7 @@ window.Crm = {
       self.highlightNav("tickets");
     });
 
-    router.on('route:editTicket', function(id) {
+    router.on('route:editTicket', function(propertyId, id) {
       if(!App.vars.ability.can("cud", "Ticket")){
         Crm.unauthorizedAlert();
         return false;
@@ -510,7 +510,7 @@ window.Crm = {
     //units
     Crm.collInst.units = new Crm.Collections.Units();
 
-    router.on('route:showUnits', function() {
+    router.on('route:showUnits', function(propertyId) {
       if(!App.vars.ability.can("read", "Unit")){
         Crm.unauthorizedAlert();
         return false;
@@ -528,7 +528,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showUnit', function(id) {
+    router.on('route:showUnit', function(propertyId, id) {
       if(!App.vars.ability.can("read", "Unit")){
         Crm.unauthorizedAlert();
         return false;
@@ -562,7 +562,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:newUnit', function() {
+    router.on('route:newUnit', function(propertyId) {
       if(!App.vars.ability.can("cud", "Unit")){
         Crm.unauthorizedAlert();
         return false;
@@ -583,7 +583,7 @@ window.Crm = {
       self.highlightNav("units");
     });
 
-    router.on('route:editUnit', function(id) {
+    router.on('route:editUnit', function(propertyId, id) {
       if(!App.vars.ability.can("cud", "Unit")){
         Crm.unauthorizedAlert();
         return false;
@@ -615,7 +615,7 @@ window.Crm = {
     //campaigns
     Crm.collInst.campaigns = new Crm.Collections.Campaigns();
 
-    router.on('route:showCampaigns', function() {
+    router.on('route:showCampaigns', function(propertyId) {
       if(!App.vars.ability.can("read", "Campaign")){
         Crm.unauthorizedAlert();
         return false;
@@ -633,7 +633,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showCampaign', function(id) {
+    router.on('route:showCampaign', function(propertyId, id) {
       if(!App.vars.ability.can("read", "Campaign")){
         Crm.unauthorizedAlert();
         return false;
@@ -667,7 +667,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:newCampaign', function() {
+    router.on('route:newCampaign', function(propertyId) {
       if(!App.vars.ability.can("cud", "Campaign")){
         Crm.unauthorizedAlert();
         return false;
@@ -688,7 +688,7 @@ window.Crm = {
       self.highlightNav("notices");
     });
 
-    router.on('route:editCampaign', function(id) {
+    router.on('route:editCampaign', function(propertyId, id) {
       if(!App.vars.ability.can("cud", "Campaign")){
         Crm.unauthorizedAlert();
         return false;
@@ -727,7 +727,7 @@ window.Crm = {
     //notifications
     Crm.collInst.notifications = new Crm.Collections.Notifications();
 
-    router.on('route:showNotifications', function() {
+    router.on('route:showNotifications', function(propertyId) {
       if(!App.vars.ability.can("read", "Notification")){
         Crm.unauthorizedAlert();
         return false;
@@ -745,7 +745,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showNotification', function(id) {
+    router.on('route:showNotification', function(propertyId, id) {
       if(!App.vars.ability.can("read", "Notification")){
         Crm.unauthorizedAlert();
         return false;
@@ -779,7 +779,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:newNotification', function() {
+    router.on('route:newNotification', function(propertyId) {
       if(!App.vars.ability.can("cud", "Notification")){
         Crm.unauthorizedAlert();
         return false;
@@ -800,7 +800,7 @@ window.Crm = {
       self.highlightNav("notifications");
     });
 
-    router.on('route:editNotification', function(id) {
+    router.on('route:editNotification', function(propertyId, id) {
       if(!App.vars.ability.can("cud", "Notification")){
         Crm.unauthorizedAlert();
         return false;
@@ -906,7 +906,7 @@ window.Crm = {
     });
 
     router.on('route:editUser', function(id) {
-      if(! (App.vars.ability.can("cud", "User") || Crm.Helpers.editProfile(id)) ){
+      if(! (App.vars.ability.can("cud", "User") || Helpers.editProfile(id)) ){
         Crm.unauthorizedAlert();
         return false;
       }
@@ -937,7 +937,7 @@ window.Crm = {
     //reports
     Crm.collInst.users = new Crm.Collections.Users();
 
-    router.on('route:showReports', function() {
+    router.on('route:showReports', function(propertyId) {
       if(false && !App.vars.ability.can("read", "Report")){
         Crm.unauthorizedAlert();
         return false;
@@ -955,7 +955,7 @@ window.Crm = {
     Crm.routerInst = router;
     
     // trigger route matching
-    Backbone.history.start({pushState: true, root: App.vars.routeRoot + "/"});
+    Backbone.history.start({pushState: true, root: "/"});
   },
   
   unauthorizedAlert: function (){
@@ -970,160 +970,5 @@ window.Crm = {
       $('#center').removeClass('previewing');
       App.layout.sizePane('west', 305);
     }
-  },
-  
-  //Backbone View Helpers
-  Helpers: {
-    timeOrTimeAgo: function(str){
-      var time = moment(str),
-        timeStr = time.format("MMMM Do YYYY, h:mm:ss a");
-      
-      if((moment().diff(time, 'day') >= 2)){
-        return '<span>'+ timeStr +'</span>';
-        
-      } else {
-        return '<span title="'+ timeStr +'">'+ time.fromNow() +'</span>';
-      }
-    },
-    prettyDuration: function(secs) {
-      var hr = Math.floor(secs / 3600);
-    	var min = Math.floor((secs - (hr * 3600))/60);
-    	var sec = secs - (hr * 3600) - (min * 60);
-
-    	while (min.length < 2) {min = '0' + min;}
-    	while (sec.length < 2) {sec = '0' + min;}
-    	if (hr) hr += ':';
-    	return hr + min + ':' + sec;
-    },
-    
-    truncate: function(str, length) {
-      if(str.length > length){
-        return $.trim(str).substring(0, length).split(" ").slice(0, -1).join(" ") + "...";
-      } else {
-        return str;
-      }
-    },
-    
-    sanitize: function(str){
-      App.vars.tempDiv.html(str);
-      App.vars.tempDiv.find('style, script, link').remove();
-      return App.vars.tempDiv.html();
-    },
-    
-    formatMarketingNote: function(note) {
-      return note ? note.replace("</b>", "</b><p>")  + "</p>" : "";
-    },
-    
-    isSelected: function (val1, val2) {
-      return val1 == val2 ? "selected" : ""
-    },
-
-    isChecked: function (val1, val2) {
-      if( _.isArray(val1) ){
-        return _.contains(val1, val2) ? "checked" : "";
-
-      } else {
-        return val1 == val2 ? "checked" : "";
-
-      }
-    },
-
-    nFormatter: function (num) {
-      if (num >= 1000000000) {
-        return (num / 1000000000).toFixed(1) + 'G';
-      }
-      if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M';
-      }
-      if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K';
-      }
-      return num;
-    },
-
-    lineBreakAndLink: function (text) {
-      return text.replace(/[\r\n]{1}/g, " <br/> ").replace(/href=/g, "target='_blank' href=")
-        .replace(/(http?:\/\/\S*)/g, '<a href="$1" target="_blank">$1</a>');
-    },
-    
-    editProfile: function(id){
-      return App.vars.userId == id;
-    },
-    
-    activityIcon: function(action) {
-      var cls = "";
-
-      switch( action ){
-        case "send_mail":
-          cls = "fa fa-envelope";
-          break;
-          
-        case "open_mail":
-          cls = "fa fa-envelope-o";
-          break;
-          
-        case "click_link":
-          cls = "fa fa-link";
-          break;
-          
-        case "schedule":
-          cls = "fa fa-clock-o";
-          break;
-          
-        case "import":
-          cls = "fa fa-plus";
-          break;
-          
-        case "download":
-          cls = "fa fa-download";
-          break;
-          
-        case "win":
-          cls = "fa fa-trophy";
-          break;
-          
-        case "enter":
-          cls = "fa fa-sign-in";
-          break;
-          
-        case "subscribe":
-        case "subscribe_page":
-        case "bulk_unsubscribe":
-          cls = "fa fa-frown-o";
-          break;
-          
-        case "unsubscribe":
-        case "unsubscribe_confirm":
-        case "unsubscribe_confirm_all":
-        case "unsubscribe_blacklisted":
-        case "unsubscribe_bounce":
-        case "unsubscribe_complaint":
-        case "bulk_resubscribe":
-          cls = "fa fa-frown-o";
-          break;
-          
-        case "refer":
-        case "referred_by":
-          cls = "fa fa-users";
-          break;
-          
-        case "bad_email_verified":
-        case "bad_email_found":
-          cls = "fa fa-frown-o";
-          break;
-          
-        case "bounce":
-          cls = "fa fa-arrow-left";
-          break;
-          
-        case "blacklist":
-        case "complain":
-          cls = "fa fa-exclamation-triangle";
-          break;
-      }
-      
-      return cls;
-    }
-    
-  } // /Helpers
+  }
 };

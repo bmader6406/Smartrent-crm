@@ -7,7 +7,7 @@
       <a href="#"><%= from %></a>
     <% } %>
     
-    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <%= Helpers.timeOrTimeAgo(created_at) %>
     
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
       <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
@@ -15,6 +15,6 @@
   </div>
   
   <div class="message">
-    <%= Crm.Helpers.sanitize( note.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
+    <%= Helpers.sanitize( note.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
   </div>
 </div>

@@ -1,4 +1,4 @@
-module MultiProperty
+module MultiTenant
   def self.generate_id
     # Start with the low-order 43 bits of the time in milliseconds...
     # The time in ms currently takes up 41 bits.  It will take
@@ -18,7 +18,7 @@ module MultiProperty
       base.class_eval do
         before_create :set_id
         def set_id
-          self.id = MultiProperty.generate_id if self.id.blank?
+          self.id = MultiTenant.generate_id if self.id.blank?
         end
       end
     end

@@ -14,3 +14,17 @@ user = User.create({
 })
 
 user.add_role :admin, Property
+
+Region.create([
+  { name: 'Washington DC' }, { name: 'Philadelphia' }, 
+  { name: 'New York' }, { name: 'Baltimore/Annapolis' },
+  { name: 'Boston' }, { name: 'Atlanta' }
+])
+
+Category.create([
+  { name: 'Flooring', active: true },
+  { name: 'Plumbing', active: true },
+  { name: 'Other', active: true }
+])
+
+

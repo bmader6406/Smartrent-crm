@@ -1,0 +1,189 @@
+<% if type == "emails" %>
+  <table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Property Name </th>
+        <th>Full Name </th>
+        <th>Unit # </th>
+        <th>Address </th>
+        <th>City </th>
+        <th>State </th>
+        <th>Zip </th>
+        <th>Status </th>
+        <th>Email </th>
+        <th>Move In </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @residents.each do |r| %>
+        <tr class="<%= cycle("even", nil) -%>">
+          <td>
+            <%= @property_dict[r["properties"]["property_id"]] %>
+          </td>
+          <td>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+          </td>
+          <td>
+            <%= @unit_dict[r["properties"]["unit_id"]] %>
+          </td>
+          <td>
+            <%= r["street"] %>
+          </td>
+          <td>
+            <%= r["city"] %>
+          </td>
+          <td>
+            <%= r["state"] %>
+          </td>
+          <td>
+            <%= r["zip"] %>
+          </td>
+          <td>
+            <%= r["properties"]["status"] %>
+          </td>
+          <td>
+            <%= r["email"] %>
+          </td>
+          <td>
+            <%= r["properties"]["move_in"].strftime("%m/%d/%Y") rescue nil %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+<% elsif type == "birthday" %>
+  <table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Property Name </th>
+        <th>Full Name </th>
+        <th>Email </th>
+        <th>Address</th>
+        <th>City </th>
+        <th>State </th>
+        <th>Zip </th>
+        <th>Birthday </th>
+        <th>Age </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @residents.each do |r| %>
+        <tr class="<%= cycle("even", nil) -%>">
+          <td>
+            <%= @property_dict[r["properties"]["property_id"]] %>
+          </td>
+          <td>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+          </td>
+          <td>
+            <%= r["email"] %>
+          </td>
+          <td>
+            <%= r["street"] %>
+          </td>
+          <td>
+            <%= r["city"] %>
+          </td>
+          <td>
+            <%= r["state"] %>
+          </td>
+          <td>
+            <%= r["zip"] %>
+          </td>
+          <td>
+            <%= r["birthday"].strftime("%m/%d/%Y") rescue nil %>
+          </td>
+          <td>
+            <%= age(r["birthday"]) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+<% elsif type == "details" %>
+  <table class="table table-striped table-bordered table-condensed" style="min-width: 1500px;">
+    <thead>
+      <tr>
+        <th>Property Name </th>
+        <th>Unit # </th>
+        <th>Full Name </th>
+        <th>Gender </th>
+        <th>Birthday </th>
+        <th>Household Status </th>
+        <th>Occupation Type </th>
+        <th>Minutes To Work </th>
+        <th>Transportation To Work </th>
+        <th># of Pets </th>
+        <th>Pet Type </th>
+        <th>Moved From </th>
+        <th># of Cars </th>
+        <th>Annual Income </th>
+        <th>Household Size </th>
+        <th>Email </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @residents.each do |r| %>
+        <tr class="<%= cycle("even", nil) -%>">
+          <td>
+            <%= @property_dict[r["properties"]["property_id"]] %>
+          </td>
+          
+          <td>
+            <%= @unit_dict[r["properties"]["unit_id"]] %>
+          </td>
+          <td>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+          </td>
+          <td>
+            <%= r["gender"] %>
+          </td>
+          <td>
+            <%= r["birthday"].strftime("%m/%d/%Y") rescue nil %>
+          </td>
+          <td>
+            <%= r["properties"]["household_status"] %>
+          </td>
+          <td>
+            <%= r["properties"]["occupation_type"] %>
+          </td>
+          <td>
+            <%= r["properties"]["minutes_to_work"] %>
+          </td>
+          <td>
+            <%= r["properties"]["transportation_to_work"] %>
+          </td>
+          <td>
+            <%= r["properties"]["pets_count"] %>
+          </td>
+          <td>
+            <%= r["properties"]["pet_type"] %>
+          </td>
+          <td>
+            <%= r["properties"]["moving_from"] %>
+          </td>
+          <td>
+            <%= r["properties"]["vehicles_count"] %>
+          </td>
+          <td>
+            <%= r["properties"]["annual_income"] %>
+          </td>
+          <td>
+            <%= r["properties"]["household_size"] %>
+          </td>
+          <td>
+            <%= r["email"] %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  
+<% end %>
+
+<div class="paging-info">
+  <%= page_entries_info @residents, :model => 'resident' %> <br>
+  <%= page_navigation_links(@residents)%>
+</div>

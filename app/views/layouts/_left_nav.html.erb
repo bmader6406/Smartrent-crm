@@ -3,7 +3,7 @@
 	  <% if can? :read, Property %>
 	    <% if @property %>
     		<li data-nav="property-info">
-          <a href="<%= raw info_property_path(@property.id) %>"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
+          <a href="<%= raw main_app.info_property_path(@property) %>"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
         </li>
 	    <% else %>
     		<li data-nav="property-info" class="admin-prop-info" style="display:none">
@@ -12,54 +12,56 @@
 	    <% end %>
     <% end %>
     
-	  <% if can? :read, Resident %>
+	  <% if can?(:read, Resident) && @property %>
   		<li data-nav="residents">
-        <a href="<%= raw residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+        <a href="<%= raw main_app.property_residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
       </li>
     <% end %>
     
     <% if can?(:read, Ticket) && @property %>
       <li data-nav="tickets">
-        <a href="<%= raw tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
+        <a href="<%= raw main_app.property_tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
       </li>
     <% end %>
     
     <% if can?(:read, Campaign) && @property %>
       <li data-nav="notices">
-        <a href="<%= raw campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
+        <a href="<%= raw main_app.property_campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
       </li>
     <% end %>
     
     <% if can?(:read, Unit) && @property %>
       <li data-nav="units">
-        <a href="<%= raw units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
+        <a href="<%= raw main_app.property_units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
       </li>
     <% end %>
     
-    <li data-nav="reports">
-      <a href="<%= raw reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
-    </li>
+    <% if @property %>
+      <li data-nav="reports">
+        <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
+      </li>
+    <% end %>
     
     <% if can?(:cud, User) %>
       <li data-nav="users">
-        <a href="<%= raw users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
+        <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
       </li>
       
     <% elsif can?(:read, User) %>
       <li data-nav="users">
-        <a href="<%= raw users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
+        <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
       </li>
     <% end %>
     
     <% if can? :list, Property %>
   		<li data-nav="properties">
-        <a href="<%= raw properties_path %>"> <i class="fa fa-home fa-fw"></i> Home </a>
+        <a href="<%= raw main_app.properties_path %>"> <i class="fa fa-home fa-fw"></i> Home </a>
       </li>
     <% end %>
 	</ul>
 	
 	<div class="footer">
-    <%= current_user.full_name %> &nbsp; | <a href="<%= logout_path %>"> Logout </a>
-    <span>Role: TODO</span>
+    <%= current_user.full_name %> &nbsp; | <a href="<%= main_app.logout_path %>"> Logout </a>
+    <span>Role: <%= current_user.role %></span>
 	</div>
 </div>

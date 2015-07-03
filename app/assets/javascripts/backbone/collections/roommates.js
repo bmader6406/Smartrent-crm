@@ -9,7 +9,7 @@ Crm.Collections.Roommates = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = App.vars.routeRoot + "/roommates";
+    this.url = "/roommates";
   },
 
   parseState: function (resp, queryParams, state, options) {

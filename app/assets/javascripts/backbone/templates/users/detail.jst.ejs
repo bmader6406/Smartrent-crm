@@ -1,0 +1,18 @@
+<div class="col-sm-6">
+  <div class="card">
+    <h3> Details </h3>
+    <ul class="list-unstyled">
+      <li>
+        <b>Role:</b> <%= App.vars.roleDict[role] %>
+      </li>
+      <li>
+        <% if(role == "regional_manager") { %>
+          <b>Authorized Regions:</b> <%= authorized_properties %>
+
+        <% } else { %>
+          <b>Authorized Properties:</b> <%= authorized_properties %>
+        <% } %>
+      </li>
+    </ul>
+  </div>
+</div>

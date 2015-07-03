@@ -45,6 +45,17 @@ module ApplicationHelper
     end
   end
   
+  def ticket_assignees
+    arr = [{:val => current_user.id.to_s, :label => current_user.full_name}]
+    
+    User.all.each do |user|
+        next if current_user == user
+        arr << {:val => user.id.to_s, :label => user.full_name}
+    end
+    
+    arr.uniq
+  end
+  
 end
 
 

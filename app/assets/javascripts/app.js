@@ -178,6 +178,177 @@ var App = {
   }
 }
 
+App.showMask = function(el) {
+  $("#spinner").show();
+}
+
+App.hideMask = function() {
+  if (!App.maskTimeout) {
+    $("#spinner").hide();
+  } else {
+    clearTimeout(App.maskTimeout);
+  }
+  
+  App.maskTimeout = setTimeout(function () {
+    App.maskTimeout = null;
+    $("#spinner").hide();
+  }, 500);
+}
+
+var Helpers = {
+  timeOrTimeAgo: function(str){
+    var time = moment(str),
+      timeStr = time.format("MMMM Do YYYY, h:mm:ss a");
+    
+    if((moment().diff(time, 'day') >= 2)){
+      return '<span>'+ timeStr +'</span>';
+      
+    } else {
+      return '<span title="'+ timeStr +'">'+ time.fromNow() +'</span>';
+    }
+  },
+  prettyDuration: function(secs) {
+    var hr = Math.floor(secs / 3600);
+  	var min = Math.floor((secs - (hr * 3600))/60);
+  	var sec = secs - (hr * 3600) - (min * 60);
+
+  	while (min.length < 2) {min = '0' + min;}
+  	while (sec.length < 2) {sec = '0' + min;}
+  	if (hr) hr += ':';
+  	return hr + min + ':' + sec;
+  },
+  
+  truncate: function(str, length) {
+    if(str.length > length){
+      return $.trim(str).substring(0, length).split(" ").slice(0, -1).join(" ") + "...";
+    } else {
+      return str;
+    }
+  },
+  
+  sanitize: function(str){
+    App.vars.tempDiv.html(str);
+    App.vars.tempDiv.find('style, script, link').remove();
+    return App.vars.tempDiv.html();
+  },
+  
+  formatMarketingNote: function(note) {
+    return note ? note.replace("</b>", "</b><p>")  + "</p>" : "";
+  },
+  
+  isSelected: function (val1, val2) {
+    return val1 == val2 ? "selected" : ""
+  },
+
+  isChecked: function (val1, val2) {
+    if( _.isArray(val1) ){
+      return _.contains(val1, val2) ? "checked" : "";
+
+    } else {
+      return val1 == val2 ? "checked" : "";
+
+    }
+  },
+
+  nFormatter: function (num) {
+    if (num >= 1000000000) {
+      return (num / 1000000000).toFixed(1) + 'G';
+    }
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num;
+  },
+
+  lineBreakAndLink: function (text) {
+    return text.replace(/[\r\n]{1}/g, " <br/> ").replace(/href=/g, "target='_blank' href=")
+      .replace(/(http?:\/\/\S*)/g, '<a href="$1" target="_blank">$1</a>');
+  },
+  
+  editProfile: function(id){
+    return App.vars.userId == id;
+  },
+  
+  activityIcon: function(action) {
+    var cls = "";
+
+    switch( action ){
+      case "send_mail":
+        cls = "fa fa-envelope";
+        break;
+        
+      case "open_mail":
+        cls = "fa fa-envelope-o";
+        break;
+        
+      case "click_link":
+        cls = "fa fa-link";
+        break;
+        
+      case "schedule":
+        cls = "fa fa-clock-o";
+        break;
+        
+      case "import":
+        cls = "fa fa-plus";
+        break;
+        
+      case "download":
+        cls = "fa fa-download";
+        break;
+        
+      case "win":
+        cls = "fa fa-trophy";
+        break;
+        
+      case "enter":
+        cls = "fa fa-sign-in";
+        break;
+        
+      case "subscribe":
+      case "subscribe_page":
+      case "bulk_unsubscribe":
+        cls = "fa fa-frown-o";
+        break;
+        
+      case "unsubscribe":
+      case "unsubscribe_confirm":
+      case "unsubscribe_confirm_all":
+      case "unsubscribe_blacklisted":
+      case "unsubscribe_bounce":
+      case "unsubscribe_complaint":
+      case "bulk_resubscribe":
+        cls = "fa fa-frown-o";
+        break;
+        
+      case "refer":
+      case "referred_by":
+        cls = "fa fa-users";
+        break;
+        
+      case "bad_email_verified":
+      case "bad_email_found":
+        cls = "fa fa-frown-o";
+        break;
+        
+      case "bounce":
+        cls = "fa fa-arrow-left";
+        break;
+        
+      case "blacklist":
+      case "complain":
+        cls = "fa fa-exclamation-triangle";
+        break;
+    }
+    
+    return cls;
+  }
+  
+} // /Helpers
+
 //global functions
 
 function msgbox(msg, type){

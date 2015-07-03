@@ -9,7 +9,7 @@
       <span>
         <img src="<%= asset.thumbnailUrl %>" target="_blank" alt="<%= asset.name %>"/>
       </span>
-      <%= Crm.Helpers.truncate(asset.name, 30) %>
+      <%= Helpers.truncate(asset.name, 30) %>
     </a>
   <% } else { %>
     <a href="<%= asset.url %>" target="_blank" class="document" data-id="<%= asset.id %>">
@@ -20,7 +20,7 @@
       <span>
         <i class="fa fa-file-text-o"></i>
       </span>
-      <%= Crm.Helpers.truncate(asset.name, 30) %>
+      <%= Helpers.truncate(asset.name, 30) %>
     </a>
   <% } %>
 <% } %>

@@ -9,7 +9,7 @@
         <h4 class="modal-title">Add New Ticket</h4>
       </div>
       <div class="modal-body">
-        <form action="<%= search_residents_path(@property) %>" method="GET">
+        <form action="<%= search_property_residents_path(@property) if @property %>" method="GET">
         Enter resident ID or resident email:
           <div class="input-group">
             <input type="text" class="form-control">

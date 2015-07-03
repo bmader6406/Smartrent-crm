@@ -11,19 +11,7 @@ Rails.application.routes.draw do
     member do
       get :info
     end
-  end
-  
-  resources :users, :path => :accounts
-  
-  resource :profile
-  resources :authentications
-  resources :user_sessions
-  resources :password_resets
-  
-  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
-  
-  # crm
-  scope  "/:property_id" do
+    
     resources :residents do
       member do 
         get :tickets
@@ -49,7 +37,6 @@ Rails.application.routes.draw do
         get :residents
       end
     end
-    
     
     resources :notifications
     
@@ -84,6 +71,15 @@ Rails.application.routes.draw do
       end
     end
   end
+  
+  resources :users, :path => :accounts
+  
+  resource :profile
+  resources :authentications
+  resources :user_sessions
+  resources :password_resets
+  
+  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
   
   resource :twilio, :controller => :twilio do
     get :usage

@@ -1,0 +1,422 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Individual Income</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["income_range"].sum{|m| m.total }  %>
+            <% @metric["income_range"].sort{|a, b| a.dimension.scan(/\d+/).first.to_i <=> b.dimension.scan(/\d+/).first.to_i }.each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%" style="border-bottom: 0 none;">
+                Average (mean) household income
+              </th>
+              <th width="15%" style="border-bottom: 0 none;">
+                &nbsp;
+              </th>
+              <th style="border-bottom: 0 none;">
+                <%= number_with_delimiter avg(@metric["properties.annual_income"].sum{|m| m.total*m.dimension.to_i }, @metric["properties.annual_income"].sum{|m| m.total }) %>
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Occupations</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.occupation_type"].sum{|m| m.total }  %>
+            <% @metric["properties.occupation_type"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Minutes To Work</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.minutes_to_work"].sum{|m| m.total }  %>
+            <% @metric["properties.minutes_to_work"].sort{|a, b| a.dimension.scan(/\d+/).first.to_i <=> b.dimension.scan(/\d+/).first.to_i }.each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Age Range</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["age_range"].sum{|m| m.total }  %>
+            <% @metric["age_range"].sort{|a, b| a.dimension.scan(/\d+/).first.to_i <=> b.dimension.scan(/\d+/).first.to_i }.each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Occupant Status</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.household_status"].sum{|m| m.total }  %>
+            <% @metric["properties.household_status"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Average Household Size</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.household_size"].sum{|m| m.total }  %>
+            <% @metric["properties.household_size"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Number Of Cars</th>
+              <th width="15%"># </th>
+              <th>Ratio </th>
+            </tr>
+          </thead>
+          <% 
+            total_cars = @metric["total_cars"].sum{|m| m.total }
+            total_residents = @metric["total_residents"].sum{|m| m.total }
+          %>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td><%= number_with_delimiter total_cars %></td>
+              <td><%= conversion(total_cars, total_residents) %>%</td>
+            </tr>
+          </tfoot>
+        </table>
+        
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Number Of Residents With Pets</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.pet_type"].sum{|m| m.total }  %>
+            <% @metric["properties.pet_type"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+            <tr>
+              <td>
+                Total Number Residents With Pets
+              </td>
+              <td colspan="2">
+                <%= number_with_delimiter @metric["total_residents_with_pets"].sum{|m| m.total } %>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Total Number Of Pets
+              </td>
+              <td colspan="2">
+                <%= number_with_delimiter @metric["total_pets"].sum{|m| m.total } %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Gender</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["gender"].sum{|m| m.total }  %>
+            <% @metric["gender"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Transportation</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.transportation_to_work"].sum{|m| m.total }  %>
+            <% @metric["properties.transportation_to_work"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <table class="table table-striped table-condensed">
+          <thead>
+            <tr>
+              <th width="70%">Where Moved From</th>
+              <th width="15%"># </th>
+              <th>% </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group_total = @metric["properties.moving_from"].sum{|m| m.total }  %>
+            <% @metric["properties.moving_from"].each do |m| %>
+              <tr>
+                <td>
+                  <%= m.dimension %>
+                </td>
+                <td>
+                  <%= number_with_delimiter m.total %>
+                </td>
+                <td>
+                  <%= conversion(m.total, group_total) %>%
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td colspan="2"><%= number_with_delimiter group_total %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+  </div>
+</div>

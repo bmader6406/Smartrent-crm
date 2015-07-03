@@ -1,0 +1,8 @@
+<% if params[:type] == "summary" %>
+  $('#report-summary .list-view').show().html("<%= j(render 'summary_metrics' )%>");
+  
+<% elsif params[:type] == "comparison" %>
+  //$('#report-comparison .list-view').show().html("Coming Soon!");
+  $('#report-comparison .list-view').show().html("<%= j(render 'comparison_metrics' )%>");
+  
+<% end %>

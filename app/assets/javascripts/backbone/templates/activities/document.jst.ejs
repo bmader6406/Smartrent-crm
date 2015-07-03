@@ -5,7 +5,7 @@
       <a href="#"><%= author.full_name %></a>
     <% } %>
     
-    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <%= Helpers.timeOrTimeAgo(created_at) %>
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
       <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
     <% } %>

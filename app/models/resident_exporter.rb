@@ -112,10 +112,10 @@ class ResidentExporter
   end
   
   def self.init(property, params)
-    @property = page
+    @property = property
     @params = params
 
-    Time.zone = page.setting.tz if page
+    Time.zone = property.setting.time_zone
     
     return self
   end

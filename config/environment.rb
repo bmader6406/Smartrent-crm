@@ -13,6 +13,12 @@ FACEBOOK_ID = 173801062636343
 FACEBOOK_KEY = "631826feeb542f675961c085a3004e15"
 FACEBOOK_SECRET = "f55a19ee9055981f0e6cf703fefd6d44"
 
+OPS_U = 'ops@hy.ly'
+OPS_P = 'HcmcNyc!@34'
+
+DROPBOX_KEY = "mz42zotb5v03alt"
+AVIARY_KEY = "jk1wj4kf7bt36inm"
+
 # CRM Leads: https://console.developers.google.com/project/289130776929
 GOOGLE_KEY = "AIzaSyDgtk2nMDv_NKRkbTKsZ2HxN1bW0JRXMcE"
 GOOGLE_APP_ID = "289130776929.apps.googleusercontent.com"

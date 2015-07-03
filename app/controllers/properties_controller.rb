@@ -56,6 +56,7 @@ class PropertiesController < ApplicationController
   
   def create
     @property = Property.new(property_params)
+    @property.user_id = current_user.id
     
     respond_to do |format|
       if @property.save
@@ -112,7 +113,7 @@ class PropertiesController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Properties" 
+      @page_title = "CRM - Properties" 
     end
     
     def filter_properties(per_page = 15)

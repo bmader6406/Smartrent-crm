@@ -17,16 +17,24 @@ class PropertySetting < ActiveRecord::Base
     self['universal_recipients'].to_s.split(',').collect{|email| email.strip}
   end
   
-  #custom mailer
-  def mailer
-    @mailer ||= mailer_id.blank? ? nil : Mailer.find_by_id(mailer_id)
+  def metrics
+    @metrics ||= begin
+      hash = JSON.parse(self[:metrics]) rescue {}
+      hash.keys.each do |k|
+        hash[k] = hash[k].split(/[\r\n]{1,2}/)
+      end
+      hash
+    end
+  end
+
+  def metrics=(data)
+    @metrics = nil
+    self[:metrics] = data.to_json
   end
   
-  def delivery_method
-    mailer ? "#{mailer.type}_#{mailer.id}".to_sym : :ses
+  def template_id
+    #TODO: for email sending
   end
-  
-  
   
   def default_source_mapping
     [
@@ -41,11 +49,6 @@ class PropertySetting < ActiveRecord::Base
       {"tag" => "rwg", "name" => "RentalsGoneWild.com"},
       {"tag" => "hylyemail", "name" => "EmailBlast"}
     ]
-  end
-  
-  # ignore ad url in newsletter
-  def ad_domains
-    @ad_domains ||= self[:ad_domains].to_s.split(",").collect{|d| d.strip }
   end
   
   private

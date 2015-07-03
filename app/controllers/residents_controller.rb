@@ -195,7 +195,7 @@ class ResidentsController < ApplicationController
       @resident = Resident.where(:_id => params[:search]).first
     end
     
-    render  :json => {:resident_path => @resident ? resident_path(@property, @resident, :anchor => "addTicket") : nil }
+    render  :json => {:resident_path => @resident ? property_resident_path(@property, @resident, :anchor => "addTicket") : nil }
   end
   
   # marketing stream (aka x-ray)

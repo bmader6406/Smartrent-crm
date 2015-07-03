@@ -1,0 +1,32 @@
+<h4>Account Usage: <%= Time.now.strftime("%b %Y") %></h4>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th width="200px">Product</th>
+      <th>Quantity</th>
+      <th>Average Price</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @usage.each do |u| %>
+      <% next if !["calls", "sms", "recordings"].include?(u.category)  %>
+      <tr>
+        <td>
+          <%= u.description %>
+        </td>
+        <td><%= u.usage %> <%= u.usage_unit %></td>
+        <td>$<%= u.usage.to_i > 0 ? (u.price.to_f/u.usage.to_f).round(4) : 0 %></td>
+        <td>$<%= u.price %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>$<%= @total.price %></td>
+    </tr>
+  </tfoot>
+</table>

@@ -5,7 +5,7 @@
       <a href="#"><%= ticket.activity_author.full_name %></a>
     <% } %>
     
-    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <%= Helpers.timeOrTimeAgo(created_at) %>
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
       <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
     <% } %>
@@ -13,19 +13,19 @@
   
   <div class="message">
     <% if (action == "new_ticket") { %>
-      Ticket <a href="<%= ticket.ticket_path %>"><%= Crm.Helpers.truncate(ticket.description, 50) %></a> was assigned 
+      Ticket <a href="<%= ticket.ticket_path %>"><%= Helpers.truncate(ticket.description, 50) %></a> was assigned 
         to <a href="#"><%= ticket.assignee.full_name %></a>
       
     <% } else if (action == "closed_ticket") { %>
-      Ticket <a href="<%= ticket.ticket_path %>"><%= Crm.Helpers.truncate(ticket.description, 50) %></a> was closed.
+      Ticket <a href="<%= ticket.ticket_path %>"><%= Helpers.truncate(ticket.description, 50) %></a> was closed.
       
     <% } else if (action == "reopened_ticket") { %>
-      Ticket <a href="<%= ticket.ticket_path %>"><%= Crm.Helpers.truncate(ticket.description, 50) %></a> was re-opened.
+      Ticket <a href="<%= ticket.ticket_path %>"><%= Helpers.truncate(ticket.description, 50) %></a> was re-opened.
       
     <% } else if (action == "on_hold_ticket") { %>
-      Ticket <a href="<%= ticket.ticket_path %>"><%= Crm.Helpers.truncate(ticket.description, 50) %></a> was on hold.
+      Ticket <a href="<%= ticket.ticket_path %>"><%= Helpers.truncate(ticket.description, 50) %></a> was on hold.
     <% } else { %>
-      Ticket <a href="<%= ticket.ticket_path %>"><%= Crm.Helpers.truncate(ticket.description, 50) %></a> - <%= action %>
+      Ticket <a href="<%= ticket.ticket_path %>"><%= Helpers.truncate(ticket.description, 50) %></a> - <%= action %>
     <% } %>
   </div>
 </div>

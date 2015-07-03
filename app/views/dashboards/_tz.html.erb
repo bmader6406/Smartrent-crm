@@ -1,0 +1,5 @@
+<% now = Time.zone.now %>
+<li class="tz" data-z="<%= now.strftime("%z") %>" data-date="<%= now.strftime("%Y-%b-%d")  %>" 
+    data-h="<%= now.strftime("%l") %>" data-m="<%= now.strftime("%M") %>" data-mer="<%= now.strftime("%p") %>">
+  Your Time: <%= now.to_s(:friendly_time) %> ( <%= @property.setting.time_zone %> )
+</li>

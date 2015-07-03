@@ -1,0 +1,9 @@
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "User")) { %>
+    <a href="<%= App.vars.usersPath %>/new" class="btn btn-primary add-new pull-right"> Add New User </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div class="grid"></div>
+  <div class="paginator"></div>
+</div>
+<div class="create-update"></div>

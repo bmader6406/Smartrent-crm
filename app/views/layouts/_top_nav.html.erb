@@ -3,7 +3,7 @@
     <i class="fa fa-bars"></i>
   </a>
 
-  <a href="<%= root_path %>" class="logo">
+  <a href="<%= main_app.root_path %>" class="logo">
     <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png">
     CRM
   </a>
@@ -11,7 +11,7 @@
   <ul class="nav navbar-nav" style="margin-left: 60px;">
     <li class="dropdown" id="property-dd">
       <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-        <%= @property.name if @property %>
+        <%= @property ? @property.name : "Select a property" %>
         <i class="fa fa-angle-down fa-lg"></i>
       </a>
       
@@ -22,7 +22,17 @@
 
     	  <div class="scroller">
       	  <div class="list-group">
-      	    ...
+            <%
+      	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
+      	      properties_region.keys.each do |region|
+      	    %>
+      	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>"> <%= region ? region.name : "Other Metro" %></b>
+        	    <div class="items">
+          	    <% properties_region[region].each do |prop| %>
+          	      <a href="<%= property_residents_path(prop) %>" class="list-group-item" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> <%= prop.name %> </a>
+          	    <% end %>
+        	    </div>
+      	    <% end %>
           </div>
         </div>
     	</div> <!-- /.list-filter -->
@@ -32,8 +42,8 @@
   <div class="nav navbar-nav navbar-right">
     <div class="user-info">
       <%= current_user.first_name %> 
-      <span>(TODO)</span> | 
-      <a href="<%= logout_path %>"> Logout </a>
+      <span>(<%= current_user.role %>)</span> | 
+      <a href="<%= main_app.logout_path %>"> Logout </a>
     </div>
   </div>
 </div>

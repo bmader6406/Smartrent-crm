@@ -7,7 +7,7 @@ class UsersController < ApplicationController
     
     respond_to do |format|
       format.html {
-        render :file => "users/index"
+        render :file => "dashboards/index"
       }
       format.json {
         filter_users(params[:per_page])
@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     
     respond_to do |format|
       format.html {
-        render :file => "users/index"
+        render :file => "dashboards/index"
       }
       format.json {}
     end
@@ -28,7 +28,7 @@ class UsersController < ApplicationController
   def new
     respond_to do |format|
       format.html {
-        render :file => "users/index"
+        render :file => "dashboards/index"
       }
       format.json {}
     end
@@ -37,7 +37,7 @@ class UsersController < ApplicationController
   def edit
     respond_to do |format|
       format.html {
-        render :file => "users/index"
+        render :file => "dashboards/index"
       }
       format.json {}
     end

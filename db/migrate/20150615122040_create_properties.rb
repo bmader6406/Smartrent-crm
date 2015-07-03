@@ -10,7 +10,6 @@ class CreateProperties < ActiveRecord::Migration
       t.string :city
       t.string :state
       t.string :zip
-      t.string :region
       t.string :email
       t.string :phone
       t.string :webpage_url

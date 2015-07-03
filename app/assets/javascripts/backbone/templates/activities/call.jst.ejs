@@ -7,7 +7,7 @@
       <a href="#"><%= call.from %></a>
     <% } %>
     
-    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <%= Helpers.timeOrTimeAgo(created_at) %>
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
       <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
     <% } %>
@@ -22,13 +22,13 @@
     </li>
     <% if(call.recording_url){ %>
       <li>
-        Length: <%= Crm.Helpers.prettyDuration(call.recording_duration) %>
+        Length: <%= Helpers.prettyDuration(call.recording_duration) %>
       </li>
     <% } %>
     
     <% if (call.message) { %>
       <li>
-        Note: <%= Crm.Helpers.sanitize( call.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
+        Note: <%= Helpers.sanitize( call.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
       </li>
     <% } %>
   </ul>

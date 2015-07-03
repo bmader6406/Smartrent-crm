@@ -7,6 +7,7 @@ gem 'rails', '4.2.2'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3'
 gem 'mysql2', '~> 0.3.18'
+gem 'mongoid', '~> 4.0.2'
 
 # Use SCSS for stylesheets
 #gem 'sass-rails', '~> 5.0'
@@ -75,7 +76,7 @@ gem "charlock_holmes", "0.6.9.4" #brew install icu4c Or apt-get install libicu-d
 gem 'rubber', '~> 3.0.1'
 
 gem 'phony_rails', '0.9.0'
-gem "twilio-ruby", :git => 'git://github.com/TinNT/twilio-ruby.git', :branch => "downgrade_jwt"
+gem 'twilio-ruby', '~> 4.2.1'
 gem 'ancestry', '2.1.0'
 gem 'email_reply_parser', '~> 0.5.8'
 

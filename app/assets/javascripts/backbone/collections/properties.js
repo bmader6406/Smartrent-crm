@@ -9,7 +9,7 @@ Crm.Collections.Properties = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = App.vars.routeRoot + "/properties";
+    this.url = "/properties";
   },
 
   parseState: function (resp, queryParams, state, options) {

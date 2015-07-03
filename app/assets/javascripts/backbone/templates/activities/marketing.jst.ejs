@@ -1,10 +1,10 @@
 <div class="marketing-act">
   <div class="time">
-    <%= Crm.Helpers.timeOrTimeAgo(created_at) %>
+    <%= Helpers.timeOrTimeAgo(created_at) %>
   </div>
   <div class="meta">
-    <i class="<%= Crm.Helpers.activityIcon(action) %>"></i>
-    <%= Crm.Helpers.formatMarketingNote(marketing.note) %>
+    <i class="<%= Helpers.activityIcon(action) %>"></i>
+    <%= Helpers.formatMarketingNote(marketing.note) %>
 
     <% if (marketing.tour_time) { %>
       <br><small>Tour Time: <%= marketing.tour_time %></small>

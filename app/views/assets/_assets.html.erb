@@ -1,0 +1,25 @@
+<ul>
+  <% @assets.each_with_index do |asset, index| %>
+    <li id="asset-<%= asset.id %>" class="asset">
+      <% if asset.image? %>
+        <img src="<%= asset.file.url(asset.to_thumbnail_style) %>" alt="<%= asset.file_file_name %>">
+      <% else %>
+        <i class="fa fa-file-o" style="font-size: 50px"></i>
+      <% end %>
+      <span> <%= truncate asset.file_file_name %></span>
+
+      <div class="actions">
+        <% if asset.image? %>
+          <a href="<%= select_property_asset_path(@property, asset) %>" data-id="<%= asset.id %>" class="select"> Select </a>
+        <% end %>
+
+      	<a href="<%= property_asset_path(@property, asset) %>" data-id="<%= asset.id %>" class="delete"> Delete </a>
+      </div>
+    </li>
+  <% end %>
+</ul>
+
+<div class="paging-info">
+  <%= page_entries_info @assets, :model => 'asset' %>
+  <%= page_navigation_links(@assets)%>
+</div>

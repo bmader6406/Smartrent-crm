@@ -1,0 +1,10 @@
+<% if params[:type] == "emails" %>
+  $('#report-emails .list-view').show().html("<%= j(render 'residents', :type => params[:type] )%>");
+  
+<% elsif params[:type] == "birthday" %>
+  $('#report-birthday .list-view').show().html("<%= j(render 'residents', :type => params[:type] )%>");
+  
+<% elsif params[:type] == "details" %>
+  $('#report-details .list-view').show().html("<%= j(render 'residents', :type => params[:type] )%>");
+
+<% end %>

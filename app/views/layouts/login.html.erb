@@ -7,152 +7,45 @@
   
   <title> <%= @page_title || controller_name %> </title>
   
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
   
   <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.1/html5shiv.js" type="text/javascript"></script>
   <![endif]-->
   
-  <%= stylesheet_link_tag "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
+  <%= stylesheet_link_tag "login", :media => "all" %>
+  <%= javascript_include_tag "login" %>
   
   <%= csrf_meta_tags %>
   
   <%= yield :css %>
   <%= yield :js %>
-  
-  <style type="text/css">
-    body {
-      background-color: #fff;
-      padding-bottom: 40px;
-      padding-top: 40px;
-    }
-    #top-nav {
-      top: 0;
-    }
-    .wrapper {
-      position: absolute;
-      padding: 0 0 15px 0;
-      top: 44px;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      width: auto;
-      height: auto;
-      z-index: 3;
-      overflow: auto;
-    }
-    #error-explanation {
-      background: #fff;
-    }
-    #error-explanation h2 {
-      font-size: 16px;
-      font-weight: 500;
-    }
-    .field_with_errors input, .field_with_errors textarea {
-     	  border: 1px solid #CCCCCC;
-    }
-    .form-signin, .form-signup, .form-reset {
-        margin: 0 auto;
-        max-width: 330px;
-        padding: 15px 15px 35px 15px;
-    }
-    .form-signin-heading {
-        font-size: 22px;
-        margin-bottom: 15px;
-    }
-    .form-signin .checkbox {
-        font-weight: normal;
-    }
-    .form-signin .form-control {
-        -moz-box-sizing: border-box;
-        font-size: 16px;
-        height: auto;
-        padding: 10px;
-        position: relative;
-    }
-    .form-signin .form-control:focus {
-        z-index: 2;
-    }
-    .form-signin input[type="text"] {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        margin-bottom: -1px;
-    }
-    .form-signin input[type="password"] {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        margin-bottom: 10px;
-    }
-    
-    .form-signin .links {
-    	margin-top: 20px;
-    }
-    .form-signin a:first-child {
-    	float: right;
-    }
-    
-    .form-signup .btn-primary {
-      margin-bottom: 10px;
-    }
-    
-    #community {
-      width: 520px;
-      margin: 100px auto 0 auto;
-    }
-    #community .list-group {
-      
-      max-height: 400px;
-      overflow: auto;
-    }
-  </style>
 </head>
 
 <body>
-  <div id="top-nav" class="navbar navbar-default">
-    <a href="#" class="logo">
-      <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png">
-      CRM
-    </a>
+  <div class="container">
+    <div class="wrapper">
+      <div class="logo">
+        <a href="/"> 
+          Bozzuto
+          CRM
+        </a>
+      </div>
+      <%= yield %>
+    </div>
   </div>
-  
-  <%= yield %>
   
   <!-- bootstrap notify -->
   <div id="notify" class='bottom-right'></div>
-  
-  <!-- cleanup -->
-  <% if notice %>
-    <div id="flash-notice" style="display:none">
-      <%= raw notice  %>
-    </div>
-
-    <script type="text/javascript">
-      $(function(){
-        var f = $('#flash-notice').hide();
-        msgbox(f.text());
-      });
-    </script>
-  <% end %>
-
-  <% if alert %>
-    <div id="flash-error">
-      <%= raw alert %>
-    </div>
-
-    <script type="text/javascript">
-      $(function(){
-        var pane = $('body');
-        if(pane[0]) pane.prepend($('#flash-error'));
-      });
-    </script>
-  <% end %>
   
   <script type="text/javascript">
     setTimeout(function () {
       window.scrollTo(0, 0);
     }, 1);
   </script>
+  
+  <%= render "layouts/facebook_sdk" %>
 </body>
 </html>
+

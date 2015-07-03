@@ -1,0 +1,40 @@
+<% if (App.vars.ability.can("cud", "User") || Helpers.editProfile(id)) { %>
+  <div class="crud-buttons">
+    <table>
+      <tr>
+        <% if( !Helpers.editProfile(id) ){ %>
+          <td>
+            <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+          </td>
+          <td>
+            <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
+          </td>
+        <% } %>
+      </tr>
+    </table>
+  </div>
+  
+<% } %>
+
+<div class="card">
+  <h3> <%= full_name %> <% if( Helpers.editProfile(id) ){ %> (You) <% } %> </h3>
+  <ul class="list-unstyled">
+    <li>
+      <b>ID:</b> <%= id %>
+    </li>
+    <li>
+      <b>Email:</b> <%= email %>
+    </li>
+    <li>
+      <b>Role:</b> <%= App.vars.roleDict[role] %>
+    </li>
+    <li>
+      <% if(role == "regional_manager") { %>
+        <b>Authorized Regions:</b> <%= authorized_properties %>
+        
+      <% } else { %>
+        <b>Authorized Properties:</b> <%= authorized_properties %>
+      <% } %>
+    </li>
+  </ul>
+</div>
