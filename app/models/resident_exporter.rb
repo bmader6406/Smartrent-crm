@@ -1,3 +1,5 @@
+require 'csv'
+
 class ResidentExporter
   def self.queue
     :crm_immediate
@@ -111,11 +113,8 @@ class ResidentExporter
     end
   end
   
-  def self.init(property, params)
-    @property = property
+  def self.init(params)
     @params = params
-
-    Time.zone = property.setting.time_zone
     
     return self
   end
@@ -125,7 +124,7 @@ class ResidentExporter
   end
   
   def self.generate_csv
-    file_name = "#{@property.name}_#{@params["type"]}Report_#{Time.now.strftime('%Y%m%d')}.csv"
+    file_name = "#{@params["type"]}Report_#{Time.now.strftime('%Y%m%d')}.csv"
 
     csv_string = CSV.generate() do |csv|  
       per_page = 250
@@ -227,7 +226,7 @@ class ResidentExporter
 
       File.open("#{TMP_DIR}#{file_name}", "wb") { |f| f.write(csv_string) }
     
-      ::Notifier.system_message("[#{@property.name}] Resident Data",
+      ::Notifier.system_message("Resident Data",
         "Your file was exported successfully.
         <br><br> 
         <a href='http://#{HOST}/downloads/#{file_name}'>Download File</a> 
@@ -248,7 +247,7 @@ class ResidentExporter
       ::Notifier.system_message("[ResidentExporter] FAILURE", "ERROR DETAILS: #{error_details}",
         ::Notifier::DEV_ADDRESS, {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
       
-      ::Notifier.system_message("[#{@property.name}] Resident Data",
+      ::Notifier.system_message("Resident Data",
         "There was an error while exporting your data, please contact help@hy.ly for help",
         @params["recipient"], {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
     end

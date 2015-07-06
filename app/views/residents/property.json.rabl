@@ -5,7 +5,7 @@ node do |n|
   {
     :id => prop.id.to_s,
     :name => prop.name,
-    :resident_path => resident_path(prop, @resident)
+    :resident_path => property_resident_path(prop, @resident)
   }
 end
 

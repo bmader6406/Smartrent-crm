@@ -64,11 +64,9 @@ class ResidentProperty
   before_save :set_rental_type
   
   after_save :set_unified_status
-  after_save :save_lead, :if => lambda { |p| !p.resident.from_import }
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status
-  after_destroy :remove_lead
   after_destroy :decrease_counter_cache
 
   def property
@@ -105,13 +103,5 @@ class ResidentProperty
     
     def set_rental_type
       self.rental_type = unit.rental_type if unit # for reports
-    end
-    
-    def save_lead
-      Resque.enqueue(ResidentSync, resident.id, property_id, "save")
-    end
-    
-    def remove_lead
-      Resque.enqueue(ResidentSync, resident.id, property_id, "remove")
     end
 end

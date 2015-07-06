@@ -8,7 +8,7 @@ node do |n|
   }
 end
 
-node(:marketing, :if => lambda {|n| n.kind_of?(EntryActivity) }) do |n|
+node(:marketing, :if => lambda {|n| n.kind_of?(MarketingActivity) }) do |n|
   {
     :note => n.note,
     :tour_time => n.action == "schedule" && n.target ? n.target.tour_time : nil
@@ -65,7 +65,7 @@ node(:ticket, :if => lambda {|n| n.subject.kind_of?(Ticket) }) do |n|
   ticket = n.subject
   hash = {
     :activity_author => nil,
-    :ticket_path => tickets_resident_path(ticket.property_id, ticket.resident_id, :anchor => ticket.id),
+    :ticket_path => tickets_property_resident_path(ticket.property_id, ticket.resident_id, :anchor => ticket.id),
     :description => ticket.description,
     :assigner => {
       :full_name => ticket.assigner.full_name,

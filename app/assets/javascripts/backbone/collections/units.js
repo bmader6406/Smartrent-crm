@@ -9,7 +9,7 @@ Crm.Collections.Units = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = "/units";
+    this.url = App.vars.routeRoot + "/units";
   },
 
   parseState: function (resp, queryParams, state, options) {

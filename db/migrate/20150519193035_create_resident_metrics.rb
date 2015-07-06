@@ -11,7 +11,6 @@ class CreateResidentMetrics < ActiveRecord::Migration
       t.timestamps
     end
     
-    change_column "resident_metrics", "id", "bigint"
     add_index "resident_metrics", ["property_id", "type"]
   end
   

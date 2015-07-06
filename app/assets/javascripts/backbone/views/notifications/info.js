@@ -23,7 +23,7 @@ Crm.Views.NotificationInfo = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Notification was archived successfully");
-            Crm.routerInst.navigate('/notifications', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', true);
           },
           error: function(model, response) {
             

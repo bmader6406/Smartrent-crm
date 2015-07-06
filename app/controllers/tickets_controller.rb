@@ -55,7 +55,7 @@ class TicketsController < ApplicationController
     
     @ticket = Ticket.new(ticket_params)
     @ticket.assigner_id = current_user.id
-    @ticket.property_id = @property.to_property_id
+    @ticket.property_id = @property.id
     
     @ticket.author = current_user
     @ticket.action = "new_ticket"

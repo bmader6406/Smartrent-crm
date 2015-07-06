@@ -156,7 +156,7 @@ Crm.Views.TicketNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Ticket was archived successfully");
-            Crm.routerInst.navigate('/tickets', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/tickets', true);
           },
           error: function(model, response) {
             

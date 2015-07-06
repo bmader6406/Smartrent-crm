@@ -2,7 +2,7 @@ class CreateComments < ActiveRecord::Migration
   def up
     create_table :comments do |t|
       t.integer :property_id
-      t.string :resident_id
+      t.integer :resident_id, :limit => 8
       t.string :type
       t.text :message
       t.string :ancestry

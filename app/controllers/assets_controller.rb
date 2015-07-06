@@ -15,7 +15,7 @@ class AssetsController < ApplicationController
     assets = []
 
     params[:files].each do |file|
-      asset = asset_clzz(file.original_filename).new(:file => file, :property => @page)
+      asset = asset_clzz(file.original_filename).new(:file => file, :property => @property)
       assets << asset if asset.save
     end
 
@@ -68,8 +68,6 @@ class AssetsController < ApplicationController
       else
         @property = current_user.managed_properties.find(params[:property_id])
 
-        @campaigns = Campaign.for_page(@property)
-
         Time.zone = @property.setting.time_zone
       end
 
@@ -95,11 +93,11 @@ class AssetsController < ApplicationController
       url, title = url.split("___", 2)
 
       if !auth_token.blank?
-        attrs = {:file => open(url, {"Authorization" => "OAuth #{auth_token}"}), :file_file_name => title, :property => @page}
+        attrs = {:file => open(url, {"Authorization" => "OAuth #{auth_token}"}), :file_file_name => title, :property => @property}
         asset_clzz(title).create(attrs)
 
       else
-        attrs = {:file => URI.parse(url), :property => @page}
+        attrs = {:file => URI.parse(url), :property => @property}
 
         attrs[:file_file_name] = title if title #for file from aviary
 
@@ -117,7 +115,7 @@ class AssetsController < ApplicationController
       return false if asset.new_record?
       return false if params[:comment_id].blank? #media library
       
-      hash = {:file => asset.file, :comment_id => params[:comment_id], :property => @page}
+      hash = {:file => asset.file, :comment_id => params[:comment_id], :property => @property}
 
       case params[:target]
         when "photo"

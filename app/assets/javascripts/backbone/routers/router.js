@@ -41,6 +41,18 @@ Crm.Router = Backbone.Router.extend({
     'properties/:property_id/notices/:id/edit(/)': 'editCampaign',
     'properties/:property_id/notices/:id(/)': 'showCampaign',
     
-    'properties/:property_id/reports(/)': 'showReports'
+    'properties/:property_id/reports(/)': 'showReports',
+    
+    
+    
+    'residents(/)': 'showResidents',
+    'residents/new(/)': 'newResident',
+    'residents/:id/edit(/)': 'editResident',
+    'residents/:id(/)': 'showResident',
+    'residents/:id/tickets(/)': 'showResidentTickets',
+    'residents/:id/roommates(/)': 'showResidentRoommates',
+    'residents/:id/properties(/)': 'showResidentProperties',
+
+    'reports(/)': 'showReports',
   }
 });

@@ -23,7 +23,7 @@ Crm.Views.UnitInfo = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Unit was archived successfully");
-            Crm.routerInst.navigate('/units', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/units', true);
           },
           error: function(model, response) {
             

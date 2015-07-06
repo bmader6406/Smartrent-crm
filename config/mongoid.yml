@@ -1,0 +1,13 @@
+# This file will be overridden when deploy to EC2
+development:
+  sessions:
+    default:
+      database: crm_stage
+      hosts: 
+        - localhost:27017
+test:
+  sessions:
+    default:
+      database: mydb_test
+      hosts: 
+        - localhost:27017

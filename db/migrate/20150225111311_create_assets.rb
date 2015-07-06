@@ -12,7 +12,6 @@ class CreateAssets < ActiveRecord::Migration
       t.timestamps
     end
     
-    change_column "assets", "id", "bigint"
     add_index "assets", ["comment_id"]
   end
   

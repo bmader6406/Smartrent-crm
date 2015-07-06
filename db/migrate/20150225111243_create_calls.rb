@@ -10,7 +10,6 @@ class CreateCalls < ActiveRecord::Migration
       t.timestamps
     end
     
-    change_column "calls", "id", "bigint"
     add_index "calls", ["comment_id"]
   end
   

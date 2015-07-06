@@ -23,7 +23,7 @@ Crm.Views.CampaignInfo = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Campaign was archived successfully");
-            Crm.routerInst.navigate('/campaigns', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/campaigns', true);
           },
           error: function(model, response) {
             

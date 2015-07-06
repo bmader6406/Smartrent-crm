@@ -50,7 +50,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     var self = this,
       link = $(ev.target);
     
-    Crm.routerInst.navigate('/residents/' + this.model.get('id'), true);
+    Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
     
     $('#resident-info .nav-details .btn').removeClass('btn-primary').addClass('btn-default');
     $('#resident-info .nav-details a[href='+link.attr('href')+']').removeClass('btn-default').addClass('btn-primary');
@@ -124,7 +124,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Resident was archived successfully");
-            Crm.routerInst.navigate('/residents', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/residents', true);
           },
           error: function(model, response) {
             

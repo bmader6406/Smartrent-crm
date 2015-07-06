@@ -14,6 +14,6 @@ node do |n|
     :sends_count => n.sends_count,
     :clicks_count => n.clicks_count,
     :statuses_path => marketing_statuses_property_resident_path(@property, @resident, :prop_id => n.property_id),
-    :activities_path => resident_activities_path(n.property, @resident, :history => "marketing")
+    :activities_path => property_resident_activities_path(n.property, @resident, :history => "marketing")
   }
 end

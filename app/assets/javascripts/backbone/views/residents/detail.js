@@ -166,7 +166,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
   newTicket: function(ev){
     if( !this.ticketForm ) {
       Crm.collInst.residentTickets = new Crm.Collections.ResidentTickets;
-      Crm.collInst.residentTickets.url = "/tickets";
+      Crm.collInst.residentTickets.url = App.vars.routeRoot + "/tickets";
       
       this.ticketForm = new Crm.Views.TicketNew({
         collection: Crm.collInst.residentTickets
@@ -195,7 +195,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
   newRoommate: function(ev){
     if( !this.roommateForm ) {
       //switch to roommates resource
-      Crm.collInst.residentRoommates.url = "/roommates?unit_id=" + this.model.get('property').unit_id;
+      Crm.collInst.residentRoommates.url = App.vars.routeRoot + "/roommates?unit_id=" + this.model.get('property').unit_id;
 
       this.roommateForm = new Crm.Views.RoommateNew({
         collection: Crm.collInst.residentRoommates

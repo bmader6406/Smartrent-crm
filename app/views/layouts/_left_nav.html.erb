@@ -12,10 +12,16 @@
 	    <% end %>
     <% end %>
     
-	  <% if can?(:read, Resident) && @property %>
-  		<li data-nav="residents">
-        <a href="<%= raw main_app.property_residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
-      </li>
+	  <% if can?(:read, Resident) %>
+	    <% if @property %>
+    		<li data-nav="residents">
+          <a href="<%= raw main_app.property_residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+        </li>
+      <% else %>
+        <li data-nav="residents">
+          <a href="<%= raw main_app.residents_path %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+        </li>
+      <% end %>
     <% end %>
     
     <% if can?(:read, Ticket) && @property %>
@@ -39,6 +45,10 @@
     <% if @property %>
       <li data-nav="reports">
         <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
+      </li>
+    <% else %>
+      <li data-nav="reports">
+        <a href="<%= raw main_app.reports_path %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
       </li>
     <% end %>
     

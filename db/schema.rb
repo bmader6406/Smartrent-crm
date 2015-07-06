@@ -140,7 +140,6 @@ ActiveRecord::Schema.define(version: 20150703180858) do
     t.string   "city",                 limit: 255
     t.string   "state",                limit: 255
     t.string   "zip",                  limit: 255
-    t.string   "region",               limit: 255
     t.string   "email",                limit: 255
     t.string   "phone",                limit: 255
     t.string   "webpage_url",          limit: 255

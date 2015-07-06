@@ -9,7 +9,7 @@ Crm.Collections.Residents = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = "/residents";
+    this.url = App.vars.routeRoot + "/residents";
   },
 
   parseState: function (resp, queryParams, state, options) {

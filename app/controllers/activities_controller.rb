@@ -129,7 +129,7 @@ class ActivitiesController < ApplicationController
   def create
     @activity = @resident.activities.new
     
-    comment = params[:comment].clone
+    comment = comment_params.clone
     
     comment[:property_id] = @property.id
     comment[:resident_id] = @resident.id
@@ -174,7 +174,7 @@ class ActivitiesController < ApplicationController
       })
       
     elsif comment[:type] == "email"
-      @comment.build_email(params[:email])
+      @comment.build_email(email_params)
       
     end
     
@@ -183,6 +183,7 @@ class ActivitiesController < ApplicationController
       @activity.action = @comment.type
       @activity.subject_id = @comment.id
       @activity.subject_type = @comment.class.to_s
+      @activity.property_id = @property.id if @property
       
       if comment[:asset_ids] 
         @property.assets.where(:id => comment[:asset_ids].split(",")).update_all(:comment_id => @comment.id)
@@ -224,6 +225,14 @@ class ActivitiesController < ApplicationController
   
     def activity_params
       params.require(:activity).permit!
+    end
+    
+    def comment_params
+      params.require(:comment).permit!
+    end
+    
+    def email_params
+      params.require(:email).permit!
     end
     
     def set_property

@@ -9,7 +9,7 @@ Crm.Collections.Tickets = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = "/tickets";
+    this.url = App.vars.routeRoot + "/tickets";
   },
 
   parseState: function (resp, queryParams, state, options) {

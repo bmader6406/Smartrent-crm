@@ -67,9 +67,10 @@ gem 'resque-scheduler', '~> 4.0.0'
 gem 'resque-retry', '~> 1.4.0'
 gem 'resque-pool', '~> 0.5.0'
 gem 'paperclip', '~> 4.3.0'
-
+gem 'aws-sdk', '~> 1.9.5'
 gem 'aws-ses', '~> 0.6.0'
 gem 'will_paginate', '~> 3.0.7'
+gem 'will_paginate_mongoid', '~> 2.0.1'
 gem 'rabl', '~> 0.11.6'
 gem "charlock_holmes", "0.6.9.4" #brew install icu4c Or apt-get install libicu-dev
 

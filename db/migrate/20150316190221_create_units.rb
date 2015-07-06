@@ -11,7 +11,6 @@ class CreateUnits < ActiveRecord::Migration
       t.timestamps
     end
     
-    change_column "units", "id", "bigint"
     add_index "units", ["property_id"]
   end
   

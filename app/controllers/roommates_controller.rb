@@ -71,7 +71,7 @@ class RoommatesController < ApplicationController
     
     #params[:property_id] come from property dropdown of org-group level form
     property_attrs = {
-      :property_id => params[:property_id] || @property.to_property_id,
+      :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }
@@ -113,7 +113,7 @@ class RoommatesController < ApplicationController
     
     #params[:property_id] come from property dropdown of org-group level form
     property_attrs = {
-      :property_id => params[:property_id] || @property.to_property_id,
+      :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }

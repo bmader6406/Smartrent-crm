@@ -17,20 +17,6 @@ class PropertySetting < ActiveRecord::Base
     self['universal_recipients'].to_s.split(',').collect{|email| email.strip}
   end
   
-  def metrics
-    @metrics ||= begin
-      hash = JSON.parse(self[:metrics]) rescue {}
-      hash.keys.each do |k|
-        hash[k] = hash[k].split(/[\r\n]{1,2}/)
-      end
-      hash
-    end
-  end
-
-  def metrics=(data)
-    @metrics = nil
-    self[:metrics] = data.to_json
-  end
   
   def template_id
     #TODO: for email sending

@@ -27,11 +27,16 @@ $(function(){
     App.vars.propertyUnits = <%= raw @property.units.collect{|c| {:val => c.id.to_s, :label => c.code} }.to_json %>;
     App.vars.propertyAudiences = <%= raw @property.audiences.collect{|c| {:val => c.id.to_s, :label => c.name} if c.name.to_s.downcase.include?("resident") }.compact.to_json  %>;
 
-    App.vars.metricOptions = <%= raw @property.setting.metrics.to_json %>;
-    
-    
     App.vars.propertyTzHack = "<%= j(render "dashboards/tz") %>";
+    App.vars.routeRoot = "/properties/<%= @property.id %>";
+  
+  <% else %>
+    App.vars.routeRoot = "";
+    App.vars.reportsPath = "<%= reports_path %>";
   <% end %>
+  
+  App.vars.metricOptions = <%= raw metric_options.to_json %>;
+  
 
   App.vars.isPropertyPage = <%= @property ? true : false %>;
 
@@ -45,7 +50,7 @@ $(function(){
   //build from property dropdown
   App.vars.properties = [];
 
-  var propertyDd = $('#prop-dd-nav');
+  var propertyDd = $('#property-dd');
 
   propertyDd.find('a[data-val]').each(function(){
     App.vars.properties.push({

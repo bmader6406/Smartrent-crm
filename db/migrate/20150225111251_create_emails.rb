@@ -12,7 +12,6 @@ class CreateEmails < ActiveRecord::Migration
       t.timestamps
     end
     
-    change_column "emails", "id", "bigint"
     add_index "emails", ["comment_id"]
     add_index "emails", ["token"]
   end

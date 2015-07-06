@@ -9,7 +9,7 @@ Crm.Collections.Campaigns = Backbone.PageableCollection.extend({
   },
   
   initialize: function(){
-    this.url = "/notices";
+    this.url = App.vars.routeRoot + "/notices";
   },
 
   parseState: function (resp, queryParams, state, options) {

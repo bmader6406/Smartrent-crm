@@ -19,7 +19,7 @@ class ReportsController < ApplicationController
     @property_dict = {}
     @unit_dict = {}
     
-    exporter = ResidentExporter.init(@property, params)
+    exporter = ResidentExporter.init(params)
     
     page = (params[:page] || 1).to_i
     per_page = (params[:rp] || 15).to_i
@@ -40,12 +40,12 @@ class ReportsController < ApplicationController
   end
 
   def export_residents
-    exporter = ResidentExporter.init(@property, params)
+    exporter = ResidentExporter.init(params)
 
     respond_to do |format|
       format.js {
         if params[:recipient]
-          Resque.enqueue(ResidentExporter, @property.id, params)
+          Resque.enqueue(ResidentExporter, params)
 
         else
           @sendible = exporter.sendible?
@@ -288,20 +288,25 @@ class ReportsController < ApplicationController
       
     end
 
-    send_data(csv_string, :type => 'text/csv; charset=utf-8; header=present', 
-      :filename => "#{@property.name.gsub(" ","")}_#{params[:type]}Report_#{Date.today.strftime('%m_%d_%Y')}.csv")
+    send_data(csv_string, :type => 'text/csv; charset=utf-8; header=present', :filename => "#{params[:type]}Report_#{Date.today.strftime('%m_%d_%Y')}.csv")
   end
   
   private
     
     def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
+      if params[:property_id]
+        @property = current_user.managed_properties.find(params[:property_id])
       
-      Time.zone = @property.setting.time_zone
+        Time.zone = @property.setting.time_zone
+      end
     end
 
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Reports" 
+      if @property
+        @page_title = "CRM - #{@property.name} - Reports" 
+      else
+        @page_title = "CRM - Reports" 
+      end
     end
     
     def filter_reports(per_page = 15)

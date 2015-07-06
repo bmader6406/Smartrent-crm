@@ -2,7 +2,7 @@ class CreateTickets < ActiveRecord::Migration
   def up
     create_table :tickets do |t|
       t.integer :property_id
-      t.integer :resident_id
+      t.integer :resident_id, :limit => 8
       
       t.string :title
       t.text :description

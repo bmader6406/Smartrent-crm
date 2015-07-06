@@ -2,16 +2,8 @@ Rails.application.routes.draw do
   
   #mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
   
-  namespace :nimda do
-    # placeholder
-  end
-  
-  # base
-  resources :properties do
-    member do
-      get :info
-    end
-    
+  # shared
+  def resident_resources
     resources :residents do
       member do 
         get :tickets
@@ -28,6 +20,28 @@ Rails.application.routes.draw do
       
       resources :activities
     end
+  end
+  
+  def report_resources
+    resources :reports do
+      collection do
+        get :residents
+        get :export_residents
+        
+        get :metrics
+        get :export_metrics
+      end
+    end
+  end
+    
+  # base
+  resources :properties do
+    member do
+      get :info
+    end
+    
+    resident_resources
+    report_resources
     
     resources :roommates
     resources :tickets
@@ -39,16 +53,6 @@ Rails.application.routes.draw do
     end
     
     resources :notifications
-    
-    resources :reports do
-      collection do
-        get :residents
-        get :export_residents
-        
-        get :metrics
-        get :export_metrics
-      end
-    end
     
     resources :notices, :as => "campaigns", :controller => "campaigns" do
       member do
@@ -72,6 +76,9 @@ Rails.application.routes.draw do
     end
   end
   
+  resident_resources
+  report_resources
+  
   resources :users, :path => :accounts
   
   resource :profile
@@ -91,6 +98,10 @@ Rails.application.routes.draw do
     post :w2p_connect
     post :w2p_fallback
     post :w2p_status
+  end
+  
+  namespace :nimda do
+    # placeholder
   end
   
   # name route

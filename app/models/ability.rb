@@ -13,8 +13,9 @@ class Ability
       # admin can do any actions on any class, resource
       can :manage, :all
       
-      cannot [:cud, :send_email], Resident
-      cannot [:cud], [Ticket, ResidentActivity, Campaign]
+      # Temporary disabled
+      #cannot [:cud, :send_email], Resident
+      #cannot [:cud], [Ticket, ResidentActivity, Campaign]
       
     else
       # everyone can read property that they have access to

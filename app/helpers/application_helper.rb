@@ -56,6 +56,51 @@ module ApplicationHelper
     arr.uniq
   end
   
+  def metric_options
+    #TODO: make it editable
+    {"resident_status"=>["Current", "Future", "Past", "Notice"],
+     "resident_type"=>["Walk-in", "Phone", "Email"],
+     "occupation_type"=>
+      ["None",
+       "Admin/Support Staff",
+       "Blue Collar",
+       "Education",
+       "Finance/Accounting",
+       "Full-Time Homemaker",
+       "Government Employee",
+       "Government Funding",
+       "Medical",
+       "Military",
+       "Professional",
+       "Public Service",
+       "Real Estate",
+       "Retail Trade",
+       "Retired",
+       "Sales",
+       "Self-Employed",
+       "Student",
+       "Technology",
+       "Minor Child"],
+     "minutes_to_work"=>["1-15", "16-30", "31-45", "61+"],
+     "household_status"=>
+      ["Married",
+       "Married W/ Child(ren)",
+       "Married W/ Roommate",
+       "Roommates",
+       "Roommates W/ Child(ren)",
+       "Separated/Divorced",
+       "Separated/Divorced W/ Child(ren)",
+       "Corporate",
+       "Single",
+       "Single W/ Child(ren)"],
+     "pet"=>["Dogs", "Cats", "Dogs & Cats"],
+     "gender"=>["Male", "Female", "Other"],
+     "transportation_to_work"=>["Public", "Own Vehicle", "Walk", "Carpool"],
+     "moving_from"=>["Apartment", "College", "House", "Parents"],
+     "occupant_type"=>["", "Type 1", "Type 2", "Type 3", "Type 4", "Type 5"],
+     "relationship"=>["", "Relationship 1", "Relationship 2", "Relationship 3"]}
+  end
+  
 end
 
 

@@ -65,7 +65,7 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Resident was archived successfully");
-            Crm.routerInst.navigate('/residents', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/residents', true);
           },
           error: function(model, response) {
             
@@ -277,7 +277,7 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
       var field = $(div).attr('data-editors');
       schema[field] = baseSchema[field];
     });
-    
+
     var form = new Backbone.Form({
       schema: schema,
       template: _.template( templateHtml ),
@@ -334,12 +334,12 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
       $('#residents .listing').show();
       $('#residents .create-update').hide();
       
-      Crm.routerInst.navigate('/residents', false);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/residents', false);
       Crm.collInst.residents.fetch();
       
     } else {
       App.layout.show('west');
-      Crm.routerInst.navigate('/residents/' + this.model.get('id'), true);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
     }
     
     return false;

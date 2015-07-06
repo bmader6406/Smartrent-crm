@@ -12,13 +12,15 @@ window.Crm = {
     this.leftMenu = $('#left-menu');
     
     $(document).on("click", "a[href^='/']", function(event){
-      var href = $(event.currentTarget).attr('href'),
-        target = $(event.currentTarget).attr('target'),
+      var link = $(event.currentTarget),
+        href = link.attr('href'),
+        target = link.attr('target'),
         sameProp = !App.vars.isPropertyPage || href.indexOf(App.vars.propertyId) > -1,
+        pageReload = link.hasClass('page-reload'),
         passThrough = href.indexOf('sign_out') > -1 || target // chain 'or's for other black list routes
 
       // Allow shift+click for new tabs, etc.
-      if (sameProp && !passThrough && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
+      if (sameProp && !passThrough && !pageReload && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
         // Remove leading slashes and hash bangs (backward compatablility)
         var url = href.replace(/^\//,'').replace('\#\!\/','');
 
@@ -32,6 +34,9 @@ window.Crm = {
     //residents
     Crm.collInst.residents = new Crm.Collections.Residents();
 
+    //residents route is shared with /residents and /properties/:property_id/resients
+    // must set "id" = "propertyId" if "id" not exist
+    
     router.on('route:showResidents', function(propertyId) {
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
@@ -52,6 +57,11 @@ window.Crm = {
     });
 
     router.on('route:showResident', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -94,7 +104,12 @@ window.Crm = {
       App.layout.show('west');
     });
     
-    router.on('route:showResidentTickets', function(propertyId, id, tid) {
+    router.on('route:showResidentTickets', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -155,7 +170,12 @@ window.Crm = {
       App.layout.show('west');
     });
     
-    router.on('route:showResidentRoommates', function(id, tid) {
+    router.on('route:showResidentRoommates', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -212,7 +232,12 @@ window.Crm = {
       App.layout.show('west');
     });
     
-    router.on('route:showResidentProperties', function(id, tid) {
+    router.on('route:showResidentProperties', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
@@ -272,6 +297,11 @@ window.Crm = {
     });
 
     router.on('route:editResident', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("cud", "Resident")){
         Crm.unauthorizedAlert();
         return false;

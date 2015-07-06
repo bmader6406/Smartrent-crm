@@ -40,7 +40,7 @@ Crm.Views.CampaignNewOrUpdate = Backbone.View.extend({
           }
           
           self.hideForm();
-          Crm.routerInst.navigate('/notices', true);
+          Crm.routerInst.navigate(App.vars.routeRoot + '/notices', true);
         }
       });
     } else {
@@ -63,7 +63,7 @@ Crm.Views.CampaignNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Notice was archived successfully");
-            Crm.routerInst.navigate('/notices', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/notices', true);
           },
           error: function(model, response) {
             
@@ -185,7 +185,7 @@ Crm.Views.CampaignNewOrUpdate = Backbone.View.extend({
     $('#center').removeClass('previewing');
     App.layout.sizePane('west', 305);
     
-    Crm.routerInst.navigate('/notices', true);
+    Crm.routerInst.navigate(App.vars.routeRoot + '/notices', true);
   },
   
   setupScheduleTime: function(){

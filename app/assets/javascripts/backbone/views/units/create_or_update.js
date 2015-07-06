@@ -40,7 +40,7 @@ Crm.Views.UnitNewOrUpdate = Backbone.View.extend({
           }
           
           self.hideForm();
-          Crm.routerInst.navigate('/units', true);
+          Crm.routerInst.navigate(App.vars.routeRoot + '/units', true);
         }
       });
     } else {
@@ -62,7 +62,7 @@ Crm.Views.UnitNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Unit was archived successfully");
-            Crm.routerInst.navigate('/units', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/units', true);
           },
           error: function(model, response) {
             
@@ -169,11 +169,11 @@ Crm.Views.UnitNewOrUpdate = Backbone.View.extend({
       $('#units .listing').show();
       $('#units .create-update').hide();
       
-      Crm.routerInst.navigate('/units', false);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/units', false);
       
     } else {
       App.layout.show('west');
-      Crm.routerInst.navigate('/units/' + this.model.get('id'), true);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/units/' + this.model.get('id'), true);
     }
   }
 });

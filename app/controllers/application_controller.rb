@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'csv'
 require 'pp'
 
 class ApplicationController < ActionController::Base

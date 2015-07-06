@@ -63,7 +63,7 @@ class ResidentsController < ApplicationController
     
     #params[:property_id] come from property dropdown of org-group level form
     property_attrs = {
-      :property_id => params[:property_id] || @property.to_property_id
+      :property_id => params[:property_id]
     }
     
     Resident::PROPERTY_FIELDS.each do |f|
@@ -103,7 +103,7 @@ class ResidentsController < ApplicationController
     
     #params[:property_id] come from property dropdown of org-group level form
     property_attrs = {
-      :property_id => params[:property_id] || @property.to_property_id
+      :property_id => params[:property_id]
     }
     
     Resident::PROPERTY_FIELDS.each do |f|
@@ -138,7 +138,7 @@ class ResidentsController < ApplicationController
   
   def tickets
     @tickets = @resident.tickets.includes(:property, :assigner, :assignee, :category, :assets)
-    @tickets = @tickets.where(:property_id => @property.id)
+    @tickets = @tickets.where(:property_id => @property.id) if @property
 
     respond_to do |format|
       format.html {
@@ -302,13 +302,15 @@ class ResidentsController < ApplicationController
     end
     
     def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
-      Time.zone = @property.setting.time_zone
+      if params[:property_id]
+        @property = current_user.managed_properties.find(params[:property_id])
+        Time.zone = @property.setting.time_zone
+      end
     end
 
     def set_resident
       @resident = Resident.find(params[:id])
-      @resident.curr_property_id = @property.id
+      @resident.curr_property_id = @property.id if @property
       
       case action_name
         when "create"
@@ -323,7 +325,11 @@ class ResidentsController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Residents" 
+      if @property
+        @page_title = "CRM - #{@property.name} - Residents" 
+      else
+        @page_title = "CRM - Residents" 
+      end
     end
     
     # temp
@@ -372,7 +378,7 @@ class ResidentsController < ApplicationController
         unit_id = params[:unit_id]
         
         # find unit_id  by unit code
-        if unit_id.to_i < 1000*1000*1000
+        if unit_id.to_i < 1000*1000*1000 && @property
           unit_id = Unit.where(:property_id => @property.id, :code => unit_id).first.id.to_s rescue unit_id
         end
         
@@ -403,8 +409,10 @@ class ResidentsController < ApplicationController
       #pp ">>>>", @residents.limit(25).explain
       @residents = @residents.paginate(:page => params[:page], :per_page => per_page)
       
-      @residents.each do |r|
-        r.curr_property_id = @property.id
+      if @property
+        @residents.each do |r|
+          r.curr_property_id = @property.id
+        end
       end
     end
     

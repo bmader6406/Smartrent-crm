@@ -40,7 +40,7 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
           }
           
           self.hideForm();
-          Crm.routerInst.navigate('/notifications', true);
+          Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', true);
         }
       });
     } else {
@@ -121,11 +121,11 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
       $('#notifications .listing').show();
       $('#notifications .create-update').hide();
       
-      Crm.routerInst.navigate('/notifications', false);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', false);
       
     } else {
       App.layout.show('west');
-      Crm.routerInst.navigate('/notifications/' + this.model.get('id'), true);
+      Crm.routerInst.navigate(App.vars.routeRoot + '/notifications/' + this.model.get('id'), true);
     }
   },
   
@@ -137,7 +137,7 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Notification was archived successfully");
-            Crm.routerInst.navigate('/notifications', true);
+            Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', true);
           },
           error: function(model, response) {
             
