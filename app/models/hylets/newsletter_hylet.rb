@@ -3,7 +3,7 @@ class NewsletterHylet < Hylet
   after_update :sync_audiences, :if => lambda { |h| !h.disable_audience_callback }
   after_update :sync_schedules, :if => lambda { |h| !h.disable_audience_callback }
   
-  scope :nimda, -> { where(:page_persona_id => nil, :campaign_id => nil) }
+  scope :nimda, -> { where(:property_id => nil, :campaign_id => nil) }
   
   attr_accessor :disable_audience_callback
   
@@ -53,14 +53,6 @@ class NewsletterHylet < Hylet
   
   def raw_html?
     self[:title2] == "raw_html"
-  end
-  
-  def custom_html?
-    self[:title2] == "custom_html"
-  end
-  
-  def mode=(str)
-    self[:title2] = str
   end
   
   def audiences
@@ -131,13 +123,13 @@ class NewsletterHylet < Hylet
     @tracking_urls ||= begin
       dict = {}
 
-      self[:text1].scan(/href=["'\"\']http\S*["'\"\']/).collect{|url| url if !url.include?(SHARE_HOST) }.compact.each do |url|
+      self[:text1].scan(/href=["'\"\']http\S*["'\"\']/).collect{|url| url if !url.include?(HOST) }.compact.each do |url|
         url = url.gsub(/href=|"|'|\"|\'/, '')
         next if campaign.ad_domains.any? {|d| url.include?(d) }
         dict[url] = generate_tracking_url(url)
       end if self[:text1]
     
-      self[:text2].scan(/http\S*/).collect{|url| url if !url.include?(SHARE_HOST) }.compact.each do |url|
+      self[:text2].scan(/http\S*/).collect{|url| url if !url.include?(HOST) }.compact.each do |url|
         next if campaign.ad_domains.any? {|d| url.include?(d) }
         dict[url] = generate_tracking_url(url)
       end if self[:text2]
@@ -197,7 +189,7 @@ class NewsletterHylet < Hylet
       #unescape the escaped html entities to have only unescaped url
       origin_url = CGI.unescapeHTML(origin_url)
       
-      url = Url.find_or_initialize_by_campaign_id_and_origin_url(campaign_id, origin_url)
+      url = Url.find_or_initialize_by(campaign_id: campaign_id, origin_url: origin_url)
       url.save if url.new_record?
       url.to_tracking_url
     end

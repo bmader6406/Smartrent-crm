@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
-  
   #mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
   
   resources :campaigns
   resources :audiences
   resources :unsubscribes
+  
+  get '/nlt/:nlt_id' => 'public#nlt', :as => :nlt
+  get '/nlt2/:cid' => 'public#nlt2', :as => :nlt2
   
   # shared
   def resident_resources
@@ -111,15 +113,11 @@ Rails.application.routes.draw do
         post :approve
         post :unapprove
         post :duplicate
-        get :lead_def
       end
       
-      collection do 
-        post :import
-      end
     end
     
-    resources :custom_hylets do      
+    resources :newsletter_hylets do      
       member do
         post :preview_editor
         

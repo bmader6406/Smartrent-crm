@@ -1,9 +1,7 @@
-class ReportsController < ApplicationController
-  
-  include UserActivityHelper::Controller
+class CampaignReportsController < ApplicationController
   
   before_action :require_user
-  before_action :get_campaign
+  before_action :set_campaign
   before_action :set_filter_params
   before_action :set_page_title
   
@@ -128,7 +126,7 @@ class ReportsController < ApplicationController
         count(if(e.type='ComplaintEvent', 1, NULL)) AS total_complaints
       FROM events e
       INNER JOIN recipients r 
-        USE INDEX (index_recipients_on_campaign_entry_status)
+        USE INDEX (index_recipients_on_campaign_resident_status)
         ON e.campaign_id = r.campaign_id 
         AND r.campaign_id IN (#{campaign_ids.join(", ")})
         AND e.resident_id = r.resident_id 
@@ -177,7 +175,7 @@ class ReportsController < ApplicationController
         count(if(e.type='ComplaintEvent', 1, NULL)) AS total_complaints
       FROM events e
       INNER JOIN recipients r 
-        USE INDEX (index_recipients_on_campaign_entry_audience)
+        USE INDEX (index_recipients_on_campaign_resident_audience)
         ON e.campaign_id = r.campaign_id 
         AND r.campaign_id IN (#{campaign_ids.join(", ")})
         AND e.resident_id = r.resident_id
@@ -706,7 +704,7 @@ class ReportsController < ApplicationController
    
   protected
   
-    def get_campaign
+    def set_campaign
       @campaign = current_user.admin_campaign(params[:landing_campaign_id])
       @property = @campaign.property
       

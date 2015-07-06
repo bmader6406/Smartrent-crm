@@ -12,23 +12,55 @@
   <link href='//fonts.googleapis.com/css?family=Raleway:400,600' rel='stylesheet' type='text/css'>
   
   <%= stylesheet_link_tag "application", :media => "all" %>
-  <%= stylesheet_link_tag "nimda", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
   
+  <style type="text/css">
+    .navbar {
+      margin-bottom: 20px;
+    }
+    .navbar .logo {
+      color: #fff;
+      display: inline-block;
+      line-height: 30px;
+      margin-top: 10px;
+    }
+    
+    #import-tpl-form {
+      display: inline-block;
+      float: left;
+      margin-right: 10px;
+    }
+    .upload-button {
+      display: block;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+
+    .upload-button input[type="file"] {
+      cursor: pointer;
+      font-size: 460px;
+      margin: 0;
+      opacity: 0;
+      filter: alpha(opacity=0);
+      padding: 0;
+      position: absolute;
+      height: 40px;
+      right: 0;
+      top: 0;
+      z-index: 1;
+    }
+  </style>
   
   <%= yield :css %>
   <%= yield :js %>
 </head>
 
-<body style="padding-bottom: 30px; padding-top: 80px;">
+<body style="padding-bottom: 30px; padding-top: 90px; overflow: auto;">
   <div id="notify" class='bottom-right'></div>
   
   <%= render "nimda/top_nav" %>
-  
-  <% if tournado_page? %>
-    <%= render "layouts/booking/nimda_nav_links" %>
-  <% end %>
   
   <div class="container-fluid">
     <%= flash_messages %>

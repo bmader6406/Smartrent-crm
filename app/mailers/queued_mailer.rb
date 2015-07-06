@@ -21,7 +21,7 @@ class QueuedMailer
     end
   end
   
-  def self.unsubscribe_entry_if_blacklisted(entry, campaign, &f)
+  def self.unsubscribe_resident_if_blacklisted(resident, campaign, &f)
     begin
       #TODO_ check if SES is off
       start_at = Time.now.to_f
@@ -40,7 +40,7 @@ class QueuedMailer
       pp ">>> Mailer Exception:", error_details
       
       if e.message.downcase.include?("blacklisted")
-        entry.unsubscribe(campaign, "unsubscribe_blacklisted")
+        resident.unsubscribe(campaign, "unsubscribe_blacklisted")
         
         return { :blacklisted => true }
       else

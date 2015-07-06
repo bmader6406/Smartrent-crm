@@ -221,7 +221,7 @@ class ResidentsController < ApplicationController
           :status => "#{s.resident_status} Resident",
           :status_date => s.created_at,
           :move_in => s.move_in,
-          :move_out => s.move_out]
+          :move_out => s.move_out
         }
       end
     end

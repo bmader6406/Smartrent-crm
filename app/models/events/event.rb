@@ -1,5 +1,4 @@
 class Event < ActiveRecord::Base
-  include MultiTenant::RandomPrimaryKeyHelper
   
   belongs_to :property
   belongs_to :campaign

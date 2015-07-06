@@ -3,12 +3,12 @@ class MailEvent < Event
   after_create :increase_counter_cache
   after_create :create_activity
   
-  def entry
-    @entry ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
+  def resident
+    @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
   end
   
   def eager_load(subject)
-    @entry = subject
+    @resident = subject
     self
   end
   

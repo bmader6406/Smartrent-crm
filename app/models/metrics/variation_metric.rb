@@ -1,6 +1,5 @@
 class VariationMetric < ActiveRecord::Base
-  include MultiTenant::RandomPrimaryKeyHelper
-  
+
   belongs_to :campaign
   
   validates :campaign_id, :presence => true

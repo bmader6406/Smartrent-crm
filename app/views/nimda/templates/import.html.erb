@@ -1,0 +1,11 @@
+<textarea>
+	<% if !@template %>
+		msgbox("There was an error when importing your file. Please try again", 5000);
+		$('#import-tpl-form').unmask();
+		
+	<% else %>
+	  msgbox("Template was successfully imported");
+	  
+	  window.location.reload();
+	<% end %>
+</textarea>

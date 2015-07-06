@@ -3,9 +3,7 @@
     <tr>
       <th style="width:40px">#</th>
       <th>Name</th>
-      <th width="130">Group </th>
       <th width="180">Category </th>
-      <th width="130">Channel </th>
       <th width="130">Status </th>
 			<th width="130">Updated At </th>
       <th width="170">Actions</th>
@@ -15,9 +13,7 @@
   <tr class="<%= cycle("even", nil) %>">
     <td><%= templates.offset + 1 + index %></td>
     <td><%= template.name %></td>
-    <td><%= template.template_group ? template.template_group.name : nil %></td>
     <td><%= pretty_category(template.category) %></td>
-    <td><%= template.channel %></td>
     <td><%= template.status %></td>
 		<td><%= template.updated_at.to_s(:nimda_time) %></td>
 

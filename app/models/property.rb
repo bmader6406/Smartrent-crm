@@ -13,7 +13,7 @@ class Property < ActiveRecord::Base
   has_many :assets
   
   has_many :campaigns
-  has_many :audiences
+  has_many :audiences, :class_name => "Audience"
   
   validates :name, :presence => true
   

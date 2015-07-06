@@ -7,7 +7,7 @@
 
       <%= link_to "Unsubscribe from CRM Notifications", confirm_unsubscribe_path(@user.unsubscribe_id), :class => "btn btn-default", :method => :post %>
       
-    <% elsif @entry %>
+    <% elsif @resident %>
       <p>
         You have requested to be unsubscribed from the <b><%= list_name %> Newsletter</b>. Please confirm your request below.
       </p>
@@ -26,19 +26,19 @@
     <% else %>
       <%
         #pretend entry
-        if params[:cid] && params[:eid]
+        if params[:cid] && params[:rid]
           @campaign = Campaign.find(params[:cid])
           @property = @campaign.property
-          @pretend_entry = @property.residents.find(params[:eid]) rescue nil
+          @pretend_resident = @property.residents.find(params[:rid]) rescue nil
         end
       %>
       
-      <% if @pretend_entry %>
+      <% if @pretend_resident %>
         <p>
           You have requested to be unsubscribed from the <b><%= list_name %> Newsletter</b>. Please confirm your request below.
         </p>
 
-        <%= link_to "Unsubscribe from #{list_name} Newsletter", confirm_unsubscribe_path(123456, :cid => @campaign.id, :eid => @pretend_resident.id), :class => "btn btn-default", :method => :post %>            
+        <%= link_to "Unsubscribe from #{list_name} Newsletter", confirm_unsubscribe_path(123456, :cid => @campaign.id, :rid => @pretend_resident.id), :class => "btn btn-default", :method => :post %>            
         
         <% if unsubscribe_all? %>
           <br><br>
@@ -46,7 +46,7 @@
             If you would like to be unsubscribed from all <%= @property.to_root.name %> promotional emails including the <b><%= list_name %> Newsletter</b>, please confirm your request below.
           </p>
 
-          <%= link_to "Unsubscribe All", confirm_unsubscribe_path(123456, :cid => @campaign.id, :eid => @pretend_resident.id, :all => 1), :class => "btn btn-default", :method => :post %>
+          <%= link_to "Unsubscribe All", confirm_unsubscribe_path(123456, :cid => @campaign.id, :rid => @pretend_resident.id, :all => 1), :class => "btn btn-default", :method => :post %>
         <% end %>
         
       <% else %>

@@ -1,7 +1,5 @@
 class Campaign < ActiveRecord::Base  
-  include MultiTenant::RandomPrimaryKeyHelper
-  include FacebookTabsHelper::Model
-   
+
   # =================
   # = relationships =
   # =================
@@ -12,7 +10,7 @@ class Campaign < ActiveRecord::Base
   belongs_to :parent, :class_name => "Campaign", :foreign_key => 'parent_id'
   belongs_to :root, :class_name => "Campaign", :foreign_key => 'root_id'
   
-  has_many :hylets, :dependent => :destroy, :foreign_key => "campaign_id", :conditions => "hylets.type IS NOT NULL", :order => "position ASC, id ASC"
+  has_many :hylets, -> { where("hylets.type IS NOT NULL") }, :dependent => :destroy, :foreign_key => "campaign_id"
 
   has_many :variation_metrics, :dependent => :destroy, :foreign_key => "campaign_id", :class_name => "VariationMetric"
   
@@ -26,11 +24,13 @@ class Campaign < ActiveRecord::Base
 
   default_scope { order('campaigns.created_at DESC') }
   
-  scope(:for_property, lambda { |property|
-    { :conditions => "property_id = #{property.id} AND root_id IS NULL AND parent_id IS NULL AND 
-                        type NOT IN ('TemplateCampaign', 'NewsletterRescheduleCampaign') AND deleted_at IS NULL"}
-  })
+  scope :for_property, ->(property) { where("property_id = #{property.id} AND root_id IS NULL AND parent_id IS NULL AND 
+   type NOT IN ('TemplateCampaign', 'NewsletterRescheduleCampaign') AND deleted_at IS NULL") }
 
+  def property_setting
+    property.setting
+  end
+  
   def variates
     @variates ||= begin
       CampaignVariation.where(:campaign_id => to_root_id).includes(:variate_campaign)
@@ -195,7 +195,7 @@ class Campaign < ActiveRecord::Base
   # =================
   
   def email_domain
-    @email_domain ||= property_setting.email_domain.blank? ? SHARE_HOST : property_setting.email_domain
+    @email_domain ||= property_setting.email_domain.blank? ? HOST : property_setting.email_domain
   end
   
   def ad_domains
@@ -278,7 +278,6 @@ class Campaign < ActiveRecord::Base
     attrs.delete("created_at");
     attrs.delete("updated_at");
     
-    #don't delete client, custom_app_id
     attrs.delete("sends_count")
     attrs.delete("variant_sends_count")
     attrs.delete("opens_count")
@@ -307,7 +306,6 @@ class Campaign < ActiveRecord::Base
 
     # create new campaign from source campaign
     # then create new hylet, new form
-    attrs["app_id"] = source_campaign.app_id
     attrs["annotation"] = "#{source_campaign.annotation} (Copied)" if attrs["root_id"].blank?
     attrs["duplicating"] = true
 

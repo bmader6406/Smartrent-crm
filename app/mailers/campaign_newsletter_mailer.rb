@@ -11,9 +11,9 @@ class CampaignNewsletterMailer < QueuedMailer
     campaign = Campaign.find(variate_campaign_id)
     newsletter = campaign.newsletter_hylet
     property = campaign.property
-    form_fields = property.lead_def.form_fields
-    custom_macros = property.lead_def.custom_macros
-    root_page_setting = property.to_root.persona_setting
+    
+    form_fields = [] #TODO: check app.hy.ly
+    app_setting = PropertySetting.app_setting
     
     #reschedule
     schedule = nil
@@ -39,9 +39,7 @@ class CampaignNewsletterMailer < QueuedMailer
     blacklisted_val = []
     blacklisted_ids = []
     
-    delivery_method = campaign.page_setting.delivery_method
-    
-    Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each_with_index do |entry, index|
+    Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each_with_index do |resident, index|
       
       next if resident.property_id == "1470172458182649674" && !resident.subscribed? #ALJ Lead Group hack
       
@@ -58,7 +56,7 @@ class CampaignNewsletterMailer < QueuedMailer
         
         #bcc first batch universal recipients
         if first_batch
-          root_page_setting.universal_recipients.each do |email|
+          app_setting.universal_recipients.each do |email|
             bcc_emails << email
           end
         end
@@ -69,9 +67,8 @@ class CampaignNewsletterMailer < QueuedMailer
         resident.unsubscribe_id =  "#{resident.id}#{schedule["timestamp"]}"
       end
       
-      res = unsubscribe_entry_if_blacklisted(entry, campaign) { 
-        Notifier.campaign_newsletter(campaign, newsletter, entry, form_fields, property_fields, custom_macros, {
-          :delivery_method => delivery_method,
+      res = unsubscribe_resident_if_blacklisted(resident, campaign) { 
+        Notifier.campaign_newsletter(campaign, newsletter, resident, form_fields, property_fields, {
           :bcc_emails => bcc_emails,
           :custom_subject => custom_subject
         }).deliver
@@ -119,7 +116,7 @@ class CampaignNewsletterMailer < QueuedMailer
     
     #pp ">>>", resident_ids, attrs
     
-    Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each do |entry|
+    Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each do |resident|
       prop = nil
       
       if !resident.properties.empty?

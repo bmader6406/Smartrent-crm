@@ -21,7 +21,7 @@ class SubscriberExporter < ReportExporter
     file_name = "#{lists[@params["type"]]}_#{annotation.to_s.gsub(" ","")}_#{Time.now.strftime('%Y%m%d')}.csv"
 
     csv_string = CSV.generate() do |csv|  
-      csv << ["Email", "Time (#{@campaign.page_setting.time_zone})"]
+      csv << ["Email", "Time (#{@campaign.property_setting.time_zone})"]
       
       filter_events
       
@@ -35,7 +35,7 @@ class SubscriberExporter < ReportExporter
         
         evs.each do |ev|
           ev.eager_load(residents.detect{|e| e.id.to_i == ev.resident_id })
-          csv << [ev.entry ? ev.resident.email : "This subscriber has been deleted", ev.created_at.to_s(:csv_time) ]
+          csv << [ev.resident ? ev.resident.email : "This subscriber has been deleted", ev.created_at.to_s(:csv_time) ]
         end
 
         query_count-=step

@@ -65,7 +65,6 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
   
   HOST = "my.hy.ly"
-  TOUR_HOST = "my.hy.ly"
   
   config.action_mailer.delivery_method = :ses
   config.action_mailer.default_url_options = { 

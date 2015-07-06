@@ -5,7 +5,7 @@
         We have subscribed <a class="email"><%= @user.email %></a> to <b>CRM Notifications</b> mailing list.<br><br>
       </p>
       
-    <% elsif @entry %>
+    <% elsif @resident %>
       <% if params[:all] && !@properties.blank? %>
         <p>
           We have subscribed <a class="email"><%= @resident.email %></a> to <b><%= @properties.collect{|p| p.name }.join(", ") %></b> mailing lists.<br><br>
@@ -22,14 +22,14 @@
       
       <%
         #pretend entry
-        if params[:cid] && params[:eid]
+        if params[:cid] && params[:rid]
           @campaign = Campaign.find(params[:cid])
           @property = @campaign.property
-          @pretend_entry = @property.residents.find(params[:eid]) rescue nil
+          @pretend_resident = @property.residents.find(params[:rid]) rescue nil
         end
       %>
       
-      <% if @pretend_entry %>
+      <% if @pretend_resident %>
         <% if params[:all] && !@properties.blank? %>
           <p>
             We have subscribed <a class="email"><%= @pretend_resident.email %></a> to <b><%= @properties.collect{|p| p.name }.join(", ") %></b> mailing lists.<br><br>

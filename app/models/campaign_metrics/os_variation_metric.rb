@@ -1,0 +1,3 @@
+class  OsVariationMetric < VariationMetric
+  
+end

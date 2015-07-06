@@ -259,7 +259,7 @@ class SendNewsletterAction
   end
   
   def self.email_body(campaign, newsletter_hylet, total, audience_counts, executed_at)
-    executed_at = executed_at.in_time_zone(campaign.page_setting.time_zone)
+    executed_at = executed_at.in_time_zone(campaign.property_setting.time_zone)
     
     audiences = audience_counts.collect{|a| "#{Property.find(a["property_id"]).name} #{a["name"]} (#{a["count"]})" }.join(" + ")
     

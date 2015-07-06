@@ -1,12 +1,11 @@
 class Url < ActiveRecord::Base
-  include MultiTenant::RandomPrimaryKeyHelper
-  
+
   belongs_to :campaign
 
   before_create :generate_token
 
   def to_tracking_url
-    "http://#{SHARE_HOST}/t/#{token}"
+    "http://#{HOST}/t/#{token}"
   end
   
   private

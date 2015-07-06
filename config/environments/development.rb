@@ -15,7 +15,6 @@ Rails.application.configure do
   
   
   HOST = "dev.hyly.us"
-  TOUR_HOST = "dev.hyly.us"
   
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true

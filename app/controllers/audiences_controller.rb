@@ -1,7 +1,5 @@
 class AudiencesController < ApplicationController
   
-  include UserActivityHelper::Controller
-
   before_action :require_user
   before_action :set_property
   before_action :get_audience, :except => [:index, :new, :create, :leads, :size, :prop_list]
@@ -45,7 +43,7 @@ class AudiencesController < ApplicationController
 
   def leads
     
-    @columns = @property.lead_def.to_columns("org_fields_first_name", [], @property.property? ? "sub_org" : "org")
+    @columns = []
 
     if !params[:all].blank?
       

@@ -1,10 +1,6 @@
 class Hylet < ActiveRecord::Base
   
-  include MultiTenant::RandomPrimaryKeyHelper
-  
   belongs_to :campaign
-  
-  before_create :set_el_id
   
   attr_accessor :curr_index, :meta
   
@@ -28,10 +24,4 @@ class Hylet < ActiveRecord::Base
     label ? "#{label} (copied)" : "(copied at #{Time.now.strftime('%l:%M %p')})"
   end
   
-  private
-  
-    def set_el_id #use to display the rows, columns, elements
-      self.el_id = id if !el_id
-    end
-    
 end

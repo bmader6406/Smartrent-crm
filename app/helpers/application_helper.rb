@@ -101,6 +101,14 @@ module ApplicationHelper
      "relationship"=>["", "Relationship 1", "Relationship 2", "Relationship 3"]}
   end
   
+  def template_categories
+    [["Newsletter", "email_newsletter"]]
+  end
+  
+  def pretty_category(cat)
+    template_categories.detect{|a| a[1] == cat}[0] rescue nil
+  end
+  
 end
 
 

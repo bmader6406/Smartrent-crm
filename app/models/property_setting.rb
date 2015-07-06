@@ -37,6 +37,12 @@ class PropertySetting < ActiveRecord::Base
     ]
   end
   
+  def self.app_setting
+    @app_setting ||= begin
+      PropertySetting.find_or_initialize_by(:property_id => nil)
+    end
+  end
+  
   private
   
     def validate_emails

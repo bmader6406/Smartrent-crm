@@ -1,0 +1,3 @@
+class  LinkClickVariationMetric < VariationMetric
+  
+end

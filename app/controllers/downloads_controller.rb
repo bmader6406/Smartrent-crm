@@ -1,7 +1,5 @@
 class DownloadsController < ApplicationController
   
-  #include UserActivityHelper::Controller
-  
   def show
     file_name = params[:id]
     path = "#{TMP_DIR}#{file_name}"
