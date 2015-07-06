@@ -60,9 +60,6 @@ class CampaignsController < ApplicationController
       :template_id => template.id,
       :annotation => params[:campaign][:subject],
       :user_id => @property.user_id,
-      :app_id => LandingApp.main.id,
-      :theme_id => template.campaign.theme_id,
-      :source => "crm"
     })
     
     respond_to do |format|
@@ -73,15 +70,8 @@ class CampaignsController < ApplicationController
           :property_id => @campaign.property_id, 
           :template_id => @campaign.template_id, 
           :user_id => @campaign.user_id,
-          :app_id => @campaign.app_id, 
-          :theme_id => @campaign.theme_id, 
-          :theme_project => @campaign.theme_project,
-          :root_id => @campaign.id, 
-          :group_id => @campaign.group_id, 
-          :client => @campaign.client,
-          :extra_css => template.campaign['extra_css'],
-          :custom_css => template.campaign['custom_css'],
-          :use_custom_css => template.campaign.use_custom_css?
+          :root_id => @campaign.id,
+          :client => @campaign.client
         })
 
         variate_campaign.save(:validate => false)

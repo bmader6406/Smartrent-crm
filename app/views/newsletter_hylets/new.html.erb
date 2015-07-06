@@ -1,0 +1,9 @@
+<div class="page-header">
+  <h1> <%= @custom_hylet.kind_of?(NewsletterHylet) ? "Email" : "Landing Page" %> &gt; New Custom Hylet </h1>
+</div>
+
+<%= link_to '<< Back', nimda_custom_hylets_path %>
+
+<br><br>
+
+<%= render 'form' %>

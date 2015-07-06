@@ -1,0 +1,35 @@
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th style="width:40px">#</th>
+      <th>Name</th>
+      <th width="130">Group </th>
+      <th width="180">Category </th>
+      <th width="130">Channel </th>
+      <th width="130">Status </th>
+			<th width="130">Updated At </th>
+      <th width="170">Actions</th>
+    </tr>
+  </thead>
+<% templates.each_with_index do |template, index| %>
+  <tr class="<%= cycle("even", nil) %>">
+    <td><%= templates.offset + 1 + index %></td>
+    <td><%= template.name %></td>
+    <td><%= template.template_group ? template.template_group.name : nil %></td>
+    <td><%= pretty_category(template.category) %></td>
+    <td><%= template.channel %></td>
+    <td><%= template.status %></td>
+		<td><%= template.updated_at.to_s(:nimda_time) %></td>
+
+    <td>
+      <%= link_to 'edit', nimda_template_path(template) %> |
+      <%= link_to 'archive', nimda_template_path(template), :confirm => 'Archive Template___Are you sure you want to archive this template?', :method => :delete %> |
+			<%= link_to 'duplicate', duplicate_nimda_template_path(template), :confirm => 'Duplicate Template___Are you sure you want to duplicate this template?', :method => :post %>
+    </td>
+  </tr>
+<% end %>
+</table>
+<div class="paging-info">
+  <%= page_entries_info templates, :model => 'template' %>
+  <%= page_navigation_links(templates, param_page)%>
+</div>

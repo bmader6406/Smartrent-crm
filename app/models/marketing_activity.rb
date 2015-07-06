@@ -43,14 +43,8 @@ class MarketingActivity
   end
   
   def eager_load(subject)
-    if subject.kind_of?(Comment)
+    if subject.kind_of?(Campaign)
       @subject = subject
-      
-    elsif subject.kind_of?(Ticket)
-      @subject = subject
-      
-    elsif subject.kind_of?(User)
-      @author = subject
       
     end
   
@@ -60,11 +54,11 @@ class MarketingActivity
   protected
 
     def increase_counter_cache
-      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"activities_count" => 1}}, {:multi => true})
+      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"marketing_activities_count" => 1}}, {:multi => true})
     end
 
     def decrease_counter_cache
-      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"activities_count" => -1}}, {:multi => true})
+      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"marketing_activities_count" => -1}}, {:multi => true})
     end
     
     def destroy_dependent

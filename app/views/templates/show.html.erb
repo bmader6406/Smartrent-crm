@@ -1,0 +1,119 @@
+<style type="text/css">
+  #template-form {
+    float: left;
+    width: 240px;
+  }
+  
+  #template-form .hint {
+    font-size:11px; 
+    color:#999; 
+    margin:0
+  }
+  
+	#template-form .actions {
+		border-bottom: 1px solid #ccc;
+		padding-bottom: 20px;
+	}
+  
+  #template-preview {
+    border: 1px solid #eee;
+    margin-left: 300px;
+    text-align: center;
+    position: relative;
+  }
+  
+  #template-preview  iframe {
+    height:1024px;
+    width: 100%;
+  }
+</style>
+
+<div class="page-header">
+  <h1> Template: <%= @template.name %> (<%= @template.channel %>)</h1>
+</div>
+<br>
+
+<%= link_to 'Back', @template.landing? ? nimda_templates_path  : nimda_templates_path(:channel => "email") %>
+
+<br><br>
+
+
+<% if !@template.approved? %>
+  <p class="well">
+    Template Approval Process:
+    <br><br>
+    1) Preview the template, update template Name/Handle Name/Category/Thumbnail URL  <br>
+    2) If everything is fine click Approve button <br>
+    3) After approved, this template will be visible in the campaign creation page
+  </p>
+<% end %>
+
+<br>
+
+<%= form_for(@template, :url => nimda_template_path(@template), :html => {:id => "template-form", :class => "well"}) do |f| %>
+  <%= render "shared/error_messages", :target => @template, :header_message => "Template could not be saved!"  %>
+  
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, :class => "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :group_id, "Group" %>
+    <%= f.select :group_id, TemplateGroup.all.collect {|g| [ g.name, g.id ] }, { :include_blank => true }, :class => "form-control" %>
+    <p class="hint"> Please let me know if we want to update the group name or add more group </p>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :category, "Category" %>
+    <%= f.select :category, template_categories, {}, :class => "form-control" %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :thumbnail, "Thumbnail URL" %>
+    <%= f.text_field :thumbnail, :class => "form-control" %>
+    <p class="hint"> e.g: /assets/metro/layout_left23.jpg, /assets/metro/layout_right23.jpg, /assets/metro/layout_3col.jpg, or an image url </p>
+  </div>
+  
+  <div class="actions">
+    <%= f.button "Update", :class => "btn btn-primary" %>
+  </div>
+
+	<br>
+	
+  <% if !@template.approved? %>
+    <%= link_to "Approve This Template", approve_nimda_template_path(@template), :method => :post, :class => "btn btn-success",
+        :confirm => "Approve Template___Are you sure you want to approve this template?" %>
+  <% else %>
+    <%= link_to "Unapprove This Template", unapprove_nimda_template_path(@template), :method => :post, :class => "btn btn-danger",
+          :confirm => "Unapprove Template___Are you sure you want to unapprove this template?" %>
+  <% end %>
+
+	<% if @template.landing? %>
+	  <br><br>
+	  <a href="<%= lead_def_nimda_template_path(@template) %>" target="_blank" class="btn btn-success"> Edit Lead Fields </a>
+
+	  <br></br>
+	  <a href="<%= edit_nimda_template_path(@template) %>" class="btn btn-info" target="_blank"> Edit Template </a>
+	<% else %>                                       
+		<br><br>                                       
+		<a href="<%= edit_nimda_template_path(@template) %>" class="btn btn-info" target="_blank"> Edit Template </a>
+	<% end %>
+	
+	<div class="help-block" style="color:red">
+	  Please edit only ONE template at a time
+	</div>
+	
+	
+<% end %>
+    
+<div id="template-preview">
+  <iframe src="<%= preview_nimda_template_path(@template) %>" frameBorder="0"></iframe>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  $(function(){
+    
+    $('#template-form').resetForm();
+    
+  });
+</script>

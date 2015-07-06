@@ -21,11 +21,12 @@ class Resident
     
   field :_id, :type => String
   
-  field :unified_status, :type => String #for group/property
+  field :unified_status, :type => String
   
   field :sources_count, :type => Integer, :default => 0
   field :properties_count, :type => Integer, :default => 0
   field :activities_count, :type => Integer, :default => 0
+  field :marketing_activities_count, :type => Integer, :default => 0
   
   field :deleted_at, :type => DateTime
   
@@ -55,11 +56,22 @@ class Resident
   field :last4_ssn, :type => String
   field :alt_email, :type => String
   
+  # for newsletter
+  field :subscribed, :type => Boolean, :default => true
+  field :subscribed_at, :type => DateTime
+  
+  field :email_check, :type => String, :default => "New"
+  field :email_checked_at, :type => DateTime
+  
+  field :bounces_count, :type => Integer, :default => 0
+  
+  
   embeds_many :activities, :class_name => "ResidentActivity"
   embeds_many :sources, :class_name => "ResidentSource"
   embeds_many :properties, :class_name => "ResidentProperty"
+  embeds_many :marketing_activities, :class_name => "MarketingActivity"
 
-  accepts_nested_attributes_for :activities, :sources, :properties
+  accepts_nested_attributes_for :activities, :sources, :properties, :marketing_activities
 
   before_save :downcase_name_email
   
@@ -118,6 +130,10 @@ class Resident
     @ordered_activities ||= activities.sort{|a, b| b.created_at <=> a.created_at}
   end
   
+  def ordered_marketing_activities
+    @marketing_activities ||= marketing_activities.sort{|a, b| b.created_at <=> a.created_at}
+  end
+  
   # TODO: add activity archiver once activity list grow big
   def archived_activities(skip = 0, limit = 100)
     ArchivedResidentActivity.where(:resident_id => id.to_s).order_by(:created_at => :desc).skip(skip).limit(limit).collect{|a| activities.new(a.to_attrs) } # DO NOT SAVE entry
@@ -125,6 +141,14 @@ class Resident
 
   def total_activities_count
     activities.length + ArchivedResidentActivity.where(:resident_id => id.to_s).count
+  end
+  
+  def archived_marketing_activities(skip = 0, limit = 100)
+    ArchivedMarketingActivity.where(:resident_id => id.to_s).order_by(:created_at => :desc).skip(skip).limit(limit).collect{|a| marketing_activities.new(a.to_attrs) } # DO NOT SAVE entry
+  end
+
+  def total_marketing_activities_count
+    marketing_activities.length + ArchivedMarketingActivity.where(:resident_id => id.to_s).count
   end
 
   # order by created_at asc

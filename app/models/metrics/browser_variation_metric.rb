@@ -1,0 +1,3 @@
+class  BrowserVariationMetric < VariationMetric
+  
+end

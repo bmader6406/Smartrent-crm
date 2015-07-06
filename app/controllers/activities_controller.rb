@@ -278,14 +278,14 @@ class ActivitiesController < ApplicationController
           activities << a
         end
         
-      elsif history == "marketing" && @resident.entry
+      elsif history == "marketing"
         counted = {} # count marker
         
         # load each 100 for marketing
         per_page = 100
         skip = (params[:page].to_i - 1) * per_page
         
-        @resident.entry.activities.where(:property_id => @property.id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
+        @resident.marketing_activities.where(:property_id => @property.id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
           next if !a.subject_type
 
           # ignore counted activity

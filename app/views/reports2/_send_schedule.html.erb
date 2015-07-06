@@ -1,0 +1,123 @@
+<% 
+	page_dict = {}
+	@all_properties.each do |p|
+	  page_dict[p.id] = p.name
+  end
+  
+	audience_dict = {}
+	@all_audiences.each do |a|
+	  audience_dict[a.id] = a
+  end
+%>
+
+<ul id="analyze-container" style="width:100%">
+  <li style="margin:0;">
+    <div id="schedule-wrap">
+      <table class="table table-bordered tablesorter tb-schedule" style="min-width:1400px;">
+        <thead>
+          <tr>
+            <th data-placeholder="<%= Date.today.strftime("%Y-%b") %>" style="width:150px"> Send At </th>
+            <th data-placeholder="Enter <%= org_sub_org.downcase %> name" style="width:220px"> <%= org_sub_org %> Name </th>
+            <th data-placeholder="Enter campaign name" style="width:220px"> Campaign Name </th>
+            <th data-placeholder="Enter subject"> Subject </th>
+            <th data-placeholder="Enter email" style="width:200px"> From </th>
+            <th data-placeholder="Enter audience name" style="width:260px"> Audience </th>
+            <th style="width:120px" class="filter-false">Size</th>
+          </tr>
+        </thead>
+        <tbody style="<%= "display:none" if @nlt_campaigns.empty? %>">
+          <% @nlt_campaigns.each do |campaign| %>
+            <%
+              root_id = campaign.kind_of?(NewsletterRescheduleCampaign) ? campaign.group_id : campaign.id
+              nlt_hylet = @nlt_dict[root_id]
+              
+              if nlt_hylet
+                schedule = nlt_hylet.schedules.detect{|s| s["timestamp"].to_i == campaign.execute_at.to_i }
+                
+                if schedule && !schedule["subject"].blank?
+                  subject = schedule["subject"].values.first
+                else
+                  subject = nlt_hylet.subject
+                end
+                
+                audiences = nlt_hylet.audience_ids.collect{|id| audience_dict[id.to_i] }.compact
+                
+              else
+                audiences = []
+                subject = "<deleted>"
+              end
+            %>
+            <tr class="<%= cycle("even", nil) -%>">
+              <td data-time="<%= campaign.execute_at.to_i %>">
+                <%= campaign.execute_at.in_time_zone.to_s(:friendly_time) %>
+              </td>
+              <td>
+                <%= link_to page_dict[campaign.property_id], page_path(campaign.property_id), :target => "_blank" %>
+              </td>
+              <td>
+                <%= link_to @annotation_dict[root_id], dashboard_landing_campaign_path(root_id), :target => "_blank" %>
+              </td>
+              <td>
+                <%= link_to subject, dashboard_landing_campaign_path(root_id), :target => "_blank" %>
+              </td>
+              <td>
+                <%= nlt_hylet.from %>
+              </td>
+              <td>
+                <% audiences.each do |audience| %>
+                  - <%= page_dict[audience.property_id] %> <%= audience.name %> <span class="size-<%= audience.id %>"></span> <br>
+                <% end %>
+              </td>
+              <td>
+                <% if !audiences.empty? %>
+                  <a href="#" data-audiences="<%= audiences.collect{|a| a.id }.join(",") %>" class="calculate-size">calculate size</a>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="paging-info" style="margin-top: 15px;">
+      <%= page_entries_info @nlt_campaigns, :model => 'newsletter' %>
+      <%= page_navigation_links(@nlt_campaigns)%>
+    </div>
+  </li>
+</ul>
+
+<script type="text/javascript">
+$(function() {
+  var scheduleTable = $('#schedule-wrap table');
+	
+  $("#analyze-container .tablesorter").each(function(){
+    var tb = $(this);
+    
+    tb.tablesorter({
+      sortInitialOrder: "desc",
+			sortList: [[1, 1]],
+			widgets: ['zebra', 'filter'],
+			widgetOptions: {
+    	  filter_searchDelay : 400,
+    	  filter_cssFilter: 'form-control'
+    	}
+		}).bind('filterEnd', function(e, filter){
+      var originFocus = $('.tablesorter-filter:focus');
+
+      scheduleTable.floatThead('reflow');
+
+      setTimeout(function(){
+    	  originFocus.focus();
+      }, 100)
+
+    });
+  });
+  
+  
+	scheduleTable.floatThead({
+    scrollContainer: function($table){
+  		return $table.parent();
+  	}
+  });
+});
+</script>

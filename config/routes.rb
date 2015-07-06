@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   
   #mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
   
+  resources :campaigns
+  resources :audiences
+  resources :unsubscribes
+  
   # shared
   def resident_resources
     resources :residents do
@@ -101,7 +105,35 @@ Rails.application.routes.draw do
   end
   
   namespace :nimda do
-    # placeholder
+    resources :templates do
+      member do
+        get :preview
+        post :approve
+        post :unapprove
+        post :duplicate
+        get :lead_def
+      end
+      
+      collection do 
+        post :import
+      end
+    end
+    
+    resources :custom_hylets do      
+      member do
+        post :preview_editor
+        
+        post :duplicate
+        post :assign
+        post :unassign
+        
+        get :assigned_pages
+      end
+      
+      collection do
+        get :campaigns
+      end
+    end
   end
   
   # name route

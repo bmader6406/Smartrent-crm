@@ -1,0 +1,78 @@
+<% grid_id = "grid-#{Time.now.to_i}" %>
+<div class="exportable">
+  <table id="<%= grid_id %>"></table>
+
+  <a href="<%= export_page_entries_path(@property, :data => "lead_core") %>" 
+      class="btn btn-default export-btn" style="bottom: 3px; right: 3px;">
+    Export
+  </a>
+</div>
+
+<script type="text/javascript">
+  $(function(){
+    
+    var colModel = <%= raw @columns.collect{|arr| 
+          {
+            :display => strip_tags(arr[1]), 
+            :name => strip_tags(arr[0]),
+            :align => 'left',
+            :hide =>  LeadDef::TRACKING_FIELDS.include?(arr[0]) ? true : false,
+            :width => 125,
+            :sortable => false
+          } 
+        }.to_json %>;
+        
+    $('#<%= grid_id %>').flexigrid({
+			url : '<%= leads_page_audiences_path(@property) %>',
+			method: 'GET',
+			params: [
+			  {name: 'aid', value: "<%= params[:aid] %>"},
+	      {name: 'expression', value: <%= raw params[:expression].to_json %>}, //string, it looks like it cannot send hash or array
+	      {name: 'all', value: "<%= params[:all].to_a.join(",") %>"} //string
+	    ],
+			height: $('#lead-dialog:visible')[0] ? 330 : 200,
+			autoload: false,
+			dataType : 'json',
+			colModel : colModel,
+			sortname : "created_at",
+			sortorder : "asc",
+			title : false,
+			useRp : false,
+			usepager: true,
+			pagestat: 'Displaying {from} to {to} of {total} leads',
+			resizable: false,
+			rp : 10,
+			singleSelect: true,
+			showTableToggleBtn : false,
+			onSuccess: function(grid){
+			  
+			}
+		}).flexAddData(<%= raw @rows.to_json %>);
+		
+		
+		var reloadBtn = $('.pReload').parent();
+		
+    reloadBtn.next().remove();
+    reloadBtn.prev().remove();
+    reloadBtn.remove();
+    
+    //exporting
+    $("#lead-dialog .export-btn, #audience-dialog .export-btn").click(function(){ //export
+      var exportable = $(this).closest('.exportable');
+      
+      exportable.find('.dropup').removeClass('open');
+      exportable.mask("Please wait...");
+      
+      $.get(this.href, {
+        audience_id: "<%= params[:aid] %>",
+        audience_ids: <%= raw (params[:all].blank? ? [] : params[:all]).to_json %>,
+        expression: <%= raw params[:expression].to_json %>
+      }, function(){ 
+        exportable.unmask(); 
+      }, 'script');
+      
+      return false;
+    });
+    
+  });
+</script>

@@ -1,0 +1,108 @@
+<div id="modal">
+  <div class="inner">
+    <% if @user %>
+      <p>
+        We have unsubscribed <a class="email" href="#"><%= @user.email %></a> from <b>CRM Notifications</b>. <br><br>
+        If you would like to receive email from <b>CRM Notifications</b>, please subscribe below.
+      </p>
+      
+      <%= link_to "Subscribe to CRM Notifications", subscribe_unsubscribe_path(@user.unsubscribe_id), :class => "btn btn-default", :method => :post %>
+        
+    <% elsif @entry %>
+      <% if params[:all] %>
+        <%= form_tag subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :all => 1, :evid => params[:evid]), :method => :post, :id => "subscribe-form" do %>
+          <p>
+            We have unsubscribed <a class="email" href="#"><%= @resident.email %></a> from all <b><%= @property.to_root.name %> lists</b>. <br><br>
+            If you would like to remain in touch with deals, offers and newsletters from any of these <%= @property.to_root.name %> lists, 
+            please check the lists you want and subscribe below:
+            
+            <% Property.where(:id => @resident.properties.collect{|p| p.property_id }).order("name asc").each do |property| %>
+              <label> <%= check_box_tag "property_id[]", property.id  %> <%= property.name %> </label>
+            <% end %>
+          </p>
+          <%= button_tag "Subscribe", :class => "btn btn-default disabled" %>
+        <% end %>
+        
+      <% else %>
+        <p>
+          We have unsubscribed <a class="email" href="#"><%= @resident.email %></a> from <b><%= list_name %></b>. <br><br>
+          If you would like to remain in touch with deals, offers and newsletters from <b><%= list_name %></b>, please subscribe below.
+        </p>
+
+        <%= link_to "Subscribe to #{list_name}", subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :evid => params[:evid]), :class => "btn btn-default", :method => :post %>
+      <% end %>
+      
+    <% else %>
+      <%
+        #pretend entry
+        if params[:cid] && params[:eid]
+          @campaign = Campaign.find(params[:cid])
+          @property = @campaign.property
+          @pretend_entry = @property.residents.find(params[:eid]) rescue nil
+        end
+      %>
+      
+      <% if @pretend_entry %>
+        <% if params[:all] %>
+          <%= form_tag subscribe_unsubscribe_path(123456, :cid => @campaign.id, :eid => @pretend_resident.id, :all => 1), :method => :post, :id => "subscribe-form" do %>
+            <p>
+              We have unsubscribed <a class="email" href="#"><%= @pretend_resident.email %></a> from all <b><%= @property.to_root.name %> lists</b>. <br><br>
+              If you would like to remain in touch with deals, offers and newsletters from any of these <%= @property.to_root.name %> lists, 
+              please check the lists you want and subscribe below:
+
+              <% Property.where(:id => @pretend_resident.properties.collect{|p| p.property_id }).order("name asc").each do |property| %>
+                <label> <%= check_box_tag "property_id[]", property.id  %> <%= page.name %> </label>
+              <% end %>
+            </p>
+            <%= button_tag "Subscribe", :class => "btn btn-default disabled" %>
+          <% end %>
+
+        <% else %>
+          <p>
+            We have unsubscribed <a class="email" href="#"><%= @pretend_resident.email %></a> from <b><%= list_name %></b>. <br><br>
+            If you would like to remain in touch with deals, offers and newsletters from <b><%= list_name %></b>, please subscribe below.
+          </p>
+
+          <%= link_to "Subscribe to #{list_name}", subscribe_unsubscribe_path(123456, :cid => @campaign.id, :eid => @pretend_resident.id), :class => "btn btn-default", :method => :post %>
+        <% end %>
+        
+      <% else %>
+        <p>
+          We have unsubscribed <a class="email" href="#">test@company.com</a> from <b>Test Company Mailing List</b>. <br><br>
+          If you would like to remain in touch with deals, offers and newsletters from <b>Test Company Mailing List</b>, please subscribe below.
+        </p>
+        
+        <%= link_to "Subscribe to Test Company", subscribe_unsubscribe_path(123456), :class => "btn btn-default", :method => :post %>
+      <% end %>
+      
+    <% end %>
+    
+    <div id="branding"><a href="http://hy.ly/" title="Powered by CRM"> Powered by CRM</a></div>
+    
+  </div>
+</div>
+
+<% if params[:id] == "123456" %>
+  <p id='sample'> This is an example page </p>
+<% end %>
+
+<script type="text/javascript">
+  $(function(){
+    var form = $("#subscribe-form");
+  
+    form.find("input:checkbox").prop("checked", false);
+  
+    form.on("submit", function(){
+      if(!form.find("input:checked")[0]){
+        return false;
+      }
+    }).on("click", "input:checkbox", function(){
+      if(form.find("input:checked")[0]){
+        form.find(".btn").removeClass("disabled");
+      }else {
+        form.find(".btn").addClass("disabled");
+      }
+    });
+  
+  });
+</script>

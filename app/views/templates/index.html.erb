@@ -1,0 +1,101 @@
+<ul class="nav nav-tabs">
+  <li class="<%= "active" if params[:channel] != "email" %>">
+    <a href="<%= nimda_templates_path %>" > Landing Page </a>
+  </li>
+  <li class="<%= "active" if params[:channel] == "email" %>">
+    <a href="<%= nimda_templates_path(:channel => "email") %>"> Email </a>
+  </li>
+</ul>
+<br>
+
+<% if params[:channel] == "email" %>
+  <%= link_to "Create A New Template", nimda_templates_path(:channel => "email"), :class => "btn btn-primary", :method => :post %>
+  
+<% else %>
+  <div class="btn-group">
+    <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle">Create A New Template <i class="icon-angle-down"></i></button>
+    <ul class="dropdown-menu">
+      <li>
+        <%= link_to "Responsive", nimda_templates_path(:channel => "responsive"), :method => :post %>
+      </li>
+      <li>
+        <%= link_to "Facebook", nimda_templates_path(:channel => "facebook"), :method => :post %>
+      </li>
+      <li>
+        <%= link_to "Widget", nimda_templates_path(:channel => "widget"), :method => :post %>
+      </li>
+      <li>
+        <%= link_to "Popup", nimda_templates_path(:channel => "popup"), :method => :post %>
+      </li>
+      <li>
+        <%= link_to "Autoresponder", nimda_templates_path(:channel => "responder"), :method => :post %>
+      </li>
+      <li class="divider"></i>
+      <li>
+        <%= link_to "Form", nimda_templates_path(:channel => "form"), :method => :post %>
+      </li>
+    </ul>
+  </div>
+<% end %>
+
+  <form id="import-tpl-form" action="<%= import_nimda_templates_path %>" encoding="multipart/form-data" enctype="multipart/form-data" method="post">
+    <input type="submit" style="display:none" name="commit" value="Upload" />
+
+    <div class="upload-button btn btn-info">
+      <span>Import Template From File </span>
+      <input type="file" name="tpl_file">
+    </div>
+  </form>
+  
+  <br><br>
+  Or convert any campaign to Template by going to the campaign detail page <%= tab_nimda_url(:cid => "ID") %> 
+	(replace ID with the campaign id)
+
+	
+<br><br>
+<h3> Approved Templates </h3>
+<%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>
+  Filter by
+  <%= select_tag "group_id", options_for_select(TemplateGroup.all.collect{|g| [g.name, g.id]}.insert(0, ['All Groups','all']), params[:group_id]), :id => "template-group", :class => "form-control"  %>
+  <%= select_tag "category", options_for_select(template_categories.insert(0, ['All Categories','all']), params[:category]), :id => "template-category", :class => "form-control"  %>
+	<%= hidden_field_tag "channel", params[:channel] if params[:channel] %>
+  <%= button_tag "Filter", :name => nil, :style => "display:none;" %>
+<% end %>
+<br>
+<% if params[:channel] == "email" %>
+  <div class="help-block">
+    Tour Autoresponder Templates will not show on the Add New Campaign page
+  </div>
+<% end %>
+<%= render "templates", :templates => @templates, :param_page => "page" %>
+
+<br><br>
+<% if !@pending_templates.empty? %>
+  <h3> Pending Templates </h3>
+  <%= render "templates", :templates => @pending_templates, :param_page => "p_page" %>
+<% end %>
+
+<script type="text/javascript">
+  $(function(){
+    $('#template-group').change(function(){
+      $(this).parents('form').submit();
+    });
+    
+    $('#template-category').change(function(){
+      $(this).parents('form').submit();
+    });
+    
+    //import template
+    var importForm = $('#import-tpl-form');
+  	
+    importForm.find('input[type=file]').change(function(e){      
+      $('body').mask('Please wait...');
+      importForm.submit();
+    });
+    
+    importForm.ajaxForm({
+      iframe: true,
+      dataType: 'script'
+    });
+  });
+</script>

@@ -1,0 +1,2 @@
+class DelayedAction < Action
+end

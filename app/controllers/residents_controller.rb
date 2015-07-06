@@ -200,62 +200,55 @@ class ResidentsController < ApplicationController
   
   # marketing stream (aka x-ray)
   def marketing_statuses
-    @entry = @resident.entry
-    
-    move_in_field_id = @property.lead_def.form_fields.detect{|f| f.field_tag == "move_in" }.field_id rescue "_not_found_"
-    move_out_field_id = @property.lead_def.form_fields.detect{|f| f.field_tag == "move_out" }.field_id rescue "_not_found_"
-
     l2l_sources = []
     l2l_changed_sources = []
 
     yardi_sources = []
     yardi_changed_sources = []
     
-    if @entry
-      # collect l2l source source
-      @entry.sources.where(:property_id => params[:prop_id]).each_with_index do |s, i|
-        pp "#{s.status}, #{s.resident_status}, #{s.status_date}, #{s.created_at}"
-        if !s.status.blank? && !s.status_date.blank?
-          l2l_sources << {
-            :status => "#{s.status} Prospect",
-            :status_date => s.status_date
-          }
-        end
-
-        if s.resident_status
-          yardi_sources << {
-            :status => "#{s.resident_status} Resident",
-            :status_date => s.created_at,
-            :move_in => s["_#{move_in_field_id}"],
-            :move_out => s["_#{move_out_field_id}"]
-          }
-        end
+    # collect l2l source source
+    @resident.sources.where(:property_id => params[:prop_id]).each_with_index do |s, i|
+      pp "#{s.status}, #{s.resident_status}, #{s.status_date}, #{s.created_at}"
+      if !s.status.blank? && !s.status_date.blank?
+        l2l_sources << {
+          :status => "#{s.status} Prospect",
+          :status_date => s.status_date
+        }
       end
 
-      #collect only l2l changed source (status & status_date changed)
-      #  must order by status_date asc, status_date always exists
-      sorted_sources = l2l_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
-      sorted_sources.each_with_index do |s, i|
-        if i == 0
-          l2l_changed_sources << s
-
-        elsif s[:status] != sorted_sources[i-1][:status]
-          l2l_changed_sources << s
-
-        end
+      if s.resident_status
+        yardi_sources << {
+          :status => "#{s.resident_status} Resident",
+          :status_date => s.created_at,
+          :move_in => s.move_in,
+          :move_out => s.move_out]
+        }
       end
+    end
 
-      #collect only l2l changed source (status & status_date changed)
-      #  must order by status_date asc, status_date always exists
-      sorted_sources = yardi_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
-      sorted_sources.each_with_index do |s, i|
-        if i == 0
-          yardi_changed_sources << s
+    #collect only l2l changed source (status & status_date changed)
+    #  must order by status_date asc, status_date always exists
+    sorted_sources = l2l_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
+    sorted_sources.each_with_index do |s, i|
+      if i == 0
+        l2l_changed_sources << s
 
-        elsif s[:status] != sorted_sources[i-1][:status]
-          yardi_changed_sources << s
+      elsif s[:status] != sorted_sources[i-1][:status]
+        l2l_changed_sources << s
 
-        end
+      end
+    end
+
+    #collect only l2l changed source (status & status_date changed)
+    #  must order by status_date asc, status_date always exists
+    sorted_sources = yardi_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
+    sorted_sources.each_with_index do |s, i|
+      if i == 0
+        yardi_changed_sources << s
+
+      elsif s[:status] != sorted_sources[i-1][:status]
+        yardi_changed_sources << s
+
       end
     end
 
@@ -272,19 +265,15 @@ class ResidentsController < ApplicationController
   end
   
   def marketing_properties
-    @entry = @resident.entry
-    
-    if @entry
-      @properties = @entry.properties
+    @properties = @residents.properties
 
-      #eager load properties
-      pages = Property.where(:id => @properties.collect{|p| p.property_id }.compact).collect{|page| page }
+    #eager load properties
+    properties = Property.where(:id => @properties.collect{|p| p.property_id }.compact).collect{|prop| prop }
 
-      @properties = @properties.collect{|p|
-        p.property = pages.detect{|page| page.id == p.property_id.to_i}
-        p.property ? p : nil
-      }.compact.sort{|a, b| a.property.name <=> b.property.name }
-    end
+    @properties = @properties.collect{|p|
+      p.property = properties.detect{|prop| prop.id == p.property_id.to_i}
+      p.property ? p : nil
+    }.compact.sort{|a, b| a.property.name <=> b.property.name }
     
     respond_to do |format|
       format.html {

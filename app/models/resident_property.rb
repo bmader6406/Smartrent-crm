@@ -59,6 +59,11 @@ class ResidentProperty
   field :other4, :type => String
   field :other5, :type => String
   
+  # for newsletter
+  field :subscribed, :type => Boolean, :default => true
+  field :subscribed_at, :type => DateTime
+  
+  
   embedded_in :resident
 
   before_save :set_rental_type

@@ -1,0 +1,6 @@
+var audiences = $('#audiences');
+
+<% @audiences.each do |a| %>
+  audiences.find(".audience-size[data-id=<%= a.id %>]").html("<%= j(link_to (number_with_delimiter a.residents_count), 
+    leads_page_audiences_path(@property, :aid => a.id), :class => "audience-lead") %>")
+<% end %>
