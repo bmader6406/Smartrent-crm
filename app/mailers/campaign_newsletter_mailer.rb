@@ -12,7 +12,6 @@ class CampaignNewsletterMailer < QueuedMailer
     newsletter = campaign.newsletter_hylet
     property = campaign.property
     
-    form_fields = [] #TODO: check app.hy.ly
     app_setting = PropertySetting.app_setting
     
     #reschedule
@@ -25,23 +24,15 @@ class CampaignNewsletterMailer < QueuedMailer
       custom_subject = nil if custom_subject.blank?
     end
     
-    if property
-      property_fields = [] #TODO: check app.hy.ly
-    else
-      property_fields = []
-    end
-    
-    send_col = [:id, :type, :property_id, :campaign_id, :campaign_variation_id, :resident_id, :mimepart, :executed_time, :message_id]
+    send_col = [:type, :property_id, :campaign_id, :campaign_variation_id, :resident_id, :mimepart, :executed_time, :message_id]
     send_val = []
     send_ids = []
     
-    blacklisted_col = [:id, :type, :property_id, :campaign_id, :campaign_variation_id, :resident_id]
+    blacklisted_col = [:type, :property_id, :campaign_id, :campaign_variation_id, :resident_id]
     blacklisted_val = []
     blacklisted_ids = []
     
     Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each_with_index do |resident, index|
-      
-      next if resident.property_id == "1470172458182649674" && !resident.subscribed? #ALJ Lead Group hack
       
       resident.context(campaign)
       
@@ -68,19 +59,19 @@ class CampaignNewsletterMailer < QueuedMailer
       end
       
       res = unsubscribe_resident_if_blacklisted(resident, campaign) { 
-        Notifier.campaign_newsletter(campaign, newsletter, resident, form_fields, property_fields, {
+        Notifier.campaign_newsletter(campaign, newsletter, resident, {
           :bcc_emails => bcc_emails,
           :custom_subject => custom_subject
-        }).deliver
+        }).deliver_now
       }
 
       if res[:mimepart]
-        send_val << [MultiTenant.generate_id, "SendEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id, res[:mimepart], res[:executed_time], res[:message_id]]
+        send_val << ["SendEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id, res[:mimepart], res[:executed_time], res[:message_id]]
         send_ids << resident.id
       
       elsif res[:blacklisted]
       
-        blacklisted_val << [MultiTenant.generate_id, "BlacklistedEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id]
+        blacklisted_val << ["BlacklistedEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id]
         blacklisted_ids << resident.id
       end
       
@@ -106,7 +97,7 @@ class CampaignNewsletterMailer < QueuedMailer
     prop_resident_ids = {}
     
     attrs = {
-      :_id => Moped::BSON::ObjectId.new,
+      :_id => BSON::ObjectId.new,
       :action => action,
       :subject_id => campaign.id,
       :subject_type => campaign.class.to_s,

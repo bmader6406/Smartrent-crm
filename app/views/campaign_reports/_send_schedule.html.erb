@@ -55,10 +55,10 @@
                 <%= link_to page_dict[campaign.property_id], page_path(campaign.property_id), :target => "_blank" %>
               </td>
               <td>
-                <%= link_to @annotation_dict[root_id], dashboard_landing_campaign_path(root_id), :target => "_blank" %>
+                <%= link_to @annotation_dict[root_id], dashboard_campaign_path(root_id), :target => "_blank" %>
               </td>
               <td>
-                <%= link_to subject, dashboard_landing_campaign_path(root_id), :target => "_blank" %>
+                <%= link_to subject, dashboard_campaign_path(root_id), :target => "_blank" %>
               </td>
               <td>
                 <%= nlt_hylet.from %>

@@ -1,13 +1,6 @@
 Rails.application.routes.draw do
   #mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
   
-  resources :campaigns
-  resources :audiences
-  resources :unsubscribes
-  
-  get '/nlt/:nlt_id' => 'public#nlt', :as => :nlt
-  get '/nlt2/:cid' => 'public#nlt2', :as => :nlt2
-  
   # shared
   def resident_resources
     resources :residents do
@@ -69,6 +62,20 @@ Rails.application.routes.draw do
       collection do
         get :preview_template
       end
+      
+      resources :reports do
+        collection do
+          post :generate
+          get :export_email_stats
+          get :subscribers
+          get :export_subscribers
+          post :export_subscribers
+
+          get :spam_watch
+          get :export_spam_watch
+          post :generate_spam_watch
+        end    
+      end
     end
     
     resources :assets do
@@ -85,6 +92,29 @@ Rails.application.routes.draw do
   resident_resources
   report_resources
   
+  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
+  
+  # email system
+  resources :audiences
+  
+  resources :unsubscribes do
+    member do
+      post :subscribe
+      post :confirm
+    end
+  end
+  
+  get '/nlt/:nlt_id' => 'public#nlt', :as => :nlt
+  get '/nlt2/:cid' => 'public#nlt2', :as => :nlt2
+  
+  resources :receivers do
+    collection do
+      get :ses_sns
+      post :ses_sns
+    end
+  end
+  
+  ## user model
   resources :users, :path => :accounts
   
   resource :profile
@@ -92,7 +122,6 @@ Rails.application.routes.draw do
   resources :user_sessions
   resources :password_resets
   
-  resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
   
   resource :twilio, :controller => :twilio do
     get :usage
@@ -106,35 +135,17 @@ Rails.application.routes.draw do
     post :w2p_status
   end
   
+  # admin
   namespace :nimda do
     resources :templates do
       member do
         get :preview
-        post :approve
-        post :unapprove
         post :duplicate
       end
       
-    end
-    
-    resources :newsletter_hylets do      
-      member do
-        post :preview_editor
-        
-        post :duplicate
-        post :assign
-        post :unassign
-        
-        get :assigned_pages
-      end
-      
-      collection do
-        get :campaigns
-      end
     end
   end
   
-  # name route
   get 'login', :to => 'user_sessions#new', :as => :login
   get 'logout', :to => 'user_sessions#destroy', :as => :logout
   get 'forgot_password', :to => 'password_resets#new', :as => :forgot_password
@@ -143,60 +154,4 @@ Rails.application.routes.draw do
   get '/auth/failure', :to => 'authentications#failure'
   
   root :to => 'dashboards#start'
-  
-  # The priority is based upon order of creation: first created -> highest priority.
-  # See how all your routes lay out with "rake routes".
-
-  # You can have the root of your site routed with "root"
-  # root 'welcome#index'
-
-  # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
-
-  # Example of named route that can be invoked with purchase_url(id: product.id)
-  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
-
-  # Example resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
-
-  # Example resource route with options:
-  #   resources :products do
-  #     member do
-  #       get 'short'
-  #       post 'toggle'
-  #     end
-  #
-  #     collection do
-  #       get 'sold'
-  #     end
-  #   end
-
-  # Example resource route with sub-resources:
-  #   resources :products do
-  #     resources :comments, :sales
-  #     resource :seller
-  #   end
-
-  # Example resource route with more complex sub-resources:
-  #   resources :products do
-  #     resources :comments
-  #     resources :sales do
-  #       get 'recent', on: :collection
-  #     end
-  #   end
-
-  # Example resource route with concerns:
-  #   concern :toggleable do
-  #     post 'toggle'
-  #   end
-  #   resources :posts, concerns: :toggleable
-  #   resources :photos, concerns: :toggleable
-
-  # Example resource route within a namespace:
-  #   namespace :admin do
-  #     # Directs /admin/products/* to Admin::ProductsController
-  #     # (app/controllers/admin/products_controller.rb)
-  #     resources :products
-  #   end
-  
 end

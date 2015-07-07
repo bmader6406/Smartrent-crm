@@ -1,5 +1,7 @@
 class PublicController < ApplicationController
   
+  layout false
+  
   def nlt
     #params[:nlt_id] = campaignID_epochResidentId
     campaign_id, resident_id = params[:nlt_id].split('_', 2)
@@ -13,17 +15,10 @@ class PublicController < ApplicationController
 
       newsletter = campaign.newsletter_hylet
       property = campaign.property
-      form_fields = []
 
       resident.unsubscribe_id = resident_id #for reschedule subject
 
-      if property.property?
-        property_fields = []
-      else
-        property_fields = []
-      end
-
-      macro = resident.to_macro(campaign, form_fields, property_fields)
+      macro = resident.to_macro(campaign)
 
       @body_html = newsletter.body_html
 

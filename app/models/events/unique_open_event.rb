@@ -11,7 +11,7 @@ class UniqueOpenEvent < MailEvent
   private
   
     def update_send_event
-      event = SendEvent.find_by_campaign_id_and_resident_id(self.campaign_id, self.resident_id)
+      event = SendEvent.find_by(campaign_id: self.campaign_id, resident_id: self.resident_id)
       
       if event && !event.opened_at
         if event.created_at > created_at

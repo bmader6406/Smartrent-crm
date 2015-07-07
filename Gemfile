@@ -73,7 +73,7 @@ gem 'will_paginate', '~> 3.0.7'
 gem 'will_paginate_mongoid', '~> 2.0.1'
 gem 'rabl', '~> 0.11.6'
 gem "charlock_holmes", "0.6.9.4" #brew install icu4c Or apt-get install libicu-dev
-
+gem 'activerecord-import', '~> 0.9.0'
 gem 'rubber', '~> 3.0.1'
 
 gem 'phony_rails', '0.9.0'

@@ -11,7 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150703180858) do
+ActiveRecord::Schema.define(version: 20150707101036) do
+
+  create_table "actions", force: :cascade do |t|
+    t.string   "type",         limit: 255
+    t.integer  "user_id",      limit: 4
+    t.integer  "actor_id",     limit: 4
+    t.integer  "subject_id",   limit: 4
+    t.string   "subject_type", limit: 255
+    t.string   "options",      limit: 255
+    t.string   "error",        limit: 255
+    t.integer  "attempt",      limit: 4
+    t.datetime "execute_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "assets", force: :cascade do |t|
     t.integer  "comment_id",        limit: 4
@@ -72,6 +86,22 @@ ActiveRecord::Schema.define(version: 20150703180858) do
 
   add_index "calls", ["comment_id"], name: "index_calls_on_comment_id", using: :btree
   add_index "calls", ["origin_id"], name: "index_calls_on_origin_id", using: :btree
+
+  create_table "campaign_variations", force: :cascade do |t|
+    t.string   "type",                limit: 255
+    t.integer  "campaign_id",         limit: 4
+    t.integer  "variate_campaign_id", limit: 4
+    t.integer  "weight",              limit: 4,   default: 1
+    t.integer  "weight_percent",      limit: 4,   default: 0
+    t.boolean  "can_delete",          limit: 1,   default: true
+    t.integer  "channel",             limit: 4,   default: 0
+    t.string   "channel_name",        limit: 255
+    t.string   "version",             limit: 255, default: "0"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "campaign_variations", ["campaign_id"], name: "index_campaign_variations_on_campaign_id", using: :btree
 
   create_table "campaigns", force: :cascade do |t|
     t.string   "type",                        limit: 255
@@ -220,6 +250,21 @@ ActiveRecord::Schema.define(version: 20150703180858) do
 
   add_index "invites", ["token"], name: "index_invites_on_token", using: :btree
 
+  create_table "monitor_metrics", force: :cascade do |t|
+    t.integer  "total",            limit: 4
+    t.string   "source",           limit: 255,   default: "email_forwarding"
+    t.integer  "bounces_count",    limit: 4
+    t.text     "bounces",          limit: 65535
+    t.integer  "complaints_count", limit: 4
+    t.text     "complaints",       limit: 65535
+    t.integer  "errors_count",     limit: 4
+    t.text     "error_details",    limit: 65535
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+  end
+
+  add_index "monitor_metrics", ["created_at"], name: "index_monitor_metrics_on_created_at", using: :btree
+
   create_table "properties", force: :cascade do |t|
     t.integer  "user_id",              limit: 4
     t.integer  "region_id",            limit: 4
@@ -277,6 +322,18 @@ ActiveRecord::Schema.define(version: 20150703180858) do
 
   add_index "property_settings", ["property_id"], name: "index_property_settings_on_property_id", using: :btree
 
+  create_table "recipients", force: :cascade do |t|
+    t.integer  "campaign_id", limit: 4
+    t.integer  "audience_id", limit: 4
+    t.integer  "resident_id", limit: 8
+    t.string   "status",      limit: 255
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "recipients", ["campaign_id", "resident_id", "audience_id"], name: "index_recipients_on_campaign_resident_audience", using: :btree
+  add_index "recipients", ["campaign_id", "resident_id", "status"], name: "index_recipients_on_campaign_resident_status", using: :btree
+
   create_table "regions", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.datetime "created_at",             null: false
@@ -320,15 +377,13 @@ ActiveRecord::Schema.define(version: 20150703180858) do
     t.integer  "property_id", limit: 4
     t.integer  "campaign_id", limit: 4
     t.string   "name",        limit: 255
-    t.boolean  "approved",    limit: 1,   default: false
-    t.string   "category",    limit: 255
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "templates", ["campaign_id"], name: "index_templates_on_campaign_id", using: :btree
-  add_index "templates", ["property_id"], name: "index_templates_on_property_id_and_parent_id", using: :btree
+  add_index "templates", ["property_id"], name: "index_templates_on_property_id", using: :btree
 
   create_table "tickets", force: :cascade do |t|
     t.integer  "property_id",       limit: 4
@@ -368,7 +423,7 @@ ActiveRecord::Schema.define(version: 20150703180858) do
   add_index "units", ["property_id"], name: "index_units_on_property_id", using: :btree
 
   create_table "urls", force: :cascade do |t|
-    t.integer  "campaign_id", limit: 8
+    t.integer  "campaign_id", limit: 4
     t.string   "token",       limit: 255
     t.text     "origin_url",  limit: 65535
     t.datetime "created_at"

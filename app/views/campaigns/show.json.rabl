@@ -13,9 +13,9 @@ node do |n|
     :audience_id => hylet.audience_ids.first,
     :audience_name => hylet.audiences.collect{|a| a.name },
     :body_text => hylet.body_text,
-    :published_at => n.published_at.to_s(:friendly_time),
-    :published_date => n.published_at.strftime("%Y-%b-%d"),
-    :published_time => n.published_at.strftime("%l:%M %p"),
+    :published_at => (n.published_at.to_s(:friendly_time) rescue nil),
+    :published_date => (n.published_at.strftime("%Y-%b-%d") rescue nil),
+    :published_time => (n.published_at.strftime("%l:%M %p") rescue nil),
     :preview_url => link_to("Preview", preview_property_campaign_path(@property, n), :target => "_blank"),
   }
 end

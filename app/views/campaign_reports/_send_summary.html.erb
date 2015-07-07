@@ -81,55 +81,55 @@
               </td>
               
               <td>
-                <%= link_to @annotation_dict[root_id], dashboard_landing_campaign_path(root_id), :target => "_blank" %>
+                <%= link_to @annotation_dict[root_id], dashboard_campaign_path(root_id), :target => "_blank" %>
               </td>
               
               <td>
-                <%= link_to subject, dashboard_landing_campaign_path(root_id), :target => "_blank", :style => (spammy ? "color:red" : "") %>
+                <%= link_to subject, dashboard_campaign_path(root_id), :target => "_blank", :style => (spammy ? "color:red" : "") %>
               </td>
               	
               <td>
-                <%= link_to number_with_delimiter(campaign.sends_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.sends_count), subscribers_campaign_reports_path(root_id, 
                       :type => "sent", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %> 
               </td>
               
               <td> 
-                <%= link_to number_with_delimiter(campaign.unique_opens_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.unique_opens_count), subscribers_campaign_reports_path(root_id, 
                       :type => "opened", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %> 
               </td>
               <td> <%= conversion(campaign.unique_opens_count, campaign.sends_count) %>% </td>
               
               <td> 
-                <%= link_to number_with_delimiter(campaign.clicks_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.clicks_count), subscribers_campaign_reports_path(root_id, 
                       :type => "clicked", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %> 
               </td>
               <td> <%= conversion(campaign.clicks_count, campaign.sends_count) %>% </td>
               
               <td>
-                <%= link_to number_with_delimiter(campaign.unique_clicks_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.unique_clicks_count), subscribers_campaign_reports_path(root_id, 
                       :type => "unique_clicked", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %>
               </td>
               <td> <%= conversion(campaign.unique_clicks_count, campaign.sends_count) %>% </td>
               
               <td> 
-                <%= link_to number_with_delimiter(campaign.unsubscribes_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.unsubscribes_count), subscribers_campaign_reports_path(root_id, 
                       :type => "unsubscribed", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %> 
               </td>
               <td> <%= conversion(campaign.unsubscribes_count, campaign.sends_count) %>% </td>
               
               <td> 
-                <%= link_to "#{spam_index}%", spam_watch_landing_campaign_reports_path(root_id, :timestamp => campaign.published_at.to_i), 
+                <%= link_to "#{spam_index}%", spam_watch_campaign_reports_path(root_id, :timestamp => campaign.published_at.to_i), 
                       :target => "_blank", :style => (spam_index > 0 ? "color:red" : "") %>
               </td>
               
               <td>
-                <%= link_to number_with_delimiter(campaign.bounces_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.bounces_count), subscribers_campaign_reports_path(root_id, 
                       :type => "bounced", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %>
               </td>
               <td style="<%= "color:red" if bounce_percent > 5 %>"> <%= bounce_percent %>% </td>
               
               <td>
-                <%= link_to number_with_delimiter(campaign.complaints_count), subscribers_landing_campaign_reports_path(root_id, 
+                <%= link_to number_with_delimiter(campaign.complaints_count), subscribers_campaign_reports_path(root_id, 
                       :type => "complained", :campaign_id => root_id, :timestamp => campaign.published_at.to_i), :class => "more" %>
               </td>
               <td style="<%= "color:red" if complaint_percent > 0.04 %>"> <%= complaint_percent %>% </td>

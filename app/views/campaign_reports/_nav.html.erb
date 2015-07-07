@@ -7,30 +7,22 @@
   	  <%= link_to "Emails Scheduled", page_send_schedule_reports_path(@property) %>
   	</li>
   	
-  	<% if @property.group? %>
-    	<li class="<%= "active" if action_name == "recent_send" %>">
-    	  <%= link_to "Most Recent Email", page_recent_send_reports_path(@property) %>
-    	</li>
-  	<% end %>
-  
-  <% elsif [NewsletterCampaign, TourResponderCampaign, FormResponderCampaign, DripCampaign].any?{|clzz| @campaign.kind_of?(clzz) } %>
+  <% elsif [NewsletterCampaign].any?{|clzz| @campaign.kind_of?(clzz) } %>
     <%
-      overview_path = landing_campaign_reports_path(@campaign)
-      subscribers_path = subscribers_landing_campaign_reports_path(@campaign)
+      overview_path = campaign_reports_path(@campaign)
+      subscribers_path = subscribers_campaign_reports_path(@campaign)
     %>
     <li class="<%= "active" if action_name == "index" %>">
 			<%= link_to "Overview", overview_path  %>
     </li>
     
     <li class="<%= "active" if action_name == "spam_watch" %>">
-			<%= link_to "Spam Watch", spam_watch_landing_campaign_reports_path(@campaign)  %>
+			<%= link_to "Spam Watch", spam_watch_campaign_reports_path(@campaign)  %>
     </li>
 
 		<li class="<%= "active" if action_name == "subscribers" %>">
 			<%= link_to "Subscribers", subscribers_path  %>
     </li>
-    
-  <% else %> <!-- landing -->
     
   <% end %>
   

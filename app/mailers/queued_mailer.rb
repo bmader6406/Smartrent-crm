@@ -23,7 +23,6 @@ class QueuedMailer
   
   def self.unsubscribe_resident_if_blacklisted(resident, campaign, &f)
     begin
-      #TODO_ check if SES is off
       start_at = Time.now.to_f
       
       msg = yield(f)

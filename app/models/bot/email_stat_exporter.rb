@@ -186,7 +186,7 @@ class EmailStatExporter < ReportExporter
       p "ERROR: #{error_details}"
 
       Notifier.system_message("[EmailStatExporter] FAILURE", "ERROR DETAILS: #{error_details}",
-        Notifier::DEV_ADDRESS, {"from" => Notifier::EXIM_ADDRESS}).deliver
+        Notifier::DEV_ADDRESS, {"from" => Notifier::EXIM_ADDRESS}).deliver_now
     end
   
   end

@@ -38,7 +38,7 @@
     <h3>
       Variant Analysis
     
-      <%= link_to "export", export_email_stats_landing_campaign_reports_path(@campaign, :type => "variant_analysis",
+      <%= link_to "export", export_email_stats_campaign_reports_path(@campaign, :type => "variant_analysis",
             :campaign_id => params[:campaign_id], :view => params[:view], :timestamp => params[:timestamp]), :style => "float: right", :class => "btn btn-default" %>
     </h3>
   
@@ -191,7 +191,7 @@
   <li>
     <h3>
       Link Clicks
-      <%= link_to "export", export_email_stats_landing_campaign_reports_path(@campaign, :type => "link_clicks",
+      <%= link_to "export", export_email_stats_campaign_reports_path(@campaign, :type => "link_clicks",
             :campaign_id => params[:campaign_id], :view => params[:view], :timestamp => params[:timestamp]), :style => "float: right;", :class => "btn btn-default" %>
     </h3>
     
@@ -248,7 +248,7 @@
             <h3>
               Opens by Mail Agent
       
-              <%= link_to "export", export_email_stats_landing_campaign_reports_path(@campaign, :type => "opens_by_browser",
+              <%= link_to "export", export_email_stats_campaign_reports_path(@campaign, :type => "opens_by_browser",
                   :campaign_id => params[:campaign_id], :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
             </h3>
             <table class="table table-bordered tablesorter" data-sort="2">
@@ -300,7 +300,7 @@
             <h3>
               Opens by OS
       
-              <%= link_to "export", export_email_stats_landing_campaign_reports_path(@campaign, :type => "opens_by_os",
+              <%= link_to "export", export_email_stats_campaign_reports_path(@campaign, :type => "opens_by_os",
                     :campaign_id => params[:campaign_id], :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
             </h3>
             <table class="table table-bordered tablesorter" data-sort="2">
@@ -352,7 +352,7 @@
             <h3>
               Opens by Country
       
-              <%= link_to "export", export_email_stats_landing_campaign_reports_path(@campaign, :type => "opens_by_country", 
+              <%= link_to "export", export_email_stats_campaign_reports_path(@campaign, :type => "opens_by_country", 
                     :campaign_id => params[:campaign_id], :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
             </h3>
             <table class="table table-bordered tablesorter" data-sort="2">

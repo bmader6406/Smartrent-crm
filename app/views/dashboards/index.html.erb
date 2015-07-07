@@ -24,8 +24,8 @@ $(function(){
     App.vars.propertyEmail = "<%= @property.email %>";
     App.vars.propertyPhone = "<%= @property.phone %>";
     
-    App.vars.propertyUnits = <%= raw @property.units.collect{|c| {:val => c.id.to_s, :label => c.code} }.to_json %>;
-    App.vars.propertyAudiences = <%= raw @property.audiences.collect{|c| {:val => c.id.to_s, :label => c.name} if c.name.to_s.downcase.include?("resident") }.compact.to_json  %>;
+    App.vars.propertyUnits = <%= raw property_units.to_json %>;
+    App.vars.propertyAudiences = <%= raw property_audiences.to_json  %>;
 
     App.vars.propertyTzHack = "<%= j(render "dashboards/tz") %>";
     App.vars.routeRoot = "/properties/<%= @property.id %>";

@@ -16,7 +16,7 @@ class Campaign < ActiveRecord::Base
   
   accepts_nested_attributes_for :hylets, :allow_destroy => true
 
-  attr_accessor :duplicating, :template_class, :tmp_timestamp
+  attr_accessor :duplicating, :template_class, :tmp_timestamp, :tmp_property_id
   
   # =================
   # = methods =
@@ -42,7 +42,7 @@ class Campaign < ActiveRecord::Base
   end
   
   def email_variates
-    @email_variates ||= variates.collect{|v| v if v.class.to_s == "LandingCampaignVariation"}.compact
+    @email_variates ||= variates.collect{|v| v if v.class.to_s == "NewsletterCampaignVariation"}.compact
   end
   
   #====
@@ -54,9 +54,9 @@ class Campaign < ActiveRecord::Base
   def channel_variates
     @channel_variates ||= begin
       if variate
-        variates.where(:type => variate["type"], :channel => variate.channel)
+        variates.where(:type => variate["type"], :channel => 0)
       else
-        variates.where(:type => "LandingCampaignVariation")
+        variates.where(:type => "NewsletterCampaignVariation")
       end
     end
   end
@@ -106,7 +106,6 @@ class Campaign < ActiveRecord::Base
         }
       end
       
-      dict["email"] = dict["facebook"] #for newsletter      
       dict["all"] = all
       dict
     end
@@ -121,21 +120,6 @@ class Campaign < ActiveRecord::Base
     end
   end
   
-  def variant_name
-    v = dict_variates["all"].detect{|v| v.variate_campaign_id == to_param.to_i}
-    v ? v.name : nil
-  end
-  
-  def variant_url
-    v = dict_variates["all"].detect{|v| v.variate_campaign_id == to_param.to_i}
-    v ? "#{permanent_url(v.channel)}/#{v.index}" : nil
-  end
-  
-  def variant_version
-    v = dict_variates["all"].detect{|v| v.variate_campaign_id == to_param.to_i}
-    v ? v.version : nil
-  end
-
   def channel
     case self["type"]        
       when "NewsletterCampaign"
@@ -143,7 +127,9 @@ class Campaign < ActiveRecord::Base
     end
   end
   
-  #========
+  def variation_id
+    @variation_id ||= variates.detect{|v| v.variate_campaign_id == self.id }.id rescue nil
+  end
   
   #=========
   
@@ -180,14 +166,7 @@ class Campaign < ActiveRecord::Base
   end
 
   def annotation(full = false)
-    @annotation ||= begin
-      if self["type"] == "NurtureCampaign"
-        anno = !self['annotation'].blank? ? self['annotation'] : "Days: #{trigger_day}"
-        full ? "#{drip.annotation} > #{anno}" : anno
-      else
-        !self['annotation'].blank? ? self['annotation'] : (self.root || self)["annotation"]
-      end
-    end
+    !self['annotation'].blank? ? self['annotation'] : (self.root || self)["annotation"]
   end
   
   # =================
@@ -195,11 +174,11 @@ class Campaign < ActiveRecord::Base
   # =================
   
   def email_domain
-    @email_domain ||= property_setting.email_domain.blank? ? HOST : property_setting.email_domain
+    @email_domain ||= HOST # or make it configurable in property.setting
   end
   
   def ad_domains
-    @ad_domains ||= property.to_root.setting.ad_domains rescue []
+    @ad_domains ||= []
   end
   
   def notification_emails
@@ -212,46 +191,6 @@ class Campaign < ActiveRecord::Base
   
   def set_newsletter_hylet(hylet) #for crm caching
     @newsletter_hylet = hylet
-  end
-  
-  #reduce queries
-  def variant_stats(variation_id, range = nil)
-    @variant_conversion ||= begin
-      dict = {}
-      tz = property_setting.time_zone
-      if range
-        start_at = range.first.to_time.in_time_zone(tz).beginning_of_day + UtcOffset::DST_HOUR
-        end_at = range.last.to_time.in_time_zone(tz).end_of_day + UtcOffset::DST_HOUR
-      else
-        Time.zone = tz
-        start_at = (Time.zone.today - 30.day).beginning_of_day + UtcOffset::DST_HOUR
-        end_at = (Time.zone.today - 1.day).end_of_day + UtcOffset::DST_HOUR
-      end
-      
-      lead_metrics.where("variation_id IN (#{variates.collect{|v| v.id}.join(', ')}) AND created_at #{(start_at..end_at).to_s(:db)}").select("sum(residents_count) as residents_count,
-            sum(sessions_count) as sessions_count, variation_id").group("variation_id").all.each do |lm|
-            
-        dict[lm.variation_id] = [lm.residents_count, lm.sessions_count] 
-      end
-      
-      dict
-    end
-
-    @variant_conversion[variation_id] || [] #[] is used when no metric found
-  end
-  
-  def thumbnails
-    @thumbnails ||= begin
-      dict = {}
-      ThumbnailAsset.joins("inner join campaigns on campaigns.thumbnail_asset_id = assets.id").where("campaigns.id = #{to_root_id} OR campaigns.root_id = #{to_root_id}").each do |asset|
-        dict[asset.id] = asset
-      end
-      dict
-    end
-  end
-  
-  def variation_id
-    @variation_id ||= variates.detect{|v| v.variate_campaign_id == self.id }.id rescue nil
   end
   
   # =================
@@ -330,20 +269,8 @@ class Campaign < ActiveRecord::Base
     
   end
   
-  def conversion(num, total)
-    (total.to_i.zero? ? 0 : num.to_f*100/total.to_f).round(2)
-  end
-  
-  def dashboard_url #
-    "http://#{HOST}/landing/#{to_root_id}/dashboard"
-  end
-  
-  def report_url
-    "http://#{HOST}/landing/#{to_root_id}/reports"
-  end
-  
-  def design_url
-    "http://#{HOST}/landing/#{self['id']}/edit"
+  def dashboard_url
+    "http://#{HOST}/properties/#{property_id}/notices/#{to_root_id}"
   end
   
   #summary report

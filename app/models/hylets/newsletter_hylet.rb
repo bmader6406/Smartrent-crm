@@ -56,7 +56,7 @@ class NewsletterHylet < Hylet
   end
   
   def audiences
-    campaign.property.all_audiences.where(:id => audience_ids).includes({:property => :audiences}, :campaign)
+    Audience.where(:id => audience_ids).includes(:property, :campaign)
   end
   
   #custom field

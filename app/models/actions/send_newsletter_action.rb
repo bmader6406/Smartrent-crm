@@ -23,7 +23,7 @@ class SendNewsletterAction
   
   def self.send_now(campaign, published_at)
     
-    action = DelayedAction.find_by_actor_id_and_subject_id(campaign.property_id, campaign.id)
+    action = DelayedAction.find_by(actor_id: campaign.property_id, subject_id: campaign.id)
     action.destroy if action
     
     action = DelayedAction.create! :user => campaign.user, :actor => campaign.property, :subject => campaign, :execute_at => published_at
@@ -173,7 +173,7 @@ class SendNewsletterAction
     
     # http://docs.mongodb.org/v2.4/core/cursors/#cursor-batches
     # - performance is bad when using skip, limit to iterate over large collection with the Audience.unique_leads_count, Audience.unique_leads_listing
-    # - we can use mongodb cursor to iterate the collections, we may have the duplicated records when the entry get updated when the import,
+    # - we can use mongodb cursor to iterate the collections, we may have the duplicated records when the resident get updated when the import,
     #    we need to use redis set to dedup the duplicated record within the audience and other audiences
     
     set_name = "newsletter_#{campaign.id}_#{MultiTenant.generate_id}" #must be unique
@@ -186,7 +186,7 @@ class SendNewsletterAction
         residents = residents.where("sources" => {'$elemMatch' => {"created_at" =>  { '$gte' => start_at, '$lt' => end_at}} })
       end
       
-      # collect entry id with cursor
+      # collect resident id with cursor
       resident_ids = []
       residents.each do |e|
         resident_ids << e["_id"]
@@ -207,7 +207,7 @@ class SendNewsletterAction
     redis_client.smembers(set_name).each_slice(step) do |batch_id|
       resident_ids = []
       
-      Resident.with(:consistency => :eventual).where(:_id.in => batch_id).each do |entry|
+      Resident.with(:consistency => :eventual).where(:_id.in => batch_id).each do |resident|
         
         subscribed = resident.subscribed?(property) || !resident.subscribed?(property) && resident.any_subscribed?(property_ids)
         
@@ -235,7 +235,7 @@ class SendNewsletterAction
       error = "Invalid send!! Long query may be killed at #{Time.now.utc} (executed at #{now}), audience_counts: #{audience_counts}"
       
       Notifier.system_message("[#{campaign.property.name}] SendNewsletterAction - FAILURE",
-        "campaign id: #{campaign.id}, campaign name: #{campaign.annotation} <br><br> ERROR DETAILS: #{error}", Notifier::DEV_ADDRESS).deliver
+        "campaign id: #{campaign.id}, campaign name: #{campaign.annotation} <br><br> ERROR DETAILS: #{error}", Notifier::DEV_ADDRESS).deliver_now
       
       raise error
     end
@@ -247,7 +247,7 @@ class SendNewsletterAction
 
     if ["NewsletterCampaign"].include?(campaign.class.to_s)
       Notifier.system_message("[#{property.name}] Newsletter Status: Sent", email_body(campaign, newsletter_hylet, total, audience_counts, now),
-        notification_emails, {"bcc" => Notifier::DEV_ADDRESS}).deliver
+        notification_emails, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now
         
       # import recpients for the spam watch report
       import_recpient_at = Time.now + ((total*60/10000) + 15).minutes
@@ -265,7 +265,7 @@ class SendNewsletterAction
     
     return <<-MESSAGE
     
-- #{campaign.property.property? ? "Sub-org" : "Organization"}:  #{campaign.property.name} <br>
+- Property:  #{campaign.property.name} <br>
 - Subject:  <a href="#{campaign.dashboard_url}">#{newsletter_hylet.last_subject}</a> <br>
 - Audience: #{audiences}<br>
 - Sent:  #{total} <br>

@@ -64,7 +64,7 @@ class SubscriberExporter < ReportExporter
         <br>
         CRM Help Team
         <br>
-        help@hy.ly", @params["recipient"], {"from" => Notifier::EXIM_ADDRESS}).deliver
+        help@hy.ly", @params["recipient"], {"from" => Notifier::EXIM_ADDRESS}).deliver_now
 
       Resque.enqueue_at(Time.now + 2.hours, DownloadCleaner, file_name)
       
@@ -74,11 +74,11 @@ class SubscriberExporter < ReportExporter
       p "ERROR: #{error_details}"
 
       Notifier.system_message("[SubscriberExporter] FAILURE", "ERROR DETAILS: #{error_details}",
-        Notifier::DEV_ADDRESS, {"from" => Notifier::EXIM_ADDRESS}).deliver
+        Notifier::DEV_ADDRESS, {"from" => Notifier::EXIM_ADDRESS}).deliver_now
         
       Notifier.system_message("[#{@property.name}] Subscribers Data",
         "There was an error while exporting your data, please contact help@hy.ly for help",
-        @params["recipient"], {"from" => Notifier::EXIM_ADDRESS}).deliver
+        @params["recipient"], {"from" => Notifier::EXIM_ADDRESS}).deliver_now
     end
   
   end

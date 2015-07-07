@@ -207,7 +207,7 @@ class CampaignReportsController < ApplicationController
     
       csv_string = CSV.generate() do |csv|
         csv << [
-          "Sub-org Name", "Campaign Name", "Deployment Time",
+          "Property Name", "Campaign Name", "Deployment Time",
           "Status", "# Sent", "# Clicks", "Clicks %", 
           "# Unsubscribed", "Unsubscribed %", 
           "# Complaints", "Complaints %", "Spam Index"
@@ -250,7 +250,7 @@ class CampaignReportsController < ApplicationController
     
       csv_string = CSV.generate() do |csv|
         csv << [
-          "Sub-org Name", "Campaign Name", "Deployment Time",
+          "Property Name", "Campaign Name", "Deployment Time",
           "Lead Group", "# Sent", "# Clicks", "Clicks %", 
           "# Unsubscribed", "Unsubscribed %", 
           "# Complaints", "Complaints %", "Spam Index"
@@ -348,7 +348,7 @@ class CampaignReportsController < ApplicationController
     end
     
     csv_string = CSV.generate() do |csv|
-      csv << ["#{@property.group? ? "Sub-org" : "Org"} Name", "Date & Time", "Campaign Name", "Subject", "Sends",
+      csv << ["Property Name", "Date & Time", "Campaign Name", "Subject", "Sends",
               "Unique Opens", "Unique Opens %", "Clicks", "Clicks %", "Unique Clicks", "Unique Clicks %",
               "Unsubscribes", "Unsubscribe %", "Spam Index", "Bounce", "Bounce %", "Complaints", "Complaints %", "# Lead Groups"]
 
@@ -477,7 +477,7 @@ class CampaignReportsController < ApplicationController
     end
 
     csv_string = CSV.generate() do |csv|
-      csv << ["Send At", "#{@property.group? ? "Sub-org" : "Org"} Name", "Campaign Name", "Subject", "From", "Audience"]
+      csv << ["Send At", "Property Name", "Campaign Name", "Subject", "From", "Audience"]
 
 
       @nlt_campaigns.each do |campaign|
@@ -589,7 +589,7 @@ class CampaignReportsController < ApplicationController
 
     csv_string = CSV.generate() do |csv|
       csv << [
-        "Sub-org Name",
+        "Property Name",
         "Last Email Sent",
         "# Days Since Last Email",
         "Campaign Name",
@@ -705,7 +705,7 @@ class CampaignReportsController < ApplicationController
   protected
   
     def set_campaign
-      @campaign = current_user.admin_campaign(params[:landing_campaign_id])
+      @campaign = current_user.admin_campaign(params[:campaign_id])
       @property = @campaign.property
       
       Time.zone = @property.setting.time_zone

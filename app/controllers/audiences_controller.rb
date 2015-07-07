@@ -8,13 +8,13 @@ class AudiencesController < ApplicationController
 
   def size
     if params[:ids]
-      @audiences = @property.all_audiences.where(:id => params[:ids])
+      @audiences = Audience.where(:id => params[:ids])
       
       res = @audiences.collect{|a| {:id => a.id.to_s, :count => a.residents_count} } #for json
       
     elsif params[:all]
       res = {:audiences => []}
-      audiences = @property.all_audiences.where(:id => params[:all])
+      audiences = Audience.where(:id => params[:all])
       
       if params[:detail]
         audiences.each do |a|
@@ -30,7 +30,7 @@ class AudiencesController < ApplicationController
       
     elsif params[:aid]
       
-      res = {:count => @property.all_audiences.find(params[:aid]).residents_count } #for json
+      res = {:count => Audience.find(params[:aid]).residents_count } #for json
     end
     
     respond_to do |format|
@@ -50,10 +50,10 @@ class AudiencesController < ApplicationController
       params[:all] = params[:all].split(",") if params[:all].kind_of?(String)
       
       # incorrect way
-      # @residents = @property.residents.or( @property.all_audiences.where(:id => params[:all]).collect{|a| a.residents.selector } )
+      # @residents = @property.residents.or( Audience.where(:id => params[:all]).collect{|a| a.residents.selector } )
       # @residents = @residents.paginate(:page => params[:page], :per_page => params[:rp] || 10)
       
-      selector = @property.residents.or( @property.all_audiences.where(:id => params[:all]).collect{|a| a.residents.selector } ).selector
+      selector = @property.residents.or( Audience.where(:id => params[:all]).collect{|a| a.residents.selector } ).selector
       page = (params[:page] || 1).to_i
       per_page = (params[:rp] || 10).to_i
       limit = page*per_page
@@ -66,7 +66,7 @@ class AudiencesController < ApplicationController
       
     else
       if !params[:aid].blank?
-        @audience = @property.all_audiences.find(params[:aid])
+        @audience = Audience.find(params[:aid])
       
       else
         @audience = UserDefinedAudience.new(:property_id => @property.id, :expression => params[:expression])
@@ -77,12 +77,12 @@ class AudiencesController < ApplicationController
       @total_residents = @residents.total_residents
     end
     
-    @residents.each{|e| e.curr_property_id = @property.id.to_s } if @property.property?
+    @residents.each{|e| e.curr_property_id = @property.id.to_s } if @property
     
     @rows = {
       :rows=> @residents.collect{|e| {
         :id=> e.id.to_s, 
-        :cell =>  sanitize_grid_cell(e.to_row(@columns, e.attributes, @property.property? ? "sub_org" : "org"))
+        :cell =>  sanitize_grid_cell(e.to_row(@columns, e.attributes, "property"))
       }},
       :page => params[:page] || 1,
       :total=> @total_residents # @total_residents is used in the view

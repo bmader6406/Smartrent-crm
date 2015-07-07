@@ -6,7 +6,7 @@ class SystemMessageMailer < QueuedMailer
   
   def self.perform(subject, message, email = nil, meta = {})
     email = Notifier::ADMIN_ADDRESS if email.blank?
-    Notifier.system_message(subject, message, email, meta).deliver
+    Notifier.system_message(subject, message, email, meta).deliver_now
   end
   
 end

@@ -24,7 +24,7 @@
           cache_audiences = @campaign.multi_sends.collect{|s| s.audience_counts }.flatten.compact.uniq
           
           if @campaign.nlt_clzz? && cache_audiences.length > 0
-            audiences = @campaign.property.all_audiences.where(:id => cache_audiences.collect{|a| a["id"]}).includes({:property => :audiences}, :campaign).all
+            audiences = @campaign.property.all_audiences.where(:id => cache_audiences.collect{|a| a["id"]}).includes(:property, :campaign).all
             
             cache_audiences.collect{|c|
               a = audiences.detect{|a| a.id == c["id"].to_i}
@@ -35,7 +35,7 @@
               else #deleted audience
                 property = Property.find_by_id(c["property_id"])
                 
-                if property && property.property?
+                if property
                   "#{property.name} #{c["name"]}"
                 else
                   c["name"]

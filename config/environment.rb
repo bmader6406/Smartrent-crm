@@ -3,6 +3,13 @@ require File.expand_path('../application', __FILE__)
 
 NIMDA_U, NIMDA_P = "hylynimda", "ZXCV!@34asdf"
 
+RETRY_LIMIT = 3
+RETRY_DELAY = 30
+TMP_DIR = "/tmp/"
+
+VERIFIED_DOMAINS = "hy.ly bozzuto.com"
+CHANNELS = ["email"]
+
 #Twitter CRM app of jjjsllc
 TWITTER_KEY = "VnbSsb1JvcaIJEqd3OTOg"
 TWITTER_SECRET = "2U5VYZkeImzQ022EGwFNzgmQnjk9pM2ULMNQj9xhM8"
@@ -29,19 +36,6 @@ LINKEDIN_SECRET = "6J2t0C0K5QFBImuv"
 
 AWS_KEY = 'AKIAIRKGJLR7V7ZO25GQ'
 AWS_SECRET = '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'
-
-#########
-
-RETRY_LIMIT = 3
-RETRY_DELAY = 30
-TMP_DIR = "/tmp/"
-
-# remove soon
-MULTI_SENDS_ENABLED_TS = Time.parse("2013-12-09 11:00:00 UTC").to_i
-DEPLOYED_AT = Time.now.to_i
-
-
-VERIFIED_DOMAINS = "hy.ly bozzuto.com"
 
 ###
 

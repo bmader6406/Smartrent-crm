@@ -125,4 +125,14 @@ class ApplicationController < ActionController::Base
     count.to_i.zero? ? 0 : total.to_i/count.to_i
   end
   
+  def sanitize_grid_cell(arr)
+    arr.collect do |str|
+      if str.kind_of?(String)
+        ActionController::Base.helpers.sanitize(str, :tags => %w(b i u span p em hr div ul ol li img br a), :attributes => %w(style src alt href target class id))
+      else
+        str
+      end
+    end
+  end
+  
 end

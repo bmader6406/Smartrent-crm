@@ -25,6 +25,18 @@ class Property < ActiveRecord::Base
     end
   end
   
+  def index_url
+    "http://#{HOST}/properties/#{id}"
+  end
+  
+  def to_macro(macro)
+    attributes.keys.each do |k|
+      macro["property.#{k}"] = self[k]
+      macro["property.#{k}"] = "http://#{self[k]}" if !self[k].to_s.match(/^https?:\/\//i)
+    end
+  end
+  
+  
   # use persona.residents.with(:consistency => :strong) to switch to primary for action that requires no lag
   #   such as: showing entry after submit, check if entry have been imported or not
 

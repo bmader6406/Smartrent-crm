@@ -1,7 +1,7 @@
 <style type="text/css">
   #template-form {
     float: left;
-    width: 340px;
+    width: 440px;
   }
   
   #template-form .hint {
@@ -11,13 +11,12 @@
   }
   
 	#template-form .actions {
-		border-bottom: 1px solid #ccc;
-		padding-bottom: 20px;
+		padding: 15px 0;
 	}
   
   #template-preview {
     border: 1px solid #eee;
-    margin-left: 400px;
+    margin-left: 500px;
     text-align: center;
     position: relative;
   }
@@ -46,8 +45,8 @@
   </div>
   
   <div class="form-group">
-    <%= f.label :category, "Category" %>
-    <%= f.select :category, template_categories, {}, :class => "form-control" %>
+    <%= f.label :property_id, "Property" %>
+    <%= f.select :property_id, Property.all.collect { |p| [ p.name, p.id ] }, {include_blank: true}, {:class => "form-control"} %>
   </div>
   
   <div class="form-group">
@@ -58,17 +57,6 @@
   <div class="actions">
     <%= f.button "Update", :class => "btn btn-primary" %>
   </div>
-
-	<br>
-	
-  <% if !@template.approved? %>
-    <%= link_to "Approve This Template", approve_nimda_template_path(@template), :method => :post, :class => "btn btn-success",
-        :confirm => "Approve Template___Are you sure you want to approve this template?" %>
-  <% else %>
-    <%= link_to "Unapprove This Template", unapprove_nimda_template_path(@template), :method => :post, :class => "btn btn-danger",
-          :confirm => "Unapprove Template___Are you sure you want to unapprove this template?" %>
-  <% end %>
-
 <% end %>
     
 <div id="template-preview">

@@ -31,6 +31,8 @@ GEM
       activemodel (= 4.2.2)
       activesupport (= 4.2.2)
       arel (~> 6.0)
+    activerecord-import (0.9.0)
+      activerecord (>= 3.0)
     activesupport (4.2.2)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
@@ -412,6 +414,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-import (~> 0.9.0)
   ancestry (= 2.1.0)
   authlogic (~> 3.4.5)
   authlogic-oauth (~> 1.0.8)

@@ -12,15 +12,15 @@
         You have requested to be unsubscribed from the <b><%= list_name %> Newsletter</b>. Please confirm your request below.
       </p>
 
-      <%= link_to "Unsubscribe from #{list_name} Newsletter", confirm_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :evid => params[:evid]), :class => "btn btn-default", :method => :post %>
+      <%= link_to "Unsubscribe from #{list_name} Newsletter", confirm_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id), :class => "btn btn-default", :method => :post %>
       
       <% if unsubscribe_all? %>
         <br><br>
         <p>
-          If you would like to be unsubscribed from all <%= @property.to_root.name %> promotional emails including the <b><%= list_name %> Newsletter</b>, please confirm your request below.
+          If you would like to be unsubscribed from all Bozzuto promotional emails including the <b><%= list_name %> Newsletter</b>, please confirm your request below.
         </p>
         
-        <%= link_to "Unsubscribe All", confirm_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :all => 1, :evid => params[:evid]), :class => "btn btn-default", :method => :post %>
+        <%= link_to "Unsubscribe All", confirm_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :all => 1), :class => "btn btn-default", :method => :post %>
       <% end %>
       
     <% else %>
@@ -43,7 +43,7 @@
         <% if unsubscribe_all? %>
           <br><br>
           <p>
-            If you would like to be unsubscribed from all <%= @property.to_root.name %> promotional emails including the <b><%= list_name %> Newsletter</b>, please confirm your request below.
+            If you would like to be unsubscribed from all Bozzuto promotional emails including the <b><%= list_name %> Newsletter</b>, please confirm your request below.
           </p>
 
           <%= link_to "Unsubscribe All", confirm_unsubscribe_path(123456, :cid => @campaign.id, :rid => @pretend_resident.id, :all => 1), :class => "btn btn-default", :method => :post %>

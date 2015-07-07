@@ -65,6 +65,16 @@ class Resident
   
   field :bounces_count, :type => Integer, :default => 0
   
+  # resident score
+  SEND_SCORE = 1
+  OPEN_SCORE = 2
+  CLICK_SCORE = 5
+  
+  field :score, :type => Integer, :default => 0
+  field :sends_count, :type => Integer, :default => 0
+  field :opens_count, :type => Integer, :default => 0
+  field :clicks_count, :type => Integer, :default => 0
+  
   
   embeds_many :activities, :class_name => "ResidentActivity"
   embeds_many :sources, :class_name => "ResidentSource"
@@ -80,9 +90,9 @@ class Resident
   index({ last_name_lc: 1 }, {background: true})
 
   #embedded
+  index({ :deleted_at => 1 })
   index({ "properties.property_id" => 1, "properties.status" => 1 })
   index({ "properties.property_id" => 1, :updated_at => 1 })
-  
   index({ "properties.property_id" => 1, "properties.unit_id" => 1 })
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
@@ -98,12 +108,22 @@ class Resident
     Resident.where(:_id => id.to_i).first
   end
   
-  def curr_source(pid = curr_property_id)
-    @curr_source ||= ordered_sources.reverse.detect{|s| s.property_id.to_s == pid.to_s }
+  def curr_property(pid = curr_property_id)
+    @curr_property ||= properties.detect{|p| p.property_id.to_s == pid.to_s } || properties.first
   end
   
-  def curr_property(pid = curr_property_id)
-    @curr_property ||= properties.detect{|p| p.property_id.to_s == pid.to_s }
+  def context(campaign)
+    #clear previous cache
+    @curr_property = nil
+    self.property_id = campaign ? campaign.property_id : nil
+    self
+  end
+  
+  # access current property method at resident level
+  PROPERTY_FIELDS.each do |f|
+    define_method "#{f}" do
+      curr_property.send(f)
+    end
   end
   
   def property=(data)
@@ -177,7 +197,7 @@ class Resident
     }
   end
   
-  #for resident cleaner, resident sub-org callback
+  #for resident cleaner, resident property callback
   def to_unified_status
     status = nil
     statues = []
@@ -199,6 +219,190 @@ class Resident
     end
   
     status
+  end
+  
+  ### email system
+  def subscribed?(property = nil)
+    if property
+      properties.detect{|p| p.property_id == property.id.to_s }.subscribed? rescue false
+
+    elsif curr_property_id
+      properties.detect{|p| p.property_id == curr_property_id.to_s }.subscribed? rescue false
+
+    else
+      self[:subscribed]
+    end
+  end
+
+  def subscribed_text
+    subscribed? ? "YES" : "NO"
+  end
+
+  def any_subscribed?(property_ids)
+    (property_ids.include?(property_id) ? self[:subscribed] : false) || properties.any?{|p| p.subscribed? && property_ids.include?(p.property_id) }
+  end
+
+  def unsubscribe(campaign, action = nil)
+    #action can be: unsubscribe_confirm, unsubscribe_confirm_all, unsubscribe_blacklisted, unsubscribe_bounce, unsubscribe_complaint
+    updated = false
+
+    if ["unsubscribe_confirm_all", "unsubscribe_blacklisted", "unsubscribe_bounce", "unsubscribe_complaint"].include?(action)
+      if self.subscribed?
+        self.update_attribute(:subscribed, false)
+        updated = true
+      end
+
+      if properties.any?{|p| p.subscribed }
+        self.properties.update_all(:subscribed => false)
+        updated = true
+      end
+
+    else
+      if campaign.property
+        prop = properties.detect{|p| p.property_id ==  campaign.property.id.to_s || campaign.tmp_property_id.to_s == p.property_id }
+
+        if prop && prop.subscribed?
+          prop.update_attribute(:subscribed, false)
+          updated = true
+
+        elsif campaign.tmp_property_id.to_s == property_id && self.subscribed?
+          self.update_attribute(:subscribed, false)
+          updated = true
+        end
+
+      else
+        if self.subscribed?
+          self.update_attribute(:subscribed, false)
+          updated = true
+        end
+      end
+
+    end
+
+    if updated
+      attrs = {:action => action, :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s}
+      if campaign.tmp_property_id
+        attrs[:target_id] = campaign.tmp_property_id
+        attrs[:target_type] = "Property"
+      end
+      marketing_activities.create(attrs)
+    end
+  end
+
+  def subscribe(campaign, bozzuto_properties = nil)
+    updated = false
+
+    if bozzuto_properties
+      bozzuto_properties.each do |property|
+        prop = properties.detect{|p| p.property_id ==  property.id.to_s }
+
+        if prop && !prop.subscribed?
+          prop.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+
+          marketing_activities.create(:action => "subscribe_property", :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s,
+            :target_id => prop.id, :target_type => "Property")
+        end
+      end
+
+    else
+      if campaign.property
+        prop = properties.detect{|p| p.property_id ==  campaign.property.id.to_s  || campaign.tmp_property_id.to_s == p.property_id  }
+
+        if prop && !prop.subscribed?
+          prop.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+          updated = true
+
+        elsif campaign.tmp_property_id.to_s == property_id && !self.subscribed?
+          self.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+          updated = true
+
+        end
+
+      else
+        if !self.subscribed?
+          self.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+          updated = true
+        end
+      end
+
+      if updated
+        attrs = {:action => "subscribe", :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s}
+        if campaign.tmp_property_id
+          attrs[:target_id] = campaign.tmp_property_id
+          attrs[:target_type] = "Property"
+        end
+        marketing_activities.create(attrs)
+      end
+    end
+
+  end
+  
+  def finalize_score
+    self.score = sends_count*SEND_SCORE + opens_count*OPEN_SCORE + clicks_count*CLICK_SCORE
+    self.save
+  end
+  
+  def bad_email?
+    email.blank? || email_check == "Bad"
+  end
+  
+  def unsubscribe_url
+    "http://#{HOST}/unsubscribes/#{unsubscribe_id}"
+  end
+  
+  def unsubscribe_id
+    @unsubscribe_id || "#{id}#{Time.now.to_i}"
+  end
+  
+  def unsubscribe_id=(uid) #for reschedule
+    @unsubscribe_id = uid
+  end
+  
+  def cookie_id
+    "#{id}#{Time.now.to_i}"
+  end
+  
+  def nlt_url(cid) #web version
+    "http://#{HOST}/nlt/#{cid}_#{unsubscribe_id}"
+  end
+
+  def to_macro(campaign)
+    macro = { 
+      "first_name" => first_name.to_s,
+      "last_name" => last_name.to_s,
+      "full_name" => full_name.to_s,
+      'email' => email.to_s,
+      "unsubscribe_url" => "#{unsubscribe_url}?cid=#{campaign.id}",
+      "email_url" => nlt_url(campaign.id),
+      "cache_buster_id" => unsubscribe_id
+    }
+    
+    attributes.keys.each do |k|
+      macro["#{k}"] = self[k]
+    end
+
+    campaign.property.to_macro(macro)
+
+    macro
+  end
+
+
+  # for unsubscribe
+  def to_cross_audience(va_campaign)
+    newsletter_hylet = va_campaign.first_nlt_hylet rescue nil
+
+    return nil if !newsletter_hylet
+
+    property_ids = properties.collect{|p| p.property_id }
+    audiences = newsletter_hylet.cross_audiences
+
+    #find sub-org audience which the lead belongs to
+    audience = audiences.detect{|a| property_ids.include?(a.property_id.to_s) }
+
+    #find org-group's audience if no sub-org's audience found
+    audience = audiences.detect{|a| property_id.to_i == a.property_id } if !audience
+
+    return audience
   end
 
   private

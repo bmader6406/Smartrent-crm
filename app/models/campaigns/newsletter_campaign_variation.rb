@@ -1,0 +1,3 @@
+class  NewsletterCampaignVariation < CampaignVariation
+  
+end

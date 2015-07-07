@@ -1,7 +1,7 @@
 class SesReceiver
   
   def self.queue
-    :crm_medium #should be im_immediate
+    :crm_medium
   end
   
   def self.perform(action, params)
@@ -58,7 +58,7 @@ class SesReceiver
       end
       
     else
-      Resque.enqueue_to("im_ses_not_found", action, params)
+      Resque.enqueue_to("crm_ses_not_found", action, params)
       
     end    
   end

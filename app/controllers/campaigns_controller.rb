@@ -45,7 +45,7 @@ class CampaignsController < ApplicationController
   end
   
   def create
-    template = ::Template.find(template_id)
+    template = ::Template.find_by(property_id: @property.id)
     published_at = DateTime.strptime(params[:published_at], '%Y-%b-%d %l:%M %p %z')
     email_project = {
       :to => params[:campaign][:to],
@@ -70,8 +70,7 @@ class CampaignsController < ApplicationController
           :property_id => @campaign.property_id, 
           :template_id => @campaign.template_id, 
           :user_id => @campaign.user_id,
-          :root_id => @campaign.id,
-          :client => @campaign.client
+          :root_id => @campaign.id
         })
 
         variate_campaign.save(:validate => false)
@@ -124,7 +123,7 @@ class CampaignsController < ApplicationController
   end
 
   def update
-    template = ::Template.find(template_id)
+    template = ::Template.find_by(property_id: @property.id)
     published_at = DateTime.strptime(params[:published_at], '%Y-%b-%d %l:%M %p %z')
     email_project = {
       :to => params[:campaign][:to],
@@ -195,7 +194,7 @@ class CampaignsController < ApplicationController
   end
   
   def preview_template
-    template = ::Template.find_by_id(template_id)
+    template = ::Template.find_by(property_id: @property.id)
     
     if template
       hylet = template.campaign.newsletter_hylet
@@ -236,10 +235,6 @@ class CampaignsController < ApplicationController
       end
     end
     
-    def template_id
-      @property.setting.template_id
-    end
-    
     def replace_macro(body_html, body_text)        
       if action_name == "preview_template"
         body_html.gsub!("{%body_text%}", "<div id='hyly-body-text'>#{ body_text }</div>")
@@ -276,7 +271,7 @@ class CampaignsController < ApplicationController
         hash[k.to_sym] = params[k]
       end
       
-      @campaigns = @property.campaigns.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("published_at asc")
+      @campaigns = Campaign.for_property(@property).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("published_at asc")
       
       # eager load newsletter hylet
       root_va_ids = Campaign.where(:root_id => @campaigns.collect{|c| [c.id, c.group_id] }.flatten.compact.uniq, :parent_id => nil).collect{|c| [c.root_id, c.id] }
@@ -290,7 +285,7 @@ class CampaignsController < ApplicationController
       end
       
       aud_dict = {}
-      audiences = Audience.where(:id => nlt_dict.values.collect{|h| h.audience_ids }.flatten.compact ).includes({:property => :audiences}, :campaign).all
+      audiences = Audience.where(:id => nlt_dict.values.collect{|h| h.audience_ids }.flatten.compact ).includes(:property, :campaign).all
       nlt_dict.keys.each do |k|
         hylet = nlt_dict[k]
         hylet.set_audience_name( audiences.collect{|a| a if hylet.audience_ids.include?(a.id.to_s) }.compact.collect{|a| a.name } )

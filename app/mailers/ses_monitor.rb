@@ -21,7 +21,7 @@ class SesMonitor
     errors = []
     
     total = 0
-    property_ids = Property.where("leads_count > 50000").collect{|p| p.id }
+    property_ids = Property.all.collect{|p| p.id }
     
     Mail.find_and_delete({:what => :last, :count => 150, :order => :desc}) { |m| 
       # don't delete any email
@@ -61,7 +61,7 @@ class SesMonitor
             complaints << "#{send_event.id}___#{final_recipient}"
             
           else
-            unsubscribed_lead = unsubscribe_lead(final_recipient, property_ids, "bad_email_found")
+            unsubscribed_lead = unsubscribe_resident(final_recipient, property_ids, "bad_email_found")
           end
         
           unsubscribed_user = unsubscribe_user(final_recipient, "unsubscribe_complaint")
@@ -79,7 +79,7 @@ class SesMonitor
             bounces << "#{send_event.id}___#{final_recipient}"
             
           else
-            unsubscribed_lead = unsubscribe_lead(final_recipient, property_ids, "bad_email_found")
+            unsubscribed_lead = unsubscribe_resident(final_recipient, property_ids, "bad_email_found")
           end
           
           unsubscribed_user = unsubscribe_user(final_recipient, "unsubscribe_bounce")
@@ -120,7 +120,7 @@ class SesMonitor
   end
   
   # SesReceiver will not unsubscribe lead
-  def self.unsubscribe_lead(email, property_ids, type)
+  def self.unsubscribe_resident(email, property_ids, type)
     pp "unsubscribing lead..."
     unsubscribed = false
     
@@ -128,7 +128,7 @@ class SesMonitor
       property_ids.each do |property_id|
         Resident.where(:property_id => property_id, :email_lc => email).each do |e|
           pp "FOUND: #{e.email}, property_id: #{property_id}"
-          e.activities.create(:state => e.state, :action => "bad_email_found")
+          e.marketing_activities.create(:state => e.state, :action => "bad_email_found")
           e.update_attribute(:subscribed, false)
           e.properties.update_all(:subscribed => false)
           
@@ -151,12 +151,7 @@ class SesMonitor
         user.unsubscribe(type)
         unsubscribed = true
       end
-      
-      user = Booking::User.find_by_email(email)
-      if user
-        user.unsubscribe
-        unsubscribed = true
-      end
+
     end
     
     unsubscribed

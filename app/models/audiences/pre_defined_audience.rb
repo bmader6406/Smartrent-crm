@@ -55,7 +55,7 @@ class PreDefinedAudience < Audience
   
   def description
     
-    org_name = property ? "Sub-org" : "Bozzuto"
+    org_name = property ? "Property" : "Bozzuto"
     if all_resident?
       "All Residents of the #{property.name} #{org_name}"
         

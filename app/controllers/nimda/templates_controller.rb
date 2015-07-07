@@ -5,15 +5,13 @@ class Nimda::TemplatesController < NimdaController
     
   # GET /templates
   def index
-    params[:category] = "all" if !params[:category]
+    @templates = Template.includes(:property)
     
-    @templates = Template.approved
-    @templates = @templates.where("category = ?", params[:category]) if params[:category] != "all"
+    if !params[:search].blank?
+      @templates = @templates.joins(:property).where("templates.name LIKE :name OR properties.name LIKE :name", {name: "%#{params[:search]}%"}) 
+    end
     
     @templates = @templates.paginate(:page => params[:page], :per_page => 50)
-    
-    @pending_templates = Template.pending
-    @pending_templates = @pending_templates.paginate(:page => params[:p_page], :per_page => 20)
   end
   
   def create
@@ -23,8 +21,7 @@ class Nimda::TemplatesController < NimdaController
     template = Template.new({
       :user_id => current_user.id,
       :campaign => template_campaign,
-      :name => template_campaign.annotation,
-      :category => "email_newsletter"
+      :name => template_campaign.annotation
     })
 
     if template.save
@@ -75,33 +72,6 @@ class Nimda::TemplatesController < NimdaController
     flash[:notice] = "Template was successfully archived"
     
     redirect_to nimda_templates_url
-  end
-  
-  def approve
-    
-    @template.approved = true
-    
-    if @template.save
-      flash[:notice] = "Template was successfully approved"
-
-      redirect_to nimda_templates_url(:category => @template.category)       
-    else
-      render :action => :show
-    end
-    
-  end
-  
-  def unapprove
-    
-    @template.approved = false
-    
-    if @template.save
-      flash[:notice] = "Template was successfully approved"
-      redirect_to nimda_templates_url
-    else
-      render :action => :show
-    end
-    
   end
   
   protected

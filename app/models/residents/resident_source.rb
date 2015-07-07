@@ -1,5 +1,5 @@
-class ResidentProperty
-
+class ResidentSource
+  
   include Mongoid::Document
   include Mongoid::Timestamps
 
@@ -59,20 +59,19 @@ class ResidentProperty
   field :other4, :type => String
   field :other5, :type => String
   
-  # for newsletter
-  field :subscribed, :type => Boolean, :default => true
-  field :subscribed_at, :type => DateTime
-  
-  
+
   embedded_in :resident
 
-  before_save :set_rental_type
-  
-  after_save :set_unified_status
-  after_create :increase_counter_cache
+  # because mongoid 2.4.12 does not support cascading callback on parent object
+  # so make sure we make changes to the embedded document directly to trigger the callbacks
+  after_create :create_property, :if => lambda { |s| s.property_id }
+  after_create :increase_counter_cache, :if => lambda { |s| !s.unify_resident }
+  after_create :create_activity, :if => lambda { |s| !s.unify_resident }
 
-  after_destroy :set_unified_status
   after_destroy :decrease_counter_cache
+  after_destroy :destroy_dependent
+
+  attr_accessor :unify_resident
 
   def property
     @property ||= Property.find_by_id(property_id)
@@ -81,32 +80,63 @@ class ResidentProperty
   def property=(prop) #eager load
     @property = prop
   end
-  
-  def unit
-    @unit ||= unit_id.blank? ? nil : Unit.find_by_id(unit_id)
-  end
-
-  #====
 
   private
 
-    def increase_counter_cache
-      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"properties_count" => 1}}, {:multi => true})
+    def create_activity
+      #pp ">>>>> create_activity"
+      resident.activities.create(:action => "add_new") if resident.activities_count.zero? #if must be here
     end
+    
+    def create_property
+      #pp ">>> create_property"
+      attrs = { :property_id => property_id }
+      
+      # save & update property fields only
+      Resident::PROPERTY_FIELDS.each do |f|
+        if self[f].kind_of?(String) && !self[f].blank?
+          attrs[f] = self[f]
+          
+        else
+          attrs[f] = self[f]
+        end
+      end
+    
+      if !status_date.blank? && !status.blank?
+        attrs[:status] = status
+        attrs[:status_date] = status_date
+      end
+    
+      existing = resident.properties.detect{|p| p.property_id == property_id}
 
-    def decrease_counter_cache
-      if resident #when delete all properties, resident will be nil
-        Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"properties_count" => -1}}, {:multi => true})
+      if existing
+        existing.update_attributes(attrs)
+      else
+        resident.properties.create(attrs)
       end
     end
   
-    def set_unified_status
-      if resident && resident.unified_status != resident.to_unified_status # pure update
-        Resident.collection.where({"_id" => resident._id}).update({ "$set" => {"unified_status" => resident.to_unified_status }}, {:multi => true})
+    def increase_counter_cache
+      #pp ">>>>> increase_counter_cache"
+      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"sources_count" => 1}}, {:multi => true})
+    end
+
+    def decrease_counter_cache
+      #pp ">>>>> decrease_counter_cache"
+      if resident #when delete all sources, resident will be nil
+        Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"sources_count" => -1}}, {:multi => true})
       end
     end
+  
+    def destroy_dependent
+      #pp ">>>>> destroy_dependent"
+      if property_id
+        if !resident.sources.where(:property_id => property_id, :_id.ne => id.to_s).first
+          ep = resident.properties.where(:property_id => property_id).first
+          ep.destroy if ep
+        end
+      end
     
-    def set_rental_type
-      self.rental_type = unit.rental_type if unit # for reports
     end
+  
 end

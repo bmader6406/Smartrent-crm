@@ -45,7 +45,7 @@ class TwilioController < ApplicationController
   #phone2phone
   def p2p_connect
     pp "p2p_connect: #{Time.now}", params
-    call = Call.find_by_origin_id(params[:CallSid])
+    call = Call.find_by(origin_id: params[:CallSid])
     response = Twilio::TwiML::Response.new do |r|
       r.Dial call.to
     end
@@ -55,7 +55,7 @@ class TwilioController < ApplicationController
 
   def p2p_status
     pp "p2p_status: #{Time.now}", params
-    call = Call.find_by_origin_id(params[:CallSid])
+    call = Call.find_by(origin_id: params[:CallSid])
     call.update_attributes({
       :recording_duration => params[:CallDuration],
       :recording_url => params[:RecordingUrl]

@@ -1,21 +1,16 @@
 <%= link_to "Create A New Template", nimda_templates_path, :class => "btn btn-primary", :method => :post %>
 
 <br><br>
-<h3> Approved Templates </h3>
-<%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>
-  Filter by
-  <%= select_tag "category", options_for_select(template_categories.insert(0, ['All Categories','all']), params[:category]), :id => "template-category", :class => "form-control"  %>
-	<%= hidden_field_tag "channel", params[:channel] if params[:channel] %>
-  <%= button_tag "Filter", :name => nil, :style => "display:none;" %>
-<% end %>
-<br>
+
+<div style="padding:10px 0;">
+  <%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>
+    <%= text_field_tag :search, params[:search], :style => "width:350px;", :class => "form-control", :placeholder => "Enter Template Name or Property Name" %>
+    <%= button_tag "search", :name => nil, :class => "btn btn-default" %>
+  <% end %>
+</div>
+
 <%= render "templates", :templates => @templates, :param_page => "page" %>
 
-<br><br>
-<% if !@pending_templates.empty? %>
-  <h3> Pending Templates </h3>
-  <%= render "templates", :templates => @pending_templates, :param_page => "p_page" %>
-<% end %>
 
 <script type="text/javascript">
   $(function(){

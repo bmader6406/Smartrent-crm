@@ -10,10 +10,10 @@
         
     <% elsif @resident %>
       <% if params[:all] %>
-        <%= form_tag subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :all => 1, :evid => params[:evid]), :method => :post, :id => "subscribe-form" do %>
+        <%= form_tag subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :all => 1), :method => :post, :id => "subscribe-form" do %>
           <p>
-            We have unsubscribed <a class="email" href="#"><%= @resident.email %></a> from all <b><%= @property.to_root.name %> lists</b>. <br><br>
-            If you would like to remain in touch with deals, offers and newsletters from any of these <%= @property.to_root.name %> lists, 
+            We have unsubscribed <a class="email" href="#"><%= @resident.email %></a> from all <b>Bozzuto lists</b>. <br><br>
+            If you would like to remain in touch with deals, offers and newsletters from any of these Bozzuto lists, 
             please check the lists you want and subscribe below:
             
             <% Property.where(:id => @resident.properties.collect{|p| p.property_id }).order("name asc").each do |property| %>
@@ -29,7 +29,7 @@
           If you would like to remain in touch with deals, offers and newsletters from <b><%= list_name %></b>, please subscribe below.
         </p>
 
-        <%= link_to "Subscribe to #{list_name}", subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id, :evid => params[:evid]), :class => "btn btn-default", :method => :post %>
+        <%= link_to "Subscribe to #{list_name}", subscribe_unsubscribe_path(@resident.unsubscribe_id, :cid => @campaign.id), :class => "btn btn-default", :method => :post %>
       <% end %>
       
     <% else %>
@@ -46,8 +46,8 @@
         <% if params[:all] %>
           <%= form_tag subscribe_unsubscribe_path(123456, :cid => @campaign.id, :rid => @pretend_resident.id, :all => 1), :method => :post, :id => "subscribe-form" do %>
             <p>
-              We have unsubscribed <a class="email" href="#"><%= @pretend_resident.email %></a> from all <b><%= @property.to_root.name %> lists</b>. <br><br>
-              If you would like to remain in touch with deals, offers and newsletters from any of these <%= @property.to_root.name %> lists, 
+              We have unsubscribed <a class="email" href="#"><%= @pretend_resident.email %></a> from all <b>Bozzuto lists</b>. <br><br>
+              If you would like to remain in touch with deals, offers and newsletters from any of these Bozzuto lists, 
               please check the lists you want and subscribe below:
 
               <% Property.where(:id => @pretend_resident.properties.collect{|p| p.property_id }).order("name asc").each do |property| %>

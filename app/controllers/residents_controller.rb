@@ -48,7 +48,7 @@ class ResidentsController < ApplicationController
     @resident = Resident.new if !@resident
 
     Resident::CORE_FIELDS.each do |f|
-      if !resident_params[f].blank?
+      if resident_params[f]
         if [:full_name].include?(f)
           @resident.full_name = resident_params[f]
         else
@@ -87,7 +87,7 @@ class ResidentsController < ApplicationController
 
   def update
     Resident::CORE_FIELDS.each do |f|
-      if !resident_params[f].blank?
+      if resident_params[f]
         if [:full_name].include?(f)
           @resident.full_name = resident_params[f]
         else
@@ -113,9 +113,9 @@ class ResidentsController < ApplicationController
         property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
-    pp resident_params
+
     respond_to do |format|
-      if @resident.update_attributes(resident_params)
+      if @resident.save
         @resident.sources.create(property_attrs)  if property_attrs[:property_id]
         format.json { render template: "residents/show.json.rabl" }
       else

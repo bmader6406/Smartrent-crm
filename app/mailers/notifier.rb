@@ -51,14 +51,14 @@ class Notifier < ActionMailer::Base
     mail(:to => email, :from => meta["from"], :subject => subject, :bcc => meta["bcc"], :reply_to => meta["reply_to"])
   end
   
-  def campaign_newsletter(campaign, newsletter, entry, form_fields, property_fields, meta)
+  def campaign_newsletter(campaign, newsletter, resident, meta)
     Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])
     
     newsletter.subject = meta[:custom_subject] if meta[:custom_subject]
     
-    macro = resident.to_macro(campaign, form_fields, property_fields)
+    macro = resident.to_macro(campaign)
     
-    translate_macro(campaign, newsletter, macro, entry)
+    translate_macro(campaign, newsletter, macro, resident)
     
     @attachment_urls.split(',').each do |url|
       url = url.strip
@@ -182,14 +182,13 @@ class Notifier < ActionMailer::Base
       @from_name ||= case email
         when "alerts@hy.ly"
           "CRM Alert"
-        when "renewals@hy.ly"
-          "CRM Renewal"
+          
         when "help@hy.ly"
           "CRM Help"
+          
         when "reports@hy.ly"
           "CRM Report"
-        when "reports2@hy.ly"
-          "CRM Report"
+          
         when "notifications@hy.ly"
           "CRM Notification"
       end
@@ -197,7 +196,7 @@ class Notifier < ActionMailer::Base
       "#{@from_name} <#{email}>"      
     end
     
-    def translate_macro(campaign, newsletter, macro, entry = nil)
+    def translate_macro(campaign, newsletter, macro, resident = nil)
       #must clone the original template
       @subject = newsletter.subject.clone
       @from = newsletter.from.clone
@@ -229,7 +228,7 @@ class Notifier < ActionMailer::Base
         end
       end
       
-      if entry
+      if resident
         url_hash = newsletter.tracking_urls
 
         if !url_hash.empty?

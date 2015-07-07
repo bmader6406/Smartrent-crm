@@ -38,7 +38,6 @@ class  CampaignVariationMetric < VariationMetric
     if channel_condition
       
       campaign.dict_variates["all"].each do |v|
-        next if v.kind_of?(ResponderCampaignVariation)
     		dict["#{v.id}"] = v.name
     	end
     
