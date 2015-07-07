@@ -99,6 +99,59 @@ class PublicController < ApplicationController
 
     render :layout => false, :action => "nlt"
   end
+  
+  def pixel
+    visitor_ip = request.env["HTTP_X_FORWARDED_FOR"] || request.remote_ip
+    visitor_ip = "8.8.8.8" if visitor_ip.include?("127.0.0.1") || visitor_ip.include?("192.168.1.")
+    visitor_ip = visitor_ip.split(",").first.strip.split(":").first rescue nil
+    
+    Resque.enqueue_to("crm_job_buffer", CampaignLogger, params[:cid], "track_open", {
+      :request_time => Time.now.to_i,
+      :rid => params[:rid],
+      :request_url => request.url,
+      :referer => request.env["HTTP_REFERER"],
+      :visitor_ip => visitor_ip,
+      :user_agent => request.env['HTTP_USER_AGENT']
+    })
+    
+    file = Rails.root.join("public/images/pixel.gif").to_s
+    send_file file, :type => 'image/gif', :disposition => 'inline'
+  end
+  
+  def tracker
+    visitor_ip = request.env["HTTP_X_FORWARDED_FOR"] || request.remote_ip
+    visitor_ip = "8.8.8.8" if visitor_ip.include?("127.0.0.1") || visitor_ip.include?("192.168.1.")
+    visitor_ip = visitor_ip.split(",").first.strip.split(":").first rescue nil
+    
+    url = Url.find_by_token(params[:token])
+    
+    if url
+      # params[:cid] indicates if it is a reschedule email
+      # Only count the click event of the real send
+      # Ignore the click event of test send
+      Resque.enqueue_to("crm_job_buffer", CampaignLogger, params[:cid] || url.campaign_id, "track_click", {
+        :request_time => Time.now.to_i,
+        :rid => params[:rid],
+        :url_id => url.id,
+        :request_url => request.url,
+        :referer => request.env["HTTP_REFERER"],
+        :visitor_ip => visitor_ip,
+        :user_agent => request.env['HTTP_USER_AGENT']
+      }) if params[:rid]
+      
+      origin_url = CGI.unescapeHTML(url.origin_url)
+
+      if origin_url.include?("e.hylyemail") && url.campaign
+        origin_url = origin_url.gsub("e.hylyemail", "e.#{url.campaign.to_root_id}")
+      end
+      
+      redirect_to origin_url and return
+      
+    else
+      redirect_to "http://www.bozzuto.com"
+    end
+    
+  end
 
   protected
 

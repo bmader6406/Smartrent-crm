@@ -4,11 +4,15 @@ class HourlyJob
   @retry_delay = RETRY_DELAY
   
   def self.queue
-    :crm_test
+    :crm_routine
   end
   
-  def self.perform()
-    puts "test"
+  def self.perform(time = Time.now.utc)
+    Resque.enqueue(VariationMetricGenerator, time.to_i)
+    
+    Resque.enqueue(SpamishEmailSent, time.to_i)
+    
+    Resque.enqueue(MetricGenerator, time.to_i)
   end
   
 end

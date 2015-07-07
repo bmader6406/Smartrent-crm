@@ -7,7 +7,6 @@ node do |n|
     :name => n.property.name,
     :subscribed => n.subscribed?,
     :status => n.status,
-    :resident_status => n.resident_status,
     :lead_type => n[lead_source["lead_type"]],
     :lead_source => n[lead_source["lead_source"]],
     :created_at => n.created_at.strftime("%m/%d/%Y"),

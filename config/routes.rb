@@ -106,6 +106,8 @@ Rails.application.routes.draw do
   
   get '/nlt/:nlt_id' => 'public#nlt', :as => :nlt
   get '/nlt2/:cid' => 'public#nlt2', :as => :nlt2
+  get '/t/:token' => 'public#tracker', :as => :t
+  get '/pixel' => 'public#pixel', :as => :pixel
   
   resources :receivers do
     collection do

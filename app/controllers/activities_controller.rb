@@ -292,13 +292,12 @@ class ActivitiesController < ApplicationController
           next if counted["#{a.action}_#{a.subject_id}"]
 
           # ignore all autoresponder history
-          next if ["send_mail", "open_mail", "click_link"].include?(a.action) &&
-                    !["NewsletterCampaign", "NewsletterRescheduleCampaign", "NurtureCampaign"].include?(a.subject_type)
+          next if ["send_mail", "open_mail", "click_link"].include?(a.action) && !["NewsletterCampaign", "NewsletterRescheduleCampaign"].include?(a.subject_type)
 
           activities << a
 
           #mark as counted
-          counted["#{a.action}_#{a.subject_id}"] = 1 if a.action != "schedule"
+          counted["#{a.action}_#{a.subject_id}"] = 1
         end
 
         

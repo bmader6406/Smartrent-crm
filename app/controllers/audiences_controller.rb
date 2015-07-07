@@ -49,10 +49,6 @@ class AudiencesController < ApplicationController
       
       params[:all] = params[:all].split(",") if params[:all].kind_of?(String)
       
-      # incorrect way
-      # @residents = @property.residents.or( Audience.where(:id => params[:all]).collect{|a| a.residents.selector } )
-      # @residents = @residents.paginate(:page => params[:page], :per_page => params[:rp] || 10)
-      
       selector = @property.residents.or( Audience.where(:id => params[:all]).collect{|a| a.residents.selector } ).selector
       page = (params[:page] || 1).to_i
       per_page = (params[:rp] || 10).to_i

@@ -38,7 +38,7 @@ class Property < ActiveRecord::Base
   
   
   # use persona.residents.with(:consistency => :strong) to switch to primary for action that requires no lag
-  #   such as: showing entry after submit, check if entry have been imported or not
+  #   such as: showing entry after submit, check if resident have been imported or not
 
   # for mongoid, no need to cache the query result because, it does not query the db if call .where only
   def residents

@@ -30,12 +30,12 @@ class MailEvent < Event
           #this activity will be created by the campaign newsletter mailer
           
         when "OpenEvent"
-          if entry
-            resident.marketing_activities.create(:state => resident.state, :action => "open_mail", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
+          if resident
+            resident.marketing_activities.create(:action => "open_mail", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
           end
           
         when "UniqueOpenEvent"
-          if entry && variate_campaign.kind_of?(NewsletterCampaign)
+          if resident && variate_campaign.kind_of?(NewsletterCampaign)
             open_mail = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "open_mail" }
             
             if open_mail
@@ -52,13 +52,13 @@ class MailEvent < Event
           end
           
         when "LinkClickEvent"
-          if entry
-            resident.marketing_activities.create(:state => resident.state, :action => "click_link", :subject_id => campaign.id, :subject_type => campaign.class.to_s,
+          if resident
+            resident.marketing_activities.create(:action => "click_link", :subject_id => campaign.id, :subject_type => campaign.class.to_s,
               :target_id => url_id , :target_type => "Url", :created_at => created_at )
           end
           
         when "UniqueLinkClickEvent"
-          if entry && variate_campaign.kind_of?(NewsletterCampaign)
+          if resident && variate_campaign.kind_of?(NewsletterCampaign)
             click_link = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "click_link" }
             
             if click_link
@@ -78,8 +78,8 @@ class MailEvent < Event
           #this activity will be created by the campaign newsletter mailer
           
         when "BounceEvent"
-          if entry
-            resident.marketing_activities.create(:state => resident.state, :action => "bounce", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
+          if resident
+            resident.marketing_activities.create(:action => "bounce", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
             
             # mark email as bounce immediately for ALJ
             if ["1470172458182649674"].include?(resident.property_id) || bounce_type == "Permanent" || resident.bounces_count > 0 # two in a row
@@ -91,8 +91,8 @@ class MailEvent < Event
           end
           
         when "ComplaintEvent"
-          if entry
-            resident.marketing_activities.create(:state => resident.state, :action => "complain", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
+          if resident
+            resident.marketing_activities.create(:action => "complain", :subject_id => campaign.id, :subject_type => campaign.class.to_s, :created_at => created_at)
             resident.unsubscribe(campaign, "unsubscribe_complaint")
           end
           

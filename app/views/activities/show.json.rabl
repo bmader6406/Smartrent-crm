@@ -10,8 +10,7 @@ end
 
 node(:marketing, :if => lambda {|n| n.kind_of?(MarketingActivity) }) do |n|
   {
-    :note => n.note,
-    :tour_time => n.action == "schedule" && n.target ? n.target.tour_time : nil
+    :note => n.note
   }
 end
 

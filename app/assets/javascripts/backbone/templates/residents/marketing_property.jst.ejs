@@ -8,9 +8,9 @@
         <span class="unsubscribed">Not Subscribed</span>
       <% } %>
       
-      <% if (resident_status) { %>
-        <span class="<%= resident_status.toLowerCase().replace(/\//g, "") + "-resident" %> status-popover">
-          <%= resident_status  %> Resident
+      <% if (status) { %>
+        <span class="<%= status.toLowerCase().replace(/\//g, "") + "-resident" %> status-popover">
+          <%= status  %> Resident
         </span>
       <% } else { %>
         <span class="non-resident">

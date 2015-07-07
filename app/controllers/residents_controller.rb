@@ -200,25 +200,16 @@ class ResidentsController < ApplicationController
   
   # marketing stream (aka x-ray)
   def marketing_statuses
-    l2l_sources = []
-    l2l_changed_sources = []
+    sources = []
+    changed_sources = []
 
-    yardi_sources = []
-    yardi_changed_sources = []
     
     # collect l2l source source
     @resident.sources.where(:property_id => params[:prop_id]).each_with_index do |s, i|
-      pp "#{s.status}, #{s.resident_status}, #{s.status_date}, #{s.created_at}"
-      if !s.status.blank? && !s.status_date.blank?
-        l2l_sources << {
-          :status => "#{s.status} Prospect",
-          :status_date => s.status_date
-        }
-      end
-
-      if s.resident_status
-        yardi_sources << {
-          :status => "#{s.resident_status} Resident",
+      pp "#{s.status}, #{s.status_date}, #{s.created_at}"
+      if s.status
+        sources << {
+          :status => s.status,
           :status_date => s.created_at,
           :move_in => s.move_in,
           :move_out => s.move_out
@@ -226,33 +217,21 @@ class ResidentsController < ApplicationController
       end
     end
 
-    #collect only l2l changed source (status & status_date changed)
+    #collect only changed source (status & status_date changed)
     #  must order by status_date asc, status_date always exists
-    sorted_sources = l2l_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
+    sorted_sources = sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
     sorted_sources.each_with_index do |s, i|
       if i == 0
-        l2l_changed_sources << s
+        changed_sources << s
 
       elsif s[:status] != sorted_sources[i-1][:status]
-        l2l_changed_sources << s
+        changed_sources << s
 
       end
     end
 
-    #collect only l2l changed source (status & status_date changed)
-    #  must order by status_date asc, status_date always exists
-    sorted_sources = yardi_sources.sort{|a, b| a[:status_date] <=> b[:status_date] }
-    sorted_sources.each_with_index do |s, i|
-      if i == 0
-        yardi_changed_sources << s
 
-      elsif s[:status] != sorted_sources[i-1][:status]
-        yardi_changed_sources << s
-
-      end
-    end
-
-    @statuses = (l2l_changed_sources + yardi_changed_sources).sort{|a, b| b[:status_date] <=> a[:status_date] }
+    @statuses = changed_sources.sort{|a, b| b[:status_date] <=> a[:status_date] }
     
     render :json => @statuses.collect{|n| 
       {
@@ -265,7 +244,7 @@ class ResidentsController < ApplicationController
   end
   
   def marketing_properties
-    @properties = @residents.properties
+    @properties = @resident.properties
 
     #eager load properties
     properties = Property.where(:id => @properties.collect{|p| p.property_id }.compact).collect{|prop| prop }
