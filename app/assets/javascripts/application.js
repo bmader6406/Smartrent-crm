@@ -22,6 +22,9 @@
 //= require jquery.hoverIntent.js
 //= require jquery.fastLiveFilter.js
 //= require jquery.mCustomScrollbar2
+//= require jquery.tablesorter.min
+//= require jquery.tablesorter.widgets.min
+//= require jquery.floatThead.min
 //= require redactor
 //
 //= require underscore-min

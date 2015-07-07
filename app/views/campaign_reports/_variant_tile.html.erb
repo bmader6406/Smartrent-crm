@@ -1,0 +1,65 @@
+<li class="variant-tile">
+  <table>
+    <tr>
+      <td colspan="2" style="padding:0;"> 
+        <h4> <%= name %> </h4>
+      </td>
+    </tr>
+    <tr>
+      <% [0, 1].each do |index| %>
+        <% v =  variates[index] %>
+    
+        <% if v %>
+          <% 
+            campaign = v.variate_campaign
+            campaign.tmp_timestamp = params[:timestamp]
+          %>
+          <td class="<%= "last" if index == 1 %>">
+            <div class="meta">
+              <div class="thumb-text">
+                <a href="#"  target="_blank">
+									<% if type == "open_rate" %>
+										<p> 
+                      <span><%= campaign.newsletter_hylet.from if !campaign.newsletter_hylet.from.blank? %></span>
+											<%= campaign.newsletter_hylet.curr_subject(params[:timestamp].to_i) %>
+										</p>
+									<% else %>
+	                  <p> Thumbnail is being generated </p>
+									<% end %>
+                </a>
+              </div>
+            </div>
+      
+            <div class="stats">
+              <% if type == "conversion_rate" %>
+                <b>
+                  <% stats = @campaign.variant_stats(v.id, params[:range])  %>
+                  <%= conversion(stats[0], stats[1]) %>%
+                </b>
+                <span> Conversion <br> Rate - <%= v.version %></span>
+                
+              <% elsif type == "open_rate" %>
+                <b>
+                  <%= conversion(campaign.variant_sends.sum{|c| c.variant_unique_opens_count }, campaign.variant_sends.sum{|c| c.variant_sends_count }) %>%
+                </b>
+                <span> <br> <%= v.version %></span>
+                
+              <% elsif type == "click_rate" %>
+                <b>
+                  <%= conversion(campaign.variant_sends.sum{|c| c.variant_unique_clicks_count }, campaign.variant_sends.sum{|c| c.variant_sends_count }) %>%
+                </b>
+                <span> <br> <%= v.version %></span>
+                
+              <% end %>
+            </div>
+          </td>
+
+        <% elsif variates.first  %>
+          <td class="last">
+
+          </td>
+        <% end %>
+      <% end %>
+    </tr>
+  </table>
+</li>

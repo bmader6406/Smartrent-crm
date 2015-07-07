@@ -39,7 +39,7 @@ class VariationMetricGenerator
   
   def self.mark_send_as_opened(campaign, start_at, end_at)
     # Mark send event as opened if it was not
-    UniqueOpenEvent.find_in_batches(:conditions => "campaign_id = #{campaign.id} AND created_at #{(start_at..end_at).to_s(:db)}") do |events|
+    UniqueOpenEvent.where("campaign_id = #{campaign.id} AND created_at #{(start_at..end_at).to_s(:db)}").find_in_batches do |events|
       events.each do |ev|
         ev.send(:update_send_event)
       end

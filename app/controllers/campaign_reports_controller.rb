@@ -705,12 +705,23 @@ class CampaignReportsController < ApplicationController
   protected
   
     def set_campaign
-      @campaign = current_user.admin_campaign(params[:campaign_id])
+      @campaign = Campaign.find(params[:campaign_id])
       @property = @campaign.property
       
       Time.zone = @property.setting.time_zone
       
       @campaign.tmp_timestamp = params[:timestamp] if @campaign
+      
+      case action_name
+        when "create"
+          authorize! :cud, Campaign
+          
+        when "edit", "update", "destroy"
+          authorize! :cud, @campaign
+          
+        else
+          authorize! :read, @campaign
+      end
     end
     
     def set_filter_params
@@ -791,8 +802,8 @@ class CampaignReportsController < ApplicationController
         ]
         
         queries.each_with_index do |query, index|
-          metrics = query.all
-          
+          metrics = query.all.collect{|m| m }
+
           total_events = metrics.sum{|m| m.total_events.to_i}
 
           metrics.each do |m|

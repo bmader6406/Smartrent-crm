@@ -1,0 +1,50 @@
+<% 
+  dict = {
+    "sent" => "Sent List",
+    "opened" => "Opened List",
+    "received" => "Received List <span style='font-weight: normal; font-size: 12px; margin-left: 3px;'>(Sent minus Opened)</span>",
+    "clicked" => "Clicked List",
+    "unique_clicked" => "Unique Clicked List",
+    "unsubscribed" => "Unsubscribed List",
+    "complained" => "Complained List",
+    "blacklisted" => "Blacklisted List",
+    "bounced" => "Bounced List",
+  
+  }
+%>
+<div id="<%= params[:type] %>-event-list" class="subscribers-list" data-type="<%= params[:type] %>">
+  <h3>
+    <%= raw dict[params[:type]] %>
+    <% if events.total_entries > 0 %>
+      <%= link_to "export", export_subscribers_property_campaign_reports_path(@property, @campaign, :type => params[:type],
+  					:timestamp => params[:timestamp]), :class => "btn btn-default export" %>
+  	<% end %>
+  </h3>
+  <table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Email </th>
+        <th style="width:35%"><%= params[:type].titleize.gsub("Unique ", "") %> At </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% events.each do |ev| %>
+        <tr class="<%= cycle("even", nil) -%>">
+          <td>
+            <% if ev.resident %>
+              <%= link_to ev.resident.email, property_resident_path(@property, ev.resident_id), :target => "_blank" %>
+            <% else %>
+              This subscriber has been deleted
+            <% end %>
+          </td>
+          <td> <%= ev.created_at.to_s(:friendly_time) %> </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="paging-info">
+    <%= page_entries_info events, :model => 'subscriber' %>
+    <%= page_navigation_links(events)%>
+  </div>
+</div>

@@ -1,27 +1,26 @@
 <ul id="top-tabs" class="nav nav-pills">
   <% if ["send_summary", "send_schedule", "recent_send"].include?(action_name) %>
     <li class="<%= "active" if action_name == "send_summary" %>">
-  	  <%= link_to "Emails Sent", page_send_summary_reports_path(@property) %>
+  	  <%= link_to "Emails Sent", send_summary_campaign_reports_path %>
   	</li>
   	<li class="<%= "active" if action_name == "send_schedule" %>">
-  	  <%= link_to "Emails Scheduled", page_send_schedule_reports_path(@property) %>
+  	  <%= link_to "Emails Scheduled", send_schedule_campaign_reports_path %>
+  	</li>
+  	<li class="<%= "current" if action_name == "recent_send" %>">
+  		<%= link_to "Most Recent Email", recent_send_campaign_reports_path %>
   	</li>
   	
   <% elsif [NewsletterCampaign].any?{|clzz| @campaign.kind_of?(clzz) } %>
-    <%
-      overview_path = campaign_reports_path(@campaign)
-      subscribers_path = subscribers_campaign_reports_path(@campaign)
-    %>
     <li class="<%= "active" if action_name == "index" %>">
-			<%= link_to "Overview", overview_path  %>
+			<%= link_to "Overview", property_campaign_reports_path(@property, @campaign)  %>
     </li>
     
     <li class="<%= "active" if action_name == "spam_watch" %>">
-			<%= link_to "Spam Watch", spam_watch_campaign_reports_path(@campaign)  %>
+			<%= link_to "Spam Watch", spam_watch_property_campaign_reports_path(@property, @campaign)  %>
     </li>
 
 		<li class="<%= "active" if action_name == "subscribers" %>">
-			<%= link_to "Subscribers", subscribers_path  %>
+			<%= link_to "Subscribers", subscribers_property_campaign_reports_path(@property, @campaign)  %>
     </li>
     
   <% end %>

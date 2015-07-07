@@ -10,7 +10,7 @@
       App.initPageLayout(null, null, function(){  //should be called on top
         scheduleWrapAutoheight();
         $('#schedule-wrap table').floatThead('reflow');
-      });
+      }, true);
       
       scheduleWrapAutoheight();
       
@@ -26,7 +26,7 @@
 <% end %>
 
 <% content_for(:ui_center) do %>
-  <div id="analyze-pane" class="hidden-pane ui-layout-center">
+  <div id="analyze-pane">
     <div class="ui-layout-content">
       <div class="main-container card-container">
         <div id="report-header" class="has-h4">

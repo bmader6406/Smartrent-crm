@@ -1,0 +1,3 @@
+class  CountryVariationMetric < VariationMetric
+  
+end

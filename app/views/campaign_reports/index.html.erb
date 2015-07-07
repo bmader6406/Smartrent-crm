@@ -1,0 +1,490 @@
+<% content_for(:js) do %>
+  <script type="text/javascript">
+    $(function(){
+      App.initPageLayout(null, null, null, true); //should be called on top
+    });
+  </script>
+<% end %>
+
+<% content_for(:ui_center) do %>
+  <div id="analyze-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container">
+        
+        <%= render "campaign_reports/nav" %>
+        
+        <div id="report-header">
+          <%= raw send_filter_select(property_campaign_reports_path(@property, @campaign)) %>
+          <div class="clear"></div>
+        </div>
+        
+        <% 
+          dict = {
+            "sends_count" => ["Sends", "Sends", "Send"],
+            "unique_opens_count" => ["Unique Opens", "Unique Opens", "Unique Open"],
+            "unique_clicks_count" => ["Unique Clicks", "Unique Clicks", "Unique Click"],
+            "unsubscribes_count" => ["Unsubscribes", "Unsubscribes", "Unsubscribe"],
+            "blacklisted_count" => ["Blacklisted", "Blacklisted", "Blacklisted"],
+            "complaints_count" => ["Complaints", "Complaints", "Complaint"],
+            "bounces_count" => ["Bounces", "Bounces", "Bounce"]
+          }
+          total_sends = nil
+        %>
+
+        <ul id="overview-container" class="tile-list list-unstyled">
+
+          <% ["sends_count", "unique_opens_count", "unique_clicks_count", "unsubscribes_count",
+                  "blacklisted_count", "complaints_count", "bounces_count"].each do |col| %>
+
+            <% 
+              total_sends = @campaign.multi_sends.sum{|c| c.sends_count } if !total_sends
+              col_count = @campaign.multi_sends.sum{|c| c.send(col) }
+            %>
+            <%= render "newsletter_tile", :total => col_count, :conversion => conversion(col_count, total_sends), :name => dict[col], :col => col  %>
+
+          <% end %>
+
+          <% if @campaign.dict_variates["email"].first %>
+            <%= render "variant_tile", :variates => @campaign.dict_variates["email"].first, :name => "Open Rate", :type => "open_rate" %>
+
+            <%= render "variant_tile", :variates => @campaign.dict_variates["email"].first, :name => "Click Rate", :type => "click_rate" %>
+          <% end %>
+
+        </ul>
+
+
+        <ul id="analyze-container" class="list-unstyled">
+          <li style="display:none">
+            <h3>
+              Variant Analysis
+
+              <%= link_to "export", export_email_stats_property_campaign_reports_path(@property, @campaign, :type => "variant_analysis",
+                    :view => params[:view], :timestamp => params[:timestamp]), :style => "float: right", :class => "btn btn-default" %>
+            </h3>
+
+            <div>
+              <table id="email-stats" class="table table-bordered tablesorter" data-sort="3">
+                <thead>
+                  <tr>
+                    <th> Variant </th>
+                    <th> 
+                      # of <br> Sent
+                    </th>
+                    <th>
+                      # of <br> Unique Opens
+                    </th>
+                    <th>
+                      # of <br> Unique Clicks
+                    </th>
+                    <th>
+                      # of <br> Unsubscribes
+                    </th>
+                    <th>
+                      # of <br> Blacklisted
+                    </th>
+                    <th>
+                      # of <br> Complaints
+                    </th>
+                    <th>
+                      # of <br> Bounces
+                    </th>
+                  </tr>
+                  <% 
+      							variates = @campaign.dict_variates["email"].first || []
+                  	campaigns = variates.collect{|v| v.variate_campaign }
+                  	campaigns.each{|c| c.tmp_timestamp = params[:timestamp] }
+
+                    total_sends = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_sends_count } }
+                    total_opens = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_unique_opens_count } }
+                    total_clicks = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_unique_clicks_count } }
+                    total_unsubscribes = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_unsubscribes_count } }
+                    total_blacklisted = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_blacklisted_count } }
+                    total_complaints = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_complaints_count } }
+                    total_bounces = campaigns.sum{|c| c.variant_sends.sum{|c2| c2.variant_bounces_count } }
+                  %>
+                </thead>
+                <tbody style="<%= "display:none" if campaigns.empty? %>">
+                  <% campaigns.each_with_index do |campaign, index| %>
+                    <% 
+                      sends_count = campaign.variant_sends.sum{|c| c.variant_sends_count}
+                      opens_count = campaign.variant_sends.sum{|c| c.variant_unique_opens_count}
+                      clicks_count = campaign.variant_sends.sum{|c| c.variant_unique_clicks_count}
+                      unsubscribes_count = campaign.variant_sends.sum{|c| c.variant_unsubscribes_count}
+                      blacklisted_count = campaign.variant_sends.sum{|c| c.variant_blacklisted_count}
+                      complaints_count = campaign.variant_sends.sum{|c| c.variant_complaints_count}
+                      bounces_count = campaign.variant_sends.sum{|c| c.variant_bounces_count}
+                    %>
+                    <tr class="<%= cycle("even", nil) -%>">
+                      <td>
+                        <%= variates[index].version %>
+                      </td>
+                      <td>
+                        <%= number_with_delimiter sends_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(opens_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter opens_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(clicks_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter clicks_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(unsubscribes_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter unsubscribes_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(blacklisted_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter blacklisted_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(complaints_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter complaints_count %>
+                      </td>
+                      <td>
+                        <span>
+                          <%= conversion(bounces_count, sends_count) %>%
+                        </span>
+                        <%= number_with_delimiter bounces_count %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <tfoot>
+                  <tr class="total">
+                    <td> Total </td>
+                    <td>
+                      <%= number_with_delimiter total_sends %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_opens, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_opens %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_clicks, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_clicks %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_unsubscribes, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_unsubscribes %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_blacklisted, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_blacklisted %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_complaints, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_complaints %>
+                    </td>
+                    <td>
+                      <span>
+                        <%= conversion(total_bounces, total_sends) %>%
+                      </span>
+                      <%= number_with_delimiter total_bounces %>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </li>
+
+          <li>
+            <h3>
+              Link Clicks
+              <%= link_to "export", export_email_stats_property_campaign_reports_path(@property, @campaign, :type => "link_clicks",
+                    :view => params[:view], :timestamp => params[:timestamp]), :style => "float: right;", :class => "btn btn-default" %>
+            </h3>
+
+            <div>
+              <table class="table table-bordered tablesorter" data-sort="2" style="width:100%">
+                <thead>
+                  <tr>
+                    <th> Link </th>
+                    <th style="width:130px"> # of Clicks </th>
+                    <th style="width:130px"> % of Clicks </th>
+                  </tr>
+                </thead>
+                <tbody style="<%= "display:none" if @link_clicks.empty? %>">
+                  <% @link_clicks.each_with_index do |m, index| %>
+                    <tr class="<%= cycle("even", nil) -%>">
+                      <td>
+                        <%= raw m[:name] %>
+                      </td>
+                      <td>
+                        <%= number_with_delimiter m[:count] %>
+                      </td>
+                      <td>
+                        <%= m[:conversion] %>%
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <tfoot>
+                  <% if @link_clicks.empty? %>
+                    <tr>
+                      <td colspan="3">
+                        No Data Found
+                      </td>
+                    </tr>
+                  <% else %>
+                    <% total = @link_clicks.sum{|m| m[:count] } %>
+
+                    <tr class="total">
+                      <td> Total </td>
+                      <td> <%= number_with_delimiter total %> </td>
+                      <td> <%= total > 0 ? 100 : 0 %>%</td>
+                    </tr>
+                  <% end %>
+                </tfoot>
+              </table>
+            </div>
+          </li>
+
+          <li>
+            <table id="opens">
+              <tr>
+                <td width="33%">
+                  <div class="opens-list">
+                    <h3>
+                      Opens by Mail Agent
+
+                      <%= link_to "export", export_email_stats_property_campaign_reports_path(@property, @campaign, :type => "opens_by_browser",
+                          :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
+                    </h3>
+                    <table class="table table-bordered tablesorter" data-sort="2">
+                      <thead>
+                        <tr>
+                          <th style="width:130px"> Agent </th>
+                          <th> # </th>
+                          <th> % </th>
+                        </tr>
+                      </thead>
+                      <tbody style="<%= "display:none" if @opens_by_browser.empty? %>">
+                        <% @opens_by_browser.each_with_index do |m, index| %>
+                          <tr class="<%= cycle("even", nil) -%>">
+                            <td>
+                              <%= !m[:name].blank? ? m[:name] : "<Not Tracked>" %>
+                            </td>
+                            <td>
+                              <%= number_with_delimiter m[:count] %>
+                            </td>
+                            <td>
+                              <%= m[:conversion] %>%
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                      <tfoot>
+                        <% if @opens_by_browser.empty? %>
+                          <tr>
+                            <td colspan="3">
+                              No Data Found
+                            </td>
+                          </tr>
+                        <% else %>
+                          <% total = @opens_by_browser.sum{|m| m[:count] } %>
+
+                          <tr class="total">
+                            <td> Total </td>
+                            <td> <%= number_with_delimiter total %> </td>
+                            <td> <%= total > 0 ? 100 : 0 %>%</td>
+                          </tr>
+                        <% end %>
+                      </tfoot>
+                    </table>
+                  </div>
+                </td>
+
+                <td width="33%">
+                  <div class="opens-list">
+                    <h3>
+                      Opens by OS
+
+                      <%= link_to "export", export_email_stats_property_campaign_reports_path(@property, @campaign, :type => "opens_by_os",
+                            :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
+                    </h3>
+                    <table class="table table-bordered tablesorter" data-sort="2">
+                      <thead>
+                        <tr>
+                          <th style="width:130px"> OS </th>
+                          <th> # </th>
+                          <th> % </th>
+                        </tr>
+                      </thead>
+                      <tbody style="<%= "display:none" if @opens_by_os.empty? %>">
+                        <% @opens_by_os.each_with_index do |m, index| %>
+                          <tr class="<%= cycle("even", nil) -%>">
+                            <td>
+                              <%= !m[:name].blank? ? m[:name] : "<Not Tracked>" %>
+                            </td>
+                            <td>
+                              <%= number_with_delimiter m[:count] %>
+                            </td>
+                            <td>
+                              <%= m[:conversion] %>%
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                      <tfoot>
+                        <% if @opens_by_os.empty? %>
+                          <tr>
+                            <td colspan="3">
+                              No Data Found
+                            </td>
+                          </tr>
+                        <% else %>
+                          <% total = @opens_by_os.sum{|m| m[:count] } %>
+
+                          <tr class="total">
+                            <td> Total </td>
+                            <td> <%= number_with_delimiter total %> </td>
+                            <td> <%= total > 0 ? 100 : 0 %>%</td>
+                          </tr>
+                        <% end %>
+                      </tfoot>
+                    </table>
+                  </div>
+                </td>
+
+                <td width="33%">
+                  <div class="opens-list">
+                    <h3>
+                      Opens by Country
+
+                      <%= link_to "export", export_email_stats_property_campaign_reports_path(@property, @campaign, :type => "opens_by_country", 
+                            :view => params[:view], :timestamp => params[:timestamp]), :class => "btn btn-default" %>
+                    </h3>
+                    <table class="table table-bordered tablesorter" data-sort="2">
+                      <thead>
+                        <tr>
+                          <th style="width:130px"> Country </th>
+                          <th> # </th>
+                          <th> % </th>
+                        </tr>
+                      </thead>
+                      <tbody style="<%= "display:none" if @opens_by_country.empty? %>">
+                        <% @opens_by_country.each_with_index do |m, index| %>
+                          <tr class="<%= cycle("even", nil) -%>">
+                            <td>
+                              <%= !m[:name].blank? ? m[:name] : "<Not Tracked>" %>
+                            </td>
+                            <td>
+                              <%= number_with_delimiter m[:count] %>
+                            </td>
+                            <td>
+                              <%= m[:conversion] %>%
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                      <tfoot>
+                        <% if @opens_by_country.empty? %>
+                          <tr>
+                            <td colspan="3">
+                              No Data Found
+                            </td>
+                          </tr>
+                        <% else %>
+                          <% total = @opens_by_country.sum{|m| m[:count] } %>
+
+                          <tr class="total">
+                            <td> Total </td>
+                            <td> <%= number_with_delimiter total %> </td>
+                            <td> <%= total > 0 ? 100 : 0 %>%</td>
+                          </tr>
+                        <% end %>
+                      </tfoot>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </li>
+        </ul>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(function(){
+  	
+  	var dateInput = $('#range-picker input'),
+      container = $('#analyze-pane');
+      
+    if(dateInput[0]) {
+      dateInput.daterangepicker({   
+        dateFormat:'mm/dd/yy',
+        onClose: function(){ 
+          setTimeout(function(){
+            var range = dateInput.val().split(' - ');   
+            container.mask('Loading...');
+            $.ajax({url: "<%= property_campaign_reports_path(@property, @campaign) %>" , type: 'GET',
+              data: {
+                range: range,
+                campaign_id: "<%= params[:campaign_id] %>"
+              },
+              complete: function(){  container.unmask()},
+              success: function(){},
+              error: function(r){msgbox(r.responseText, 3000);},
+              dataType: "script" 
+            });
+          },100);        
+        },
+        presetRanges: [
+          {
+            text: 'Yesterday', 
+            dateStart: 'today-1day', 
+            dateEnd: 'today-1day' 
+          }, {
+            text: "Last 7 days",
+            dateStart: "today-7days",
+            dateEnd: "today-1day"
+          }, {
+              text: "Last 14 days",
+              dateStart: "today-14days",
+              dateEnd: "today-1day"
+          }, {
+              text: "Last 30 days",
+              dateStart: "today-30days",
+              dateEnd: "today-1day"
+          }
+        ],
+        presets: { 
+          dateRange:"Date Range"
+        }
+      });
+    }
+    
+    
+    try{
+      $("#analyze-container .tablesorter").each(function(){
+        var tb = $(this);
+        tb.tablesorter( {sortInitialOrder: "desc", sortList: [[tb.attr('data-sort'), 1]], widgets: ['zebra'] } );
+      });
+    }catch(ex){};
+    
+  });
+</script>

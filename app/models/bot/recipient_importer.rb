@@ -24,23 +24,23 @@ class RecipientImporter
         selector = recursive_delete(selector, "subscribed")
         selector = recursive_delete(selector, "email_check")
         
-        Resident.with(:consistency => :eventual).only(:unified_status, :properties).where(selector).each do |e|
+        Resident.with(:consistency => :eventual).only(:_id, :unified_status, :properties).where(selector).each do |r|
           status = nil
-          prop = e.properties.detect{|p| p.property_id.to_i == audience.property_id }
+          prop = r.properties.detect{|p| p.property_id.to_i == audience.property_id }
           
           if prop && ["current", "future", "past", "notice"].include?(prop.status.to_s.downcase)
             status = "resident_#{prop.status.downcase}"
               
           else
-            status = e.unified_status
+            status = r.unified_status
           end
           
-          resident_dict[e._id.to_i] = {:audience_id => audience.id, :status => status}
+          resident_dict[r._id.to_i] = {:audience_id => audience.id, :status => status}
         end
       end
       
       # build recipient array to import
-      recipient_col = [:campaign_id, :audience_id, :resident_id, :status]
+      recipient_col = [:id, :campaign_id, :audience_id, :resident_id, :status]
       
       query_count = send_events.count
       current_page = 0

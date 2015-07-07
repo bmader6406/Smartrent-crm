@@ -4,7 +4,7 @@ class VariationMetric < ActiveRecord::Base
   
   validates :campaign_id, :presence => true
   
-  default_scope { ordre('created_at DESC, type') }
+  default_scope { order('created_at DESC, type') }
   
   before_validation :set_property_id
   

@@ -30,13 +30,13 @@
     <%= render "layouts/top_nav" %>
     
     <div class="hidden-pane ui-layout-west">
-      <div class="ui-layout-content" id="west"></div>
+      <div class="ui-layout-content" id="west"><%= yield :ui_west %></div>
     </div>
     <div class="hidden-pane ui-layout-center">
-      <div class="ui-layout-content" id="center"></div>
+      <div class="ui-layout-content" id="center"><%= yield :ui_center %></div>
     </div>
     <div class="hidden-pane ui-layout-east">
-      <div class="ui-layout-content" #id="east"></div>
+      <div class="ui-layout-content" #id="east"><%= yield :ui_east %></div>
     </div>
     <div id="mask"></div>
   </div>

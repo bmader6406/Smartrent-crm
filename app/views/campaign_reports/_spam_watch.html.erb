@@ -1,0 +1,226 @@
+<% if @status_metrics && !@status_total.empty? %>
+  <h3>
+    Spam Watch Report By Status
+    <%= link_to "export", export_spam_watch_property_campaign_reports_path(@property, @campaign, :type => "status",
+					:timestamp => params[:timestamp]), :class => "btn btn-default export" %> <br>
+  </h3>
+  <table class="table table-bordered tablesorter" style="">
+    <thead>
+      <tr>
+        <th data-placeholder="Enter status" width="200px">Status</th>
+        <th data-placeholder=">= 1000"># Sent</th>
+        <th data-placeholder=">= 10"># Clicks</th>
+        <th data-placeholder=">= 5">Clicks %</th>
+        <th data-placeholder=">= 10"># Unsubscribed</th>
+        <th data-placeholder=">= 5">Unsubscribed %</th>
+        <th data-placeholder=">= 2"># Complaints</th>
+        <th data-placeholder=">= 0">Complaints %</th>
+        <th data-placeholder=">= 0"> Spam Index </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @status_metrics.each do |m| %>
+        <% 
+          complaint_percent = conversion(m["total_complaints"], m["total_sends"])
+          spam_index = conversion(m["total_unsubscribes"] - m["total_clicks"], m["total_clicks"])
+        %>
+        
+        <tr class="<%= cycle("even", nil) -%>">
+          <td>
+            <%= m["status"] %>
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_sends"] %>
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_clicks"] %>
+          </td>
+          <td>
+            <%= conversion(m["total_clicks"], m["total_sends"]) %>%
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_unsubscribes"] %>
+          <td>
+            <%= conversion(m["total_unsubscribes"], m["total_sends"]) %>%
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_complaints"] %>
+          </td>
+          <td style="<%= "color:red" if complaint_percent > 0.04 %>">
+            <%= complaint_percent %>%
+          </td>
+          <td style="<%= "color:red" if spam_index > 0 %>">
+            <%= spam_index %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="total">
+        <td>
+          Total
+        </td>
+        <td>
+          <%= number_with_delimiter @status_total["total_sends"] %>
+        </td>
+        <td>
+          <%= number_with_delimiter @status_total["total_clicks"] %>
+        </td>
+        <td>
+          <%= conversion(@status_total["total_clicks"], @status_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= number_with_delimiter @status_total["total_unsubscribes"] %>
+        <td>
+          <%= conversion(@status_total["total_unsubscribes"], @status_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= number_with_delimiter @status_total["total_complaints"] %>
+        </td>
+        <td>
+          <%= conversion(@status_total["total_complaints"], @status_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= conversion(@status_total["total_unsubscribes"] - @status_total["total_clicks"], @status_total["total_clicks"]) %>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <script type="text/javascript">
+    $(function(){
+    	var tb = $("#status-stat table");
+
+      tb.tablesorter({
+        sortInitialOrder: "desc",
+  			sortList: [[1, 1]],
+  			widgets: ['zebra', 'filter'],
+  			widgetOptions: {
+      	  filter_searchDelay : 400,
+      	  filter_cssFilter: 'form-control'
+      	}
+  		}).bind('filterEnd', function(e, filter){
+        var originFocus = $('.tablesorter-filter:focus');
+
+        tb.floatThead('reflow');
+
+        setTimeout(function(){
+      	  originFocus.focus();
+        }, 100);
+      });
+    });
+  </script>
+  
+<% elsif @audience_metrics && !@audience_total.empty? %>
+  <h3>
+    Spam Watch Report By Lead Group
+    <%= link_to "export", export_spam_watch_property_campaign_reports_path(@property, @campaign, :type => "audience",
+					:timestamp => params[:timestamp]), :class => "btn btn-default export" %> <br>
+  </h3>
+  <table class="table table-bordered tablesorter" style="">
+    <thead>
+      <tr>
+        <th data-placeholder="Enter lead group name" width="200px">Lead Group</th>
+        <th data-placeholder=">= 1000"># Sent</th>
+        <th data-placeholder=">= 10"># Clicks</th>
+        <th data-placeholder=">= 5">Clicks %</th>
+        <th data-placeholder=">= 10"># Unsubscribed</th>
+        <th data-placeholder=">= 5">Unsubscribed %</th>
+        <th data-placeholder=">= 2"># Complaints</th>
+        <th data-placeholder=">= 0">Complaints %</th>
+        <th data-placeholder=">= 0"> Spam Index </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @audience_metrics.each do |m| %>
+        <% 
+          complaint_percent = conversion(m["total_complaints"], m["total_sends"])
+          spam_index = conversion(m["total_unsubscribes"] - m["total_clicks"], m["total_clicks"])
+        %>
+        <tr class="<%= cycle("even", nil) -%>">
+          <td data-id="<%= m["audience_id"] %>">
+            <%= m["audience_name"] || "N/A" %>
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_sends"] %>
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_clicks"] %>
+          </td>
+          <td>
+            <%= conversion(m["total_clicks"], m["total_sends"]) %>%
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_unsubscribes"] %>
+          <td>
+            <%= conversion(m["total_unsubscribes"], m["total_sends"]) %>%
+          </td>
+          <td>
+            <%= number_with_delimiter m["total_complaints"] %>
+          </td>
+          <td style="<%= "color:red" if complaint_percent > 0.04 %>">
+            <%= complaint_percent %>%
+          </td>
+          <td style="<%= "color:red" if spam_index > 0 %>">
+            <%= spam_index %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="total">
+        <td>
+          Total
+        </td>
+        <td>
+          <%= number_with_delimiter @audience_total["total_sends"] %>
+        </td>
+        <td>
+          <%= number_with_delimiter @audience_total["total_clicks"] %>
+        </td>
+        <td>
+          <%= conversion(@audience_total["total_clicks"], @audience_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= number_with_delimiter @audience_total["total_unsubscribes"] %>
+        <td>
+          <%= conversion(@audience_total["total_unsubscribes"], @audience_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= number_with_delimiter @audience_total["total_complaints"] %>
+        </td>
+        <td>
+          <%= conversion(@audience_total["total_complaints"], @audience_total["total_sends"]) %>%
+        </td>
+        <td>
+          <%= conversion(@audience_total["total_unsubscribes"] - @audience_total["total_clicks"], @audience_total["total_clicks"]) %>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  
+  <script type="text/javascript">
+    $(function(){
+    	var tb = $("#audience-stat table");
+
+      tb.tablesorter({
+        sortInitialOrder: "desc",
+  			sortList: [[1, 1]],
+  			widgets: ['zebra', 'filter'],
+  			widgetOptions: {
+      	  filter_searchDelay : 400,
+      	  filter_cssFilter: 'form-control'
+      	}
+  		}).bind('filterEnd', function(e, filter){
+        var originFocus = $('.tablesorter-filter:focus');
+
+        tb.floatThead('reflow');
+
+        setTimeout(function(){
+      	  originFocus.focus();
+        }, 100);
+      });
+    });
+  </script>
+  
+<% end %>

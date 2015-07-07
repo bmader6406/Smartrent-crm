@@ -63,7 +63,7 @@ Rails.application.routes.draw do
         get :preview_template
       end
       
-      resources :reports do
+      resources :reports, :controller => "campaign_reports" do
         collection do
           post :generate
           get :export_email_stats
@@ -87,6 +87,19 @@ Rails.application.routes.draw do
         post :import
       end
     end
+  end
+  
+  resources :notice_reports, :controller => "campaign_reports" do
+    collection do
+      get :send_summary
+      get :export_send_summary
+      
+      get :send_schedule
+      get :export_send_schedule
+      
+      get :recent_send
+      get :export_recent_send
+    end    
   end
   
   resident_resources

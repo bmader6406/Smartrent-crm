@@ -1,0 +1,71 @@
+<% content_for(:js) do %>
+  <script type="text/javascript">
+    $(function(){
+      App.initPageLayout(null, null, null, true); //should be called on top
+    });
+  </script>
+<% end %>
+
+<% content_for(:ui_center) do %>
+  <div id="analyze-pane">
+
+    <div class="ui-layout-content">
+      <div class="main-container card-container">
+        
+        <%= render "campaign_reports/nav" %>
+        
+        <div id="report-header">
+          <%= raw send_filter_select(spam_watch_property_campaign_reports_path(@property, @campaign)) %>
+          <div class="clear"></div>
+        </div>
+        
+        <ul id="analyze-container" class="list-unstyled" style="width:100%">
+          <% if @audience_total.empty? %>
+          
+            <div class="well" id="report-generating" style="<%= "display:none" if !session["generating_spam_watch_#{@campaign.id}"] %>">
+              The report is being generated... Please reload this page after a few minutes
+            </div>
+            
+            <%= link_to "Generate Spam Watch Report", generate_spam_watch_property_campaign_reports_path(@property, @campaign,
+        					:timestamp => params[:timestamp]), :class => "btn btn-info generate",
+        					:style => session["generating_spam_watch_#{@campaign.id}"] ? "display:none" : "" %> <br>
+          <% else %>
+            
+            <li id="audience-stat">
+              <%= render "spam_watch" %>
+            </li>
+            
+            <li id="status-stat">
+              Loading Spam Watch By Status report...
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(function(){
+  	var container = $('#analyze-pane');
+    
+    container.on('click', '.generate', function(){
+      var link = $(this);
+      
+      container.mask("Please wait...");
+      
+      $.post(this.href, function(){
+        link.hide();
+        $('#report-generating').show();
+        container.unmask();
+        
+      }, 'json');
+      
+      return false;
+    });
+    
+    <% if !@audience_total.empty? %>
+      $.getScript('<%= raw spam_watch_property_campaign_reports_path(@property, @campaign, :timestamp => params[:timestamp]) %>');
+    <% end %>
+  });
+</script>
