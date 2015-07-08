@@ -84,8 +84,7 @@ gem 'email_reply_parser', '~> 0.5.8'
 
 
 #engines
-# gem "crm", :path => "/mnt/gems/new-xray"
-# gem "smartrent", :path => "/mnt/gems/new-iq"
+gem "smartrent", :path => "/mnt/gems/smartrent"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

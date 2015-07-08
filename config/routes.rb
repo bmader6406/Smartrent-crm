@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  #mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
+  mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
   
   # shared
   def resident_resources
