@@ -100,7 +100,11 @@ class MarketingActivity
             end
             
           when "subscribe_property"
-            "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
+            if target
+              "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
+            else
+              "Subscribed"
+            end
         end
         
       else

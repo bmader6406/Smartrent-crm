@@ -292,7 +292,7 @@ class ActivitiesController < ApplicationController
           next if counted["#{a.action}_#{a.subject_id}"]
 
           # ignore all autoresponder history
-          next if ["send_mail", "open_mail", "click_link"].include?(a.action) && !["Campaign"].include?(a.subject_type)
+          next if ["send_mail", "open_mail", "click_link"].include?(a.action) && !["NewsletterCampaign"].include?(a.subject_type)
 
           activities << a
 
