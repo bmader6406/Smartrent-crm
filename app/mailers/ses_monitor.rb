@@ -53,8 +53,7 @@ class SesMonitor
           if send_event
             
             if !ComplaintEvent.where(:campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id).first
-              ComplaintEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id,
-                :campaign_variation_id => send_event.campaign_variation_id, :resident_id => send_event.resident_id )
+              ComplaintEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id )
             end
                 
             complaints_count += 1
@@ -71,8 +70,7 @@ class SesMonitor
           if send_event
             
             if !BounceEvent.where(:campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id).first
-              BounceEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id,
-                :campaign_variation_id => send_event.campaign_variation_id, :resident_id => send_event.resident_id )
+              BounceEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id )
             end
                             
             bounces_count += 1

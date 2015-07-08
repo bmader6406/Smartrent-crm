@@ -17,34 +17,33 @@ class CreateNewsletterTables < ActiveRecord::Migration
     
     create_table "campaigns" do |t|
       t.string   "type"
-      t.string   "annotation"
       t.integer  "property_id"
       t.integer  "user_id"
-      t.integer  "parent_id"
-      t.integer  "root_id"
-      t.integer  "group_id"
       t.integer  "template_id"
+      
+      t.string   "from"
+      t.string   "subject"
+      t.string   "reply_to"
+      t.string   "cc"
+      t.string   "bcc"
+      t.text   "body_plain",      :limit => 16777215
+      t.text   "body_html",      :limit => 16777215
+      t.text   "body_text",      :limit => 16777215
+      t.text   "attachments"
+      t.text   "audience_ids"
       t.text     "audience_counts"
+      
       t.boolean  "is_published",                                    :default => false,     :null => false
       t.datetime "published_at"
       t.integer  "sends_count",                                     :default => 0
-      t.integer  "variant_sends_count",                             :default => 0
       t.integer  "opens_count",                                     :default => 0
-      t.integer  "variant_opens_count",                             :default => 0
       t.integer  "unique_opens_count",                              :default => 0
-      t.integer  "variant_unique_opens_count",                      :default => 0
       t.integer  "clicks_count",                                    :default => 0
-      t.integer  "variant_clicks_count",                            :default => 0
       t.integer  "unsubscribes_count",                              :default => 0
-      t.integer  "variant_unsubscribes_count",                      :default => 0
       t.integer  "blacklisted_count",                               :default => 0
-      t.integer  "variant_blacklisted_count",                       :default => 0
       t.integer  "complaints_count",                                :default => 0
-      t.integer  "variant_complaints_count",                        :default => 0
       t.integer  "bounces_count",                                   :default => 0
-      t.integer  "variant_bounces_count",                           :default => 0
       t.integer  "unique_clicks_count",                             :default => 0
-      t.integer  "variant_unique_clicks_count",                     :default => 0
       
       t.datetime "created_at"
       t.datetime "updated_at"
@@ -53,37 +52,7 @@ class CreateNewsletterTables < ActiveRecord::Migration
 
     add_index "campaigns", ["user_id"], :name => "index_campaigns_on_user_id"
     add_index "campaigns", ["property_id", "created_at"], :name => "index_campaigns_on__property_id_and_created_at"
-    add_index "campaigns", ["root_id"], :name => "index_campaigns_on_root_id"
-    add_index "campaigns", ["parent_id"], :name => "index_campaigns_on_parent_id"
-    add_index "campaigns", ["group_id"], :name => "index_campaigns_on_group_id"
     
-    create_table "hylets" do |t|
-      t.string   "type"
-      t.integer  "property_id"
-      t.integer  "campaign_id"
-      t.string   "title1"
-      t.text     "text1",           :limit => 16777215
-      t.text     "style1"
-      t.integer  "value1",                              :default => 0
-      t.boolean  "flag1",                               :default => false
-      t.string   "title2"
-      t.text     "text2",           :limit => 16777215
-      t.text     "style2"
-      t.integer  "value2",                              :default => 0
-      t.boolean  "flag2",                               :default => false
-      t.string   "title3"
-      t.text     "text3",           :limit => 16777215
-      t.text     "style3"
-      t.integer  "value3",                              :default => 0
-      t.boolean  "flag3",                               :default => false
-
-      t.datetime "created_at"
-      t.datetime "updated_at"
-    end
-
-    add_index "hylets", ["campaign_id", "type"], :name => "index_hylets_on_campaign_id_and_type"
-    add_index "hylets", ["property_id", "type"], :name => "index_hylets_on_property_id_and_type"
-
     create_table "audiences" do |t|
       t.string   "type"
       t.integer  "property_id"
@@ -103,7 +72,6 @@ class CreateNewsletterTables < ActiveRecord::Migration
       t.string   "type"
       t.integer  "campaign_id"
       t.integer  "property_id"
-      t.integer  "campaign_variation_id"
       t.integer  "resident_id", :limit => 8
       t.integer  "url_id"
       t.string   "resolution"
@@ -129,50 +97,6 @@ class CreateNewsletterTables < ActiveRecord::Migration
     add_index "events", ["message_id"], :name => "index_events_on_message_id"
     add_index "events", ["mimepart"], :name => "index_events_on_mimepart"
 
-
-    create_table "variation_metrics" do |t|
-      t.integer  "campaign_id"
-      t.integer  "variation_id"
-      t.string   "type"
-      t.string   "text"
-      t.integer  "property_id"
-      t.integer  "sends_count",                       :default => 0
-      t.integer  "opens_count",                       :default => 0
-      t.integer  "unique_opens_count",                :default => 0
-      t.integer  "unsubscribes_count",                :default => 0
-      t.integer  "clicks_count",                      :default => 0
-      t.integer  "blacklisted_count",                 :default => 0
-      t.integer  "complaints_count",                  :default => 0
-      t.integer  "bounces_count",                     :default => 0
-      t.integer  "events_count",                      :default => 0
-      t.integer  "unique_clicks_count",               :default => 0
-
-      t.datetime "created_at"
-      t.datetime "updated_at"
-    end
-
-    add_index "variation_metrics", ["campaign_id"], :name => "index_variation_metrics_on_campaign_id"
-    add_index "variation_metrics", ["campaign_id", "type", "created_at"], :name => "index_variation_metrics_on_campaign_id_and_type_and_created_at"
-    add_index "variation_metrics", ["property_id", "type", "created_at"], :name => "index_vm_on_property_and_type_and_ca"
-    add_index "variation_metrics", ["property_id", "variation_id", "type"], :name => "index_vm_on_property_and_variation_and_type"
-    
-    create_table :campaign_variations do |t|
-      t.string   "type"
-      t.integer  "campaign_id"
-      t.integer  "variate_campaign_id"
-      t.integer  "weight",                           :default => 1
-      t.integer  "weight_percent",                   :default => 0
-      t.boolean  "can_delete",                       :default => true
-      t.integer  "channel",                          :default => 0
-      t.string   "channel_name"
-      t.string   "version",                          :default => 0
-      
-      t.datetime "created_at"
-      t.datetime "updated_at"
-    end
-    
-    add_index "campaign_variations", ["campaign_id"], :name => "index_campaign_variations_on_campaign_id"
-    
     create_table "monitor_metrics" do |t|
       t.integer  "total"
       t.string   "source",           :default => "email_forwarding"
@@ -188,8 +112,6 @@ class CreateNewsletterTables < ActiveRecord::Migration
     end
     
     add_index "monitor_metrics", ["created_at"], :name => "index_monitor_metrics_on_created_at"
-    
-    
 
     create_table "actions" do |t|
       t.string   "type"
@@ -216,13 +138,5 @@ class CreateNewsletterTables < ActiveRecord::Migration
     add_index "urls", ["campaign_id"], :name => "index_urls_on_campaign_id"
     add_index "urls", ["token"], :name => "index_urls_on_token"
 
-
-    create_table :suppression_emails do |t|
-      t.string :email
-
-      t.timestamps
-    end
-
-    add_index "suppression_emails", ["email"]
   end
 end

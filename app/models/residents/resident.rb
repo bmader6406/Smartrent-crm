@@ -280,7 +280,7 @@ class Resident
     end
 
     if updated
-      attrs = {:action => action, :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s}
+      attrs = {:action => action, :subject_id => campaign.id, :subject_type => campaign.class.to_s}
       if campaign.tmp_property_id
         attrs[:target_id] = campaign.tmp_property_id
         attrs[:target_type] = "Property"
@@ -299,7 +299,7 @@ class Resident
         if prop && !prop.subscribed?
           prop.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
 
-          marketing_activities.create(:action => "subscribe_property", :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s,
+          marketing_activities.create(:action => "subscribe_property", :subject_id => campaign.id, :subject_type => campaign.class.to_s,
             :target_id => prop.id, :target_type => "Property")
         end
       end
@@ -326,7 +326,7 @@ class Resident
       end
 
       if updated
-        attrs = {:action => "subscribe", :subject_id => campaign.to_root.id, :subject_type => campaign.to_root.class.to_s}
+        attrs = {:action => "subscribe", :subject_id => campaign.id, :subject_type => campaign.class.to_s}
         if campaign.tmp_property_id
           attrs[:target_id] = campaign.tmp_property_id
           attrs[:target_type] = "Property"
@@ -389,12 +389,8 @@ class Resident
 
   # for unsubscribe
   def to_cross_audience(va_campaign)
-    newsletter_hylet = va_campaign.first_nlt_hylet rescue nil
-
-    return nil if !newsletter_hylet
-
     property_ids = properties.collect{|p| p.property_id }
-    audiences = newsletter_hylet.cross_audiences
+    audiences = cross_audiences
 
     #find sub-org audience which the lead belongs to
     audience = audiences.detect{|a| property_ids.include?(a.property_id.to_s) }

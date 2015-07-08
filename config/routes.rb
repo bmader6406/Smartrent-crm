@@ -128,7 +128,6 @@ Rails.application.routes.draw do
     resources :templates do
       member do
         get :preview
-        post :duplicate
       end
       
     end

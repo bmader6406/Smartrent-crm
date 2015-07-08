@@ -1,7 +1,7 @@
 # Load the Rails application.
 require File.expand_path('../application', __FILE__)
 
-NIMDA_U, NIMDA_P = "hylynimda", "ZXCV!@34asdf"
+NIMDA_U, NIMDA_P = "crmnimda", "CRMn1md4"
 
 RETRY_LIMIT = 3
 RETRY_DELAY = 30
@@ -13,8 +13,7 @@ CHANNELS = ["email"]
 #Twitter CRM app of jjjsllc
 TWITTER_KEY = "VnbSsb1JvcaIJEqd3OTOg"
 TWITTER_SECRET = "2U5VYZkeImzQ022EGwFNzgmQnjk9pM2ULMNQj9xhM8"
-TWITTER_ACCESS_TOKEN = "120244684-vutyefi4Ra65QwFDG0DniCX2wF2GvEdAmA4rfmTx"
-TWITTER_ACCESS_SECRET = "gGQ2TDNOse4zRLBejfPCv17uYRdNLRqiHblH9yPlE"
+
 
 FACEBOOK_ID = 173801062636343
 FACEBOOK_KEY = "631826feeb542f675961c085a3004e15"
@@ -24,7 +23,6 @@ OPS_U = 'ops@hy.ly'
 OPS_P = 'HcmcNyc!@34'
 
 DROPBOX_KEY = "mz42zotb5v03alt"
-AVIARY_KEY = "jk1wj4kf7bt36inm"
 
 # CRM Leads: https://console.developers.google.com/project/289130776929
 GOOGLE_KEY = "AIzaSyDgtk2nMDv_NKRkbTKsZ2HxN1bW0JRXMcE"

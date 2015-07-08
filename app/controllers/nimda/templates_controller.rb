@@ -15,13 +15,12 @@ class Nimda::TemplatesController < NimdaController
   end
   
   def create
-    template_campaign = TemplateCampaign.create(:annotation => "Nimda Template")
-    template_campaign.hylets.create(:type => "NewsletterHylet", :title2 => "raw_html")
+    template_campaign = TemplateCampaign.create(:subject => "Hello world!")
 
     template = Template.new({
       :user_id => current_user.id,
       :campaign => template_campaign,
-      :name => template_campaign.annotation
+      :name => "Unnamed"
     })
 
     if template.save
@@ -30,12 +29,6 @@ class Nimda::TemplatesController < NimdaController
       flash[:error] = "There was an error, please try again"
       redirect_to nimda_templates_url
     end
-  end
-  
-  def duplicate
-    parent_template = @template.duplicate
-
-    redirect_to(nimda_template_url(parent_template), :notice => 'Template was successfully duplicated.')
   end
   
   def show
@@ -54,8 +47,7 @@ class Nimda::TemplatesController < NimdaController
     
     respond_to do |format|
       if @template.update_attributes(template_params)
-        @template.campaign.newsletter_hylet.update_attributes(:body_html => params[:body_html])
-        
+        @template.campaign.update_attributes(:body_html => params[:body_html])
         format.html { redirect_to(nimda_template_url(@template), :notice => 'Template was successfully updated.') }
       else
         show

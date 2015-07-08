@@ -1,18 +1,16 @@
 object @campaign
 
 node do |n|
-  hylet = n.newsletter_hylet #from cache
-  hylet = n.first_nlt_hylet if !hylet #fetch
   hash = {
     :id => n.id.to_s,
-    :id_url => link_to(hylet.subject, edit_property_campaign_path(@property, n)),
+    :id_url => link_to(n.subject, edit_property_campaign_path(@property, n)),
     :show_path => property_campaign_path(@property, n),
     :edit_path => edit_property_campaign_path(@property, n),
-    :subject => hylet.subject,
-    :from => hylet.from,
-    :audience_id => hylet.audience_ids.first,
-    :audience_name => hylet.audiences.collect{|a| a.name },
-    :body_text => hylet.body_text,
+    :subject => n.subject,
+    :from => n.from,
+    :audience_id => n.audience_ids.first,
+    :audience_name => n.audiences.collect{|a| a.name },
+    :body_text => n.body_text,
     :published_at => (n.published_at.to_s(:friendly_time) rescue nil),
     :published_date => (n.published_at.strftime("%Y-%b-%d") rescue nil),
     :published_time => (n.published_at.strftime("%l:%M %p") rescue nil)
@@ -29,4 +27,4 @@ node do |n|
   hash
 end
 
-attributes :annotation, :created_at
+attributes :subject, :created_at

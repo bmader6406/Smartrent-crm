@@ -51,19 +51,19 @@ class Notifier < ActionMailer::Base
     mail(:to => email, :from => meta["from"], :subject => subject, :bcc => meta["bcc"], :reply_to => meta["reply_to"])
   end
   
-  def campaign_newsletter(campaign, newsletter, resident, meta)
+  def campaign_newsletter(campaign, resident, meta)
     Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])
     
     macro = resident.to_macro(campaign)
     
-    translate_macro(campaign, newsletter, macro, resident)
+    translate_macro(campaign, macro, resident)
     
     @attachment_urls.split(',').each do |url|
       url = url.strip
       attachments[url.split('/').last] = open(url).read
     end
     
-    tracking_img = "<img src='#{"http://#{campaign.email_domain}/pixel?cid=#{campaign.id}&rid=#{resident.id}"}'/>"
+    tracking_img = "<img src='#{"http://#{HOST}/pixel?cid=#{campaign.id}&rid=#{resident.id}"}'/>"
     body_end = @body_html.scan(/<\/\s*body\s*>/i).first
     
     if body_end
@@ -107,19 +107,19 @@ class Notifier < ActionMailer::Base
       "#{@from_name} <#{email}>"      
     end
     
-    def translate_macro(campaign, newsletter, macro, resident = nil)
+    def translate_macro(campaign, macro, resident = nil)
       #must clone the original template
-      @subject = newsletter.subject.clone
-      @from = newsletter.from.clone
-      @cc = newsletter.cc.clone
-      @bcc = newsletter.bcc.clone
-      @reply_to = newsletter.reply_to.clone
-      @body_html = @body_html || newsletter.body_html.clone
-      @body_plain = @body_plain || newsletter.body_plain.clone
-      @attachment_urls = newsletter.attachments.to_s.clone
+      @subject = campaign.subject.to_s.clone
+      @from = campaign.from.to_s.clone
+      @cc = campaign.cc.to_s.clone
+      @bcc = campaign.bcc.to_s.clone
+      @reply_to = campaign.reply_to.to_s.clone
+      @body_html = @body_html || campaign.body_html.to_s.clone
+      @body_plain = @body_plain || campaign.body_plain.to_s.clone
+      @attachment_urls = campaign.attachments.to_s.clone
 
-      header_macro = newsletter.header_macro
-      body_macro = newsletter.body_macro
+      header_macro = campaign.header_macro
+      body_macro = campaign.body_macro
 
       if !header_macro.empty?
         header_macro.each do |um|
@@ -140,12 +140,11 @@ class Notifier < ActionMailer::Base
       end
       
       if resident
-        url_hash = newsletter.tracking_urls
+        url_hash = campaign.tracking_urls
 
         if !url_hash.empty?
           url_hash.keys.sort{|k1, k2| k2.to_s.length <=> k1.to_s.length}.each do |origin_url|
-            tracking_url = url_hash[origin_url].gsub(HOST, campaign.email_domain) + "?rid=#{resident.id}"
-            tracking_url += "&cid=#{campaign.id}" if campaign.kind_of?(NewsletterRescheduleCampaign)
+            tracking_url = url_hash[origin_url] + "?rid=#{resident.id}"
 
             @body_html.gsub!("'#{origin_url}'", tracking_url)
             @body_html.gsub!("\"#{origin_url}\"", tracking_url)

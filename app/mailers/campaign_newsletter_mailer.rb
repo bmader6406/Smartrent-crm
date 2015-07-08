@@ -4,22 +4,21 @@ class CampaignNewsletterMailer < QueuedMailer
     :crm_newsletter
   end
   
-  def self.perform(variate_campaign_id, resident_ids, first_batch = false)
+  def self.perform(campaign_id, resident_ids, first_batch = false)
     
     return true if resident_ids.empty?
     
-    campaign = Campaign.find(variate_campaign_id)
-    newsletter = campaign.newsletter_hylet
+    campaign = Campaign.find(campaign_id)
     property = campaign.property
     
     app_setting = PropertySetting.app_setting
     
     
-    send_col = [:type, :property_id, :campaign_id, :campaign_variation_id, :resident_id, :mimepart, :executed_time, :message_id]
+    send_col = [:type, :property_id, :campaign_id, :resident_id, :mimepart, :executed_time, :message_id]
     send_val = []
     send_ids = []
     
-    blacklisted_col = [:type, :property_id, :campaign_id, :campaign_variation_id, :resident_id]
+    blacklisted_col = [:type, :property_id, :campaign_id, :resident_id]
     blacklisted_val = []
     blacklisted_ids = []
     
@@ -38,18 +37,16 @@ class CampaignNewsletterMailer < QueuedMailer
       end
       
       res = unsubscribe_resident_if_blacklisted(resident, campaign) { 
-        Notifier.campaign_newsletter(campaign, newsletter, resident, {
-          :bcc_emails => bcc_emails
-        }).deliver_now
+        Notifier.campaign_newsletter(campaign, resident, { :bcc_emails => bcc_emails }).deliver_now
       }
 
       if res[:mimepart]
-        send_val << ["SendEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id, res[:mimepart], res[:executed_time], res[:message_id]]
+        send_val << ["SendEvent", campaign.property_id, campaign.id, resident.id, res[:mimepart], res[:executed_time], res[:message_id]]
         send_ids << resident.id
       
       elsif res[:blacklisted]
       
-        blacklisted_val << ["BlacklistedEvent", campaign.property_id, campaign.to_root_id, campaign.variation_id, resident.id]
+        blacklisted_val << ["BlacklistedEvent", campaign.property_id, campaign.id, resident.id]
         blacklisted_ids << resident.id
       end
       
@@ -64,9 +61,7 @@ class CampaignNewsletterMailer < QueuedMailer
     
     #update counters
     
-    Campaign.update_counters campaign.to_root_id, SendEvent.attr_count => send_val.length, BlacklistedEvent.attr_count => blacklisted_val.length
-    Campaign.update_counters campaign.id, "variant_#{SendEvent.attr_count.to_s}" => send_val.length,
-      "variant_#{BlacklistedEvent.attr_count.to_s}" => blacklisted_val.length
+    Campaign.update_counters campaign.id, SendEvent.attr_count => send_val.length, BlacklistedEvent.attr_count => blacklisted_val.length
       
     
   end

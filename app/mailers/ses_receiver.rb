@@ -23,8 +23,7 @@ class SesReceiver
         
         if message["notificationType"] == "Complaint"
           if !ComplaintEvent.where(:campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id).first
-            ComplaintEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id,
-              :campaign_variation_id => send_event.campaign_variation_id, :resident_id => send_event.resident_id )
+            ComplaintEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id )
           end
         
           complaints_count += 1
@@ -35,8 +34,7 @@ class SesReceiver
         
         if message["notificationType"] == "Bounce"
           if !BounceEvent.where(:campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id).first
-            BounceEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id,
-              :campaign_variation_id => send_event.campaign_variation_id, :resident_id => send_event.resident_id, :bounce_type => message["bounce"]["bounceType"] )
+            BounceEvent.create( :property_id => send_event.property_id, :campaign_id => send_event.campaign_id, :resident_id => send_event.resident_id, :bounce_type => message["bounce"]["bounceType"] )
           end
         
           bounces_count += 1

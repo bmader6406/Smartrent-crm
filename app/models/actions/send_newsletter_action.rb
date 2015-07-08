@@ -42,59 +42,20 @@ class SendNewsletterAction
   
   def self.perform(action_id, type = "send_now")
     action = DelayedAction.find_by_id(action_id)
+    campaign = action.subject
     
-    if action
-      campaign = action.subject
-      newsletter_hylet = campaign.first_nlt_hylet
-
-      if campaign
-        if type == "schedule" #for schedule only
-          
-          schedules = newsletter_hylet.schedules
-          current = schedules.detect{|s| s["action_id"].to_i == action.id }
-          current["is_send"] = true
-          
-          newsletter_hylet.update_attributes(:email_project => {:schedules => schedules})
-          
-          if !campaign.is_published? && schedules.all?{|s| s["is_send"] }
-            campaign.update_attributes(:is_published => true)
-          end
-        end
-        
-        enqueue(campaign, newsletter_hylet)
-        
-      end
-
-      action.destroy
-      
-    end #end if action
-    
-  end
-  
-  def self.batch_size(total)
-    s = 10
-    
-    if total >= 10000
-      s = 500
-    elsif total >= 5000
-      s = 250
-    elsif total >= 1000
-      s = 50
-    elsif total >= 500
-      s = 25
-    elsif total >= 100
-      s = 5
-    elsif total >= 50
-      s = 2
+    if campaign
+      campaign.update_attributes(:is_published => true)
+      enqueue(campaign)
     end
-    
-    s
+
+    action.destroy
   end
   
-  def self.enqueue(campaign, newsletter_hylet)
+  def self.enqueue(campaign)
     first_batch = true
     property = campaign.property
-    audiences = newsletter_hylet.audiences
+    audiences = campaign.audiences
     
     #send across superorg, property
     property_ids = []
@@ -113,11 +74,6 @@ class SendNewsletterAction
     audience_counts = audiences.collect{|audience|
       {"id" => audience.id, "name" => audience.name, "property_id" => audience.property_id, "count" => audience.residents.count}
     }
-    
-    vc_ids = {}
-    campaign.channel_variates.each do |v|
-      vc_ids[v.variate_campaign_id] = v.variate_campaign_id
-    end
     
     campaign.update_attribute(:audience_counts, audience_counts)
     
@@ -150,9 +106,7 @@ class SendNewsletterAction
       end
     end
     
-    step = batch_size( redis_client.scard(set_name) )
-    
-    step = 500 if campaign.channel_variates.length == 1 #default to 500 if there is only one variant
+    step = 500
     
     pp "redis_client.scard(set_name) #{redis_client.scard(set_name)}"
     
@@ -170,13 +124,12 @@ class SendNewsletterAction
       end
       
       num = ((total-1)/quota).to_i
-      campaign_id = vc_ids[campaign.channel_random_variate.variate_campaign_id]
       
       if num == 0
-        Resque.enqueue_to(email_queue, mailer_clzz, campaign_id, resident_ids, first_batch)
+        Resque.enqueue_to(email_queue, mailer_clzz, campaign.id, resident_ids, first_batch)
         
       elsif !resident_ids.empty?
-        Resque.enqueue_at_with_queue(email_queue, now + num.day, mailer_clzz, campaign_id, resident_ids, first_batch)
+        Resque.enqueue_at_with_queue(email_queue, now + num.day, mailer_clzz, campaign.id, resident_ids, first_batch)
         
       end
     
@@ -187,7 +140,7 @@ class SendNewsletterAction
       error = "Invalid send!! Long query may be killed at #{Time.now.utc} (executed at #{now}), audience_counts: #{audience_counts}"
       
       Notifier.system_message("[#{campaign.property.name}] SendNewsletterAction - FAILURE",
-        "campaign id: #{campaign.id}, campaign name: #{campaign.annotation} <br><br> ERROR DETAILS: #{error}", Notifier::DEV_ADDRESS).deliver_now
+        "campaign id: #{campaign.id}, campaign name: #{campaign.subject} <br><br> ERROR DETAILS: #{error}", Notifier::DEV_ADDRESS).deliver_now
       
       raise error
     end
@@ -195,15 +148,13 @@ class SendNewsletterAction
     #remove redis key
     redis_client.del set_name
     
-    notification_emails = campaign.notification_emails.uniq.reject{|e| e.blank? }
-
     if ["NewsletterCampaign"].include?(campaign.class.to_s)
-      Notifier.system_message("[#{property.name}] Newsletter Status: Sent", email_body(campaign, newsletter_hylet, total, audience_counts, now),
-        notification_emails, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now      
+      Notifier.system_message("[#{property.name}] Newsletter Status: Sent", email_body(campaign, total, audience_counts, now),
+        campaign.property.setting.notification_emails.uniq.reject{|e| e.blank? }, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now      
     end
   end
   
-  def self.email_body(campaign, newsletter_hylet, total, audience_counts, executed_at)
+  def self.email_body(campaign, total, audience_counts, executed_at)
     executed_at = executed_at.in_time_zone(campaign.property_setting.time_zone)
     
     audiences = audience_counts.collect{|a| "#{Property.find(a["property_id"]).name} #{a["name"]} (#{a["count"]})" }.join(" + ")
@@ -211,7 +162,7 @@ class SendNewsletterAction
     return <<-MESSAGE
     
 - Property:  #{campaign.property.name} <br>
-- Subject:  <a href="#{campaign.dashboard_url}">#{newsletter_hylet.subject}</a> <br>
+- Subject:  <a href="#{campaign.dashboard_url}">#{campaign.subject}</a> <br>
 - Audience: #{audiences}<br>
 - Sent:  #{total} <br>
 - Date:  #{executed_at.strftime("%m/%d/%Y")} at #{executed_at.strftime("%l:%M %p")} <br>

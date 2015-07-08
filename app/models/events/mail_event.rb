@@ -12,15 +12,10 @@ class MailEvent < Event
     self
   end
   
-  def variate_campaign
-    @variate_campaign ||= CampaignVariation.find_by(campaign_id: campaign_id, id: campaign_variation_id).variate_campaign rescue nil
-  end
-  
   private
     
     def increase_counter_cache
       Campaign.update_counters campaign_id, self.class.attr_count => 1
-      Campaign.update_counters variate_campaign.id, "variant_#{self.class.attr_count.to_s}" => 1 if variate_campaign
     end
     
     def create_activity
@@ -35,7 +30,7 @@ class MailEvent < Event
           end
           
         when "UniqueOpenEvent"
-          if resident && variate_campaign.kind_of?(NewsletterCampaign)
+          if resident && campaign.kind_of?(NewsletterCampaign)
             open_mail = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "open_mail" }
             
             if open_mail
@@ -58,7 +53,7 @@ class MailEvent < Event
           end
           
         when "UniqueLinkClickEvent"
-          if resident && variate_campaign.kind_of?(NewsletterCampaign)
+          if resident && campaign.kind_of?(NewsletterCampaign)
             click_link = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "click_link" }
             
             if click_link

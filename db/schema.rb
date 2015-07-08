@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150707101036) do
+ActiveRecord::Schema.define(version: 20150703180858) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -87,61 +87,39 @@ ActiveRecord::Schema.define(version: 20150707101036) do
   add_index "calls", ["comment_id"], name: "index_calls_on_comment_id", using: :btree
   add_index "calls", ["origin_id"], name: "index_calls_on_origin_id", using: :btree
 
-  create_table "campaign_variations", force: :cascade do |t|
-    t.string   "type",                limit: 255
-    t.integer  "campaign_id",         limit: 4
-    t.integer  "variate_campaign_id", limit: 4
-    t.integer  "weight",              limit: 4,   default: 1
-    t.integer  "weight_percent",      limit: 4,   default: 0
-    t.boolean  "can_delete",          limit: 1,   default: true
-    t.integer  "channel",             limit: 4,   default: 0
-    t.string   "channel_name",        limit: 255
-    t.string   "version",             limit: 255, default: "0"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "campaign_variations", ["campaign_id"], name: "index_campaign_variations_on_campaign_id", using: :btree
-
   create_table "campaigns", force: :cascade do |t|
-    t.string   "type",                        limit: 255
-    t.string   "annotation",                  limit: 255
-    t.integer  "property_id",                 limit: 4
-    t.integer  "user_id",                     limit: 4
-    t.integer  "parent_id",                   limit: 4
-    t.integer  "root_id",                     limit: 4
-    t.integer  "group_id",                    limit: 4
-    t.integer  "template_id",                 limit: 4
-    t.text     "audience_counts",             limit: 65535
-    t.boolean  "is_published",                limit: 1,     default: false, null: false
+    t.string   "type",                limit: 255
+    t.integer  "property_id",         limit: 4
+    t.integer  "user_id",             limit: 4
+    t.integer  "template_id",         limit: 4
+    t.string   "from",                limit: 255
+    t.string   "subject",             limit: 255
+    t.string   "reply_to",            limit: 255
+    t.string   "cc",                  limit: 255
+    t.string   "bcc",                 limit: 255
+    t.text     "body_plain",          limit: 16777215
+    t.text     "body_html",           limit: 16777215
+    t.text     "body_text",           limit: 16777215
+    t.text     "attachments",         limit: 65535
+    t.text     "audience_ids",        limit: 65535
+    t.text     "audience_counts",     limit: 65535
+    t.boolean  "is_published",        limit: 1,        default: false, null: false
     t.datetime "published_at"
-    t.integer  "sends_count",                 limit: 4,     default: 0
-    t.integer  "variant_sends_count",         limit: 4,     default: 0
-    t.integer  "opens_count",                 limit: 4,     default: 0
-    t.integer  "variant_opens_count",         limit: 4,     default: 0
-    t.integer  "unique_opens_count",          limit: 4,     default: 0
-    t.integer  "variant_unique_opens_count",  limit: 4,     default: 0
-    t.integer  "clicks_count",                limit: 4,     default: 0
-    t.integer  "variant_clicks_count",        limit: 4,     default: 0
-    t.integer  "unsubscribes_count",          limit: 4,     default: 0
-    t.integer  "variant_unsubscribes_count",  limit: 4,     default: 0
-    t.integer  "blacklisted_count",           limit: 4,     default: 0
-    t.integer  "variant_blacklisted_count",   limit: 4,     default: 0
-    t.integer  "complaints_count",            limit: 4,     default: 0
-    t.integer  "variant_complaints_count",    limit: 4,     default: 0
-    t.integer  "bounces_count",               limit: 4,     default: 0
-    t.integer  "variant_bounces_count",       limit: 4,     default: 0
-    t.integer  "unique_clicks_count",         limit: 4,     default: 0
-    t.integer  "variant_unique_clicks_count", limit: 4,     default: 0
+    t.integer  "sends_count",         limit: 4,        default: 0
+    t.integer  "opens_count",         limit: 4,        default: 0
+    t.integer  "unique_opens_count",  limit: 4,        default: 0
+    t.integer  "clicks_count",        limit: 4,        default: 0
+    t.integer  "unsubscribes_count",  limit: 4,        default: 0
+    t.integer  "blacklisted_count",   limit: 4,        default: 0
+    t.integer  "complaints_count",    limit: 4,        default: 0
+    t.integer  "bounces_count",       limit: 4,        default: 0
+    t.integer  "unique_clicks_count", limit: 4,        default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
   end
 
-  add_index "campaigns", ["group_id"], name: "index_campaigns_on_group_id", using: :btree
-  add_index "campaigns", ["parent_id"], name: "index_campaigns_on_parent_id", using: :btree
   add_index "campaigns", ["property_id", "created_at"], name: "index_campaigns_on__property_id_and_created_at", using: :btree
-  add_index "campaigns", ["root_id"], name: "index_campaigns_on_root_id", using: :btree
   add_index "campaigns", ["user_id"], name: "index_campaigns_on_user_id", using: :btree
 
   create_table "categories", force: :cascade do |t|
@@ -186,22 +164,21 @@ ActiveRecord::Schema.define(version: 20150707101036) do
   add_index "emails", ["token"], name: "index_emails_on_token", using: :btree
 
   create_table "events", force: :cascade do |t|
-    t.string   "type",                  limit: 255
-    t.integer  "campaign_id",           limit: 4
-    t.integer  "property_id",           limit: 4
-    t.integer  "campaign_variation_id", limit: 4
-    t.integer  "resident_id",           limit: 8
-    t.integer  "url_id",                limit: 4
-    t.string   "resolution",            limit: 255
-    t.string   "browser",               limit: 255
-    t.string   "os",                    limit: 255
-    t.string   "country",               limit: 255
-    t.string   "ip",                    limit: 255
+    t.string   "type",          limit: 255
+    t.integer  "campaign_id",   limit: 4
+    t.integer  "property_id",   limit: 4
+    t.integer  "resident_id",   limit: 8
+    t.integer  "url_id",        limit: 4
+    t.string   "resolution",    limit: 255
+    t.string   "browser",       limit: 255
+    t.string   "os",            limit: 255
+    t.string   "country",       limit: 255
+    t.string   "ip",            limit: 255
     t.datetime "opened_at"
-    t.integer  "response_time",         limit: 4
-    t.string   "mimepart",              limit: 255
-    t.float    "executed_time",         limit: 24,  default: 0.0
-    t.string   "message_id",            limit: 255
+    t.integer  "response_time", limit: 4
+    t.string   "mimepart",      limit: 255
+    t.float    "executed_time", limit: 24,  default: 0.0
+    t.string   "message_id",    limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -212,32 +189,6 @@ ActiveRecord::Schema.define(version: 20150707101036) do
   add_index "events", ["message_id"], name: "index_events_on_message_id", using: :btree
   add_index "events", ["mimepart"], name: "index_events_on_mimepart", using: :btree
   add_index "events", ["type", "campaign_id"], name: "index_events_on_type_and_campaign_id", using: :btree
-
-  create_table "hylets", force: :cascade do |t|
-    t.string   "type",        limit: 255
-    t.integer  "property_id", limit: 4
-    t.integer  "campaign_id", limit: 4
-    t.string   "title1",      limit: 255
-    t.text     "text1",       limit: 16777215
-    t.text     "style1",      limit: 65535
-    t.integer  "value1",      limit: 4,        default: 0
-    t.boolean  "flag1",       limit: 1,        default: false
-    t.string   "title2",      limit: 255
-    t.text     "text2",       limit: 16777215
-    t.text     "style2",      limit: 65535
-    t.integer  "value2",      limit: 4,        default: 0
-    t.boolean  "flag2",       limit: 1,        default: false
-    t.string   "title3",      limit: 255
-    t.text     "text3",       limit: 16777215
-    t.text     "style3",      limit: 65535
-    t.integer  "value3",      limit: 4,        default: 0
-    t.boolean  "flag3",       limit: 1,        default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "hylets", ["campaign_id", "type"], name: "index_hylets_on_campaign_id_and_type", using: :btree
-  add_index "hylets", ["property_id", "type"], name: "index_hylets_on_property_id_and_type", using: :btree
 
   create_table "invites", force: :cascade do |t|
     t.string   "email",       limit: 255
@@ -310,26 +261,14 @@ ActiveRecord::Schema.define(version: 20150707101036) do
   add_index "properties", ["user_id"], name: "index_properties_on_user_id", using: :btree
 
   create_table "property_settings", force: :cascade do |t|
-    t.integer  "property_id",          limit: 4
-    t.text     "notification_emails",  limit: 65535
-    t.string   "time_zone",            limit: 255
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.integer  "property_id",         limit: 4
+    t.text     "notification_emails", limit: 65535
+    t.string   "time_zone",           limit: 255
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   add_index "property_settings", ["property_id"], name: "index_property_settings_on_property_id", using: :btree
-
-  create_table "recipients", force: :cascade do |t|
-    t.integer  "campaign_id", limit: 4
-    t.integer  "audience_id", limit: 4
-    t.integer  "resident_id", limit: 8
-    t.string   "status",      limit: 255
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-  end
-
-  add_index "recipients", ["campaign_id", "resident_id", "audience_id"], name: "index_recipients_on_campaign_resident_audience", using: :btree
-  add_index "recipients", ["campaign_id", "resident_id", "status"], name: "index_recipients_on_campaign_resident_status", using: :btree
 
   create_table "regions", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -360,14 +299,6 @@ ActiveRecord::Schema.define(version: 20150707101036) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
-
-  create_table "suppression_emails", force: :cascade do |t|
-    t.string   "email",      limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "suppression_emails", ["email"], name: "index_suppression_emails_on_email", using: :btree
 
   create_table "templates", force: :cascade do |t|
     t.integer  "user_id",     limit: 4
@@ -469,30 +400,5 @@ ActiveRecord::Schema.define(version: 20150707101036) do
   end
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
-
-  create_table "variation_metrics", force: :cascade do |t|
-    t.integer  "campaign_id",         limit: 4
-    t.integer  "variation_id",        limit: 4
-    t.string   "type",                limit: 255
-    t.string   "text",                limit: 255
-    t.integer  "property_id",         limit: 4
-    t.integer  "sends_count",         limit: 4,   default: 0
-    t.integer  "opens_count",         limit: 4,   default: 0
-    t.integer  "unique_opens_count",  limit: 4,   default: 0
-    t.integer  "unsubscribes_count",  limit: 4,   default: 0
-    t.integer  "clicks_count",        limit: 4,   default: 0
-    t.integer  "blacklisted_count",   limit: 4,   default: 0
-    t.integer  "complaints_count",    limit: 4,   default: 0
-    t.integer  "bounces_count",       limit: 4,   default: 0
-    t.integer  "events_count",        limit: 4,   default: 0
-    t.integer  "unique_clicks_count", limit: 4,   default: 0
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "variation_metrics", ["campaign_id", "type", "created_at"], name: "index_variation_metrics_on_campaign_id_and_type_and_created_at", using: :btree
-  add_index "variation_metrics", ["campaign_id"], name: "index_variation_metrics_on_campaign_id", using: :btree
-  add_index "variation_metrics", ["property_id", "type", "created_at"], name: "index_vm_on_property_and_type_and_ca", using: :btree
-  add_index "variation_metrics", ["property_id", "variation_id", "type"], name: "index_vm_on_property_and_variation_and_type", using: :btree
 
 end

@@ -52,11 +52,10 @@ class UnsubscribesController < ApplicationController
         
         @resident.unsubscribe(@campaign, params[:all] ? "unsubscribe_confirm_all" : "unsubscribe_confirm")
           
-        event = UnsubscribeClickEvent.find_by(campaign_id: @campaign.to_root_id, resident_id: @resident.id)
+        event = UnsubscribeClickEvent.find_by(campaign_id: @campaign.id, resident_id: @resident.id)
       
         if !event
-          UnsubscribeClickEvent.create( :property_id => @campaign.property_id, :campaign_id => @campaign.to_root_id,
-              :campaign_variation_id => @campaign.variation_id, :resident_id => @resident.id )
+          UnsubscribeClickEvent.create( :property_id => @campaign.property_id, :campaign_id => @campaign.id, :resident_id => @resident.id )
         end
       
       else
@@ -114,7 +113,7 @@ class UnsubscribesController < ApplicationController
     def switch_page #if the lead not belongs to this page, switch to the shared audience page
       @property = @campaign.property
       
-      if @campaign.kind_of?(NewsletterCampaign) && !@resident.properties.detect{|p| p.property_id == @property.id.to_s }
+      if !@resident.properties.detect{|p| p.property_id == @property.id.to_s }
         audience = @resident.to_cross_audience(@campaign)
         
         if audience && audience.property

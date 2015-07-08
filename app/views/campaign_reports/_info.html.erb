@@ -1,6 +1,3 @@
-<% 
-  hylet = @campaign.first_nlt_hylet
-%>
 <div class="campaign-info">
   <div class="crud-buttons">
     <table>
@@ -19,14 +16,14 @@
     <h3> Notice Info </h3>
     <ul class="list-unstyled">
       <li>
-        <b>Subject:</b> <%= hylet.subject %>
+        <b>Subject:</b> <%= @campaign.subject %>
       </li>
       <li>
-        <b>From:</b> <%= hylet.from %>
+        <b>From:</b> <%= @campaign.from %>
       </li>
       <li>
         <b>To:</b> 
-        <%= @campaign.first_nlt_hylet.audiences.collect{|a| a.long_name }.join(', ') %>
+        <%= @campaign.audiences.collect{|a| a.long_name }.join(', ') %>
       </li>
       <li>
         <b>Sent At:</b> <%= @campaign.sent_at %>

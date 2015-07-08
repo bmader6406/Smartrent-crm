@@ -24,8 +24,7 @@ class CampaignLogger
         
         attrs = {
           :property_id => campaign.property_id,
-          :campaign_id => campaign.to_root_id,
-          :campaign_variation_id => campaign.variation_id,
+          :campaign_id => campaign.id,
           :resident_id => param["rid"],
           :url_id => param["url_id"],
           :created_at => Time.at(param["request_time"].to_i)
@@ -34,7 +33,7 @@ class CampaignLogger
         LinkClickEvent.create(attrs)
         
         #must be below click event (wait for click activity created)
-        unique_click = UniqueLinkClickEvent.find_by_campaign_id_and_resident_id(campaign.to_root_id, param["rid"])
+        unique_click = UniqueLinkClickEvent.find_by_campaign_id_and_resident_id(campaign.id, param["rid"])
 
         if !unique_click
           UniqueLinkClickEvent.create(attrs)
@@ -54,8 +53,7 @@ class CampaignLogger
         if location && !location["error"]
           attrs = {
             :property_id => campaign.property_id,
-            :campaign_id => campaign.to_root_id,
-            :campaign_variation_id => campaign.variation_id,
+            :campaign_id => campaign.id,
             :resident_id => param["rid"],
             :created_at => Time.at(param["request_time"].to_i)
           }
@@ -63,7 +61,7 @@ class CampaignLogger
           OpenEvent.create(attrs)
 
           #must be below open event (wait for open activity created)
-          unique_open = UniqueOpenEvent.find_by_campaign_id_and_resident_id(campaign.to_root_id, param["rid"])
+          unique_open = UniqueOpenEvent.find_by_campaign_id_and_resident_id(campaign.id, param["rid"])
 
           if !unique_open
             user_agent = UserAgent.parse(param["user_agent"])

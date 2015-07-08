@@ -49,58 +49,58 @@ class MarketingActivity
             "Imported"
             
           when "send_mail"
-            "<b>Received</b> newsletter <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a>"
+            "<b>Received</b> newsletter <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a>"
 
           when "open_mail"
-            "<b>Opened</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Opened</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
 
           when "click_link"
-            "<b>Clicked</b> <a href='#{target.origin_url}' target='_blank'>#{target.origin_url}</a> link in the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Clicked</b> <a href='#{target.origin_url}' target='_blank'>#{target.origin_url}</a> link in the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
 
           when "bounce"
-            "<a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter was bounced"
+            "<a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter was bounced"
 
           when "blacklist"
-            "<b>Blacklisted</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Blacklisted</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
 
           when "complain"
-            "<b>Complained</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Complained</b> <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
 
           when "unsubscribe" #legacy
-            "<b>Clicked</b> unsubscribe link in the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Clicked</b> unsubscribe link in the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             
           when "unsubscribe_confirm"
             if target && subject
-              "<b>Unsubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+              "<b>Unsubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             elsif subject && subject.property
-              "<b>Unsubscribed</b> <a href='#{subject.property.index_url}' target='_blank'>#{subject.property.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+              "<b>Unsubscribed</b> <a href='#{subject.property.index_url}' target='_blank'>#{subject.property.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             else
               "<b>Unsubscribed</b>"
             end
             
           when "unsubscribe_confirm_all"
-            "<b>Unsubscribed</b> all sub-orgs from the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Unsubscribed</b> all sub-orgs from the <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             
           when "unsubscribe_blacklisted"
-            "Auto-unsubscribe - Reason: Blacklisted <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "Auto-unsubscribe - Reason: Blacklisted <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             
           when "unsubscribe_bounce"
-            "Auto-unsubscribe - Reason: <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter was bounced"
+            "Auto-unsubscribe - Reason: <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter was bounced"
             
           when "unsubscribe_complaint"
-            "Auto-unsubscribe - Reason: Complained <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "Auto-unsubscribe - Reason: Complained <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
 
           when "subscribe"
             if target && subject
-              "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+              "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             elsif subject && subject.property
-              "<b>Resubscribed</b> <a href='#{subject.property.index_url}' target='_blank'>#{subject.property.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+              "<b>Resubscribed</b> <a href='#{subject.property.index_url}' target='_blank'>#{subject.property.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
             else
               "Resubscribed"
             end
             
           when "subscribe_property"
-            "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.annotation(true)}</a> newsletter"
+            "<b>Resubscribed</b> <a href='#{target.index_url}' target='_blank'>#{target.name}</a> from <a href='#{subject.dashboard_url}' target='_blank'>#{subject.subject}</a> newsletter"
         end
         
       else

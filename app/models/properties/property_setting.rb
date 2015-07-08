@@ -1,6 +1,7 @@
 class PropertySetting < ActiveRecord::Base
   belongs_to :property
   before_create :set_time_zone    
+  
   serialize :notification_emails, Array
 
   def self.app_setting

@@ -17,38 +17,6 @@
         </p>
       
       <% end %>
-      
-    <% else %>
-      
-      <%
-        #pretend entry
-        if params[:cid] && params[:rid]
-          @campaign = Campaign.find(params[:cid])
-          @property = @campaign.property
-          @pretend_resident = @property.residents.find(params[:rid]) rescue nil
-        end
-      %>
-      
-      <% if @pretend_resident %>
-        <% if params[:all] && !@properties.blank? %>
-          <p>
-            We have subscribed <a class="email"><%= @pretend_resident.email %></a> to <b><%= @properties.collect{|p| p.name }.join(", ") %></b> mailing lists.<br><br>
-          </p>
-
-        <% else %>
-          <p>
-            We have subscribed <a class="email"><%= @pretend_resident.email %></a></a> to <b><%= list_name %></b> mailing list.<br><br>
-          </p>
-        
-        <% end %>
-        
-      <% else %>
-        <p>
-          We have subscribed <a class="email">test@company.com</a> to <b>Test Company</b> mailing list.<br><br>
-        </p>
-                
-      <% end %>
-      
     <% end %>
     
     <div id="branding"><a href="http://bozzuto.com/" title="Powered by CRM"> Powered by CRM</a></div>

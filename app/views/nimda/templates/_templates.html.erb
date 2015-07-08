@@ -17,8 +17,7 @@
 
     <td>
       <%= link_to 'edit', nimda_template_path(template) %> |
-      <%= link_to 'archive', nimda_template_path(template), :data => {:confirm => 'Are you sure you want to archive this template?'}, :method => :delete %> |
-			<%= link_to 'duplicate', duplicate_nimda_template_path(template), :data => {:confirm => 'Are you sure you want to duplicate this template?'}, :method => :post %>
+      <%= link_to 'archive', nimda_template_path(template), :data => {:confirm => 'Are you sure you want to archive this template?'}, :method => :delete %>
     </td>
   </tr>
 <% end %>
