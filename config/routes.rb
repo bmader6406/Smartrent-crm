@@ -63,19 +63,7 @@ Rails.application.routes.draw do
         get :preview_template
       end
       
-      resources :reports, :controller => "campaign_reports" do
-        collection do
-          post :generate
-          get :export_email_stats
-          get :subscribers
-          get :export_subscribers
-          post :export_subscribers
-
-          get :spam_watch
-          get :export_spam_watch
-          post :generate_spam_watch
-        end    
-      end
+      resources :reports, :controller => "campaign_reports"
     end
     
     resources :assets do
@@ -89,27 +77,12 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :notice_reports, :controller => "campaign_reports" do
-    collection do
-      get :send_summary
-      get :export_send_summary
-      
-      get :send_schedule
-      get :export_send_schedule
-      
-      get :recent_send
-      get :export_recent_send
-    end    
-  end
-  
   resident_resources
   report_resources
   
   resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
   
   # email system
-  resources :audiences
-  
   resources :unsubscribes do
     member do
       post :subscribe

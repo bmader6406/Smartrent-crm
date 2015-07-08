@@ -8,10 +8,6 @@ class HourlyJob
   end
   
   def self.perform(time = Time.now.utc)
-    Resque.enqueue(VariationMetricGenerator, time.to_i)
-    
-    Resque.enqueue(SpamishEmailSent, time.to_i)
-    
     Resque.enqueue(MetricGenerator, time.to_i)
   end
   

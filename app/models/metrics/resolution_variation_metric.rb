@@ -1,3 +1,0 @@
-class  ResolutionVariationMetric < VariationMetric
-  
-end

@@ -313,9 +313,6 @@ ActiveRecord::Schema.define(version: 20150707101036) do
     t.integer  "property_id",          limit: 4
     t.text     "notification_emails",  limit: 65535
     t.string   "time_zone",            limit: 255
-    t.text     "ftp_setting",          limit: 16777215
-    t.text     "universal_recipients", limit: 65535
-    t.boolean  "bcc_responder",        limit: 1,        default: false
     t.datetime "created_at",                                            null: false
     t.datetime "updated_at",                                            null: false
   end

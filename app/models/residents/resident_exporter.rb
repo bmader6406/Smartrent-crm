@@ -233,7 +233,7 @@ class ResidentExporter
         <br><br> To protect your data the download link will work for the next two hours, or until you download the file
         <br>
         <br>
-        Hy.ly Help Team
+        CRM Team
         <br>
         help@hy.ly", @params["recipient"], {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
 

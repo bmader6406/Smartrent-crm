@@ -1,8 +1,0 @@
-<% if params[:summary] %>
-  var leadDialog = $('#lead-dialog');
-  leadDialog.find('.modal-body').html("<%= j(render 'subscribers', :events => @events )%>");
-  leadDialog.find('.modal-title').html(leadDialog.find('.subscribers-list h3').html());
-<% else %>
-  $('#<%= params[:type] %>-event-list').replaceWith("<%= j(render 'subscribers', :events => @events )%>");
-<% end %>
-

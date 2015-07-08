@@ -27,7 +27,6 @@ class MarketingActivity
   def subject
     @subject ||= begin
       s = class_from_string(subject_type).find_by_id(subject_id) rescue nil
-      s.kind_of?(NewsletterRescheduleCampaign) ? s.to_parent : s
     end
   end
   

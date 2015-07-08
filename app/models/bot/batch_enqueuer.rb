@@ -8,13 +8,6 @@
 # 2. crm_batch_builder read 1. to organize jobs to 3
 # 3. >> crm_email_logger_batch
 
-# Manual queue_now
-# 10.times do |i|
-#   pp i
-#   Resque::Scheduler.enqueue_from_config( Resque.next_item_for_timestamp(1404587602) )
-# end
-
-
 class BatchEnqueuer
   extend Resque::Plugins::Retry
   @retry_limit = RETRY_LIMIT

@@ -11,12 +11,10 @@ class Campaign < ActiveRecord::Base
   belongs_to :root, :class_name => "Campaign", :foreign_key => 'root_id'
   
   has_many :hylets, -> { where("hylets.type IS NOT NULL") }, :dependent => :destroy, :foreign_key => "campaign_id"
-
-  has_many :variation_metrics, :dependent => :destroy, :foreign_key => "campaign_id", :class_name => "VariationMetric"
   
   accepts_nested_attributes_for :hylets, :allow_destroy => true
 
-  attr_accessor :duplicating, :template_class, :tmp_timestamp, :tmp_property_id
+  attr_accessor :duplicating, :template_class, :tmp_property_id
   
   # =================
   # = methods =
@@ -25,7 +23,7 @@ class Campaign < ActiveRecord::Base
   default_scope { order('campaigns.created_at DESC') }
   
   scope :for_property, ->(property) { where("property_id = #{property.id} AND root_id IS NULL AND parent_id IS NULL AND 
-   type NOT IN ('TemplateCampaign', 'NewsletterRescheduleCampaign') AND deleted_at IS NULL") }
+   type NOT IN ('TemplateCampaign') AND deleted_at IS NULL") }
 
   def property_setting
     property.setting
@@ -108,15 +106,6 @@ class Campaign < ActiveRecord::Base
       
       dict["all"] = all
       dict
-    end
-  end
-  
-  #variates || multi sends variantes
-  def all_variates
-    if nlt_clzz?
-      multi_sends.collect{|c| c.variates }.flatten
-    else
-      variates
     end
   end
   
@@ -289,40 +278,6 @@ class Campaign < ActiveRecord::Base
     self[:audience_counts] = ac.to_json
   end
   
-  #total sends of the multi-send newsletter
-  def nlt_clzz?
-    self.class.to_s == "NewsletterCampaign"
-  end
-  
-  def sent_ts
-    tmp_timestamp.to_i
-  end
-  
-  #root sends
-  def multi_sends
-    @multi_sends ||= begin
-      if nlt_clzz?
-        [self, NewsletterRescheduleCampaign.where(:group_id => id, :root_id => nil).all].flatten.collect{|c|
-          c if sent_ts == 0 || sent_ts > 0 && c.published_at.to_i == sent_ts
-        }.compact
-      else
-        [self]
-      end
-    end
-  end
-  
-  def variant_sends
-    @variant_sends ||= begin
-      if nlt_clzz?
-        [self, NewsletterRescheduleCampaign.where({:group_id => root_id, :parent_id => id}).all].flatten.collect{|c|
-          c if sent_ts == 0 || sent_ts > 0 && c.published_at.to_i == sent_ts || c.class.to_s == "NewsletterCampaign" && c.to_root.published_at.to_i == sent_ts
-        }.compact
-      else
-        [self]
-      end
-    end
-  end
-  
   ###
   
   def first_nlt_hylet
@@ -330,13 +285,8 @@ class Campaign < ActiveRecord::Base
   end
   
   def sent_at
-    if sent_ts == 0
-      ts = first_nlt_hylet.schedules.collect{|s| Time.zone.at(s["timestamp"].to_i).to_s(:friendly_time) if s["is_send"]}.compact.join(", ")
-      ts.blank? ? (published_at ? published_at.to_s(:friendly_time) : "Not Sent Yet") : ts
-    else
-      schedule = first_nlt_hylet.schedules.detect{|s| s["timestamp"].to_i == sent_ts && s["is_send"]}
-      schedule ? Time.zone.at(sent_ts).to_s(:friendly_time) : "Not Sent Yet"
-    end
+    ts = first_nlt_hylet.schedules.collect{|s| Time.zone.at(s["timestamp"].to_i).to_s(:friendly_time) if s["is_send"]}.compact.join(", ")
+    ts.blank? ? (published_at ? published_at.to_s(:friendly_time) : "Not Sent Yet") : ts
   end
   
   private

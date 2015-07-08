@@ -160,7 +160,6 @@ class CampaignsController < ApplicationController
           # reschedule
           action = SendNewsletterAction.schedule(@campaign, published_at)
           
-          # not support multi schedule
           schedules = [] #hylet.schedules
           schedules << {"timestamp" => published_at.to_i, "action_id" => action.id, "is_send" => false, "subject" => {}}
           schedules = schedules.sort{|a, b| a["timestamp"].to_i <=> b["timestamp"].to_i }

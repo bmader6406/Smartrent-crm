@@ -21,7 +21,7 @@ node do |n|
   arr = [link_to("Preview", preview_property_campaign_path(@property, n), :target => "_blank")]
   
   if n.sends_count > 0
-    arr << link_to("View Reports", property_campaign_reports_path(@property, n), :target => "_blank")
+    arr << link_to("Report", property_campaign_reports_path(@property, n), :target => "_blank")
   end
   
   hash[:actions] = arr.join(" | ")

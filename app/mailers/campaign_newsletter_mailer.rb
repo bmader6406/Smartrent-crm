@@ -4,7 +4,7 @@ class CampaignNewsletterMailer < QueuedMailer
     :crm_newsletter
   end
   
-  def self.perform(variate_campaign_id, resident_ids, timestamp = nil, first_batch = false)
+  def self.perform(variate_campaign_id, resident_ids, first_batch = false)
     
     return true if resident_ids.empty?
     
@@ -14,15 +14,6 @@ class CampaignNewsletterMailer < QueuedMailer
     
     app_setting = PropertySetting.app_setting
     
-    #reschedule
-    schedule = nil
-    custom_subject = nil
-    
-    if timestamp
-      schedule = newsletter.schedules.detect{|s| s["timestamp"].to_i == timestamp}
-      custom_subject = schedule["subject"]["#{campaign.to_reschedule_id}"] if schedule && schedule["subject"]
-      custom_subject = nil if custom_subject.blank?
-    end
     
     send_col = [:type, :property_id, :campaign_id, :campaign_variation_id, :resident_id, :mimepart, :executed_time, :message_id]
     send_val = []
@@ -44,24 +35,11 @@ class CampaignNewsletterMailer < QueuedMailer
         if resident_ids.length > 100
           bcc_emails = [Notifier::DEV_ADDRESS]
         end
-        
-        #bcc first batch universal recipients
-        if first_batch
-          app_setting.universal_recipients.each do |email|
-            bcc_emails << email
-          end
-        end
-        
-      end
-      
-      if schedule
-        resident.unsubscribe_id =  "#{resident.id}#{schedule["timestamp"]}"
       end
       
       res = unsubscribe_resident_if_blacklisted(resident, campaign) { 
         Notifier.campaign_newsletter(campaign, newsletter, resident, {
-          :bcc_emails => bcc_emails,
-          :custom_subject => custom_subject
+          :bcc_emails => bcc_emails
         }).deliver_now
       }
 

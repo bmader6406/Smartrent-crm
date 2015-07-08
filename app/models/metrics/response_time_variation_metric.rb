@@ -1,3 +1,0 @@
-class  ResponseTimeVariationMetric < VariationMetric
-  
-end

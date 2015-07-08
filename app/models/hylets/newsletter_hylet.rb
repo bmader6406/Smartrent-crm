@@ -15,26 +15,6 @@ class NewsletterHylet < Hylet
     self[:title1] = str
   end
   
-  def last_subject
-    ls = schedules.reverse.detect{|s| s["is_send"] }
-    
-    if ls && ls["subject"] && ls["subject"].values.first
-      ls["subject"].values.first
-    else
-      subject
-    end
-  end
-  
-  def curr_subject(timestamp) #for report page
-    ls = schedules.reverse.detect{|s| s["timestamp"].to_i == timestamp }
-    
-    if ls && ls["subject"] && ls["subject"].values.first
-      ls["subject"].values.first
-    else
-      last_subject
-    end
-  end
-  
   def body_html
     self[:text1] || "Your HTML email goes here"
   end

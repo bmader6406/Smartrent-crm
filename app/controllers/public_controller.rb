@@ -22,13 +22,11 @@ class PublicController < ApplicationController
 
       @body_html = newsletter.body_html
 
-      #reschedule message
-      custom_subject = newsletter.schedules.detect{|s| s["timestamp"].to_i == timestamp}["subject"]["#{campaign.to_reschedule_id}"] rescue nil
-      subject = custom_subject || newsletter.subject
+      subject = newsletter.subject
 
       title = @body_html.scan(/<title>(.*?)<\/title>/i).first
 
-      if title #replace custom_subject if exist, or replace the default Email Subject
+      if title #replace subject if exist, or replace the default Email Subject
         @body_html = @body_html.sub(/<title>(.*?)<\/title>/i, "<title>#{subject}</title>")
 
       elsif !title #auto append title tag

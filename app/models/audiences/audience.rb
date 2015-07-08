@@ -9,8 +9,8 @@ class Audience < ActiveRecord::Base
   
   #### unique leads count
   
-  def self.unique_leads_count(query)
-    #pp ">> unique_leads_count", query
+  def self.unique_residents_count(query)
+    #pp ">> unique_residents_count", query
     Resident.with(:consistency => :eventual).collection.aggregate([
        { "$match" => query},
        { "$group" => { :_id => "$_id" } },
@@ -18,8 +18,8 @@ class Audience < ActiveRecord::Base
     ])[0]["count"] rescue 0
   end
   
-  def self.unique_leads_listing(query, limit, skip)
-    #pp ">> unique_leads_listing, limit #{limit}, skip #{skip}", query
+  def self.unique_residents_listing(query, limit, skip)
+    #pp ">> unique_residents_listing, limit #{limit}, skip #{skip}", query
     Resident.with(:consistency => :eventual).collection.aggregate([
        { "$match" => query},
        { "$group" => { :_id => "$_id" } },
@@ -95,9 +95,6 @@ class Audience < ActiveRecord::Base
           property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
             'status' => {'$in' => ['N/A', '', nil]}, "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
         end
-        
-      else #UserDefinedAudience
-        # not support for now
       end
       
     end

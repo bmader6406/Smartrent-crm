@@ -41,13 +41,6 @@ class SesReceiver
         
           bounces_count += 1
           bounces << "#{send_event.id}___#{ message["bounce"]["bouncedRecipients"].collect{|b| b["emailAddress"]}.join(",") }"
-          
-          # add to suppression list if hard bounce, suppresed email
-          if message["bounce"]["bounceType"] == "Permanent"
-            message["bounce"]["bouncedRecipients"].each do |e|
-              SuppressionEmail.create(:email => e["emailAddress"])
-            end
-          end
         end
         
       end

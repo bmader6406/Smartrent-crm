@@ -27,8 +27,6 @@ class SendNewsletterAction
     action.destroy if action
     
     action = DelayedAction.create! :user => campaign.user, :actor => campaign.property, :subject => campaign, :execute_at => published_at
-      
-    Resque.enqueue(SpamishEmailScheduled, action.id)
     
     Resque.enqueue_at(published_at, SendNewsletterAction, action.id)
     
@@ -36,8 +34,6 @@ class SendNewsletterAction
   
   def self.schedule(campaign, published_at)
     action = DelayedAction.create! :user => campaign.user, :actor => campaign.property, :subject => campaign, :execute_at => published_at
-    
-    Resque.enqueue(SpamishEmailScheduled, action.id)
     
     Resque.enqueue_at(published_at, SendNewsletterAction, action.id, "schedule")
     
@@ -50,15 +46,13 @@ class SendNewsletterAction
     if action
       campaign = action.subject
       newsletter_hylet = campaign.first_nlt_hylet
-      timestamp = nil
-      
+
       if campaign
         if type == "schedule" #for schedule only
           
           schedules = newsletter_hylet.schedules
           current = schedules.detect{|s| s["action_id"].to_i == action.id }
           current["is_send"] = true
-          timestamp = current["timestamp"].to_i if current["subject"] && !current["subject"].empty? #reschedule case
           
           newsletter_hylet.update_attributes(:email_project => {:schedules => schedules})
           
@@ -67,7 +61,7 @@ class SendNewsletterAction
           end
         end
         
-        enqueue(campaign, newsletter_hylet, timestamp)
+        enqueue(campaign, newsletter_hylet)
         
       end
 
@@ -97,7 +91,7 @@ class SendNewsletterAction
     s
   end
   
-  def self.enqueue(campaign, newsletter_hylet, timestamp = nil, start_at = nil, end_at = nil)
+  def self.enqueue(campaign, newsletter_hylet)
     first_batch = true
     property = campaign.property
     audiences = newsletter_hylet.audiences
@@ -120,49 +114,12 @@ class SendNewsletterAction
       {"id" => audience.id, "name" => audience.name, "property_id" => audience.property_id, "count" => audience.residents.count}
     }
     
-    #create NewsletterRescheduleCampaign for analytics
-    #vc_ids is used to switch to the reschedule campaign when sending
-    
     vc_ids = {}
     campaign.channel_variates.each do |v|
       vc_ids[v.variate_campaign_id] = v.variate_campaign_id
     end
     
-    if timestamp #reschedule case
-      
-      #don't set parent_id for reschedule_root
-      reschedule_root = NewsletterRescheduleCampaign.create({
-        :property_id => campaign.property_id, 
-        :user_id => campaign.user_id, 
-        :group_id => campaign.id,
-        :audience_counts => audience_counts,
-        :published_at => Time.at(timestamp),
-        :is_published => true
-      })
-      
-      campaign.channel_variates.each do |v|
-        variate_campaign = v.variate_campaign
-        
-        reschedule_campaign = NewsletterRescheduleCampaign.create({
-          :property_id => reschedule_root.property_id, 
-          :user_id => reschedule_root.user_id,
-          :group_id => reschedule_root.group_id,
-          :root_id => reschedule_root.id, 
-          
-          :parent_id => variate_campaign.id,
-          :published_at => Time.at(timestamp),
-          :is_published => true
-        })
-        
-        reschedule_root.channel_variates.create(:variate_campaign_id => reschedule_campaign.id, :weight_percent => 100)
-        
-        vc_ids[variate_campaign.id] = reschedule_campaign.id
-      end
-      
-    else
-      campaign.update_attribute(:audience_counts, audience_counts)
-      
-    end
+    campaign.update_attribute(:audience_counts, audience_counts)
     
     quota = 750000
     now = Time.now.utc
@@ -172,7 +129,7 @@ class SendNewsletterAction
     email_queue = :crm_newsletter
     
     # http://docs.mongodb.org/v2.4/core/cursors/#cursor-batches
-    # - performance is bad when using skip, limit to iterate over large collection with the Audience.unique_leads_count, Audience.unique_leads_listing
+    # - performance is bad when using skip, limit to iterate over large collection with the Audience.unique_residents_count, Audience.unique_residents_listing
     # - we can use mongodb cursor to iterate the collections, we may have the duplicated records when the resident get updated when the import,
     #    we need to use redis set to dedup the duplicated record within the audience and other audiences
     
@@ -180,11 +137,6 @@ class SendNewsletterAction
     
     audiences.each do |audience|
       residents = audience.residents.without(:activities)
-      
-      #lead nurturer
-      if start_at && end_at
-        residents = residents.where("sources" => {'$elemMatch' => {"created_at" =>  { '$gte' => start_at, '$lt' => end_at}} })
-      end
       
       # collect resident id with cursor
       resident_ids = []
@@ -221,10 +173,10 @@ class SendNewsletterAction
       campaign_id = vc_ids[campaign.channel_random_variate.variate_campaign_id]
       
       if num == 0
-        Resque.enqueue_to(email_queue, mailer_clzz, campaign_id, resident_ids, timestamp, first_batch)
+        Resque.enqueue_to(email_queue, mailer_clzz, campaign_id, resident_ids, first_batch)
         
       elsif !resident_ids.empty?
-        Resque.enqueue_at_with_queue(email_queue, now + num.day, mailer_clzz, campaign_id, resident_ids, timestamp, first_batch)
+        Resque.enqueue_at_with_queue(email_queue, now + num.day, mailer_clzz, campaign_id, resident_ids, first_batch)
         
       end
     
@@ -247,14 +199,7 @@ class SendNewsletterAction
 
     if ["NewsletterCampaign"].include?(campaign.class.to_s)
       Notifier.system_message("[#{property.name}] Newsletter Status: Sent", email_body(campaign, newsletter_hylet, total, audience_counts, now),
-        notification_emails, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now
-        
-      # import recpients for the spam watch report
-      import_recpient_at = Time.now + ((total*60/10000) + 15).minutes
-      campaign.multi_sends.each do |c|
-        Resque.enqueue_at(import_recpient_at, RecipientImporter, c.id)
-      end
-      
+        notification_emails, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now      
     end
   end
   
@@ -266,7 +211,7 @@ class SendNewsletterAction
     return <<-MESSAGE
     
 - Property:  #{campaign.property.name} <br>
-- Subject:  <a href="#{campaign.dashboard_url}">#{newsletter_hylet.last_subject}</a> <br>
+- Subject:  <a href="#{campaign.dashboard_url}">#{newsletter_hylet.subject}</a> <br>
 - Audience: #{audiences}<br>
 - Sent:  #{total} <br>
 - Date:  #{executed_at.strftime("%m/%d/%Y")} at #{executed_at.strftime("%l:%M %p")} <br>
