@@ -1013,6 +1013,16 @@ h4.total {
 }
 
 
+.paging-info {
+  clear: both;
+  margin-top: 10px;
+  
+  .pagination {
+    display: block;
+    margin: 10px 0;
+  }
+}
+
 #gallery {
   .form-inline {
     margin: 10px 0 20px;
@@ -1076,13 +1086,6 @@ h4.total {
     &:hover div {
       display: block;
     }
-  }
-  .paging-info {
-    clear: both;
-    margin-top: 10px;
-  }
-  .pagination {
-    margin: 10px 0;
   }
 }
 
@@ -1367,150 +1370,10 @@ h4.total {
   margin-top: 5px;
 }
 
+#campaign-info {
+  
+}
 /* reports */
-.tile-list {
-  width: 960px;
-  overflow: hidden;
-  
-  a {
-     text-decoration: none;
-  }
-  & > li {
-    background: @crmTileColorDarker;
-    color: @crmTileColor;
-    float: left;
-    margin: 0 10px 10px 0;
-    height: 230px;
-    padding: 5px;
-    font-family: @crmMyriadConFont;
-    font-size: 18px;
-    position: relative;
-    width: 230px;
-  }
-  h4 {
-    font-weight: normal;
-    font-family: @crmMyriadConFont;
-    line-height: 30px;
-    font-size: 32px;
-  	margin: 0;
-    white-space: nowrap;
-    color: @crmWhite;
-  }
-  .chart {
-    clear: both;
-    height: 60px;
-  }
-  .variant-tile {
-    width: 470px !important;
-  }
-  .kpi-tile {
-    height: 114px;
-    width: 230px;
-  }
-  .details-tile {
-    width: 950px;
-    padding: 1px;
-  }
-}
-
-.left-stats {
-  float: left;
-  width: 205px;
-  
-  .newsletter-tile & {
-    margin-top: 5px;
-    width: 215px;
-  }
-  a {
-    color: @crmTileColor;
-    text-decoration: none;
-  }
-  b {
-    color: @crmWhite;
-    font-size: 65px;
-    line-height: 82px;
-    font-weight: normal;
-    
-    .newsletter-tile & {
-      font-size: 65px;
-      line-height: 70px;
-    }
-  }
-  span {
-    font-size: 18px;
-    display: block;
-    
-    .newsletter-tile & {
-      display: inline;
-      float: right;
-      font-size: 22px;
-      margin-top: 34px;
-    }
-  }
-}
-
-.right-stats {
-  float: right;
-  width: 90px;
-  text-align: right;
-  
-  .total-tile & {
-    clear: both;
-    width: 200px !important;
-    margin-top: 23px;
-  }
-  .tag-tile & {
-    float: right;
-    width: 200px;
-    text-align: right;
-  }
-  .tag-tile.details-tile & {
-    margin-top: 22px;
-  }
-  a {
-    color: @crmTileColor;
-  }
-  b {
-    font-size: 43px;
-    line-height: 35px;
-    font-weight: normal;
-    
-    .tag-tile & {
-      display: block;
-      font-size: 30px;
-      font-weight: normal;
-      line-height: 100%;
-      margin-bottom: 10px;
-    }
-  }
-  span {
-    font-size: 12px;
-    display: block;
-    
-    .tag-tile & {
-      float: right;
-      font-size: 16px;
-      margin-left: 5px;
-      margin-top: 5px;
-      text-align: left;
-      width: 34px;
-
-      .total-tile& {
-        width: 52px;
-      }
-    }
-  }
-}
-
-.newsletter-tile {
-  height: 110px !important;
-  width: 230px !important;
-  
-  &.large {
-    height: 230px !important;
-  }
-}
-
 #report-detail {
   .tab-content {
     padding: 20px 15px;
@@ -1546,47 +1409,28 @@ h4.total {
 /* campaign reports */
 
 .tile-list {
-  width: 960px;
   overflow: hidden;
   
   a {
      text-decoration: none;
   }
   & > li {
-    background: @crmTileColorDarker;
-    color: @crmTileColor;
+    background: #eee;
     float: left;
     margin: 0 10px 10px 0;
     height: 230px;
     padding: 5px;
-    font-family: @crmMyriadConFont;
     font-size: 18px;
     position: relative;
     width: 230px;
   }
   h4 {
     font-weight: normal;
-    font-family: @crmMyriadConFont;
     line-height: 30px;
-    font-size: 32px;
+    font-size: 24px;
   	margin: 0;
     white-space: nowrap;
-    color: @crmWhite;
-  }
-  .chart {
-    clear: both;
-    height: 60px;
-  }
-  .variant-tile {
-    width: 470px !important;
-  }
-  .kpi-tile {
-    height: 114px;
-    width: 230px;
-  }
-  .details-tile {
-    width: 950px;
-    padding: 1px;
+    color: @crmColor !important;
   }
 }
 
@@ -1595,22 +1439,18 @@ h4.total {
   width: 205px;
   
   .newsletter-tile & {
-    margin-top: 5px;
+    margin-top: 20px;
     width: 215px;
   }
   a {
-    color: @crmTileColor;
     text-decoration: none;
   }
   b {
-    color: @crmWhite;
     font-size: 65px;
-    line-height: 82px;
     font-weight: normal;
     
     .newsletter-tile & {
-      font-size: 65px;
-      line-height: 70px;
+      font-size: 35px;
     }
   }
   span {
@@ -1621,91 +1461,28 @@ h4.total {
       display: inline;
       float: right;
       font-size: 22px;
-      margin-top: 34px;
+      margin-top: 13px;
     }
   }
 }
 
-.right-stats {
-  float: right;
-  width: 90px;
-  text-align: right;
+.newsletter-tile {
+  height: 110px !important;
+  width: 230px !important;
   
-  .total-tile & {
-    clear: both;
-    width: 200px !important;
-    margin-top: 23px;
+  &.large {
+    height: 230px !important;
   }
-  .tag-tile & {
-    float: right;
-    width: 200px;
-    text-align: right;
-  }
-  .tag-tile.details-tile & {
-    margin-top: 22px;
-  }
-  a {
-    color: @crmTileColor;
-  }
-  b {
-    font-size: 43px;
-    line-height: 35px;
-    font-weight: normal;
-    
-    .tag-tile & {
-      display: block;
-      font-size: 30px;
-      font-weight: normal;
-      line-height: 100%;
-      margin-bottom: 10px;
-    }
-  }
-  span {
-    font-size: 12px;
-    display: block;
-    
-    .tag-tile & {
-      float: right;
-      font-size: 16px;
-      margin-left: 5px;
-      margin-top: 5px;
-      text-align: left;
-      width: 34px;
+}
 
-      .total-tile& {
-        width: 52px;
-      }
-    }
+li {
+  &.white-tile {
+    background: @crmWhite !important;
+    border: 1px solid #ddd;
   }
 }
 
 
-.new-variant {
-  height: 130px;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  text-align: center;
-  
-  .last & {
-    text-align: right;
-    
-    span {
-      padding: 15px 0 0 45px;
-    }
-  }
-  a {
-    display: block;
-  }
-  img {
-    width: 64px;
-  }
-  span {
-    color: @crmWhite;
-    display: block;
-    font-size: 16px;
-    padding: 15px 10px 0;
-  }
-}
 
 #email-stats td span {
   float: right;

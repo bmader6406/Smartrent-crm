@@ -1,9 +1,13 @@
 <% content_for(:js) do %>
   <script type="text/javascript">
     $(function(){
-      App.initPageLayout(null, null, null, true); //should be called on top
+      App.initPageLayout(); //should be called on top
     });
   </script>
+<% end %>
+
+<% content_for(:ui_west) do %>
+  <%= render "campaign_reports/info" %>
 <% end %>
 
 <% content_for(:ui_center) do %>
@@ -43,13 +47,6 @@
             <%= render "newsletter_tile", :total => col_count, :conversion => conversion(col_count, total_sends), :name => dict[col], :col => col  %>
 
           <% end %>
-
-          <% if @campaign.dict_variates["email"].first %>
-            <%= render "variant_tile", :variates => @campaign.dict_variates["email"].first, :name => "Open Rate", :type => "open_rate" %>
-
-            <%= render "variant_tile", :variates => @campaign.dict_variates["email"].first, :name => "Click Rate", :type => "click_rate" %>
-          <% end %>
-
         </ul>
 
 

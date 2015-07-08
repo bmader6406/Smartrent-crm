@@ -273,6 +273,10 @@ class Campaign < ActiveRecord::Base
     "http://#{HOST}/properties/#{property_id}/notices/#{to_root_id}"
   end
   
+  def preview_url
+    "http://#{HOST}/properties/#{property_id}/notices/#{id}/preview"
+  end
+  
   #summary report
   # {"id" => 123, "property_id" => 456, "name" => "XYZ", "count" => 555}
   # name is used if audience is deleted

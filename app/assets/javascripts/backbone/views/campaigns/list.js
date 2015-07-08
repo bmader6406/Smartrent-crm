@@ -38,8 +38,8 @@ Crm.Views.CampaignsList = Backbone.View.extend({
           editable: false,
           sortable: false
         }, {
-          name: "preview_url",
-          label: "Preview Link",
+          name: "actions",
+          label: "Actions",
           cell: 'html',
           editable: false,
           sortable: false
