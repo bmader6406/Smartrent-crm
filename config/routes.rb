@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  mount Smartrent::Engine, :at => "/smartrent", :as => "smartrent"
+
+  constraints :subdomain => (Rails.env.production? ? 'smartrent' : 'smartrent-beta')  do
+      mount Smartrent::Engine, :at => "/", :as => "smartrent"
+  end
   
   # shared
   def resident_resources

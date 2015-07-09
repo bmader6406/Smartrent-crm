@@ -9,8 +9,8 @@
 user = User.create({
   :email => "demo+admin@hy.ly",
   :full_name => "Hy.ly Admin",
-  :password => "gggggg",
-  :password_confirmation => "gggggg"
+  :password => "gggggggg",
+  :password_confirmation => "gggggggg"
 })
 
 user.add_role :admin, Property
@@ -28,3 +28,6 @@ Category.create([
 ])
 
 
+# smartrent
+Smartrent::Setting.create([{:key => "sign_up_bonus", :value => "0"}, {:key => "monthly_awards", :value => "0"}])
+Smartrent::User.create(:email => "demo+admin@hy.ly", :password => "gggggggg", :password_confirmation => "gggggggg")

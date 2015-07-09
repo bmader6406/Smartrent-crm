@@ -14,7 +14,8 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   
   
-  HOST = "dev.hyly.us"
+  HOST = "crm-dev.bozzuto.com"
+  SR_HOST = "smartrent-dev.bozzuto.com"
   
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true

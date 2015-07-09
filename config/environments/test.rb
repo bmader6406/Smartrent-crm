@@ -26,7 +26,8 @@ Rails.application.configure do
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 
-  HOST = "dev.hyly.us"
+  HOST = "crm-dev.bozzuto.com"
+  SR_HOST = "smartrent-dev.bozzuto.com"
   
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
