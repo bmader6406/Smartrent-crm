@@ -1,5 +1,5 @@
 # REQUIRED: The name of your application
-app_name: crm
+app_name: crm-smartrent
 
 # REQUIRED: The system user to run your app servers as
 app_user: app
