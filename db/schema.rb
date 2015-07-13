@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150708185413) do
+ActiveRecord::Schema.define(version: 20150713095313) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -217,43 +217,62 @@ ActiveRecord::Schema.define(version: 20150708185413) do
   add_index "monitor_metrics", ["created_at"], name: "index_monitor_metrics_on_created_at", using: :btree
 
   create_table "properties", force: :cascade do |t|
-    t.integer  "user_id",              limit: 4
-    t.integer  "region_id",            limit: 4
-    t.string   "name",                 limit: 255
-    t.string   "address_line1",        limit: 255
-    t.string   "address_line2",        limit: 255
-    t.string   "city",                 limit: 255
-    t.string   "state",                limit: 255
-    t.string   "zip",                  limit: 255
-    t.string   "email",                limit: 255
-    t.string   "phone",                limit: 255
-    t.string   "webpage_url",          limit: 255
-    t.string   "website_url",          limit: 255
-    t.string   "status",               limit: 255
-    t.string   "regional_manager",     limit: 255
-    t.string   "svp",                  limit: 255
-    t.string   "property_number",      limit: 255
-    t.string   "l2l_property_id",      limit: 255
-    t.string   "yardi_property_id",    limit: 255
-    t.string   "owner_group",          limit: 255
+    t.integer  "user_id",                   limit: 4
+    t.integer  "region_id",                 limit: 4
+    t.string   "name",                      limit: 255
+    t.string   "address_line1",             limit: 255
+    t.string   "address_line2",             limit: 255
+    t.string   "city",                      limit: 255
+    t.string   "state",                     limit: 255
+    t.string   "zip",                       limit: 255
+    t.string   "email",                     limit: 255
+    t.string   "phone",                     limit: 255
+    t.string   "webpage_url",               limit: 255
+    t.string   "website_url",               limit: 255
+    t.string   "status",                    limit: 255
+    t.string   "regional_manager",          limit: 255
+    t.string   "svp",                       limit: 255
+    t.string   "property_number",           limit: 255
+    t.string   "l2l_property_id",           limit: 255
+    t.string   "yardi_property_id",         limit: 255
+    t.string   "owner_group",               limit: 255
     t.datetime "date_opened"
     t.datetime "date_closed"
-    t.string   "monday_open_time",     limit: 255
-    t.string   "monday_close_time",    limit: 255
-    t.string   "tuesday_open_time",    limit: 255
-    t.string   "tuesday_close_time",   limit: 255
-    t.string   "wednesday_open_time",  limit: 255
-    t.string   "wednesday_close_time", limit: 255
-    t.string   "thursday_open_time",   limit: 255
-    t.string   "thursday_close_time",  limit: 255
-    t.string   "friday_open_time",     limit: 255
-    t.string   "friday_close_time",    limit: 255
-    t.string   "saturday_open_time",   limit: 255
-    t.string   "saturday_close_time",  limit: 255
-    t.string   "sunday_open_time",     limit: 255
-    t.string   "sunday_close_time",    limit: 255
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.string   "monday_open_time",          limit: 255
+    t.string   "monday_close_time",         limit: 255
+    t.string   "tuesday_open_time",         limit: 255
+    t.string   "tuesday_close_time",        limit: 255
+    t.string   "wednesday_open_time",       limit: 255
+    t.string   "wednesday_close_time",      limit: 255
+    t.string   "thursday_open_time",        limit: 255
+    t.string   "thursday_close_time",       limit: 255
+    t.string   "friday_open_time",          limit: 255
+    t.string   "friday_close_time",         limit: 255
+    t.string   "saturday_open_time",        limit: 255
+    t.string   "saturday_close_time",       limit: 255
+    t.string   "sunday_open_time",          limit: 255
+    t.string   "sunday_close_time",         limit: 255
+    t.datetime "created_at",                                              null: false
+    t.datetime "updated_at",                                              null: false
+    t.string   "county",                    limit: 255
+    t.text     "description",               limit: 65535
+    t.text     "short_description",         limit: 65535
+    t.float    "latitude",                  limit: 24
+    t.float    "longitude",                 limit: 24
+    t.float    "studio_price",              limit: 24
+    t.boolean  "special_promotion",         limit: 1,     default: false
+    t.string   "image_file_name",           limit: 255
+    t.string   "image_content_type",        limit: 255
+    t.integer  "image_file_size",           limit: 4
+    t.datetime "image_updated_at"
+    t.boolean  "studio",                    limit: 1,     default: false
+    t.integer  "origin_id",                 limit: 4
+    t.string   "bozzuto_url",               limit: 255
+    t.string   "promotion_title",           limit: 255
+    t.string   "promotion_subtitle",        limit: 255
+    t.string   "promotion_url",             limit: 255
+    t.date     "promotion_expiration_date"
+    t.boolean  "is_smartrent",              limit: 1,     default: false
   end
 
   add_index "properties", ["name"], name: "index_properties_on_name", using: :btree

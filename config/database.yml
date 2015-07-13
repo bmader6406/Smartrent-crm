@@ -5,6 +5,8 @@ development:
   port: 3306
   database: crm_stage
   username: root
+  password: root
+  socket: /tmp/mysql.sock
 
 stage:
   adapter: mysql2
@@ -12,6 +14,8 @@ stage:
   port: 3306
   database: crm_stage
   username: root
+  password: root
+  socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -23,3 +27,5 @@ test: &TEST
   port: 3306
   database: crm_test
   username: root
+  password: root
+  socket: /tmp/mysql.sock

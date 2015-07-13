@@ -16,6 +16,18 @@ class Property < ActiveRecord::Base
   has_many :audiences, :class_name => "Audience"
   
   validates :name, :presence => true
+
+  ########################## SmartRent Property Associations #######################
+    validates_uniqueness_of :name, :case_sensitive => true, :allow_blank => true
+    has_attached_file :image, :styles => {:search_page => "150x150>"}
+    validates_attachment_content_type :image, :content_type => /\Aimage\/.*\Z/
+    #scope :matches_all_features, -> *feature_ids { where(matches_all_features_arel(feature_ids)) }
+    #scope :where_one_bed, -> *search { where(where_bed_arel(1, search)) }
+    #scope :where_two_bed, -> *search { where(where_bed_arel(2, search)) }
+    #scope :where_three_more_bed, -> *search { where(where_bed_arel_more_than_eq(3)) }
+    #scope :where_penthouse, -> *search { where(where_penthouse_arel) }
+    #scope :price, -> *price { where(price_arel(price)) }
+  ##################################################################################
   
   resourcify
   
@@ -44,5 +56,10 @@ class Property < ActiveRecord::Base
   def residents
     Resident.with(:consistency => :eventual).where(:deleted_at => nil)
   end
-  
+
+
+  #*****************************************SmartRent methods**************************
+  def self.custom_ransack(q)
+    Smartrent::Property.ransack(q)
+  end
 end
