@@ -81,7 +81,7 @@ gem 'phony_rails', '0.9.0'
 gem 'twilio-ruby', '~> 4.2.1'
 gem 'ancestry', '2.1.0'
 gem 'email_reply_parser', '~> 0.5.8'
-gem 'ransack', :github => "talal7860/ransack"
+gem 'ransack', github: 'activerecord-hackery/ransack', :branch => "rails-4.2"
 
 #engines
 gem "smartrent", :path => "/mnt/gems/smartrent"

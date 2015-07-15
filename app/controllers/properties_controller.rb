@@ -1,5 +1,5 @@
 class PropertiesController < ApplicationController
-  before_action :require_user
+  before_filter :require_user
   before_action :set_property, :except => [:index, :new, :create, :info]
   before_action :set_page_title
   
@@ -127,6 +127,6 @@ class PropertiesController < ApplicationController
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @properties = Property.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
+      @properties = Property.where(:is_crm => true).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
     end
 end

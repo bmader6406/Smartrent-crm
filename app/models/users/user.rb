@@ -117,15 +117,59 @@ class User < ActiveRecord::Base
     @managed_properties ||= begin
       if has_role? :admin, Property
         Property.all
-        
       elsif has_role? :regional_manager, Property
-        Property.where(:region_id => managed_region_ids)
-            
+        Smartrent::Property.where(:region_id => managed_region_ids)
       else
-        Property.where(:id => managed_property_ids)
-        
+        Smartrent::Property.where(:id => managed_property_ids)
       end
     end
+  end
+  def managed_residents
+    @managed_residents ||= begin
+      if is_admin?
+        Smartrent::Resident.all
+      else
+        if has_role? :regional_manager, Property
+          properties = Smartrent::Property.where(:region_id => managed_region_ids)
+        else
+          properties = Smartrent::Property.where(:id => managed_property_ids)
+        end
+        residents = nil
+        properties.each do |property|
+          if residents.nil?
+            residents = property.residents
+          else
+            residents.concat property.residents
+          end
+        end
+        residents
+      end
+    end
+  end
+  def managed_rewards
+    @managed_rewards ||= begin
+      if is_admin?
+        Reward.all
+      else
+        residents = managed_residents
+        rewards = nil
+        residents.each do |resident|
+          if rewards.nil?
+            rewards = resident.rewards
+          else
+            rewards.concat resident.rewards
+          end
+        end
+        rewards
+      end
+    end
+  end
+
+  def is_admin?
+    has_role? :admin, Property
+  end
+  def is_property_manager?
+    has_role? :property_manager, Property
   end
   
   # memo:

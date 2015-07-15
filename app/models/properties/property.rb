@@ -16,19 +16,24 @@ class Property < ActiveRecord::Base
   has_many :audiences, :class_name => "Audience"
   
   validates :name, :presence => true
-  
+########################## SmartRent Property Associations #######################
+  validates_uniqueness_of :name, :case_sensitive => true, :allow_blank => true
+  has_attached_file :image, :styles => {:search_page => "150x150>"}
+  validates_attachment_content_type :image, :content_type => /\Aimage\/.*\Z/
+##################################################################################
+
   resourcify
-  
+
   def setting
     @setting ||= begin
       property_setting ? property_setting : create_property_setting(:notification_emails => [user.email])
     end
   end
-  
+
   def index_url
     "http://#{HOST}/properties/#{id}"
   end
-  
+
   def to_macro(macro)
     attributes.keys.each do |k|
       macro["property.#{k}"] = self[k]
@@ -44,5 +49,10 @@ class Property < ActiveRecord::Base
   def residents
     Resident.with(:consistency => :eventual).where(:deleted_at => nil)
   end
+
+#*****************************************SmartRent methods**************************
+  def self.custom_ransack(q)
+    Smartrent::Property.ransack(q)
+  end 
   
 end

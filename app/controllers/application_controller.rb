@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
     
     respond_to do |format|
       format.html {
+        flash[:error] = "You are not authorized to access that page"
         redirect_to main_app.root_url, :alert => "You are not authorized to access that page"
       }
       format.json {
@@ -71,6 +72,13 @@ class ApplicationController < ActionController::Base
       redirect_to accept_invite_and_redirect(current_user, params[:token]) || back_or_default_url( main_app.root_url(:protocol => "http") )
       return false
     end
+  end
+
+  def authenticate_admin!
+    if current_user and current_user.is_admin?
+      return true
+    end
+    raise CanCan::AccessDenied
   end
       
   def store_location

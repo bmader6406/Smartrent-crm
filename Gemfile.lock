@@ -1,6 +1,7 @@
 GIT
-  remote: git://github.com/talal7860/ransack.git
-  revision: a30599909bc60a356e3c6c1717058fd90816e4c7
+  remote: git://github.com/activerecord-hackery/ransack.git
+  revision: bcce3a0d96789c656e1cad7e58f1da348f745a13
+  branch: rails-4.2
   specs:
     ransack (1.2.4)
       actionpack (~> 4.2.0)

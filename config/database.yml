@@ -5,6 +5,8 @@ development:
   port: 3306
   database: crm_stage
   username: root
+  password: root
+  socket: /tmp/mysql.sock
 
 stage:
   adapter: mysql2
