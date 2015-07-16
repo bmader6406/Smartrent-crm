@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         
         get :marketing_properties
         get :marketing_statuses
+        get :smartrent_resident
       end
       
       collection do

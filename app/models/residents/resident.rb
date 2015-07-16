@@ -64,6 +64,7 @@ class Resident
   field :email_checked_at, :type => DateTime
   
   field :bounces_count, :type => Integer, :default => 0
+  field :smartrent_resident_id, :type => Integer, :default => nil
   
   # resident score
   SEND_SCORE = 1
@@ -399,6 +400,10 @@ class Resident
     audience = audiences.detect{|a| property_id.to_i == a.property_id } if !audience
 
     return audience
+  end
+
+  def smartrent_resident
+    Smartrent::Resident.find_by_crm_resident_id(id) rescue nil
   end
 
   private

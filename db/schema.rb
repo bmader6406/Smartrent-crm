@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150714204815) do
+ActiveRecord::Schema.define(version: 20150716105140) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -483,6 +483,7 @@ ActiveRecord::Schema.define(version: 20150714204815) do
     t.integer  "origin_id",              limit: 4
     t.integer  "property_id",            limit: 4
     t.integer  "home_id",                limit: 4
+    t.integer  "crm_resident_id",        limit: 8
   end
 
   add_index "smartrent_residents", ["email"], name: "index_smartrent_residents_on_email", unique: true, using: :btree

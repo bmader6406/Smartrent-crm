@@ -149,15 +149,18 @@ class User < ActiveRecord::Base
   def managed_rewards
     @managed_rewards ||= begin
       if is_admin?
-        Reward.all
+        Smartrent::Reward.all
       else
         residents = managed_residents
         rewards = nil
         residents.each do |resident|
-          if rewards.nil?
-            rewards = resident.rewards
-          else
-            rewards.concat resident.rewards
+          #Use Case 2: Only show rewards when the property is a smartrent
+          if resident.property.is_smartrent
+            if rewards.nil?
+              rewards = resident.rewards
+            else
+              rewards.concat resident.rewards
+            end
           end
         end
         rewards

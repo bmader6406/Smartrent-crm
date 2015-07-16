@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user_session, :current_user, :accept_invite_and_redirect, :conversion, :avg, :age
   
   before_action :set_user_time_zone
-  
+
   rescue_from CanCan::AccessDenied do |exception|
     msg = "Access denied on #{exception.action} #{exception.subject.inspect} - #{current_user.id}"
     ppp msg

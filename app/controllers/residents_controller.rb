@@ -186,6 +186,15 @@ class ResidentsController < ApplicationController
       }
     end
   end
+
+  def smartrent_resident
+    @smartrent_resident = @resident.smartrent_resident
+    if @smartrent_resident
+      render json: {:total => @smartrent_resident.total_rewards, :monthly_awards => @smartrent_resident.monthly_awards_amount, :balance => @smartrent_resident.balance, :monthly_total => @smartrent_resident.monthly_awards_amount}
+    else
+      render json: nil
+    end
+  end
   
   # for add new ticket page
   def search
@@ -294,9 +303,9 @@ class ResidentsController < ApplicationController
     
     def set_page_title
       if @property
-        @page_title = "CRM - #{@property.name} - Residents" 
+        @page_title = "CRM - #{@property.name} - Residents"
       else
-        @page_title = "CRM - Residents" 
+        @page_title = "CRM - Residents"
       end
     end
     

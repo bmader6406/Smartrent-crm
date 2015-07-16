@@ -35,7 +35,7 @@ class Ability
           rewards.include?(r) if rewards.present?
         end
         can :manage, [Resident, Unit, Ticket, ResidentActivity, Campaign]
-        can :read, [Property, User, Notification]
+        can :read, [Property, User, Notification, Resident]
 
       elsif user.has_role? :leasing_staff, Property
         can :manage, [Resident, Ticket, ResidentActivity, Campaign]
