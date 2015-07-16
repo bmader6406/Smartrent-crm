@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150716105140) do
+ActiveRecord::Schema.define(version: 20150716174359) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -254,6 +254,7 @@ ActiveRecord::Schema.define(version: 20150716105140) do
     t.string   "sunday_close_time",         limit: 255
     t.datetime "created_at",                                              null: false
     t.datetime "updated_at",                                              null: false
+    t.boolean  "is_crm",                    limit: 1,     default: true
     t.string   "county",                    limit: 255
     t.text     "description",               limit: 65535
     t.text     "short_description",         limit: 65535
@@ -273,7 +274,6 @@ ActiveRecord::Schema.define(version: 20150716105140) do
     t.string   "promotion_url",             limit: 255
     t.date     "promotion_expiration_date"
     t.boolean  "is_smartrent",              limit: 1,     default: false
-    t.boolean  "is_crm",                    limit: 1,     default: true
   end
 
   add_index "properties", ["name"], name: "index_properties_on_name", using: :btree
