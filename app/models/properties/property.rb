@@ -18,7 +18,7 @@ class Property < ActiveRecord::Base
   validates :name, :presence => true
 ########################## SmartRent Property Associations #######################
   validates_uniqueness_of :name, :case_sensitive => true, :allow_blank => true
-  has_attached_file :image, :styles => {:search_page => "150x150>"}
+  has_attached_file :image, :styles => {:search_page => "150x150>"}, :path => ":rails_root/public/paperclip/:attachment/:id/:style/:filename", :url => "/paperclip/:attachment/:id/:style/:filename"
   validates_attachment_content_type :image, :content_type => /\Aimage\/.*\Z/
 ##################################################################################
 
