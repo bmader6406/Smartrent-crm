@@ -1,6 +1,16 @@
 Rails.application.routes.draw do
+  def smartrent_subdomain
+    case Rails.env
+      when "development", "test"
+        "smartrent-dev"
+      when "stage"
+        "smartrent-beta"
+      else
+        "smartrent"
+    end
+  end
 
-  constraints :subdomain => (Rails.env.production? ? 'smartrent' : 'smartrent-beta')  do
+  constraints :subdomain => smartrent_subdomain  do
       mount Smartrent::Engine, :at => "/", :as => "smartrent"
   end
   
