@@ -1,7 +1,7 @@
 <%
   @read_cmd = 'crontab -l'
   @write_cmd = 'crontab -'
-  @additive = ["# im-start", "# im-end"]
+  @additive = ["# crm-smartrent-start", "# crm-smartrent-end"]
 %>
 
 # cron clears out environment variables. All we need is PATH.

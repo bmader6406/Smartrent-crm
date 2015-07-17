@@ -26,7 +26,7 @@ class Property < ActiveRecord::Base
 
   def setting
     @setting ||= begin
-      property_setting ? property_setting : create_property_setting(:notification_emails => [user.email])
+      property_setting ? property_setting : create_property_setting(:notification_emails => user ? [user.email] : [])
     end
   end
 

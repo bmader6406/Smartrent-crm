@@ -7,9 +7,6 @@ RETRY_LIMIT = 3
 RETRY_DELAY = 30
 TMP_DIR = "/tmp/"
 
-VERIFIED_DOMAINS = "hy.ly bozzuto.com"
-CHANNELS = ["email"]
-
 #Twitter CRM app of jjjsllc
 TWITTER_KEY = "VnbSsb1JvcaIJEqd3OTOg"
 TWITTER_SECRET = "2U5VYZkeImzQ022EGwFNzgmQnjk9pM2ULMNQj9xhM8"
