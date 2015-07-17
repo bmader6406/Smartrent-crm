@@ -190,7 +190,8 @@ class ResidentsController < ApplicationController
   def smartrent_resident
     @smartrent_resident = @resident.smartrent_resident
     if @smartrent_resident
-      render json: {:total => @smartrent_resident.total_rewards, :monthly_awards => @smartrent_resident.monthly_awards_amount, :balance => @smartrent_resident.balance, :monthly_total => @smartrent_resident.monthly_awards_amount}
+      @resident_rewards = @smartrent_resident.rewards.paginate(:page => params[:page], :per_page => 10)
+      render json: {:total => @smartrent_resident.total_rewards, :monthly_awards => @smartrent_resident.monthly_awards_amount, :balance => @smartrent_resident.balance, :monthly_total => @smartrent_resident.monthly_awards_amount, :resident_rewards => @resident_rewards}
     else
       render json: nil
     end
