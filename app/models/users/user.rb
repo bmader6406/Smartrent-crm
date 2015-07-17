@@ -134,15 +134,16 @@ class User < ActiveRecord::Base
         else
           properties = Smartrent::Property.where(:id => managed_property_ids)
         end
-        residents = nil
-        properties.each do |property|
-          if residents.nil?
-            residents = property.residents
-          else
-            residents.concat property.residents
-          end
-        end
-        residents
+        #residents = nil
+        Smartrent::Resident.where(:property_id => properties.collect{|p| p.id})
+        #properties.each do |property|
+          #if residents.nil?
+            #residents = property.residents
+          #else
+            #residents.concat property.residents
+          #end
+        #end
+        #residents
       end
     end
   end
@@ -151,19 +152,20 @@ class User < ActiveRecord::Base
       if is_admin?
         Smartrent::Reward.all
       else
-        residents = managed_residents
-        rewards = nil
-        residents.each do |resident|
+        #residents = managed_residents
+        Smartrent::Reward.where(:resident_id => managed_residents.select{|r| r.property.present? and r.property.is_smartrent}.collect{|r| r.id})
+        #rewards = nil
+        #residents.each do |resident|
           #Use Case 2: Only show rewards when the property is a smartrent
-          if resident.property.is_smartrent
-            if rewards.nil?
-              rewards = resident.rewards
-            else
-              rewards.concat resident.rewards
-            end
-          end
-        end
-        rewards
+          #if resident.property.is_smartrent
+            #if rewards.nil?
+              #rewards = resident.rewards
+            #else
+              #rewards.concat resident.rewards
+            #end
+          #end
+        #end
+        #rewards
       end
     end
   end
