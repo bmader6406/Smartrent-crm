@@ -447,6 +447,56 @@ fieldset[disabled] .btn-default.active {
       background: #9b9b9b;
     }
   }
+  &.smartrent-active {
+    border-color: #73ccdb;
+    
+    & > span {
+      color: #73ccdb;
+    }
+    .dropdown {
+      background: #73ccdb;
+    }
+  }
+  &.smartrent-champion {
+    border-color: #1fc960;
+    
+    & > span {
+      color: #1fc960;
+    }
+    .dropdown {
+      background: #1fc960;
+    }
+  }
+  &.smartrent-expired {
+    border-color: #d82b20;
+    
+    & > span {
+      color: #d82b20;
+    }
+    .dropdown {
+      background: #d82b20;
+    }
+  }
+  &.smartrent-inactive {
+    border-color: #f0d22f;
+    
+    & > span {
+      color: #f0d22f;
+    }
+    .dropdown {
+      background: #f0d22f;
+    }
+  }
+  &.smartrent-archive {
+    border-color: #aaa;
+    
+    & > span {
+      color: #aaa;
+    }
+    .dropdown {
+      background: #aaa;
+    }
+  }
   .dropdown {
     bottom: 0;
     height: 20px;
@@ -464,7 +514,6 @@ fieldset[disabled] .btn-default.active {
   }
 }
 
-/* x-ray */
 .prop-header {
   b {
     font-size: 16px;
@@ -827,6 +876,61 @@ fieldset[disabled] .btn-default.active {
   }
   .status {
     width: 100px;
+  }
+}
+
+#smartrent {
+  padding: 0 15px;
+  background: #f9f9f9;
+  height: 100%;
+  margin: 0;
+  
+  h4 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #5f5d5b;
+    margin: 0 0 15px 0;
+  }
+  .dropdown-menu {
+    margin: 0;
+  }
+  .col-md-6, .col-md-12 {
+    padding: 0 10px 5px 10px;
+  }
+}
+
+.total-rewards {
+  text-align: center;
+  color: #7ccddc;
+  font-size: 24px;
+  font-weight: bold;
+  float: left;
+  border: 1px solid #7ccddc;
+  height: 100px;
+  width: 100px;
+  line-height: 100px;
+}
+
+.point-row {
+  .card {
+    min-height: 170px;
+  }
+  .list-unstyled {
+    margin-left: 120px !important;
+  }
+}
+
+.password-row {
+  .card {
+    min-height: 270px;
+  }
+}
+
+#reset-password {
+  .email {
+    display: block;
+    font-size: 16px;
+    margin: 30px 0;
   }
 }
 

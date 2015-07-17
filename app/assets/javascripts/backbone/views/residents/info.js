@@ -8,6 +8,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     "click .collapsible .fa": "toggleInfo",
     "click .collapsible h4": "toggleInfo",
 		"click .archive": "archive",
+		"click .smartrent-details": "viewSmartrent",
 		"scroll": "fetchMoreActivities"
   },
 
@@ -63,7 +64,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#resident-history').html( new Crm.Views.ActivitiesList({ collection: Crm.collInst.residentActivities }).render().el );
         }
         
-        $('#marketing-history, #resident-roommates').hide();
+        $('#marketing-history, #resident-roommates, #smartrent').hide();
         $('#resident-history, #toolbar').show();
         
         break;
@@ -75,7 +76,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#marketing-history').html( new Crm.Views.MarketingPropertiesList({ collection: Crm.collInst.marketingProperties }).render().el );
         }
         
-        $('#resident-history, #resident-roommates, #toolbar').hide();
+        $('#resident-history, #resident-roommates, #smartrent, #toolbar').hide();
         $('#marketing-history').show();
         
         break;
@@ -87,7 +88,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#resident-roommates > div').html( new Crm.Views.ResidentRoommatesList({ collection: Crm.collInst.residentRoommates }).render().el );
         }
         
-        $('#resident-history, #marketing-history, #toolbar').hide();
+        $('#resident-history, #marketing-history, #smartrent, #toolbar').hide();
         $('#resident-roommates').show();
         
         break;
@@ -98,6 +99,20 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           Crm.collInst.residentProperties.url = self.model.get('properties_path');
           $('#resident-properties').html( new Crm.Views.ResidentPropertiesList({ collection: Crm.collInst.residentProperties }).render().el );
         }
+
+        break;
+        
+      case '#smartrent':
+        var smartrent = $('#smartrent');
+        
+        if( !smartrent.find('> div')[0] ){
+          $.getJSON(this.model.get('smartrent_path'), function(data){
+            smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
+          });
+        }
+
+        $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
+        smartrent.show();
 
         break;
     }
@@ -114,6 +129,11 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
   
   fetchMoreActivities: function(){
     //console.log("fetchMoreActivities")
+  },
+  
+  viewSmartrent: function(){ 
+    this.$('.nav-details a[href="#smartrent"]').click();
+    return false;
   },
   
   archive: function(){

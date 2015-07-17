@@ -14,7 +14,8 @@ node do |n|
       :roommates_path => roommates_property_resident_path(@property, n),
       :properties_path => properties_property_resident_path(@property, n),
       :marketing_properties_path => marketing_properties_property_resident_path(@property, n),
-      :activities_path => property_resident_activities_path(@property, n)
+      :activities_path => property_resident_activities_path(@property, n),
+      :smartrent_path => smartrent_property_resident_path(@property, n)
     })
   else
     attrs.merge!({
@@ -48,4 +49,15 @@ child :curr_property => :property do |p|
   node(:signing_date){|p| p.signing_date.strftime("%m/%d/%Y") rescue nil }
   node(:move_in){|p| p.move_in.strftime("%m/%d/%Y") rescue nil }
   node(:move_out){|p| p.move_out.strftime("%m/%d/%Y") rescue nil }
+end
+
+child :smartrent_resident => :smartrent do |sr|
+  node do |n|
+    {
+      :total_rewards => number_with_delimiter(sr.total_rewards),
+      :monthly_awards_amount => number_with_delimiter(sr.monthly_awards_amount),
+      :sign_up_bonus_ => number_with_delimiter(sr.sign_up_bonus_),
+      :initial_reward => number_with_delimiter(sr.initial_reward)
+    }
+  end
 end
