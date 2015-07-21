@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   end
 
   constraints :subdomain => smartrent_subdomain  do
-      mount Smartrent::Engine, :at => "/", :as => "smartrent"
+    mount Smartrent::Engine, :at => "/", :as => "smartrent"
   end
   
   # shared

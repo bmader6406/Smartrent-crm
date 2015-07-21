@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150716174359) do
+ActiveRecord::Schema.define(version: 20150721165606) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -276,6 +276,7 @@ ActiveRecord::Schema.define(version: 20150716174359) do
     t.boolean  "is_smartrent",              limit: 1,     default: false
   end
 
+  add_index "properties", ["is_smartrent"], name: "index_properties_on_is_smartrent", using: :btree
   add_index "properties", ["name"], name: "index_properties_on_name", using: :btree
   add_index "properties", ["region_id"], name: "index_properties_on_region_id", using: :btree
   add_index "properties", ["user_id"], name: "index_properties_on_user_id", using: :btree
@@ -442,6 +443,30 @@ ActiveRecord::Schema.define(version: 20150716174359) do
     t.datetime "updated_at",            null: false
   end
 
+  create_table "smartrent_resident_homes", force: :cascade do |t|
+    t.integer  "resident_id", limit: 4
+    t.integer  "home_id",     limit: 4
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  create_table "smartrent_resident_properties", force: :cascade do |t|
+    t.string   "resident_id",           limit: 255
+    t.integer  "property_id",           limit: 4
+    t.integer  "house_hold_size",       limit: 4
+    t.integer  "pets_count",            limit: 4
+    t.date     "contract_signing_date"
+    t.string   "status",                limit: 255
+    t.date     "move_in_date"
+    t.date     "move_out_date"
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+  end
+
+  add_index "smartrent_resident_properties", ["property_id"], name: "index_smartrent_resident_properties_on_property_id", using: :btree
+  add_index "smartrent_resident_properties", ["resident_id"], name: "index_smartrent_resident_properties_on_resident_id", using: :btree
+  add_index "smartrent_resident_properties", ["status"], name: "index_smartrent_resident_properties_on_status", using: :btree
+
   create_table "smartrent_residents", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "",   null: false
     t.string   "encrypted_password",     limit: 255, default: "",   null: false
@@ -466,8 +491,6 @@ ActiveRecord::Schema.define(version: 20150716174359) do
     t.string   "work_phone",             limit: 255
     t.string   "cell_phone",             limit: 255
     t.string   "company",                limit: 255
-    t.integer  "house_hold_size",        limit: 4
-    t.integer  "pets_count",             limit: 4
     t.datetime "contract_signing_date"
     t.integer  "type_",                  limit: 4
     t.integer  "status",                 limit: 4
@@ -481,13 +504,14 @@ ActiveRecord::Schema.define(version: 20150716174359) do
     t.boolean  "active",                 limit: 1,   default: true
     t.string   "country",                limit: 255
     t.integer  "origin_id",              limit: 4
-    t.integer  "property_id",            limit: 4
-    t.integer  "home_id",                limit: 4
     t.integer  "crm_resident_id",        limit: 8
+    t.string   "unit_id",                limit: 255
   end
 
+  add_index "smartrent_residents", ["crm_resident_id"], name: "index_smartrent_residents_on_crm_resident_id", using: :btree
   add_index "smartrent_residents", ["email"], name: "index_smartrent_residents_on_email", unique: true, using: :btree
   add_index "smartrent_residents", ["reset_password_token"], name: "index_smartrent_residents_on_reset_password_token", unique: true, using: :btree
+  add_index "smartrent_residents", ["unit_id"], name: "index_smartrent_residents_on_unit_id", using: :btree
 
   create_table "smartrent_rewards", force: :cascade do |t|
     t.integer  "resident_id",  limit: 4
