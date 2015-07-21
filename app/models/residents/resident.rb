@@ -139,9 +139,9 @@ class Resident
 
 
   def eager_load(subject)
-    # if subject.kind_of?(X)
-
-    # end
+    if subject.kind_of?(Smartrent::Resident)
+      @smartrent_resident = subject
+    end
   
     self
   end
@@ -401,9 +401,17 @@ class Resident
 
     return audience
   end
-
+  
+  # @smartrent_resident is used to eager load the smartrent resident
+  #TODO:
+  # - add index on crm_resident_id
+  # - awards point should be stored in database, don't query the db to calculate the point everytime
   def smartrent_resident
-    Smartrent::Resident.find_by_crm_resident_id(id) rescue nil
+    if defined? @smartrent_resident
+      @smartrent_resident
+    else
+      Smartrent::Resident.find_by_crm_resident_id(id)
+    end
   end
 
   private

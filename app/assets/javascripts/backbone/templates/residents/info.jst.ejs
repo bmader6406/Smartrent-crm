@@ -132,7 +132,7 @@
       </li>
     </ul>
   </div>
-
+  
   <div class="card collapsible">
     <h4>
       <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
@@ -245,6 +245,37 @@
       </li>
     </ul>
   </div>
+
+  
+  <% if ( App.vars.propertyObj.is_smartrent && smartrent ) { %>
+    <div class="card collapsible">
+      <h4>
+        <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
+        SmartRent
+      </h4>
+      <ul class="list-unstyled">
+        <li>
+          <label>Total:</label>
+          $<%= smartrent.total_rewards %>
+        </li>
+        <li>
+          <label>Monthly Awards:</label>
+          $<%= smartrent.monthly_awards_amount %>
+        </li>
+        <li>
+          <label>Sign-Up Bonus:</label>
+          $<%= smartrent.sign_up_bonus_ %>
+        </li>
+        <li>
+          <label>Initial Reward:</label>
+          $<%= smartrent.initial_reward %>
+        </li>
+        <li>
+          <a href="#" class="btn btn-primary btn-lg smartrent-details"> View Details</a>
+        </li>
+      </ul>
+    </div>
+  <% } %>
 <% } %>
 
 
@@ -265,6 +296,11 @@
     <a href="<%= tickets_path %>" class="btn btn-lg btn-default ticket-nav">
       <i class="fa fa-angle-right"></i>
       Tickets
+    </a>
+    <!-- smartrent tab is always hidden -->
+    <a href="#smartrent" class="btn btn-lg btn-default tab-nav" style="display: none !important;">
+      <i class="fa fa-angle-right"></i>
+      Smartrent
     </a>
   </div>
 <% } else { %>

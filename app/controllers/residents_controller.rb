@@ -187,14 +187,8 @@ class ResidentsController < ApplicationController
     end
   end
 
-  def smartrent_resident
+  def smartrent
     @smartrent_resident = @resident.smartrent_resident
-    if @smartrent_resident
-      @resident_rewards = @smartrent_resident.rewards.paginate(:page => params[:page], :per_page => 10)
-      render json: {:total => @smartrent_resident.total_rewards, :monthly_awards => @smartrent_resident.monthly_awards_amount, :balance => @smartrent_resident.balance, :smartrent_status => @smartrent_resident.smartrent_status_text, :monthly_total => @smartrent_resident.monthly_awards_amount, :resident_rewards => @resident_rewards}
-    else
-      render json: nil
-    end
   end
   
   # for add new ticket page
@@ -392,6 +386,18 @@ class ResidentsController < ApplicationController
           r.curr_property_id = @property.id
         end
       end
+      
+      # manual eager load smartrent resident
+      smartrent = {}
+      
+      Smartrent::Resident.where(:crm_resident_id => @residents.collect{|r| r.id.to_i }).each do |sr|
+        smartrent[sr.crm_resident_id] = sr
+      end
+      
+      @residents.each do |r|
+        r.eager_load(smartrent[r.id.to_i])
+      end
+      
     end
     
 end

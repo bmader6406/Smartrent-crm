@@ -24,7 +24,7 @@ Rails.application.routes.draw do
         
         get :marketing_properties
         get :marketing_statuses
-        get :smartrent_resident
+        get :smartrent
       end
       
       collection do
@@ -95,6 +95,13 @@ Rails.application.routes.draw do
   report_resources
   
   resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
+  
+  resources :resident_passwords do
+    member do
+      post :reset
+      post :set_status
+    end
+  end
   
   # email system
   resources :unsubscribes do

@@ -1,16 +1,16 @@
 development:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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
-  bucket: img.hy.ly.dev
+  bucket: img.bozzuto.com.dev
 test:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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
-  bucket: img.hy.ly.dev
+  bucket: img.bozzuto.com.dev
 stage:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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
-  bucket: img.hy.ly.stg
+  bucket: img.bozzuto.com.stg
 production:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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
-  bucket: img.hy.ly
+  bucket: img.bozzuto.com
