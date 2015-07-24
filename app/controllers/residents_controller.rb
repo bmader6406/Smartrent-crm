@@ -152,9 +152,9 @@ class ResidentsController < ApplicationController
   
   def roommates
     @roommates = [] # must assign array manually, otherwise curr_property will not work on rabl view
-    
+
     Resident.ordered("first_name asc").where("properties" => {
-      "$elemMatch" => { 
+      "$elemMatch" => {
         "property_id" => @property.id.to_s, 
         "unit_id" => @resident.curr_property.unit_id.to_s, 
         "roommate" => true
@@ -189,6 +189,9 @@ class ResidentsController < ApplicationController
 
   def smartrent
     @smartrent_resident = @resident.smartrent_resident
+  end
+  def change_smartrent_status
+
   end
   
   # for add new ticket page

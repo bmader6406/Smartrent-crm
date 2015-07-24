@@ -18,6 +18,12 @@ class ResidentPasswordsController < ApplicationController
   end
   
   def set_status
+    smartrent_status = params[:smartrent_status]
+    if smartrent_status.present? and @smartrent_resident.update_attributes({:smartrent_status => smartrent_status.capitalize})
+      render :json => {:success => true}
+    else
+      render :json => {:success => false}
+    end
     #placeholder
     # TODO: Tala please write code for this method (I am waiting for the multiple properties backend change)
   end

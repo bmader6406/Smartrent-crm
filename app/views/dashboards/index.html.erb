@@ -100,7 +100,7 @@ $(function(){
     App.vars.userObj = <%= raw render(:template => 'users/show.json.rabl') %>;
   <% end %>
   
-  App.vars.smartrentStatuses = <%= raw Smartrent::Resident.statuses.to_json %>;
+  App.vars.smartrentStatuses = <%= raw Smartrent::Resident.smartrent_statuses.to_json %>;
 
   App.vars.states = [
     "Alabama",

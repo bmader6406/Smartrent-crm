@@ -1,6 +1,6 @@
 Crm.Views.Smartrent = Backbone.View.extend({
   template: JST["backbone/templates/residents/smartrent"],
-  
+
   events: {
     "click .status-dd li a": "setStatus",
     "click #reset-password button:submit": "resetPassword",
@@ -10,37 +10,51 @@ Crm.Views.Smartrent = Backbone.View.extend({
   initialize: function() {
 	  //this.listenTo(this.model, 'change', this.render);
 	},
-  
+
   render: function () {
     //console.log(this.model, "smartrentData");
     this.$el.html( JST["backbone/templates/residents/smartrent"](this.model) );
   	return this;
   },
-  
+
   setStatus: function(ev){
     var link = $(ev.target),
       status = $.trim(link.text()).toLowerCase().replace(" ", "-"),
       statusDd = link.parents('.status-dd');
-    
+
     statusDd.find('> span').text( link.text() );
     statusDd.attr('class', 'status-dd smartrent-' + status);
-    
+
     //use link.attr('data-index') to get the status number
-    
-    msgbox("Under contruction! find me in backbones > views > residents > smartrent.js");
+    capitializedStatus = status.charAt(0).toUpperCase() + status.slice(1)
+    var self = this
+
+    $.ajax({
+      type: 'POST',
+      url: self.model.set_status_path,
+      data: {smartrent_status : capitializedStatus},
+      success: function(data) {
+        msgbox("Your status has been successfully updated");
+      },
+      error: function(){
+        msgbox("There was an error updating your status", "danger");
+      }
+     });
+
+    //msgbox("Under contruction! find me in backbones > views > residents > smartrent.js");
   },
-  
+
   resetPassword: function(ev) {
     var form = $('#reset-password');
-    
+
     form.ajaxSubmit({
       dataType: 'json',
       beforeSubmit: function(){
         form.mask('Please wait...');
-      }, 
+      },
       success: function(data){
         form.unmask();
-        
+
         if(data.success){
           msgbox('The password reset information have been sent!');
         }else {
@@ -49,15 +63,15 @@ Crm.Views.Smartrent = Backbone.View.extend({
       }
     });
   },
-  
+
   changePassword: function(ev) {
     var form = $('#change-password');
-    
+
     form.ajaxSubmit({
       dataType: 'json',
       beforeSubmit: function(){
         form.mask('Please wait...');
-      }, 
+      },
       success: function(data){
         form.unmask();
         if(data.success){
@@ -68,5 +82,5 @@ Crm.Views.Smartrent = Backbone.View.extend({
       }
     });
   }
-  
+
 });
