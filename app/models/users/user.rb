@@ -135,7 +135,8 @@ class User < ActiveRecord::Base
           properties = Smartrent::Property.where(:id => managed_property_ids)
         end
         #residents = nil
-        Smartrent::Resident.where(:property_id => properties.collect{|p| p.id})
+        resident_properties = Smartrent::ResidentProperty.where(:property_id=> properties.collect{|p| p.id})
+        Smartrent::Resident.where(:id => resident_properties.collect{|rp| rp.resident_id})
         #properties.each do |property|
           #if residents.nil?
             #residents = property.residents
@@ -148,25 +149,13 @@ class User < ActiveRecord::Base
     end
   end
   def managed_rewards
-    @managed_rewards ||= begin
-      if is_admin?
-        Smartrent::Reward.all
-      else
-        #residents = managed_residents
-        Smartrent::Reward.where(:resident_id => managed_residents.select{|r| r.property.present? and r.property.is_smartrent}.collect{|r| r.id})
-        #rewards = nil
-        #residents.each do |resident|
-          #Use Case 2: Only show rewards when the property is a smartrent
-          #if resident.property.is_smartrent
-            #if rewards.nil?
-              #rewards = resident.rewards
-            #else
-              #rewards.concat resident.rewards
-            #end
-          #end
-        #end
-        #rewards
-      end
+    if is_admin?
+      Smartrent::Reward.all
+    else
+      resident_ids = Rails.cache.fetch([self.class.name, id, "managed_rewards"]){
+        managed_residents.select{|r| r.is_smartrent?}.collect{|r| r.id}
+      }
+      Smartrent::Reward.where(:resident_id => resident_ids)
     end
   end
 
