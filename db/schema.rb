@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150724125512) do
+ActiveRecord::Schema.define(version: 20150727172539) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -486,31 +486,14 @@ ActiveRecord::Schema.define(version: 20150724125512) do
     t.integer  "failed_attempts",        limit: 4,   default: 0,    null: false
     t.string   "unlock_token",           limit: 255
     t.datetime "locked_at"
-    t.string   "name",                   limit: 255
-    t.string   "home_phone",             limit: 255
-    t.string   "work_phone",             limit: 255
-    t.string   "cell_phone",             limit: 255
-    t.string   "company",                limit: 255
-    t.datetime "contract_signing_date"
-    t.integer  "type_",                  limit: 4
-    t.string   "status",                 limit: 255
-    t.string   "address",                limit: 255
-    t.string   "city",                   limit: 255
-    t.string   "state",                  limit: 255
-    t.string   "zip",                    limit: 255
-    t.string   "current_community",      limit: 255
     t.boolean  "active",                 limit: 1,   default: true
-    t.string   "country",                limit: 255
-    t.integer  "origin_id",              limit: 4
     t.integer  "crm_resident_id",        limit: 8
-    t.string   "unit_id",                limit: 255
     t.string   "smartrent_status",       limit: 255
   end
 
   add_index "smartrent_residents", ["crm_resident_id"], name: "index_smartrent_residents_on_crm_resident_id", using: :btree
   add_index "smartrent_residents", ["email"], name: "index_smartrent_residents_on_email", unique: true, using: :btree
   add_index "smartrent_residents", ["reset_password_token"], name: "index_smartrent_residents_on_reset_password_token", unique: true, using: :btree
-  add_index "smartrent_residents", ["unit_id"], name: "index_smartrent_residents_on_unit_id", using: :btree
 
   create_table "smartrent_rewards", force: :cascade do |t|
     t.integer  "resident_id",  limit: 4

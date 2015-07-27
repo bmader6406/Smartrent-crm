@@ -9,7 +9,7 @@ node do |n|
     :smartrent_status_text => n.smartrent_status_text,
     :total_rewards => number_to_currency(n.cached_total_rewards),
     :monthly_awards_amount => number_with_delimiter(n.cached_monthly_awards_amount),
-    :sign_up_bonus_ => number_with_delimiter(n.sign_up_bonus),
+    :sign_up_bonus => number_with_delimiter(n.sign_up_bonus),
     :initial_reward => number_with_delimiter(n.initial_reward),
     :move_in_date => (n.move_in_date.to_s(:year_month_day) rescue nil),
     :total_months => n.cached_total_months.to_i,

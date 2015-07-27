@@ -56,7 +56,7 @@ child :smartrent_resident => :smartrent do |sr|
     {
       :total_rewards => number_with_delimiter(sr.total_rewards),
       :monthly_awards_amount => number_with_delimiter(sr.monthly_awards_amount),
-      :sign_up_bonus_ => number_with_delimiter(sr.sign_up_bonus_),
+      :sign_up_bonus => number_with_delimiter(sr.sign_up_bonus),
       :initial_reward => number_with_delimiter(sr.initial_reward)
     }
   end
