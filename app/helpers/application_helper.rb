@@ -101,6 +101,10 @@ module ApplicationHelper
      "relationship"=>["", "Relationship 1", "Relationship 2", "Relationship 3"]}
   end
   
+  def sr_page?
+    request.path.include?("/sr/")
+  end
+  
 end
 
 

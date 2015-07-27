@@ -451,7 +451,7 @@ ActiveRecord::Schema.define(version: 20150724125512) do
   end
 
   create_table "smartrent_resident_properties", force: :cascade do |t|
-    t.string   "resident_id",           limit: 255
+    t.integer  "resident_id",           limit: 4
     t.integer  "property_id",           limit: 4
     t.integer  "house_hold_size",       limit: 4
     t.integer  "pets_count",            limit: 4
