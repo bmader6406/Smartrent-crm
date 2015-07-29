@@ -5,7 +5,7 @@ development:
 test:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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
-  bucket: img.bozzuto.com.dev
+  bucket: img.bozzuto.com.test
 stage:
   access_key_id: AKIAIRKGJLR7V7ZO25GQ
   secret_access_key: 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

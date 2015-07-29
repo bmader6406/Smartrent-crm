@@ -20,7 +20,6 @@ class Property < ActiveRecord::Base
   has_attached_file :image, 
     :styles => {:search_page => "150x150>"},
     :storage => :s3,
-    :processors => [:cropper],
     :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
     :path => ":class/:attachment/:id/:style/:filename"
   
