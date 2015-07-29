@@ -7,7 +7,7 @@ class PhotoAsset < Asset
      :storage => :s3,
      :processors => [:cropper],
      :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
-     :path => ":org/:id/:style.:extension", #:org is paperclip interpolation.
+     :path => ":class/:attachment/:id/:style/:filename",
      :default_url => ""
      
    validates_attachment :file, 

@@ -2,7 +2,7 @@ class DocumentAsset < Asset
   has_attached_file :file,
     :storage => :s3,
     :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
-    :path => ":org/:id/:filename", #:org is paperclip interpolation.
+    :path => ":class/:attachment/:id/:filename", #:org is paperclip interpolation.
     :default_url => ""
 
   validates_attachment :file, 
