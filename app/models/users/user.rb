@@ -152,10 +152,7 @@ class User < ActiveRecord::Base
     if is_admin?
       Smartrent::Reward.all
     else
-      resident_ids = Rails.cache.fetch([self.class.name, id, "managed_rewards"]){
-        managed_residents.select{|r| r.is_smartrent?}.collect{|r| r.id}
-      }
-      Smartrent::Reward.where(:resident_id => resident_ids)
+      Smartrent::Reward.where(:resident_id => managed_residents.select{|r| r.is_smartrent?}.collect{|r| r.id})
     end
   end
 

@@ -15,23 +15,26 @@ class Property < ActiveRecord::Base
   has_many :campaigns
   has_many :audiences, :class_name => "Audience"
   
-  validates :name, :presence => true
-  after_commit :flush_cache
-########################## SmartRent Property Associations #######################
-  validates_uniqueness_of :name, :case_sensitive => true, :allow_blank => true
-  has_attached_file :image, :styles => {:search_page => "150x150>"}, :path => ":rails_root/public/paperclip/:attachment/:id/:style/:filename", :url => "/paperclip/:attachment/:id/:style/:filename"
-  validates_attachment_content_type :image, :content_type => /\Aimage\/.*\Z/
-##################################################################################
+  validates :name, :presence => true, :uniqueness => true
 
+  has_attached_file :image, 
+    :styles => {:search_page => "150x150>"},
+    :storage => :s3,
+    :processors => [:cropper],
+    :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
+    :path => ":class/:attachment/:id/:style/:filename"
+  
+  validates_attachment :image,
+     :size => {:less_than => 10.megabytes, :message => "file size must be less than 10 megabytes" },
+     :content_type => {
+       :content_type => ['image/pjpeg', 'image/jpeg', 'image/png', 'image/x-png', 'image/gif'],
+       :message => "must be either a JPEG, PNG or GIF image"
+      }
+       
+  scope :crm, -> { where(is_crm:  true) }
+  scope :smartrent, -> { where(is_smartrent:  true) }
+  
   resourcify
-
-  def flush_cache
-    begin
-      Rails.cache.delete([User.name, property.user_id, "managed_rewards"])
-    rescue Exception => e
-      puts e
-    end
-  end
 
   def setting
     @setting ||= begin

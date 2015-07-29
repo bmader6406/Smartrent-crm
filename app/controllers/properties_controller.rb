@@ -127,6 +127,6 @@ class PropertiesController < ApplicationController
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @properties = Property.where(:is_crm => true).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
+      @properties = Property.crm.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
     end
 end

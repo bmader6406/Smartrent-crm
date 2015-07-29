@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150727172539) do
+ActiveRecord::Schema.define(version: 20150729105043) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -353,6 +353,8 @@ ActiveRecord::Schema.define(version: 20150727172539) do
     t.datetime "updated_at",                     null: false
   end
 
+  add_index "smartrent_floor_plan_images", ["more_home_id"], name: "index_smartrent_floor_plan_images_on_more_home_id", using: :btree
+
   create_table "smartrent_floor_plans", force: :cascade do |t|
     t.integer  "property_id", limit: 4
     t.integer  "origin_id",   limit: 4
@@ -368,6 +370,8 @@ ActiveRecord::Schema.define(version: 20150727172539) do
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
+
+  add_index "smartrent_floor_plans", ["property_id"], name: "index_smartrent_floor_plans_on_property_id", using: :btree
 
   create_table "smartrent_homes", force: :cascade do |t|
     t.string   "title",                   limit: 255
@@ -404,37 +408,7 @@ ActiveRecord::Schema.define(version: 20150727172539) do
     t.datetime "updated_at",             null: false
   end
 
-  create_table "smartrent_properties", force: :cascade do |t|
-    t.string   "title",                     limit: 255
-    t.string   "phone_number",              limit: 255
-    t.string   "website",                   limit: 255
-    t.string   "short_description",         limit: 255
-    t.string   "state",                     limit: 255
-    t.string   "county",                    limit: 255
-    t.string   "city",                      limit: 255
-    t.string   "address",                   limit: 255
-    t.float    "latitude",                  limit: 24,    default: 0.0
-    t.float    "longitude",                 limit: 24,    default: 0.0
-    t.float    "studio_price",              limit: 24,    default: 0.0
-    t.boolean  "special_promotion",         limit: 1,     default: false
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
-    t.string   "image_file_name",           limit: 255
-    t.string   "image_content_type",        limit: 255
-    t.integer  "image_file_size",           limit: 4
-    t.datetime "image_updated_at"
-    t.boolean  "studio",                    limit: 1,     default: false
-    t.integer  "origin_id",                 limit: 4
-    t.string   "bozzuto_url",               limit: 255
-    t.string   "email",                     limit: 255
-    t.string   "promotion_title",           limit: 255
-    t.string   "promotion_subtitle",        limit: 255
-    t.string   "promotion_url",             limit: 255
-    t.date     "promotion_expiration_date"
-    t.string   "zip",                       limit: 255
-    t.text     "description",               limit: 65535
-    t.integer  "status",                    limit: 4,     default: 1
-  end
+  add_index "smartrent_more_homes", ["home_id"], name: "index_smartrent_more_homes_on_home_id", using: :btree
 
   create_table "smartrent_property_features", force: :cascade do |t|
     t.integer  "feature_id",  limit: 4
@@ -442,6 +416,9 @@ ActiveRecord::Schema.define(version: 20150727172539) do
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
   end
+
+  add_index "smartrent_property_features", ["feature_id"], name: "index_smartrent_property_features_on_feature_id", using: :btree
+  add_index "smartrent_property_features", ["property_id"], name: "index_smartrent_property_features_on_property_id", using: :btree
 
   create_table "smartrent_resident_homes", force: :cascade do |t|
     t.integer  "resident_id", limit: 4
@@ -451,16 +428,13 @@ ActiveRecord::Schema.define(version: 20150727172539) do
   end
 
   create_table "smartrent_resident_properties", force: :cascade do |t|
-    t.integer  "resident_id",           limit: 4
-    t.integer  "property_id",           limit: 4
-    t.integer  "house_hold_size",       limit: 4
-    t.integer  "pets_count",            limit: 4
-    t.date     "contract_signing_date"
-    t.string   "status",                limit: 255
+    t.integer  "resident_id",   limit: 4
+    t.integer  "property_id",   limit: 4
+    t.string   "status",        limit: 255
     t.date     "move_in_date"
     t.date     "move_out_date"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "smartrent_resident_properties", ["property_id"], name: "index_smartrent_resident_properties_on_property_id", using: :btree
@@ -507,41 +481,15 @@ ActiveRecord::Schema.define(version: 20150727172539) do
     t.datetime "updated_at",               null: false
   end
 
+  add_index "smartrent_rewards", ["property_id"], name: "index_smartrent_rewards_on_property_id", using: :btree
+  add_index "smartrent_rewards", ["resident_id"], name: "index_smartrent_rewards_on_resident_id", using: :btree
+
   create_table "smartrent_settings", force: :cascade do |t|
     t.string   "key",        limit: 255
     t.string   "value",      limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
-
-  create_table "smartrent_users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "", null: false
-    t.string   "encrypted_password",     limit: 255, default: "", null: false
-    t.string   "reset_password_token",   limit: 255
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          limit: 4,   default: 0,  null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "confirmation_token",     limit: 255
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.integer  "failed_attempts",        limit: 4,   default: 0,  null: false
-    t.string   "unlock_token",           limit: 255
-    t.datetime "locked_at"
-    t.string   "name",                   limit: 255
-    t.string   "address",                limit: 255
-    t.string   "city",                   limit: 255
-    t.string   "state",                  limit: 255
-    t.string   "zip",                    limit: 255
-  end
-
-  add_index "smartrent_users", ["email"], name: "index_smartrent_users_on_email", unique: true, using: :btree
-  add_index "smartrent_users", ["reset_password_token"], name: "index_smartrent_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "templates", force: :cascade do |t|
     t.integer  "user_id",     limit: 4

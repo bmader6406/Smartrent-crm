@@ -7,7 +7,7 @@
       </div>
       <ul class="list-unstyled">
         <li> <b>Monthly Total:</b> <%= monthly_awards_amount %> </li>
-        <li> <b>Sign-Up Bonus:</b> <%= sign_up_bonus_ %> </li>
+        <li> <b>Sign-Up Bonus:</b> <%= sign_up_bonus %> </li>
         <li> <b>Initial Reward:</b> <%= initial_reward %> </li>
       </ul>
     </div>
@@ -92,7 +92,7 @@
           <tbody>
             <% for (var i=0, rw; rw=rewards[i]; i++) { %>
               <tr>
-                <td><%= rw.type_ %></td>
+                <td><%= rw.type %></td>
                 <td><%= rw.period_start %></td>
                 <td><%= rw.period_end %></td>
                 <td><%= rw.property_name %></td>
