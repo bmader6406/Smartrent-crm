@@ -54,10 +54,10 @@ end
 child :smartrent_resident => :smartrent do |sr|
   node do |n|
     {
-      :total_rewards => number_with_delimiter(sr.total_rewards),
-      :monthly_awards_amount => number_with_delimiter(sr.monthly_awards_amount),
-      :sign_up_bonus => number_with_delimiter(sr.sign_up_bonus),
-      :initial_reward => number_with_delimiter(sr.initial_reward)
+      :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
+      :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
+      :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
+      :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
     }
   end
 end

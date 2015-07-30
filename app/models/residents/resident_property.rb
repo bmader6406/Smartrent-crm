@@ -75,6 +75,7 @@ class ResidentProperty
   before_save :set_rental_type
   
   after_save :set_unified_status
+  after_save :update_smartrent_resident
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status
@@ -119,5 +120,9 @@ class ResidentProperty
     
     def set_rental_type
       self.rental_type = unit.rental_type if unit # for reports
+    end
+    
+    def update_smartrent_resident
+      Resque.enqueue(SmartrentResidentUpdater, resident._id, _id.to_s) if property.is_smartrent?
     end
 end
