@@ -133,7 +133,7 @@ class User < ActiveRecord::Base
         Smartrent::Resident.all
         
       else
-        Smartrent::Resident.where(:property_id => managed_properties.collect{|p| p.id })
+        Smartrent::Resident.joins(:resident_properties).where("smartrent_resident_properties.property_id IN (?)", managed_properties.collect{|p| p.id })
       end
     end
   end

@@ -11,7 +11,7 @@ class DashboardsController < ApplicationController
       redirect_to properties_url and return
       
     elsif current_user.managed_properties.first
-      redirect_to residents_url(current_user.managed_properties.first) and return
+      redirect_to property_residents_url(current_user.managed_properties.first) and return
 
     else
       redirect_to profile_url and return
