@@ -15,11 +15,13 @@ node do |n|
     
     :reset_password_path => reset_resident_password_path(n),
     :update_password_path => resident_password_path(n),
-    :set_status_path => set_status_resident_password_path(n)
+    :set_status_path => set_status_resident_password_path(n),
+    :set_amount_path => set_amount_resident_password_path(n)
   }
 
   n.rewards.order("period_start desc, id desc").each do |reward|
     hash[:rewards] << {
+      :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],
       :period_start => (reward.period_start.to_s(:utc_date) rescue nil),
       :period_end => (reward.period_end.to_s(:utc_date) rescue nil),

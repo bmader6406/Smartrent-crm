@@ -4,7 +4,10 @@ Crm.Views.Smartrent = Backbone.View.extend({
   events: {
     "click .status-dd li a": "setStatus",
     "click #reset-password button:submit": "resetPassword",
-    "click #change-password button:submit": "changePassword"
+    "click #change-password button:submit": "changePassword",
+    "click .edit-amount": "editAmount",
+    "click .update-amount": "updateAmount",
+    "click .cancel-amount": "cancelAmount"
   },
 
   initialize: function() {
@@ -18,7 +21,8 @@ Crm.Views.Smartrent = Backbone.View.extend({
   },
 
   setStatus: function(ev){
-    var link = $(ev.target),
+    var self = this,
+      link = $(ev.target),
       status = $.trim(link.text()).toLowerCase().replace(" ", "-"),
       statusDd = link.parents('.status-dd');
 
@@ -27,21 +31,52 @@ Crm.Views.Smartrent = Backbone.View.extend({
 
     //use link.attr('data-index') to get the status number
     capitializedStatus = status.charAt(0).toUpperCase() + status.slice(1)
-    var self = this
 
     $.ajax({
       type: 'POST',
       url: self.model.set_status_path,
       data: {smartrent_status : capitializedStatus},
       success: function(data) {
-        msgbox("Your status has been successfully updated");
+        msgbox("Smartrent Status was successfully updated");
+        $('.smartrent-details').click();
       },
       error: function(){
         msgbox("There was an error updating your status", "danger");
       }
      });
-
-    //msgbox("Under contruction! find me in backbones > views > residents > smartrent.js");
+  },
+  
+  editAmount: function(ev){
+    var editor = $(ev.target).parent().next();
+    
+    editor.show();
+    editor.prev().hide();
+  },
+  
+  updateAmount: function(ev){
+    var self = this,
+      editor = $(ev.target).closest('.amount-editor');
+    
+    $.ajax({
+      type: 'POST',
+      url: self.model.set_amount_path,
+      data: {reward_id : editor.attr('data-id'), amount: editor.find(':input').val()},
+      success: function(data) {
+        msgbox("Smartrent Status was successfully updated");
+        $('.smartrent-details').click();
+      },
+      error: function(){
+        msgbox("There was an error updating your status", "danger");
+      }
+     });
+     
+  },
+  
+  cancelAmount: function(ev){
+    var editor = $(ev.target).closest('.amount-editor');
+    
+    editor.hide();
+    editor.prev().show();
   },
 
   resetPassword: function(ev) {

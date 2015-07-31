@@ -685,6 +685,24 @@ fieldset[disabled] .btn-default.active {
   cursor: help;
 }
 
+.amount-editor {
+  display: none;
+  width: 70px;
+}
+
+.edit-amount {
+  cursor: pointer;
+  color: #7ccddc;
+  float: right;
+  visibility: hidden;
+  
+  .card:hover & {
+    visibility: visible;
+  }
+}
+#is_smartrent-0 {
+  margin-right: 5px;
+}
 /* tickets */
 .ticket {
   .desc {

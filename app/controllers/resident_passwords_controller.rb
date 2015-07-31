@@ -24,8 +24,14 @@ class ResidentPasswordsController < ApplicationController
     else
       render :json => {:success => false}
     end
-    #placeholder
-    # TODO: Tala please write code for this method (I am waiting for the multiple properties backend change)
+  end
+  
+  def set_amount
+    if @smartrent_resident.rewards.find(params[:reward_id]).update_attributes(:amount => params[:amount])
+      render :json => {:success => true}
+    else
+      render :json => {:success => false}
+    end
   end
   
   private

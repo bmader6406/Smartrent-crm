@@ -102,6 +102,7 @@ Rails.application.routes.draw do
     member do
       post :reset
       post :set_status
+      post :set_amount
     end
   end
   

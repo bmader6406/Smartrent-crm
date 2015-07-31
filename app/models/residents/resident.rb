@@ -85,6 +85,7 @@ class Resident
   accepts_nested_attributes_for :activities, :sources, :properties, :marketing_activities
 
   before_save :downcase_name_email
+  after_save :change_smartrent_email
   
   index({ email_lc: 1 }, {background: true})
   index({ first_name_lc: 1 }, {background: true})
@@ -420,5 +421,11 @@ class Resident
       self.first_name_lc = first_name.downcase if first_name
       self.last_name_lc = last_name.downcase if last_name
       self.email_lc = email.downcase if email
+    end
+    
+    def change_smartrent_email
+      if email_changed? && smartrent_resident
+        smartrent_resident.update_attributes(:email => email)
+      end
     end
 end

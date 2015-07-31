@@ -246,6 +246,14 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
         },
         owner_group: {
           title: 'Owner Group'
+        },
+        is_smartrent: { 
+          title: 'Smartrent Eligible Property',
+          type: 'Checkboxes',
+          options: [{ val: true, label: 'Yes' }],
+          editorAttrs: {
+            class: 'list-unstyled'
+          }
         }
       },
       template: JST['backbone/templates/properties/form'],

@@ -86,7 +86,7 @@
               <th>Period Start</th>
               <th>Period End</th>
               <th>Property</th>
-              <th>Amount</th>
+              <th width="170px">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -96,7 +96,25 @@
                 <td><%= rw.period_start %></td>
                 <td><%= rw.period_end %></td>
                 <td><%= rw.property_name %></td>
-                <td><%= rw.amount %></td>
+                <td>
+                  <div class="amount">
+                    <span><%= rw.amount %></span>
+                    <i class="fa fa-pencil edit-amount"></i>
+                  </div>
+                  <div class="input-group amount-editor" data-id="<%= rw.id %>">
+                      <input type="text" value="<%= rw.amount.replace("$", "") %>" class="form-control" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-default update-amount" type="button">
+                          <i class="fa fa-check"></i>
+                        </button>
+                      </span>
+                      <span class="input-group-btn">
+                        <button class="btn btn-default cancel-amount" type="button">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </span>
+                  </div>
+                </td>
               </tr>
             <% } %>
           </tbody>

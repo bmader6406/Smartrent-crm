@@ -105,11 +105,9 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
       case '#smartrent':
         var smartrent = $('#smartrent');
         
-        if( !smartrent.find('> div')[0] ){
-          $.getJSON(this.model.get('smartrent_path'), function(data){
-            smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
-          });
-        }
+        $.getJSON(this.model.get('smartrent_path'), function(data){
+          smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
+        });
 
         $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
         smartrent.show();
