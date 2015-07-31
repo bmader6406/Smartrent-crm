@@ -117,55 +117,36 @@ class User < ActiveRecord::Base
     @managed_properties ||= begin
       if has_role? :admin, Property
         Property.all
+        
       elsif has_role? :regional_manager, Property
-        Smartrent::Property.where(:region_id => managed_region_ids)
+        Property.where(:region_id => managed_region_ids)
+        
       else
-        Smartrent::Property.where(:id => managed_property_ids)
+        Property.where(:id => managed_property_ids)
       end
     end
   end
+  
   def managed_residents
     @managed_residents ||= begin
       if is_admin?
         Smartrent::Resident.all
+        
       else
-        if has_role? :regional_manager, Property
-          properties = Smartrent::Property.where(:region_id => managed_region_ids)
-        else
-          properties = Smartrent::Property.where(:id => managed_property_ids)
-        end
-        #residents = nil
-        resident_properties = Smartrent::ResidentProperty.where(:property_id=> properties.collect{|p| p.id})
-        Smartrent::Resident.where(:id => resident_properties.collect{|rp| rp.resident_id})
-        #properties.each do |property|
-          #if residents.nil?
-            #residents = property.residents
-          #else
-            #residents.concat property.residents
-          #end
-        #end
-        #residents
+        Smartrent::Resident.where(:property_id => managed_properties.collect{|p| p.id })
       end
     end
   end
+  
   def managed_rewards
     if is_admin?
       Smartrent::Reward.all
     else
-      Smartrent::Reward.where(:resident_id => managed_residents.select{|r| r.is_smartrent?}.collect{|r| r.id})
+      Smartrent::Reward.where(:property_id => managed_properties.collect{|p| p.id })
     end
   end
 
   def is_admin?
     has_role? :admin, Property
   end
-  def is_property_manager?
-    has_role? :property_manager, Property
-  end
-  
-  # memo:
-  # def find_property_by_id(id)
-  #   managed_properties.find(id)
-  # end
-  
 end

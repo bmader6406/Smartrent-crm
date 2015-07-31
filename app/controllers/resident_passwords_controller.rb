@@ -34,8 +34,7 @@ class ResidentPasswordsController < ApplicationController
     end
     
     def set_resident
-      #TODO: use current_user.managed_residents.find
-      @smartrent_resident = Smartrent::Resident.find(params[:id])
+      @smartrent_resident = current_user.managed_residents.find(params[:id])
     end
     
 end

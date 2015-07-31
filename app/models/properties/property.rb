@@ -61,9 +61,5 @@ class Property < ActiveRecord::Base
     Resident.with(:consistency => :eventual).where(:deleted_at => nil)
   end
 
-#*****************************************SmartRent methods**************************
-  def self.custom_ransack(q)
-    Smartrent::Property.ransack(q)
-  end 
   
 end

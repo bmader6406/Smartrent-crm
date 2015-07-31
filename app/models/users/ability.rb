@@ -31,8 +31,7 @@ class Ability
 
       elsif user.has_role? :property_manager, Property
         can :manage, Smartrent::Reward do |r|
-          rewards = user.managed_rewards
-          rewards.include?(r) if rewards.present?
+          user.managed_rewards.find_by_id(r.id)
         end
         can :manage, [Resident, Unit, Ticket, ResidentActivity, Campaign]
         can :read, [Property, User, Notification, Resident]
