@@ -90,7 +90,7 @@ class ResidentImporter
               property_attrs[f] = unit.id
             end
           end
-
+          
           if resident.save
             #create submit
             resident.sources.create(property_attrs) if property_attrs[:property_id]

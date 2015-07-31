@@ -190,10 +190,7 @@ class ResidentsController < ApplicationController
   def smartrent
     @smartrent_resident = @resident.smartrent_resident
   end
-  def change_smartrent_status
 
-  end
-  
   # for add new ticket page
   def search
     if params[:search].include?("@")

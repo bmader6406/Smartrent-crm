@@ -25,12 +25,17 @@
         	  <div class="list-group">
               <%
         	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
-        	      properties_region.keys.each do |region|
+        	      properties_region.keys.sort{ |a, b| (a.name.to_s rescue "WWW") <=> (b.name.to_s rescue "WWW") }.each do |region|
         	    %>
         	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>"> <%= region ? region.name : "Other Metro" %></b>
           	    <div class="items">
-            	    <% properties_region[region].each do |prop| %>
-            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> <%= prop.name %> </a>
+            	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
+            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> 
+            	        <%= prop.name %> 
+            	        <% if prop.is_smartrent? %>
+            	          <span class="label label-info smartrent">Smartrent</span>
+            	        <% end %>
+            	      </a>
             	    <% end %>
           	    </div>
         	    <% end %>
