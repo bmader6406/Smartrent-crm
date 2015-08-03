@@ -1,15 +1,18 @@
-<div id="top-nav" class="navbar navbar-default">
-  <a href="#" id="hamburger">
-    <i class="fa fa-bars"></i>
+<div id="top-nav" class="navbar navbar-default navbar-fixed-top">
+  <a href="<%= raw main_app.root_path %>" class="navbar-brand logo">
+    <i class="fa fa-angle-down"></i>
+    <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png" alt="Bozzuto" />
+    <span> 
+      <% if sr_page? %>
+        Smartrent
+      <% else %>
+        CRM
+      <% end %>
+    </span>
   </a>
-
-  <% if !sr_page? %>
-    <a href="<%= main_app.root_path %>" class="logo">
-      <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png">
-      CRM
-    </a>
   
-    <ul class="nav navbar-nav" style="margin-left: 60px;">
+  <% if !sr_page? %>
+    <ul class="nav navbar-nav">
       <li class="dropdown" id="property-dd">
         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
           <% if @property %>
@@ -53,11 +56,6 @@
       	</div> <!-- /.list-filter -->
       </li>
     </ul>
-  <% else %>
-    <a href="<%= main_app.root_path %>" class="logo">
-      <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png">
-      Smartrent
-    </a>
   <% end %>
 
   <div class="nav navbar-nav navbar-right">

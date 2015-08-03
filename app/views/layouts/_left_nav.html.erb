@@ -1,4 +1,27 @@
 <div id="left-nav">
+  <div class="apps">
+    <a href="<%= raw main_app.root_path %>" class="app-name">
+      <i class="fa fa-angle-down"></i>
+      <img alt="Hy.ly" src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png"> 
+      <span>
+        <% if !sr_page? %>
+          CRM
+        <% else %>
+          Smartrent
+        <% end %>
+      </span>
+    </a>
+    <ul class="list-unstyled">
+      <li class="<%= "active" if !sr_page? %>">
+        <a href="<%= raw main_app.root_path %>" class="page-reload" title="CRM"> <i class="fa fa-headphones"></i> </a>
+      </li>
+
+      <li class="<%= "active" if sr_page? %>">
+        <a href="<%= raw sr.admin_properties_path %>" class="page-reload" title="Smartrent"> <i class="fa fa-lightbulb-o"></i> </a>
+      </li>
+    </ul>
+  </div>
+  
 	<ul id="left-menu">
 	  <% if !sr_page? %>
   	  <% if can? :read, Property %>
@@ -70,16 +93,9 @@
         </li>
       <% end %>
       
-      <li>
-        <a href="<%= raw sr.admin_properties_path %>"> <i class="fa fa-lightbulb-o fa-fw"></i> Smartrent </a>
-      </li>
       
     <% else %>
       <%= render "layouts/smartrent/left_nav_links" %>
-      
-      <li>
-        <a href="<%= raw main_app.root_path %>" class="page-reload"> <i class="fa fa-headphones fa-fw"></i> CRM </a>
-      </li>
       
     <% end %>
 	</ul>

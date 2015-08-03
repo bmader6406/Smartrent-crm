@@ -14,9 +14,18 @@ body {
   height: 100%;
   position: fixed;
 	top: 0;
-	left: 0;
-  width: 265px;
-  z-index: 1;
+	left: -305px;
+  z-index: 1500;
+  width: 305px;
+  
+  -moz-transition: width ease-in-out 0.28s;
+  -webkit-transition: width ease-in-out 0.28s;
+  -o-transition: width ease-in-out 0.28s;
+  transition: width ease-in-out 0.28s;
+  -ms-transform: translate(0px, 0);
+  -moz-transform: translate(0px, 0);
+  -webkit-transform: translate3d(0px, 0, 0);
+  transform: translate(0px, 0);
   
   a {
     color: #ccc;
@@ -43,11 +52,63 @@ body {
       margin-top: 5px;
     }
   }
+  .apps {
+    background-color: #222222;
+    border-color: #111111;
+    padding: 0 20px 10px 20px;
+    border-right: 1px solid #222;
+    
+    ul {
+      margin: 0;
+    }
+    li {
+      border-bottom: 5px solid transparent;
+      display: inline-block;
+      height: 35px;
+      margin-right: 5px;
+      text-align: center;
+      width: 25px;
+      
+      a {
+        color: #fff;
+        font-size: 20px;
+      }
+      &.active, &:hover {
+        border-bottom: 5px solid #20bdec;
+      }
+    }
+  }
+  .app-name {
+    color: #fff;
+    display: block;
+    font-size: 18px;
+    height: 50px;
+    line-height: 50px;
+    margin: 0;
+    outline: 0 none;
+    padding-left: 110px;
+    position: relative;
+    text-decoration: none;
+    
+    img {
+      height: 27px;
+      left: 0;
+      position: absolute;
+      top: 13px;
+      width: 102px;
+    }
+    i {
+      color: #20bdec;
+      float: right;
+      font-size: 22px;
+      margin: 15px 5px 0 0;
+    }
+  }
 }
 
 #left-menu {
   padding: 0;
-  margin: 30px 0 0 0;
+  margin: 10px 0 0 0;
   list-style-type: none;
   
   li {
@@ -94,13 +155,6 @@ body {
   -webkit-transition: -webkit-transform 0.28s ease-in-out;
   transition: transform 0.28s ease-in-out;
 	
-	.left-expanded & {
-    -ms-transform: translate(265px, 0);
-    -moz-transform: translate(265px, 0);
-    -webkit-transform: translate3d(265px, 0, 0);
-    transform: translate(265px, 0);
-  }
-  
   .hidden-pane {
   	display:	none;
   	overflow: visible !important;
@@ -114,6 +168,22 @@ body {
     padding: 15px;
   }
 }
+.left-expanded {
+  overflow: hidden;
+  
+  #left-nav {
+    left: 0;
+  }
+  #viewport {
+   -ms-transform: translate(305px, 0);
+    -moz-transform: translate(305px, 0);
+    -webkit-transform: translate3d(305px, 0, 0);
+    transform: translate(305px, 0);
+  }
+  #mask {
+    display: block;
+  }
+}
 #mask {
   display: none;
   position: absolute;
@@ -124,34 +194,40 @@ body {
   background: #fff;
   opacity: 0;
   filter: alpha(opacity=0);
-  
-  .left-expanded & {
-    display: block;
-  }
 }
 #top-nav {
-  background: #565a5d;
-  border: 0 none;
-  position: absolute;
-  left: 0;
-  top: -50px;
-  width: 100%;
-  
-  .logo {
-    font-size: 20px;
-    left: 50%;
-    margin-left: -135px;
-    position: absolute;
+  .container-fluid {
+    background: #565a5d;
+    border-color: #111111;
+  }
+  .navbar-brand {
+    font-size: 18px;
+    height: 50px;
+    line-height: 50px;
+    margin: 0;
+    outline: 0 none;
+    padding: 0 20px 0 130px;
+    position: relative;
     text-decoration: none;
-    top: 12px;
-    width: 270px;
-
+    width: 304px;
+    
     img {
-      position: relative;
-      top: -1px;
+      left: 20px;
+      position: absolute;
+      top: 13px;
+    }
+    i {
+      float: right;
+      font-size: 22px;
+      margin: 15px 5px 0 0;
+    }
+    &:hover {
+      i {
+        color: #20bdec;
+      }
     }
   }
-  .logo, .dropdown-toggle {
+  .dropdown-toggle {
     color: #ffffff !important;
   }
   .open .dropdown-toggle {
@@ -161,22 +237,8 @@ body {
     margin-right: 10px;
   }
   
-  #hamburger {
-    color: #fff;
-    font-size: 26px;
-    height: 50px;
-    left: 5px;
-    line-height: 50px;
-    position: absolute;
-    text-align: center;
-    top: 0;
-    width: 50px;
-    
-    .fa-angle-left {
-      font-size: 35px;
-      position: relative;
-      top: 4px;
-    }
+  .navbar-nav > li > a {
+    border-left: 1px solid #111111;
   }
   .user-info {
     color: #fff;

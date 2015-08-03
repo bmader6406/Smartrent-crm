@@ -42,23 +42,17 @@ var App = {
     this.layout = viewport.layout(opts);
   	
   	//left-nav expand/collapse
-  	viewport.on('click', '#hamburger', function(){
-  	  var t = $(this);
-  	  
-  	  if(t.attr('data-expanded')){
-  	    body.removeClass('left-expanded');
-  	    t.removeAttr('data-expanded');
-  	    t.find('i').attr('class', 'fa fa-bars');
-  	    leftExpanded = false;
-  	  } else {
-  	    body.addClass('left-expanded');
-  	    t.attr('data-expanded', 1);
-  	    t.find('i').attr('class', 'fa fa-angle-left');
-  	    leftExpanded = true;
-  	  }
-  	  
-  	  return false;
-  	});
+  	var body = $('body');
+    $('#top-nav .navbar-brand, #left-nav .app-name, #mask').on('click', function(){
+      if( body.hasClass('left-expanded') ) {
+        body.removeClass('left-expanded');
+
+      } else {
+        body.addClass('left-expanded');
+      }
+
+      return false;
+    });
   	
   	//prop filter
   	var propertyDd = $('#property-dd'),
@@ -99,17 +93,7 @@ var App = {
     });
     
     Crm.initialize();
-    
-    // close left nav on escape, viewport click
-    $(document).on('keydown', function(e) {
-      if(leftExpanded && e.which == 27) {
-        $('#hamburger[data-expanded=1]').click();
-      }
-    }).on('click', function(e){
-      if(leftExpanded && $(e.target).parents('#viewport')[0]){
-        $('#hamburger[data-expanded=1]').click();
-      }
-    });
+
   },
   
   initAssetManager: function(){
