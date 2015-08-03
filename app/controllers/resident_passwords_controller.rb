@@ -9,7 +9,6 @@ class ResidentPasswordsController < ApplicationController
   end
 
   def update
-    
     if @smartrent_resident.update_attributes(resident_params)
       render :json => {:success => true}
     else
@@ -18,8 +17,7 @@ class ResidentPasswordsController < ApplicationController
   end
   
   def set_status
-    smartrent_status = params[:smartrent_status]
-    if smartrent_status.present? and @smartrent_resident.update_attributes({:smartrent_status => smartrent_status.capitalize})
+    if @smartrent_resident.update_attributes({:smartrent_status => params[:smartrent_status].capitalize})
       render :json => {:success => true}
     else
       render :json => {:success => false}

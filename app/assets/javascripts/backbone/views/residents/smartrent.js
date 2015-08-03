@@ -81,39 +81,48 @@ Crm.Views.Smartrent = Backbone.View.extend({
 
   resetPassword: function(ev) {
     var form = $('#reset-password');
+    
+    bootbox.confirm("Sure you want to reset the resident's password?", function(result) {
+      if (result) {
+        form.ajaxSubmit({
+          dataType: 'json',
+          beforeSubmit: function(){
+            form.mask('Please wait...');
+          },
+          success: function(data){
+            form.unmask();
 
-    form.ajaxSubmit({
-      dataType: 'json',
-      beforeSubmit: function(){
-        form.mask('Please wait...');
-      },
-      success: function(data){
-        form.unmask();
-
-        if(data.success){
-          msgbox('The password reset information have been sent!');
-        }else {
-          msgbox('There was an error, please try again', 'danger');
-        }
+            if(data.success){
+              msgbox('The password reset information have been sent!');
+            }else {
+              msgbox('There was an error, please try again', 'danger');
+            }
+          }
+        });
       }
     });
+    
   },
 
   changePassword: function(ev) {
     var form = $('#change-password');
 
-    form.ajaxSubmit({
-      dataType: 'json',
-      beforeSubmit: function(){
-        form.mask('Please wait...');
-      },
-      success: function(data){
-        form.unmask();
-        if(data.success){
-          msgbox('The password was successfully updated!');
-        }else {
-          msgbox('There was an error, please try again', 'danger');
-        }
+    bootbox.confirm("Sure you want to change the resident's password?", function(result) {
+      if (result) {
+        form.ajaxSubmit({
+          dataType: 'json',
+          beforeSubmit: function(){
+            form.mask('Please wait...');
+          },
+          success: function(data){
+            form.unmask();
+            if(data.success){
+              msgbox('The password was successfully updated!');
+            }else {
+              msgbox('There was an error, please try again', 'danger');
+            }
+          }
+        });
       }
     });
   }
