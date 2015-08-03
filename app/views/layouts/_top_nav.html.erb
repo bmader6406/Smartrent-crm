@@ -12,11 +12,18 @@
     <ul class="nav navbar-nav" style="margin-left: 60px;">
       <li class="dropdown" id="property-dd">
         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-          <%= @property ? @property.name : "Select a property" %>
-          <i class="fa fa-angle-down fa-lg"></i>
+          <% if @property %>
+            <%= @property.name %>
+            <span class="label">
+    	        <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">Smartrent</span>
+  	        </span>
+          <% else %>
+            Select a property
+          <% end %>
+          <i class="fa fa-angle-down fa-lg" style="<%= "visibility:hidden" if current_user.managed_properties.count <= 1 %>"></i>
         </a>
       
-        <div class="list-filter dropdown-menu">
+        <div class="list-filter dropdown-menu" style="<%= "display:none" if current_user.managed_properties.count <= 1 %>">
       	  <form class="form-inline">
             <input type="text" class="form-control" placeholder="Start typing property name...">
           </form>
@@ -30,11 +37,13 @@
         	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>"> <%= region ? region.name : "Other Metro" %></b>
           	    <div class="items">
             	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
-            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> 
-            	        <%= prop.name %> 
-            	        <% if prop.is_smartrent? %>
-            	          <span class="label label-info smartrent">Smartrent</span>
-            	        <% end %>
+            	      <% next if !prop.is_crm? && !prop.is_smartrent?  %>
+            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> 
+            	        <%= prop.name %>
+            	        
+            	        <span class="label">
+              	        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">Smartrent</span>
+            	        </span>
             	      </a>
             	    <% end %>
           	    </div>

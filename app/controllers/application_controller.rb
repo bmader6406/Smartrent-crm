@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def authenticate_admin!
+  def require_admin
     if current_user and current_user.is_admin?
       return true
     end

@@ -254,6 +254,14 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
           editorAttrs: {
             class: 'list-unstyled'
           }
+        },
+        is_crm: { 
+          title: 'CRM Eligible Property',
+          type: 'Checkboxes',
+          options: [{ val: true, label: 'Yes' }],
+          editorAttrs: {
+            class: 'list-unstyled'
+          }
         }
       },
       template: JST['backbone/templates/properties/form'],

@@ -37,6 +37,11 @@ node do |n|
   
   attrs[:birthday] = n.birthday.strftime("%m/%d/%Y") rescue nil
   
+  if n.curr_property
+    attrs[:move_in] = n.curr_property.move_in.strftime("%m/%d/%Y") rescue nil
+    attrs[:status] = n.curr_property.status
+  end
+  
   attrs
 end
 

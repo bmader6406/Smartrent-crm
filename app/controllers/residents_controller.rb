@@ -373,7 +373,7 @@ class ResidentsController < ApplicationController
         hint = {}
       end
 
-      @residents = Resident.where(conditions).ordered("updated_at desc")
+      @residents = Resident.where(conditions).ordered("first_name asc, last_name asc")
 
       # specify the index explicitly
       @residents = @residents.extras(:hint => hint) if !hint.empty?

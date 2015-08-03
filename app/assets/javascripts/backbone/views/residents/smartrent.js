@@ -38,7 +38,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
       data: {smartrent_status : capitializedStatus},
       success: function(data) {
         msgbox("Smartrent Status was successfully updated");
-        $('.smartrent-details').click();
+        $('.view-smartrent').click();
       },
       error: function(){
         msgbox("There was an error updating your status", "danger");
@@ -63,7 +63,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
       data: {reward_id : editor.attr('data-id'), amount: editor.find(':input').val()},
       success: function(data) {
         msgbox("Smartrent Status was successfully updated");
-        $('.smartrent-details').click();
+        $('.view-smartrent').click();
       },
       error: function(){
         msgbox("There was an error updating your status", "danger");

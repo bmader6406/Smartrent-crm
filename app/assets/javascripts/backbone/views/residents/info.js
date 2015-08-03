@@ -8,7 +8,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     "click .collapsible .fa": "toggleInfo",
     "click .collapsible h4": "toggleInfo",
 		"click .archive": "archive",
-		"click .smartrent-details": "viewSmartrent",
+		"click .view-smartrent": "viewSmartrent",
 		"scroll": "fetchMoreActivities"
   },
 

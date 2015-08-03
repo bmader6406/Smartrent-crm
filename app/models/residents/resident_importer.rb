@@ -117,9 +117,8 @@ class ResidentImporter
        :city => 4,
        :state => 5,
        :zip => 6,
-       :status => 7,
-       :email => 8,
-       :move_in => 9
+       :email => 7,
+       :move_in => 8
       }
       
       custom_name = {

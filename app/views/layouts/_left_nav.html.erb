@@ -25,40 +25,40 @@
         <% end %>
       <% end %>
     
-      <% if can?(:read, Ticket) && @property %>
-        <li data-nav="tickets">
-          <a href="<%= raw main_app.property_tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
-        </li>
-      <% end %>
+      <% if @property && @property.is_crm? %>
+        <% if can?(:read, Ticket) %>
+          <li data-nav="tickets">
+            <a href="<%= raw main_app.property_tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
+          </li>
+        <% end %>
     
-      <% if can?(:read, Campaign) && @property %>
-        <li data-nav="notices">
-          <a href="<%= raw main_app.property_campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
-        </li>
-      <% end %>
+        <% if can?(:read, Campaign) %>
+          <li data-nav="notices">
+            <a href="<%= raw main_app.property_campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
+          </li>
+        <% end %>
     
-      <% if can?(:read, Unit) && @property %>
-        <li data-nav="units">
-          <a href="<%= raw main_app.property_units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
-        </li>
+        <% if can?(:read, Unit) %>
+          <li data-nav="units">
+            <a href="<%= raw main_app.property_units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
+          </li>
+        <% end %>
       <% end %>
     
       <% if @property %>
-        <li data-nav="reports">
-          <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
-        </li>
+        <% if @property.is_crm? %>
+          <li data-nav="reports">
+            <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
+          </li>
+        <% end %>
+        
       <% else %>
         <li data-nav="reports">
           <a href="<%= raw main_app.reports_path %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
         </li>
       <% end %>
     
-      <% if can?(:cud, User) %>
-        <li data-nav="users">
-          <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
-        </li>
-      
-      <% elsif can?(:read, User) %>
+      <% if !@property && (can?(:cud, User) || can?(:read, User)) %>
         <li data-nav="users">
           <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
         </li>

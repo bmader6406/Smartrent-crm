@@ -42,7 +42,19 @@ Crm.Views.ResidentsList = Backbone.View.extend({
            cell: 'string',
            editable: false,
            sortable: false
-         }],
+         }, {
+            name: "status",
+            label: "Status",
+            cell: 'string',
+            editable: false,
+            sortable: false
+          }, {
+            name: "move_in",
+            label: "Move In",
+            cell: 'string',
+            editable: false,
+            sortable: false
+          }],
          collection: self.collection
        }),
        
