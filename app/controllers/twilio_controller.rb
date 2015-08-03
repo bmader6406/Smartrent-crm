@@ -28,9 +28,11 @@
 #require 'twilio-ruby'
 
 class TwilioController < ApplicationController
+  skip_before_action :verify_authenticity_token
+  
   # Before we allow the incoming request to connect, verify that it is a Twilio request
   before_action :authenticate_twilio_request, :only => [:p2p_connect, :p2p_fallback, :p2p_status, :w2p_connect, :w2p_fallback2, :w2p_status]
-
+  
   layout false
 
   def usage
