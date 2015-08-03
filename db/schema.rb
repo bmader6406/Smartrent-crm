@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150731112731) do
+ActiveRecord::Schema.define(version: 20150803175313) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -460,7 +460,7 @@ ActiveRecord::Schema.define(version: 20150731112731) do
   end
 
   create_table "smartrent_resident_properties", force: :cascade do |t|
-    t.integer  "resident_id",   limit: 4
+    t.string   "resident_id",   limit: 255
     t.integer  "property_id",   limit: 4
     t.string   "status",        limit: 255
     t.date     "move_in_date"
@@ -505,15 +505,16 @@ ActiveRecord::Schema.define(version: 20150731112731) do
   add_index "smartrent_residents", ["reset_password_token"], name: "index_smartrent_residents_on_reset_password_token", unique: true, using: :btree
 
   create_table "smartrent_rewards", force: :cascade do |t|
-    t.integer  "resident_id",  limit: 4
-    t.integer  "type_",        limit: 4
-    t.integer  "property_id",  limit: 4
+    t.integer  "resident_id",   limit: 4
+    t.integer  "type_",         limit: 4
+    t.integer  "property_id",   limit: 4
     t.datetime "period_start"
     t.datetime "period_end"
-    t.float    "amount",       limit: 24
-    t.string   "rule_applied", limit: 255
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "amount",        limit: 24
+    t.string   "rule_applied",  limit: 255
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.integer  "months_earned", limit: 4,   default: 0
   end
 
   add_index "smartrent_rewards", ["property_id"], name: "index_smartrent_rewards_on_property_id", using: :btree
