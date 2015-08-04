@@ -4,12 +4,15 @@ class ResidentPasswordsController < ApplicationController
 
   def reset
     @smartrent_resident.send_reset_password_instructions
+    @smartrent_resident.update_attribute(:confirmed_at, Time.now) if !@smartrent_resident.confirmed_at
     
     render :json => {:success => true}
   end
 
   def update
     if @smartrent_resident.update_attributes(resident_params)
+      @smartrent_resident.update_attribute(:confirmed_at, Time.now) if !@smartrent_resident.confirmed_at
+      
       render :json => {:success => true}
     else
       render :json => {:success => false}
