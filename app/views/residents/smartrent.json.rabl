@@ -26,7 +26,8 @@ node do |n|
       :period_start => (reward.period_start.to_s(:utc_date) rescue nil),
       :period_end => (reward.period_end.to_s(:utc_date) rescue nil),
       :property_name => (reward.property.name rescue nil),
-      :amount => number_to_currency(reward.amount, :precision => 0)
+      :amount => number_to_currency(reward.amount, :precision => 0),
+      :months_earned => reward.months_earned
     }
   end
   
