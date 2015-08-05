@@ -6,12 +6,12 @@ class ResidentImporter
   def self.queue
     :crm_immediate
   end
-  
+
   #TODO: create and set unit_id
   def self.perform(file_path, type = "yardi")
-    
+
     if type == "yardi"
-      
+
       resident_map = {
        :yardi_property_id => 0,
        :unit_code => 1,
@@ -31,7 +31,7 @@ class ResidentImporter
 
       prop_map = {}
 
-      Property.all.each do |p|
+      Property.where(:is_smartrent => 1).each do |p|
         prop_map[p.yardi_property_id.to_s.gsub(/^0*/, '')] = p.id
       end
 
@@ -107,7 +107,7 @@ class ResidentImporter
           pp ">>> line: #{line}, ERROR:", error_details
         end
       end
-      
+
     elsif type == "smartrent"
       resident_map = {
        :property_name => 0,
@@ -120,7 +120,7 @@ class ResidentImporter
        :email => 7,
        :move_in => 8
       }
-      
+
       custom_name = {
         "The Beacon at Waugh Chapel" => "Beacon at Waugh Chapel",
         "Concord Park At Russett" => "Concord Park at Russett- Invesco",
@@ -149,7 +149,7 @@ class ResidentImporter
 
       prop_map = {}
 
-      Property.all.each do |p|
+      Property.where(:is_smartrent => 1).each do |p|
         prop_map[ custom_name[p.name] || p.name] = p.id
       end
 
@@ -221,8 +221,8 @@ class ResidentImporter
           error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
           pp ">>> line: #{line}, ERROR:", error_details
         end
-      end  
+      end
     end
-    
+
   end
 end

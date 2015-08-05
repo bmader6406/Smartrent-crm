@@ -106,6 +106,9 @@ class ResidentSource
         attrs[:status] = status
         attrs[:status_date] = status_date
       end
+      ##Code to cater the minimum move in
+      minimum_move_in = resident.sources.collect{|s| s.move_in if !s.move_in.blank?}.compact.sort.first
+      attrs[:move_in] = minimum_move_in if minimum_move_in
     
       existing = resident.properties.detect{|p| p.property_id == property_id}
 
