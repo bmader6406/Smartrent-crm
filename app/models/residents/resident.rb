@@ -91,6 +91,8 @@ class Resident
   index({ first_name_lc: 1 }, {background: true})
   index({ last_name_lc: 1 }, {background: true})
 
+  index({ :smartrent_resident_id => 1 }, {background: true})
+  
   #embedded
   index({ :deleted_at => 1 })
   index({ "properties.property_id" => 1, "properties.status" => 1 })

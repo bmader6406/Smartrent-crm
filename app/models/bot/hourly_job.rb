@@ -8,8 +8,15 @@ class HourlyJob
   end
   
   def self.perform(time = Time.now.utc)
+    
+    time = time.in_time_zone('Eastern Time (US & Canada)')
+    
     Resque.enqueue(MetricGenerator, time.to_i)
     
+    if time.hour = 0
+      Resque.enqueue(Smartrent::DailyResidentCreator, Time.now)
+    end
+      
     if time.day == 1 && time.hour == 0 #execute at the begining of month
       Resque.enqueue(Smartrent::MonthlyStatusUpdater, Time.now.prev_month)
       
