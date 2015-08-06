@@ -26,37 +26,72 @@ Crm.Views.Smartrent = Backbone.View.extend({
       status = $.trim(link.text()).toLowerCase().replace(" ", "-"),
       statusDd = link.parents('.status-dd');
 
-    statusDd.find('> span').text( link.text() );
-    statusDd.attr('class', 'status-dd smartrent-' + status);
 
     //use link.attr('data-index') to get the status number
     capitializedStatus = status.charAt(0).toUpperCase() + status.slice(1)
-
-    $.ajax({
-      type: 'POST',
-      url: self.model.set_status_path,
-      data: {smartrent_status : capitializedStatus},
-      success: function(data) {
-        msgbox("Smartrent Status was successfully updated");
-        $('.view-smartrent').click();
-      },
-      error: function(){
-        msgbox("There was an error updating your status", "danger");
+    if (capitializedStatus == "Champion" && !self.model.can_become_champion) {
+      msgbox("You can only set the Champion status if the resident live in this property for 12 consecutive months", "danger");
+    } else {
+      if (capitializedStatus == "Champion") {
+        bootbox.prompt({
+          title: "Set Cash Out Amount",
+          value: self.model.total_amount,
+          callback: function(result) {
+            if (result) {
+              amount = parseInt(result, 10)
+              if (amount == 0 || amount > self.model.total_amount) {
+                msgbox("Invalid Amount", "danger")
+                return false
+              } else {
+                $.ajax({
+                  type: "POST",
+                  url: self.model.become_champion_path,
+                  data: {amount : amount},
+                  success: function(data) {
+                    statusDd.find('> span').text( link.text() );
+                    statusDd.attr('class', 'status-dd smartrent-' + status);
+                    msgbox("You have successfully become a champion");
+                    $('.view-smartrent').click();
+                  },
+                  error: function(){
+                    msgbox("There was an error making you champion", "danger");
+                  }
+                })
+              }
+            }
+          }
+        });
+      } else {
+        $.ajax({
+          type: 'POST',
+          url: self.model.set_status_path,
+          data: {smartrent_status : capitializedStatus},
+          success: function(data) {
+            statusDd.find('> span').text( link.text() );
+            statusDd.attr('class', 'status-dd smartrent-' + status);
+            msgbox("Smartrent Status was successfully updated");
+            $('.view-smartrent').click();
+          },
+          error: function(){
+            msgbox("There was an error updating your status", "danger");
+          }
+         });
       }
-     });
+    }
+
   },
-  
+
   editAmount: function(ev){
     var editor = $(ev.target).parent().next();
-    
+
     editor.show();
     editor.prev().hide();
   },
-  
+
   updateAmount: function(ev){
     var self = this,
       editor = $(ev.target).closest('.amount-editor');
-    
+
     $.ajax({
       type: 'POST',
       url: self.model.set_amount_path,
@@ -69,19 +104,19 @@ Crm.Views.Smartrent = Backbone.View.extend({
         msgbox("There was an error updating your status", "danger");
       }
      });
-     
+
   },
-  
+
   cancelAmount: function(ev){
     var editor = $(ev.target).closest('.amount-editor');
-    
+
     editor.hide();
     editor.prev().show();
   },
 
   resetPassword: function(ev) {
     var form = $('#reset-password');
-    
+
     bootbox.confirm("Sure you want to reset the resident's password?", function(result) {
       if (result) {
         form.ajaxSubmit({
@@ -101,7 +136,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
         });
       }
     });
-    
+
   },
 
   changePassword: function(ev) {

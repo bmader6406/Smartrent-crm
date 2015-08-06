@@ -103,7 +103,7 @@ $(function(){
     App.vars.userObj = <%= raw render(:template => 'users/show.json.rabl') %>;
   <% end %>
   
-  App.vars.smartrentStatuses = <%= raw Smartrent::Resident.smartrent_statuses.to_json %>;
+  App.vars.smartrentStatuses = <%= raw Smartrent::Resident.changable_smartrent_statuses.to_json %>;
 
   App.vars.states = <%= raw ([{:val => "", :label => ""}] + US_STATES.keys.sort.collect{|k| {:val => k, :label => US_STATES[k]} }).to_json %>;
   

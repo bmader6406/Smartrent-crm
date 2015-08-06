@@ -20,7 +20,15 @@ class ResidentPasswordsController < ApplicationController
   end
   
   def set_status
-    if @smartrent_resident.update_attributes({:smartrent_status => params[:smartrent_status].capitalize})
+    if @smartrent_resident.update_changable_smartrent_status(params[:smartrent_status])
+      render :json => {:success => true}
+    else
+      render :json => {:success => false}
+    end
+  end
+
+  def become_champion
+    if @smartrent_resident.become_champion(params[:amount])
       render :json => {:success => true}
     else
       render :json => {:success => false}

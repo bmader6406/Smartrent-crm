@@ -6,17 +6,20 @@ node do |n|
     :email => n.email,
     :smartrent_status_text => n.smartrent_status_text,
     :total_rewards => number_to_currency(n.total_rewards, :precision => 0),
+    :total_amount => n.total_rewards,
     :monthly_awards_amount => number_to_currency(n.monthly_awards_amount, :precision => 0),
     :sign_up_bonus => number_to_currency(n.sign_up_bonus, :precision => 0),
     :initial_reward => number_to_currency(n.initial_reward, :precision => 0),
     :move_in_date => (n.move_in_date.to_s(:year_month_day) rescue nil),
     :total_months => n.total_months.to_i,
+    :can_become_champion => n.can_become_champion_in_property?(@property),
     :rewards => [],
     
     :reset_password_path => reset_resident_password_path(n),
     :update_password_path => resident_password_path(n),
     :set_status_path => set_status_resident_password_path(n),
-    :set_amount_path => set_amount_resident_password_path(n)
+    :set_amount_path => set_amount_resident_password_path(n),
+    :become_champion_path => become_champion_resident_password_path(n)
   }
 
   n.rewards.order("period_start desc, id desc").each do |reward|
