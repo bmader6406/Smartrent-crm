@@ -123,6 +123,6 @@ class ResidentProperty
     end
     
     def update_smartrent_resident
-      Resque.enqueue(Smartrent::ResidentUpdater, resident._id, _id.to_s) if property.is_smartrent?
+      Resque.enqueue(Smartrent::ResidentUpdater, resident._id, _id.to_s) if property.is_smartrent? && move_in && move_in > Time.now
     end
 end
