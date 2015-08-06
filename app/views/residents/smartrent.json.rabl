@@ -22,7 +22,7 @@ node do |n|
     :become_champion_path => become_champion_resident_password_path(n)
   }
 
-  n.rewards.order("created_at desc").each do |reward|
+  n.rewards.order("created_at desc, id desc").each do |reward|
     hash[:rewards] << {
       :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],
