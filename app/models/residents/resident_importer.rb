@@ -51,7 +51,7 @@ class ResidentImporter
             unit_code = row[ resident_map[:unit_code] ]
             email = row[ resident_map[:email] ]
 
-            next if !email
+            next if email.blank?
 
             unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
             unit.save(:validate => false)
