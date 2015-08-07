@@ -7,7 +7,7 @@ node do |n|
   
   if @property
     attrs.merge!({
-      :name_url => link_to(n.full_name, property_resident_path(@property, n)),
+      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, property_resident_path(@property, n)),
       :show_path => property_resident_path(@property, n),
       :edit_path => edit_property_resident_path(@property, n),
       :tickets_path => tickets_property_resident_path(@property, n),
@@ -19,7 +19,7 @@ node do |n|
     })
   else
     attrs.merge!({
-      :name_url => link_to(n.full_name, resident_path(n)),
+      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, resident_path(n)),
       :show_path => resident_path(n),
       :edit_path => edit_resident_path(n),
       :tickets_path => tickets_resident_path(n),
@@ -42,6 +42,9 @@ node do |n|
     attrs[:status] = n.curr_property.status
   end
   
+  # Mark as smartrent resident, load the rewards detail when the user view the resident detail
+  attrs[:smartrent] = n.smartrent_resident ? true : false
+  
   attrs
 end
 
@@ -56,13 +59,14 @@ child :curr_property => :property do |p|
   node(:move_out){|p| p.move_out.strftime("%m/%d/%Y") rescue nil }
 end
 
-child :smartrent_resident => :smartrent do |sr|
-  node do |n|
-    {
-      :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
-      :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
-      :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
-      :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
-    }
-  end
-end
+# This generate a lot of rewards query
+# child :smartrent_resident => :smartrent do |sr|
+#   node do |n|
+#     {
+#       :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
+#       :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
+#       :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
+#       :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
+#     }
+#   end
+# end
