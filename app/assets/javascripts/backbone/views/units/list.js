@@ -8,6 +8,8 @@ Crm.Views.UnitsList = Backbone.View.extend({
   
   initialize: function () {
     this.listenTo(this.collection, 'reset', this.showTotal);
+    this.listenTo(this.collection, 'request', App.showMask);
+    this.listenTo(this.collection, 'sync', App.hideMask);
   },
   
   showTotal: function(){
@@ -74,11 +76,10 @@ Crm.Views.UnitsList = Backbone.View.extend({
       paginator = new Backgrid.Extension.Paginator({
         collection: self.collection,
         controls: {
-          rewind: null,
-          back: null,
-          forward: null,
-          fastForward: null
-        }
+          fastForward: null,
+          rewind: null
+        },
+        windowSize: 5
       });
 
     this.$el.html(this.template());

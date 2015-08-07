@@ -7,7 +7,7 @@ node do |n|
   
   if @property
     attrs.merge!({
-      :name_url => link_to(n.full_name, property_resident_path(@property, n)),
+      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, property_resident_path(@property, n)),
       :show_path => property_resident_path(@property, n),
       :edit_path => edit_property_resident_path(@property, n),
       :tickets_path => tickets_property_resident_path(@property, n),
@@ -19,7 +19,7 @@ node do |n|
     })
   else
     attrs.merge!({
-      :name_url => link_to(n.full_name, resident_path(n)),
+      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, resident_path(n)),
       :show_path => resident_path(n),
       :edit_path => edit_resident_path(n),
       :tickets_path => tickets_resident_path(n),

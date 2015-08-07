@@ -321,10 +321,9 @@ class ResidentsController < ApplicationController
 
     def filter_residents(per_page = 15)
       conditions = {}
-      hint = {"properties.property_id" => 1, "properties.status" => 1 }
+      hint = {}
       
       conditions["properties.property_id"] = @property.id.to_s if @property
-      conditions["properties.status"] = {'$in' => ["Current", "Future", "Notice", "Past"]}
       
       if !params[:email].blank?
         conditions[:email_lc] = params[:email].downcase
@@ -355,6 +354,19 @@ class ResidentsController < ApplicationController
         end
         
         conditions["properties.unit_id"] = unit_id
+      end
+      
+      if !params[:status].blank? && @property # filter by property + resident status
+        conditions.delete("properties.property_id")
+        
+        conditions["properties"] = {
+          "$elemMatch" => {
+            "property_id" => @property.id.to_s,
+            "status" => params[:status]
+          }
+        }
+        
+        hint = {"properties.property_id" => 1, "properties.status" => 1 }
       end
       
       if conditions[:first_name_lc] # search first name
