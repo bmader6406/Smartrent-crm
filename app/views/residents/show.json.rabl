@@ -58,11 +58,15 @@ end
 
 child :smartrent_resident => :smartrent do |sr|
   node do |n|
-    {
-      :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
-      :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
-      :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
-      :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
-    }
+    # This generate a lot of rewards query
+    # {
+    #   :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
+    #   :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
+    #   :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
+    #   :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
+    # }
+    
+    # Mark as smartrent resident, load the rewards detail when the user view the resident detail
+    true
   end
 end

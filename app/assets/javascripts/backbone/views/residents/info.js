@@ -67,6 +67,14 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         $('#marketing-history, #resident-roommates, #smartrent').hide();
         $('#resident-history, #toolbar').show();
         
+        // load smartrent info in background
+        if (this.model.get('smartrent') && App.vars.isCrm && App.vars.isSmartrent) {
+          $.getJSON(this.model.get('smartrent_path'), function(data){
+            self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
+            self.$('.smartrent-info').hide();
+          });
+        }
+        
         break;
       
       case '#marketing-history':
@@ -108,6 +116,9 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         if (this.model.get('smartrent')) {
           $.getJSON(this.model.get('smartrent_path'), function(data){
             smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
+            
+            self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
+            self.$('.smartrent-info').show();
           });
         } else {
           smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> Smartrent record will be created on '+ this.model.get('move_in') +' </div>');
