@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150807043452) do
+ActiveRecord::Schema.define(version: 20150807065904) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -501,6 +501,7 @@ ActiveRecord::Schema.define(version: 20150807043452) do
     t.float    "champion_amount",        limit: 24,  default: 0.0
   end
 
+  add_index "smartrent_residents", ["confirmation_token"], name: "index_smartrent_residents_on_confirmation_token", unique: true, using: :btree
   add_index "smartrent_residents", ["crm_resident_id"], name: "index_smartrent_residents_on_crm_resident_id", using: :btree
   add_index "smartrent_residents", ["email"], name: "index_smartrent_residents_on_email", unique: true, using: :btree
   add_index "smartrent_residents", ["reset_password_token"], name: "index_smartrent_residents_on_reset_password_token", unique: true, using: :btree
