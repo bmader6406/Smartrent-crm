@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150803175313) do
+ActiveRecord::Schema.define(version: 20150807043452) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -274,6 +274,7 @@ ActiveRecord::Schema.define(version: 20150803175313) do
     t.string   "promotion_url",             limit: 255
     t.date     "promotion_expiration_date"
     t.boolean  "is_smartrent",              limit: 1,     default: false
+    t.boolean  "is_visible",                limit: 1,     default: true
   end
 
   add_index "properties", ["is_smartrent"], name: "index_properties_on_is_smartrent", using: :btree
