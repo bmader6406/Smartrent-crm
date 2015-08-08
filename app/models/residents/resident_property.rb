@@ -68,14 +68,17 @@ class ResidentProperty
   field :sends_count, :type => Integer, :default => 0
   field :opens_count, :type => Integer, :default => 0
   field :clicks_count, :type => Integer, :default => 0
+
+
   
   
   embedded_in :resident
 
   before_save :set_rental_type
+  before_save :update_smartrent_resident
   
   after_save :set_unified_status
-  after_save :update_smartrent_resident
+  after_save :check_and_update_resident_status
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status
@@ -98,6 +101,18 @@ class ResidentProperty
   def finalize_score
     self.score = sends_count*Resident::SEND_SCORE + opens_count*Resident::OPEN_SCORE +  clicks_count*Resident::CLICK_SCORE
     self.save
+  end
+
+  def check_and_update_resident_status
+    if move_out.present? && move_in.present?
+      if move_in <= Time.now && move_out >= Time.now
+        self.status = "Current"
+      elsif move_in >= Time.now && move_out >= Time.now
+        self.status = "Future"
+      elsif move_in <= Time.now && move_out <= Time.now
+        self.status = "Past"
+      end
+    end
   end
   
   private
@@ -125,4 +140,5 @@ class ResidentProperty
     def update_smartrent_resident
       Resque.enqueue(Smartrent::ResidentUpdater, resident._id, _id.to_s) if property.is_smartrent? && move_in && move_in <= Time.now
     end
+
 end

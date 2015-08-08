@@ -15,6 +15,7 @@ class HourlyJob
     
     if time.hour = 0
       Resque.enqueue(Smartrent::DailyResidentCreator, Time.now)
+      Resque.enqueue(ResidentPropertyStatusChanger, Time.now)
     end
       
     if time.day == 1 && time.hour == 0 #execute at the begining of month
