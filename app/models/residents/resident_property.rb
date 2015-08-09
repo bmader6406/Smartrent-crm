@@ -78,7 +78,7 @@ class ResidentProperty
   before_save :update_smartrent_resident
   
   after_save :set_unified_status
-  after_save :check_and_update_resident_status
+  before_save :check_and_update_resident_status
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status
