@@ -45,6 +45,11 @@ class ResidentsController < ApplicationController
   def create
     #consolidate resident by email
     @resident = Resident.with(:consistency => :strong).where(:email_lc => resident_params[:email].downcase ).unify_ordered.first
+    #Don't update a resident with the same property_id
+    #Instead make it nil so that the model can handle the unique_email validation
+    if @resident && @resident.properties.where(:property_id => @property.id).present?
+      @resident = nil
+    end
     @resident = Resident.new if !@resident
 
     Resident::CORE_FIELDS.each do |f|

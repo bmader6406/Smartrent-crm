@@ -101,9 +101,9 @@ class Resident
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
   scope :unify_ordered, -> { order_by({:created_at => :asc}) }
-  
   attr_accessor :curr_property_id, :property_id, :from_import
-  
+  validates :email, {:uniqueness => true}
+
   # don't set default sort order
   # don't specify sort if not needed on a large set
   # http://stackoverflow.com/questions/11599069/what-does-mongo-sort-on-when-no-sort-order-is-specified
@@ -111,11 +111,11 @@ class Resident
   def self.find_by_id(id)
     Resident.where(:_id => id.to_i).first
   end
-  
+
   def curr_property(pid = curr_property_id)
     @curr_property ||= properties.detect{|p| p.property_id.to_s == pid.to_s } || properties.first
   end
-  
+
   def context(campaign)
     #clear previous cache
     @curr_property = nil
