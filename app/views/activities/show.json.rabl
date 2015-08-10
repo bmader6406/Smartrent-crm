@@ -4,7 +4,7 @@ node do |n|
   {
     :id => n.id.to_s,
     :action => n.action,
-    :created_at => n.created_at
+    :created_at => n.created_at.iso8601
   }
 end
 
