@@ -104,7 +104,7 @@
                     <i class="fa fa-pencil edit-amount"></i>
                   </div>
                   <div class="input-group amount-editor" data-id="<%= rw.id %>">
-                      <input type="text" value="<%= rw.amount.replace("$", "") %>" class="form-control" />
+                      <input type="text" value="<%= rw.amount.replace("$", "").replace(",", "") %>" class="form-control" />
                       <span class="input-group-btn">
                         <button class="btn btn-default update-amount" type="button">
                           <i class="fa fa-check"></i>
