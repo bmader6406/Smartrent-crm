@@ -65,5 +65,13 @@ class Property < ActiveRecord::Base
   def self.custom_ransack(q)
     Smartrent::Property.ransack(q)
   end
+
+  def formatted_website_url
+    if website_url =~ /\A#{URI::regexp(['http', 'https'])}\z/
+      website_url
+    else
+      "http://" + website_url
+    end
+  end
   
 end
