@@ -1,5 +1,11 @@
 <div id="resident-search">
-  <h3> Resident Search </h3>
+  <h3> 
+    <% if(App.vars.propertyObj){ %>
+      Resident Search for <%= App.vars.propertyObj.name %>
+    <% } else { %>
+      Resident Search 
+    <% } %>
+  </h3>
   <form action="<%= App.vars.residentsPath %>" id="resident-search-form">
     <div class="form-group">
       <input type="text" class="form-control" name="resident_id" value="" placeholder="Resident ID"/>

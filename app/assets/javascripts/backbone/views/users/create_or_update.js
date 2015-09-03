@@ -178,7 +178,7 @@ Crm.Views.UserNewOrUpdate = Backbone.View.extend({
     form.$('.filter-box :text').fastLiveFilter(form.$('.list-group'), {
       timeout: 200
     });
-    
+
     this.form = form; //for events
 
     if(this.isCreateNew){

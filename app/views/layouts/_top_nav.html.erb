@@ -28,16 +28,21 @@
       
         <div class="list-filter dropdown-menu" style="<%= "display:none" if current_user.managed_properties.count <= 1 %>">
       	  <form class="form-inline">
-            <input type="text" class="form-control" placeholder="Start typing property name...">
+            <input type="text" class="form-control" placeholder="Start typing property name..." value="">
           </form>
 
       	  <div class="scroller">
         	  <div class="list-group">
+        	    <a href="<%= main_app.residents_path %>" class="list-group-item <%= "active" if !@property %>">
+        	      All Properties
+        	    </a>
+        	    <div class="divider"></div>
               <%
         	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
         	      properties_region.keys.sort{ |a, b| (a.name.to_s rescue "WWW") <=> (b.name.to_s rescue "WWW") }.each do |region|
+        	        hidden_region = properties_region[region].collect{|prop| prop if prop.is_crm? || prop.is_smartrent? }.compact.blank?
         	    %>
-        	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>"> <%= region ? region.name : "Other Metro" %></b>
+        	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>" style="<%= "display:none" if hidden_region %>"> <%= region ? region.name : "Other Metro" %></b>
           	    <div class="items">
             	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
             	      <% next if !prop.is_crm? && !prop.is_smartrent?  %>

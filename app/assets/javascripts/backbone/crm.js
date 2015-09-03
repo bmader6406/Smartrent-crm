@@ -17,7 +17,7 @@ window.Crm = {
         target = link.attr('target'),
         sameProp = !App.vars.isPropertyPage || href.indexOf(App.vars.propertyId) > -1,
         pageReload = link.hasClass('page-reload'),
-        passThrough = href.indexOf('sign_out') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/sr') > -1 || target // chain 'or's for other black list routes
+        passThrough = href.indexOf('logout') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/sr') > -1 || target // chain 'or's for other black list routes
 
       // Allow shift+click for new tabs, etc.
       if (sameProp && !passThrough && !pageReload && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){

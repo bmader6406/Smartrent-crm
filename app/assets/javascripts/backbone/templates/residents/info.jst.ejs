@@ -1,22 +1,24 @@
-<div class="crud-buttons">
-  <table>
-    <tr>
-      <% if (App.vars.ability.can("cud", "Resident")) { %>
-        <td>
-          <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
-        </td>
-        <td>
-          <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
-        </td>
+<% if(App.vars.isPropertyPage) { %>
+  <div class="crud-buttons">
+    <table>
+      <tr>
+        <% if (App.vars.ability.can("cud", "Resident")) { %>
+          <td>
+            <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+          </td>
+          <td>
+            <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
+          </td>
 
-      <% } else if (App.vars.ability.can("read", "Resident")) { %>
-        <td>
-          <!-- placeholder -->
-        </td>
-      <% } %>
-    </tr>
-  </table>
-</div>
+        <% } else if (App.vars.ability.can("read", "Resident")) { %>
+          <td>
+            <!-- placeholder -->
+          </td>
+        <% } %>
+      </tr>
+    </table>
+  </div>
+<% } %>
 
 <div class="card">
   <b href="#" class="blue-text">#<%= id %></b>
@@ -31,7 +33,7 @@
   </ul>
 </div>
 
-<% if( !property ){ %>
+<% if(!App.vars.isPropertyPage) { %>
   <div class="card collapsible">
     <h4>
       <i class="fa fa-minus"></i> <i class="fa fa-plus"></i>
