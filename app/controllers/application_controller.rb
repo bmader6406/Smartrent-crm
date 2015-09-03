@@ -89,7 +89,10 @@ class ApplicationController < ActionController::Base
   
   def back_or_default_url(default)
     url = session[:return_to] || default
-    url = default if url == login_url || url.include?("login") || url.include?("user_sessions")
+    if url == login_url || url.include?("login") || url.include?("user_sessions")
+      url = default
+      session[:return_to] = nil
+    end
     session[:return_to] = nil
     url
   end    
