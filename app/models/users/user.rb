@@ -149,4 +149,8 @@ class User < ActiveRecord::Base
   def is_admin?
     has_role? :admin, Property
   end
+
+  def is_property_manager?
+    has_role? :property_manager, Property
+  end
 end

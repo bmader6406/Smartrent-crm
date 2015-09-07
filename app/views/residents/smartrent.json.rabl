@@ -13,6 +13,7 @@ node do |n|
     :move_in_date => (n.move_in_date.to_s(:year_month_day) rescue nil),
     :total_months => n.total_months.to_i,
     :can_become_champion => n.can_become_champion_in_property?(@property),
+    :is_admin => current_user.is_admin?,
     :rewards => [],
     
     :reset_password_path => reset_resident_password_path(n),

@@ -1,6 +1,7 @@
 class ResidentPasswordsController < ApplicationController
   before_filter :require_user
   before_filter :set_resident
+  before_filter :require_admin, :only => [:update, :set_status, :become_champion, :set_amount]
 
   def reset
     @smartrent_resident.send_reset_password_instructions
@@ -10,7 +11,7 @@ class ResidentPasswordsController < ApplicationController
   end
 
   def update
-    if @smartrent_resident.update_attributes(resident_params)
+    if @smartrent_resident.update_attributes(:password => resident_params[:password], :password_confirmation => resident_password[:password_confirmation])
       @smartrent_resident.update_attribute(:confirmed_at, Time.now) if !@smartrent_resident.confirmed_at
       
       render :json => {:success => true}
