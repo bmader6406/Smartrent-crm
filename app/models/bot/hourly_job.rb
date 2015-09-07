@@ -20,7 +20,12 @@ class HourlyJob
 
     #Just to make sure that this task runs before the monthly status updater
     #So we'll execute this at the end of the week
-    if time.day == time.end_of_week.day && time.hour == 0
+    #And if in any case the end of the week turns out to be first day of the month, we'll execute it on the previous day
+    day_to_execute = time.end_of_week.day
+    if day_to_excute == 1
+      day_to_execute = time.end_of_month.day
+    end
+    if time.day == day_to_excute && time.hour == 0
       Resque.enqueue(Smartrent::WeeklyResidentXmlImporter, Time.now)
     end
 
