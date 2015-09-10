@@ -31,16 +31,12 @@ class UnitLoadWorker
     }
     #FeaturedButton contains all the features
     
-    if Rails.env != "development"
-      Net::FTP.open('feeds.livebozzuto.com', 'CRMbozchh', 'NAQpPt41') do |ftp|
-        ftp.passive = true
-        ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
-        puts "Ftp downloaded"
-      end
-      f = File.read("#{TMP_DIR}bozzuto.xml")
-    else
-      f = File.read("/Users/talal/Desktop/mits4_1.xml")
+    Net::FTP.open('feeds.livebozzuto.com', 'CRMbozchh', 'NAQpPt41') do |ftp|
+      ftp.passive = true
+      ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
+      puts "Ftp downloaded"
     end
+    f = File.read("#{TMP_DIR}bozzuto.xml")
     
     properties = Hash.from_xml(f)
     properties["PhysicalProperty"]["Property"].each do |p|
