@@ -1,13 +1,9 @@
 require 'csv'
 require 'net/ftp'
+require Rails.root.join("lib/core_ext", "hash.rb")
 
 # - Import Residents from the ftp link and add the new properties
 
-class Hash
-  def nest(keys)
-    keys.reduce(self) {|m,k| m && m[k] }
-  end
-end
 
 class UnitLoadWorker
   extend Resque::Plugins::Retry
