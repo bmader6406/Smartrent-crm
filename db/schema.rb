@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150908064449) do
+ActiveRecord::Schema.define(version: 20150910112817) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -605,6 +605,8 @@ ActiveRecord::Schema.define(version: 20150908064449) do
     t.string   "code",        limit: 255
     t.datetime "deleted_at"
     t.string   "rental_type", limit: 255
+    t.string   "updated_by",  limit: 255
+    t.integer  "origin_id",   limit: 4
   end
 
   add_index "units", ["property_id"], name: "index_units_on_property_id", using: :btree
