@@ -31,7 +31,7 @@ class ResidentImporter
 
       prop_map = {}
 
-      Property.where(:is_smartrent => 1).each do |p|
+      Property.where(:is_crm => 1).each do |p|
         prop_map[p.yardi_property_id.to_s.gsub(/^0*/, '')] = p.id
       end
 
