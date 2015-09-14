@@ -2,9 +2,12 @@
   <div class="crud-buttons">
     <table>
       <tr>
-        <td>
-          <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
-        </td>
+        <% debugger %>
+        <% if(updated_by != "xml_feed") { %>
+          <td>
+            <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+          </td>
+        <% } %>
         <td>
           <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
         </td>
