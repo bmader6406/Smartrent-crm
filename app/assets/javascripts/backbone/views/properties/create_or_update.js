@@ -229,10 +229,6 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
             placeholder: 'mm/dd/yyyy'
           }
         },
-        updated_by: {
-          title: 'Updated By',
-          validators: [{type: 'required', message: "Updated By required"}]
-        },
         date_closed: {
           title: 'Date Closed',
           fieldClass: 'date-field',
