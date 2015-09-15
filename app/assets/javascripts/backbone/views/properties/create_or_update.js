@@ -78,10 +78,10 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
 
   render: function () {
     var property = this.property(),
-      openTime = [],
-      closeTime = [];
+      openTime = [{val: "CLOSED", label: "CLOSED"}],
+      closeTime = [{val: "CLOSED", label: "CLOSED"}];
 
-    _.each([5,6,7,8,9,10,11,12,13,14,15,16], function(h){
+    _.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], function(h){
       _.each(["00","30"], function(m){        
         var label = (h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM");
 
@@ -89,7 +89,7 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
       });
     });
 
-    _.each([10,11,12,13,14,15,16,17,18,19,20,21,22,23], function(h){
+    _.each([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], function(h){
       _.each(["00","30"], function(m){
         var label = (h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM");
         
