@@ -4,7 +4,7 @@ class HourlyJob
   @retry_delay = RETRY_DELAY
 
   def self.queue
-    :crm_routine
+    :crm_scheduled
   end
 
   def self.perform(time = Time.now.utc)
@@ -27,6 +27,8 @@ class HourlyJob
     end
     if time.day == day_to_excute && time.hour == 0
       Resque.enqueue(Smartrent::WeeklyResidentXmlImporter, Time.now)
+      Resque.enqueue(UnitLoadWorker, Time.now)
+      Resque.enqueue(UnitRefreshWorker, Time.now)
     end
 
     if time.day == 1 && time.hour == 0 #execute at the begining of month

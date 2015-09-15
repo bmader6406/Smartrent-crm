@@ -82,14 +82,18 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
       closeTime = [];
 
     _.each([5,6,7,8,9,10,11,12,13,14,15,16], function(h){
-      _.each(["00","30"], function(m){
-        openTime.push((h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM"));
+      _.each(["00","30"], function(m){        
+        var label = (h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM");
+
+        openTime.push({val: label.replace(":00", ""), label: label});
       });
     });
 
     _.each([10,11,12,13,14,15,16,17,18,19,20,21,22,23], function(h){
       _.each(["00","30"], function(m){
-        closeTime.push((h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM"));
+        var label = (h > 12 ? (h-12) : h ) +":"+m+ (h > 11 ? " PM" : " AM");
+        
+        closeTime.push({val: label.replace(":00", ""), label: label});
       });
     });
 
@@ -228,10 +232,6 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
           editorAttrs: {
             placeholder: 'mm/dd/yyyy'
           }
-        },
-        updated_by: {
-          title: 'Updated By',
-          validators: [{type: 'required', message: "Updated By required"}]
         },
         date_closed: {
           title: 'Date Closed',

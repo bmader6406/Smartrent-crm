@@ -111,7 +111,10 @@
 	</ul>
 	
 	<div class="footer">
-    <%= current_user.full_name %> &nbsp; | <a href="<%= main_app.logout_path %>"> Logout </a>
+    <a href="<%= main_app.profile_path %>" class="page-reload">
+      <%= current_user.first_name %> 
+    </a>
+    &nbsp; | <a href="<%= main_app.logout_path %>"> Logout </a>
     <span>Role: <%= current_user.role %></span>
 	</div>
 </div>

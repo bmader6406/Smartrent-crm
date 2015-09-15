@@ -1,34 +1,40 @@
-<div class="page-header">
-  <h1> Profile </h1>      
-</div>
+<% content_for(:js) do %>
+  <script type="text/javascript">
+    $(function(){
+      App.initPageLayout(null, null, null, true); //should be called on top
+    });
+  </script>
+<% end %>
 
-<div class="row">
+<% content_for(:ui_center) do %>
+  <h2 style="margin:25px 20px 5px 20px;"> Profile </h2>  
+
   <div class="col-md-6">
     <div class="card">
       <%= render "form" %>
     </div>
   </div>
-  
+
   <div class="col-md-6">
     <div class="card auth-list">
       <% unless current_user.authentications.empty? %>
   	    <h4>You have signed in with these services:</h4>
-  	    
+	    
   	    <ul class="list-group">
   	      <% current_user.authentications.each do |authentication| %>
   	        <li class="list-group-item">
   	          <%= image_tag authentication.icon, :size => "32x32" %>
   	          <%= authentication.name %>
-						
+					
   						<%= link_to raw('<i class="fa fa-trash-o fa-lg"></i>'), authentication, 
       							:data => {:confirm => 'Are you sure?'}, :method => :delete, :class => "remove" %>
   	        </li>
   	      <% end %>
         </ul>
   	  <% end %>
-		
+	
   		<h4> Add another service to sign in with:</h4>
-		
+	
   		<div class="providers">
   			<%= link_to image_tag("auth/facebook_64.png"), "#", :id => "fb-login" %>
   			<%= link_to image_tag("auth/twitter_64.png"), "/auth/twitter" %>
@@ -37,7 +43,7 @@
   		</div>
   	</div>
   </div>
-</div>
+<% end %>
 
 
 <%= render "layouts/facebook_sdk" %>

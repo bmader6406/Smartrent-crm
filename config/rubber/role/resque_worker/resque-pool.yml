@@ -3,8 +3,10 @@
 %>
 <% if Rubber.env == "production" %>
 'crm_immediate,crm_medium': 1
+'crm_scheduled,crm_newsletter,crm_immediate': 1
 
 <% else %>
 'crm_immediate,crm_medium': 1
+'crm_scheduled,crm_newsletter,crm_immediate': 1
 
 <% end %>

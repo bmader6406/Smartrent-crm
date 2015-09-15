@@ -65,7 +65,9 @@
 
   <div class="nav navbar-nav navbar-right">
     <div class="user-info">
-      <%= current_user.first_name %> 
+      <a href="<%= main_app.profile_path %>" class="page-reload">
+        <%= current_user.first_name %> 
+      </a>
       <span>(<%= current_user.role %>)</span> | 
       <a href="<%= main_app.logout_path %>"> Logout </a>
     </div>
