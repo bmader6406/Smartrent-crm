@@ -102,7 +102,7 @@ module ApplicationHelper
   end
   
   def sr_page?
-    request.path.include?("/sr/")
+    request.path.include?("/sr/") || request.host.include?("smartrent")
   end
   
 end
