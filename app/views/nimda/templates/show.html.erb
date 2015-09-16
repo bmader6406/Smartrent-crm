@@ -46,7 +46,7 @@
   
   <div class="form-group">
     <%= f.label :property_id, "Property" %>
-    <%= f.select :property_id, Property.all.collect { |p| [ p.name, p.id ] }, {include_blank: true}, {:class => "form-control"} %>
+    <%= f.select :property_id, Property.order("name asc").all.collect { |p| [ p.name, p.id ] }, {include_blank: true}, {:class => "form-control"} %>
   </div>
   
   <div class="form-group">

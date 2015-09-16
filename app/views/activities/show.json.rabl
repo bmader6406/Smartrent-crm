@@ -30,7 +30,8 @@ node(:call, :if => lambda {|n| n.subject.call rescue false }) do |n|
     :to => comment.call.to,
     :message => comment.message,
     :recording_duration => comment.call.recording_duration,
-    :recording_url => comment.call.recording_url
+    :recording_url => comment.call.recording_url,
+    :update_path => update_note_property_resident_activity_path(n.property_id, @resident.id, n.id)
   }
 end
 
@@ -47,7 +48,8 @@ end
 node(:note, :if => lambda {|n| n.subject.note? rescue false }) do |n|
   comment = n.subject
   {
-    :message => comment.message
+    :message => comment.message,
+    :update_path => update_note_property_resident_activity_path(n.property_id, @resident.id, n.id)
   }
 end
 

@@ -26,11 +26,20 @@
       </li>
     <% } %>
     
-    <% if (call.message) { %>
-      <li>
-        Note: <%= Helpers.sanitize( call.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
-      </li>
-    <% } %>
+    <li>
+      <div class="message" style="padding: 0;">
+        <% if (call.message) { %>
+          <span>Note: <%= Helpers.sanitize( call.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %></span>
+          
+        <% } else { %>
+          <span>Note: NOT GIVEN YET</span>
+        <% } %>
+      
+        <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
+          <a href="#" class="edit-note"><i class="fa fa-pencil"></i></a>
+        <% } %>
+      </div>
+    </li>
   </ul>
   
   <% if(call.recording_url){ %>
@@ -38,4 +47,14 @@
       <i class="fa fa-play-circle-o"></i> Play Call
     </a>
   <% } %>
+  
+  
+  <form action="<%= call.update_path %>" onsubmit="return false;" class="note-form">
+    <div class="form-group">
+      <label>Note:</label>
+      <textarea class="form-control" name="call_note"><%= call.message ? Helpers.sanitize( call.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) : "" %></textarea>
+    </div>
+    <button type="submit" class="btn btn-success update-note">Update</button>
+    <a href="#" class="btn btn-default cancel-note">Cancel</a>
+  </form>
 </div>

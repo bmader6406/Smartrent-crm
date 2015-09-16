@@ -220,6 +220,16 @@ class ActivitiesController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  def update_note
+    if params[:call_note]
+      @activity.subject.update_attributes(:message => params[:call_note])
+    else
+      @activity.subject.update_attributes(:message => params[:note])
+    end
+    
+    render :json => {:success => true}
+  end
 
   private
   

@@ -133,10 +133,16 @@ class PropertiesController < ApplicationController
       ["name", "city", "state", "zip", "property_number", "l2l_property_id", "yardi_property_id"].each do |k|
         next if params[k].blank?
         
-        arr << "name LIKE :#{k}"
+        arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @properties = Property.crm.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
+      if params[:property_type] == "crm" || !params[:property_type]
+        arr << "is_crm = 1"
+      elsif params[:property_type] == "smartrent"
+        arr << "is_smartrent = 1"
+      end
+      
+      @properties = Property.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")
     end
 end

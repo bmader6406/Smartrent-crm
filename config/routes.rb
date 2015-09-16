@@ -33,7 +33,11 @@ Rails.application.routes.draw do
         get :search
       end
       
-      resources :activities
+      resources :activities do
+        member do
+          post :update_note
+        end
+      end
     end
   end
   

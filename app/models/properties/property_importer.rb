@@ -96,12 +96,15 @@ class PropertyImporter
               val = Date.parse(val) rescue nil
             end
 
-            if k.match(/_time$/)
+            if k.match(/open_time$/)
               if val.to_i >= 12
                 val = "#{val} PM"
               elsif val.to_i > 0
                 val = "#{val} AM"
               end
+              
+            elsif k.match(/close_time$/) #close time always in PM
+              val = "#{val} PM"
             end
 
             prop[k] = val
