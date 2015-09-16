@@ -12,7 +12,9 @@ Crm.Views.EmailForm = Backbone.View.extend({
   
   cancel: function(){
     $('#toolbar .btn.selected').click();
-    $(this.form.el).resetForm();
+    //$(this.form.el).resetForm();
+    $(this.form.el).find("#subject, #message").val("");
+    this.$('.redactor_editor').empty();
     
     return false;
   },
@@ -40,7 +42,8 @@ Crm.Views.EmailForm = Backbone.View.extend({
         success: function (model, response) {
           msgbox('Activity was created successfully!');
           $('.no-histories').hide();
-          $(self.form.el).resetForm();
+          //$(self.form.el).resetForm();
+          $(self.form.el).find("#subject, #message").val("");
           self.$('.redactor_editor').empty();
           
           self.$el.slideUp();

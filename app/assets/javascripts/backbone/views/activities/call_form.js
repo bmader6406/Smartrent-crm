@@ -12,7 +12,8 @@ Crm.Views.CallForm = Backbone.View.extend({
   
   cancel: function(){
     $('#toolbar .btn.selected').click();
-    $(this.form.el).resetForm();
+    //$(this.form.el).resetForm();
+    $(this.form.el).find("#message").val("");
     
     return false;
   },
@@ -36,7 +37,8 @@ Crm.Views.CallForm = Backbone.View.extend({
         success: function (model, response) {
           msgbox('Activity was created successfully!');
           $('.no-histories').hide();
-          $(self.form.el).resetForm();
+          //$(self.form.el).resetForm();
+          $(self.form.el).find("#message").val("");
           
           self.$el.slideUp();
           $('#toolbar .btn').removeClass('selected');
