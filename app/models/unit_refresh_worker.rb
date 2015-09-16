@@ -19,11 +19,11 @@ class UnitRefreshWorker
     
     #Floorplan contains all the floor_plans
     unit_map = {
-      :origin_id => ["ILS_Unit",0 ,"Units", "UnitID"],
-      :bed => ["ILS_Unit",0 ,"Units","UnitBedrooms"],
-      :bath => ["ILS_Unit",0 ,"Units","UnitBathrooms"],
-      :sq_ft => ["ILS_Unit",0 ,"Units","MaxSquareFeet"],
-      :rental_type => ["ILS_Unit", 0, "Units", "UnitEconomicStatus"]
+      :origin_id => ["Units", "UnitID"],
+      :bed => ["Units","UnitBedrooms"],
+      :bath => ["Units","UnitBathrooms"],
+      :sq_ft => ["Units","MaxSquareFeet"],
+      :rental_type => ["Units", "UnitEconomicStatus"]
     }
     property_map = {
       :name => ["PropertyID","MarketingName"],
@@ -36,29 +36,31 @@ class UnitRefreshWorker
       ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
       puts "Ftp downloaded"
     end
+    f = File.read("#{TMP_DIR}mits4_1.xml")
     
     properties = Hash.from_xml(f)
     properties["PhysicalProperty"]["Property"].each do |p|
-      origin_id = p.nest(unit_map[:origin_id])
       name = p.nest(property_map[:name])
-      next if !origin_id.present?
-      next if Unit.where(:origin_id => origin_id).count > 0
-      property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_map[:origin_id]).first
-      unit = Smartrent::Unit.where(:origin_id => origin_id).first
-      next if !unit
-      if property
-        unit.property_id = property.id
-      else
-        unit.property_id = property_map[:id]
-      end
-      ActiveRecord::Base.transaction do
-        unit_map.each do |key, value|
-          unit[key] = p.nest(value)
+      property_origin_id = p.nest(property_map[:origin_id])
+      property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
+      p["ILS_Unit"].each do |u|
+        origin_id = u.nest(unit_map[:origin_id])
+        pp origin_id
+        next if !origin_id.present?
+        unit = Unit.where(:origin_id => origin_id).first
+        next if !unit
+        if property
+          unit.property_id = property.id
         end
-        unit.updated_by = "xml_feed"
-        unit.status = "Active"
-        if unit.save!
-          puts "A Unit has been saved"
+        ActiveRecord::Base.transaction do
+          unit_map.each do |key, value|
+            unit[key] = u.nest(value)
+          end
+          unit.updated_by = "xml_feed"
+          unit.status = "Active"
+          if unit.save!
+            puts "A Unit has been saved"
+          end
         end
       end
     end
