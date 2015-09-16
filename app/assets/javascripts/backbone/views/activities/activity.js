@@ -4,7 +4,10 @@ Crm.Views.Activity = Backbone.View.extend({
   events: {
     "click .delete": "_delete",
     "click .reply-email": "replyEmail",
-    "click .show-quoted": "showQuoted"
+    "click .show-quoted": "showQuoted",
+    "click .edit-note": "editNote",
+    "click .cancel-note": "cancelNote",
+    "click .update-note": "updateNote",
   },
   
   initialize: function() {
@@ -72,6 +75,58 @@ Crm.Views.Activity = Backbone.View.extend({
         '<blockquote class="hyly_quoted" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">'+ 
         $.trim( residentBox.find('.message').html() ) + '</blockquote>');
     }, 100);
+    
+    return false;
+  },
+  
+  editNote: function (ev) {
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
+    
+    residentBox.find('.note-form').slideDown();
+    residentBox.find('.note-form textarea').focus();
+    
+    return false;
+  },
+  
+  cancelNote: function (ev) {
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
+    
+    residentBox.find('.note-form').slideUp();
+    
+    return false;
+  },
+  
+  updateNote: function (ev) {
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box'),
+      form = residentBox.find('.note-form');
+    
+    form.ajaxSubmit({
+      method: "POST",
+      dataType: 'json',
+      beforeSubmit: function(){
+        form.mask('Please wait...');
+      },
+      success: function(data){
+        form.unmask();
+        
+        if(residentBox.hasClass('call-act')) {
+          residentBox.find('.message span').html("Note: " + form.find('textarea').val());
+        } else {
+          residentBox.find('.message span').html( form.find('textarea').val() );
+        }
+        
+        if(data.success){
+          msgbox('Note was successfully updated!');
+        }else {
+          msgbox('There was an error, please try again', 'danger');
+        }
+      }
+    });
+    
+    residentBox.find('.note-form').slideUp();
     
     return false;
   },
