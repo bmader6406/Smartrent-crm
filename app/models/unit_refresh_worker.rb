@@ -23,7 +23,8 @@ class UnitRefreshWorker
       :bed => ["Units","UnitBedrooms"],
       :bath => ["Units","UnitBathrooms"],
       :sq_ft => ["Units","MaxSquareFeet"],
-      :rental_type => ["Units", "UnitEconomicStatus"]
+      :rental_type => ["Units", "UnitEconomicStatus"],
+      :code => ["Units", "MarketingName"]
     }
     property_map = {
       :name => ["PropertyID","MarketingName"],
