@@ -49,6 +49,7 @@ class TwilioController < ApplicationController
     pp "p2p_connect: #{Time.now}", params
     call = Call.find_by(origin_id: params[:CallSid])
     response = Twilio::TwiML::Response.new do |r|
+      r.Say "Please wait while we place a call to #{call.to}", voice: "alice"
       r.Dial call.to
     end
 
