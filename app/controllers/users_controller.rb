@@ -73,9 +73,18 @@ class UsersController < ApplicationController
   end
 
   def update
-    # not update existing user info
+    attrs = {} # IMPORTANT these attrs are allowed on users creation only
+    [:first_name, :last_name, :email, :password, :password_confirmation].each do |k|
+      attrs[k] = user_params[k]
+    end
+    
+    if attrs[:password].blank?
+      attrs.delete(:password)
+      attrs.delete(:password_confirmation)
+    end
+    
     respond_to do |format|
-      if true
+      if @user.update_attributes(attrs)
         revoke_and_grant
         format.json { render template: "users/show.json.rabl" }
       else
