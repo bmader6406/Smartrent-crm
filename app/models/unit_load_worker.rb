@@ -36,7 +36,7 @@ class UnitLoadWorker
       ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
       puts "Ftp downloaded"
     end
-    f = File.read("#{TMP_DIR}bozzuto.xml")
+    #f = File.read("#{TMP_DIR}bozzuto.xml")
     
     properties = Hash.from_xml(f)
     properties["PhysicalProperty"]["Property"].each do |p|
