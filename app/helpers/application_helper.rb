@@ -58,8 +58,8 @@ module ApplicationHelper
   
   def metric_options
     #TODO: make it editable
-    {"resident_status"=>["Current", "Future", "Past", "Notice"],
-     "resident_type"=>["Walk-in", "Phone", "Email"],
+    {"resident_status"=>{"" => "--Select Status--","Current" => "Current", "Future" => "Future", "Past" => "Past", "Notice" => "Notice"},
+     "resident_type"=>{"" => "--Select Type--","Walk-in" => "Walk-in", "Phone" => "Phone", "Email" => "Email"},
      "occupation_type"=>
       ["None",
        "Admin/Support Staff",
@@ -81,24 +81,28 @@ module ApplicationHelper
        "Student",
        "Technology",
        "Minor Child"],
-     "minutes_to_work"=>["1-15", "16-30", "31-45", "61+"],
+     "minutes_to_work"=>["","1-15", "16-30", "31-45", "61+"],
      "household_status"=>
-      ["Married",
-       "Married W/ Child(ren)",
-       "Married W/ Roommate",
-       "Roommates",
-       "Roommates W/ Child(ren)",
-       "Separated/Divorced",
-       "Separated/Divorced W/ Child(ren)",
-       "Corporate",
-       "Single",
-       "Single W/ Child(ren)"],
-     "pet"=>["Dogs", "Cats", "Dogs & Cats"],
-     "gender"=>["Male", "Female", "Other"],
-     "transportation_to_work"=>["Public", "Own Vehicle", "Walk", "Carpool"],
-     "moving_from"=>["Apartment", "College", "House", "Parents"],
-     "occupant_type"=>["", "Type 1", "Type 2", "Type 3", "Type 4", "Type 5"],
-     "relationship"=>["", "Relationship 1", "Relationship 2", "Relationship 3"]}
+      {
+        "" => "--Select House Hold Status",
+        "Married" => "Married",
+        "Married W/ Child(ren)" => "Married W/ Child(ren)",
+        "Married W/ Roommate" => "Married W/ Roommate" ,
+        "Roommates" => "Roommates",
+        "Roommates W/ Child(ren)" => "Roommates W/ Child(ren)",
+        "Separated/Divorced" => "Separated/Divorced",
+        "Separated/Divorced W/ Child(ren)" => "Separated/Divorced W/ Child(ren)",
+        "Corporate" => "Corporate",
+        "Single" => "Single",
+        "Single W/ Child(ren)" => "Single W/ Child(ren)"
+      },
+     "pet"=>{"" => "--Select Pets--","Dogs" => "Dogs", "Cats" => "Cats","Dogs & Cats" => "Dogs & Cats"},
+     "gender"=>{"" => "--Select Gender--", "Male" => "Male", "Female" => "Female", "Other" => "Other"},
+     "transportation_to_work"=>{"" => "--Select Transportation to Work--","Public" => "Public","Own Vehicle" => "Own Vehicle","Walk" => "Walk", "Carpool" => "Carpool"},
+     "moving_from"=>{"" => "--Select Moving From--","Apartment" => "Apartment","College" => "College","House" => "House","Parents" => "Parents"},
+     "occupant_type"=>{"" => "--Select Occupant Type--", "Type 1" => "Type 1","Type 2" => "Type 2", "Type 3" => "Type 3","Type 4" => "Type 4","Type 5" => "Type 5"},
+     "relationship"=>{"" => "--Select Relationship--", "Relationship 1" => "Relationship 1", "Relationship 2" => "Relationship 2", "Relationship 3" => "Relationship 3"}
+    }
   end
   
   def sr_page?
