@@ -36,6 +36,21 @@ node do |n|
   end
   
   attrs[:birthday] = n.birthday.strftime("%m/%d/%Y") rescue nil
+  if n.status == "Past"
+    if n.unit_code.present?
+      attrs[:unit_text] = "Past Resident ##{n.unit_code}"
+    else
+      attrs[:unit_text] = "Past Resident"
+    end
+  elsif n.status == "Future"
+    if n.unit_code.present?
+      attrs[:unit_text] = "Future Resident ##{n.unit_code}"
+    else
+      attrs[:unit_text] = "Future Resident"
+    end
+  else
+    attrs[:unit_text] = "Unit ##{n.unit_code}"
+  end
   
   if n.curr_property
     attrs[:move_in] = n.curr_property.move_in.strftime("%m/%d/%Y") rescue nil

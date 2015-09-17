@@ -21,14 +21,14 @@
 <% } %>
 
 <div class="card">
-  <b href="#" class="blue-text">#<%= id %></b>
+  <b href="#" class="blue-text"><%= unit_text %></b>
   <h3> <a href="<%= show_path %>" class="default-view"><%= full_name %></a> </h3>
   <ul class="list-unstyled">
     <li class="blue-text" style="word-break: break-all;">
       <%= email %>
     </li>
     <li>
-      Primary Contact: <span class="blue-text"><%= primary_phone %></span>
+      <span class="blue-text"><%= primary_phone %></span>
     </li>
   </ul>
 </div>

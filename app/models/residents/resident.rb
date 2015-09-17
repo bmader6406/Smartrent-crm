@@ -112,6 +112,10 @@ class Resident
     Resident.where(:_id => id.to_i).first
   end
 
+  def unit_code
+    Unit.where(:id => unit_id).first.code rescue ""
+  end
+
   def curr_property(pid = curr_property_id)
     @curr_property ||= properties.detect{|p| p.property_id.to_s == pid.to_s } || properties.first
   end
