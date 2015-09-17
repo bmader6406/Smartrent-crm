@@ -1,9 +1,12 @@
 <div class="resident-box">
-  <i class="fa fa-building-o"></i>
+  <i class="fa fa-smile-o" style="top: 16px; font-size: 22px;"></i>
   
   <ul class="list-unstyled">
     <li>
       Full Name: <span><%= first_name %> <%= last_name %></span>
+      <% if ( property.roommate ) { %>
+        <span class="badge" style="margin-left: 10px;">roommate</span>
+      <% } %>
     </li>
     <li>
       Email: <span><%= email %></span>
@@ -28,7 +31,7 @@
     </li>
   </ul>
   
-  <% if (App.vars.ability.can("cud", "Resident")) { %>
+  <% if (App.vars.ability.can("cud", "Resident") && property.roommate) { %>
     <a href="#" data-id="<%= id %>" class="edit-roommate"> More </a>
   <% } %>
 </div>
