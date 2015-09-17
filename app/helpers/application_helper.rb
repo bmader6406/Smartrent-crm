@@ -84,7 +84,7 @@ module ApplicationHelper
      "minutes_to_work"=>["","1-15", "16-30", "31-45", "61+"],
      "household_status"=>
       {
-        "" => "--Select House Hold Status",
+        "" => "--Select House Hold Status--",
         "Married" => "Married",
         "Married W/ Child(ren)" => "Married W/ Child(ren)",
         "Married W/ Roommate" => "Married W/ Roommate" ,
