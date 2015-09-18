@@ -48,13 +48,17 @@ class ResidentImporter
 
             next if !property_id
 
+            origin_id = row[ resident_map[:origin_id] ]
             unit_code = row[ resident_map[:unit_code] ]
             email = row[ resident_map[:email] ]
 
             next if email.blank?
 
-            unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
-            unit.save(:validate => false)
+            # Don't create unit. Unit must be imported from mits4_1.xml before importing resident
+            #unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
+            #unit.save(:validate => false)
+            
+            unit = Unit.find_by(property_id: property_id, code: unit_code)
 
             pp "#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
@@ -77,7 +81,8 @@ class ResidentImporter
             end
 
             property_attrs = {
-              :property_id => property_id
+              :property_id => property_id,
+              :roommate => origin_id.to_s.match(/^r/) ? true : false
             }
 
             Resident::PROPERTY_FIELDS.each do |f|

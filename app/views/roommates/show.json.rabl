@@ -20,7 +20,7 @@ end
 
 # property fields
 child :curr_property => :property do |p|
-  [Resident::PROPERTY_FIELDS, :created_at].flatten.each do |f|
+  [Resident::PROPERTY_FIELDS, :created_at, :roommate].flatten.each do |f|
     node(f){|n| p.send(f) || nil }
   end
   

@@ -161,13 +161,25 @@ class ResidentsController < ApplicationController
     Resident.ordered("first_name asc").where("properties" => {
       "$elemMatch" => {
         "property_id" => @property.id.to_s, 
-        "unit_id" => @resident.curr_property.unit_id.to_s, 
-        "roommate" => true
+        "unit_id" => @resident.curr_property.unit_id.to_s
       }
     }).each do |r|
       r.curr_property_id = @property.id
       @roommates << r
     end
+    
+    primary_residents = []
+    roommates = []
+    
+    @roommates.each do |r|
+      if r.curr_property.roommate?
+        roommates << r
+      else
+        primary_residents << r
+      end
+    end
+    
+    @roommates = primary_residents + roommates
     
     respond_to do |format|
       format.html {

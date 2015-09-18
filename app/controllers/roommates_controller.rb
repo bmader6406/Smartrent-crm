@@ -12,11 +12,24 @@ class RoommatesController < ApplicationController
         @roommates = []
         
         Resident.ordered("first_name asc").where("properties" => {
-          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id], "roommate" => true}
+          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id] }
         }).each do |r|
           r.curr_property_id = @property.id
           @roommates << r
         end
+        
+        primary_residents = []
+        roommates = []
+        
+        @roommates.each do |r|
+          if r.curr_property.roommate?
+            roommates << r
+          else
+            primary_residents << r
+          end
+        end
+        
+        @roommates = primary_residents + roommates
       }
     end
   end
@@ -131,7 +144,7 @@ class RoommatesController < ApplicationController
     end
     
     respond_to do |format|
-      if @roommate.update_attributes(roommate_params)
+      if @roommate.save
         @roommate.sources.create(property_attrs) if property_attrs[:property_id]
         format.json { render template: "roommates/show.json.rabl" }
       else
