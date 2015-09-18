@@ -78,7 +78,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 
         break;
 
-      case '#marketing-history':
+      /*case '#marketing-history':
         if( !Crm.collInst.marketingProperties ){
           Crm.collInst.marketingProperties = new Crm.Collections.MarketingProperties;
           Crm.collInst.marketingProperties.url = self.model.get('marketing_properties_path');
@@ -88,7 +88,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         $('#resident-history, #resident-roommates, #smartrent, #toolbar').hide();
         $('#marketing-history').show();
 
-        break;
+        break;*/
 
       case '#resident-roommates':
         if( !Crm.collInst.residentRoommates ){
