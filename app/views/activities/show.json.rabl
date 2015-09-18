@@ -18,6 +18,7 @@ node(:author, :if => lambda {|n| n.subject.has_author? rescue false }) do |n|
   comment = n.subject
   {
     :full_name => comment.author.full_name,
+    :email => comment.author.email,
     :type => comment.author.class.to_s,
     :id => comment.author.id.to_s
   }
@@ -39,6 +40,7 @@ node(:email, :if => lambda {|n| n.subject.email rescue false }) do |n|
   comment = n.subject
   {
     :from => comment.email.from,
+    :is_received => comment.email.to == comment.resident.email,
     :to => comment.email.to,
     :subject => comment.email.subject,
     :message => comment.email.message

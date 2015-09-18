@@ -1,0 +1,235 @@
+
+<% if(!App.vars.isPropertyPage) { %>
+<div class="col-md-6">
+  <div class="card">
+    <h3>Contact Info </h3>
+    <ul class="list-unstyled">
+      <li>
+        <label>Address:</label>
+        <%= street %> <%= city %>, <%= state %> <%= zip %>
+      </li>
+      <li>
+        <label>Gender:</label>
+        <%= gender %>
+      </li>
+      <li>
+        <label>Birthday:</label>
+        <%= birthday %>
+      </li>
+      <li>
+        <label>SSN#:</label>
+        <%= last4_ssn %>
+      </li>
+      <li>
+        <label>Cell Phone:</label>
+        <%= cell_phone %>
+      </li>
+      <li>
+        <label>Home Phone:</label>
+        <%= home_phone %>
+      </li>
+      <li>
+        <label>Work Phone:</label>
+        <%= work_phone %>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<% } else { %>
+<div class="col-md-6">
+  <div class="card">
+    <h3>
+      Contact Info
+    </h3>
+    <ul class="list-unstyled">
+      <li>
+        <label>Address:</label>
+        <%= street %> <%= city %>, <%= state %> <%= zip %>
+      </li>
+      <li>
+        <label>Cell Phone:</label>
+        <%= cell_phone %>
+      </li>
+      <li>
+        <label>Home Phone:</label>
+        <%= home_phone %>
+      </li>
+      <li>
+        <label>Work Phone:</label>
+        <%= work_phone %>
+      </li>
+    </ul>
+  </div>
+</div>
+  
+<div class="col-md-6">
+  <div class="card">
+    <h3>
+      Lease Info
+    </h3>
+    <ul class="list-unstyled">
+      <li>
+        <label>Unit Number:</label>
+        <% var unit = _.find(App.vars.propertyUnits, function(u) { return u["val"] == property.unit_id }) %>
+        <%= unit ? unit.label : "" %>
+      </li>
+      <li>
+        <label>Contract Signing Date:</label>
+        <%= property.signing_date %>
+      </li>
+      <li>
+        <label>Move-in Date:</label>
+        <%= property.move_in %>
+      </li>
+      <li>
+        <label>Move-out Date:</label>
+        <%= property.move_out %>
+      </li>
+      <li>
+        <label>Rent:</label>
+        <%= property.rent %>
+      </li>
+      <li>
+        <label>Status:</label>
+        <%= property.status %>
+      </li>
+      <li>
+        <label>Type:</label>
+        <%= property.type %>
+      </li>
+    </ul>
+  </div>
+</div>
+  
+  <% if (App.vars.isCrm) { %>
+
+<div class="col-md-6">
+    <div class="card">
+      <h3>
+        Demographics
+      </h3>
+      <ul class="list-unstyled">
+        <li class="heading"> Occupant </li>
+        <li>
+          <label>Gender:</label>
+          <%= gender %>
+        </li>
+        <li>
+          <label>Birthday:</label>
+          <%= birthday %>
+        </li>
+        <li>
+          <label>SSN:</label>
+          <%= ssn %>
+        </li>
+        <li>
+          <label>Household Size:</label>
+          <%= property.household_size %>
+        </li>
+        <li>
+          <label>Household Status:</label>
+          <%= property.household_status %>
+        </li>
+      
+        <li class="heading"> Previous Residence</li>
+        <li>
+          <label>Moving From:</label>
+          <%= property.moving_from %>
+        </li>
+      
+        <li class="heading"> Pet Information</li>
+        <li>
+          <label>Pets Count:</label>
+          <%= property.pets_count %>
+        </li>
+        <li>
+          <label>Pet Type:</label>
+          <%= property.pet_type %>
+        </li>
+        <li>
+          <label>Pet Breed:</label>
+          <%= property.pet_breed %>
+        </li>
+        <li>
+          <label>Pet Name:</label>
+          <%= property.pet_name %>
+        </li>
+      
+        <li class="heading"> Employment</li>
+        <li>
+          <label>Occupation Type:</label>
+          <%= property.occupation_type %>
+        </li>
+        <li>
+          <label>Employer:</label>
+          <%= property.employer %>
+        </li>
+        <li>
+          <label>Employer City:</label>
+          <%= property.employer_city %>
+        </li>
+        <li>
+          <label>Employer State:</label>
+          <%= property.employer_state %>
+        </li>
+        <li>
+          <label>Annual Income:</label>
+          <%= property.annual_income %>
+        </li>
+        <li>
+          <label>Minutes to Work:</label>
+          <%= property.minutes_to_work %>
+        </li>
+        <li>
+          <label>Transportation to Work:</label>
+          <%= property.transportation_to_work %>
+        </li>
+        <% if(property.vehicle1) { %>
+          <li>
+            <label>V1. Make/Model/Year:</label>
+            <%= property.vehicle1 %>
+          </li>
+          <li>
+            <label>License Plate 1:</label>
+            <%= property.license1 %>
+          </li>
+        <% } %>
+      
+        <% if(property.vehicle2) { %>
+          <li>
+            <label>V2. Make/Model:</label>
+            <%= property.vehicle2 %>
+          </li>
+          <li>
+            <label>License Plate 1:</label>
+            <%= property.license2 %>
+          </li>
+        <% } %>
+        <li>
+          <label>Badge #:</label>
+          <%= property.badge_number %>
+        </li>
+        <li>
+          <label>Number of Vehicles:</label>
+          <%= property.vehicles_count %>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <% } %>
+  <% if ( App.vars.isSmartrent && smartrent ) { %>
+  <div class="col-md-6">
+    <div class="card">
+      <h3>
+        SmartRent
+      </h3>
+      <ul class="list-unstyled smartrent-info"> <!-- will be loaded when the user view the resident detail -->
+        <li>
+          <a href="#" class="btn btn-primary btn-lg view-smartrent"> View Details</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <% } %>
+<% } %>
