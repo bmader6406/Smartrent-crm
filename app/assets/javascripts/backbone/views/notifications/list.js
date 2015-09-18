@@ -1,5 +1,4 @@
 Crm.Views.NotificationsList = Backbone.View.extend({
-  id: 'notifications',
   template: JST['backbone/templates/notifications/list'],
   
   events: {
@@ -7,18 +6,39 @@ Crm.Views.NotificationsList = Backbone.View.extend({
   },
   
   initialize: function () {
+    this.listenTo(this.collection, 'reset', this.showTotal);
+    this.listenTo(this.collection, 'reset', this.addNotifications);
     this.listenTo(this.collection, 'add', this.add);
+  },
+  
+  showTotal: function(){
+    var total = this.collection.state.totalRecords,
+      found = total == 1 ? " Pendding Message" : " Pendding Messages";
+      
+    this.$('.total').text(this.collection.state.totalRecords + found);
   },
 
   add: function (model) {
     var notificationView = new Crm.Views.Notification({ model: model });
 		
-		this.$el.append(notificationView.render().el);
+		this.$('#notifications').append(notificationView.render().el);
+  },
+  
+  addNotifications: function(){
+    this.$('#notifications').empty();
+
+    if(this.collection.length == 0){
+      this.$('#notifications').html('<div class="well">No Messages Found</div>');
+    } else {
+      this.collection.each(this.add, this);
+    }
   },
   
   render: function () {
-  	//this.$el.html(this.template(this.model.toJSON()));
-  	this.$el.html("under construction");
+  	this.$el.html(this.template());
+  	
+  	this.collection.fetch({reset: true});
+  	
   	return this;
   }
 });

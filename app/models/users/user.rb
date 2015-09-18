@@ -127,6 +127,22 @@ class User < ActiveRecord::Base
     end
   end
   
+  def notifications
+    @notifications ||= begin
+      if has_role? :admin, Property
+        Notification.all
+
+      elsif has_role? :regional_manager, Property
+        Notification.joins("INNER JOINS properties where properties.id = notifications.property_id").where(:region_id => managed_region_ids)
+
+      else
+        Notification.where(:property_id => managed_property_ids)
+      end
+    end
+  end
+  
+  #### smartrent
+  
   def managed_residents
     @managed_residents ||= begin
       if is_admin?

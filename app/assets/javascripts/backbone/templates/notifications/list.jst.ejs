@@ -1,1 +1,8 @@
-notifications list
+<div class="listing">
+  <% if (App.vars.ability.can("cud", "Ticket")) { %>
+    <a href="<%= App.vars.notificationsPath %>/new" class="btn btn-primary add-new"> Add New Notification </a>
+  <% } %>
+  <h4 class="total"> </h4>
+  <div id="notifications"> </div>
+</div>
+<div class="create-update"></div>

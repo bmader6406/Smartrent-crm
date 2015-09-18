@@ -1,3 +1,32 @@
-<div class="notification">
-  notification info
+<div class="notification resident-box <%= state == "pending" ? "active" : "" %>">
+  <i class="fa <%= state == "pending" ? "fa-bell" : "fa-bell-o" %>"></i>
+  <div class="author">
+    <% if (typeof(owner) != "undefined") { %>
+      <a href="#"><%= owner.full_name %></a>
+    <% } else { %>
+      <a href="#"><%= resident.full_name || resident.email %></a>
+    <% } %>
+    
+    <%= Helpers.timeOrTimeAgo(created_at) %>
+    <% if (App.vars.ability.can("cud", "Notification")) { %>
+      <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
+    <% } %>
+  </div>
+  
+  <b>Property: The Frasier &nbsp; | &nbsp; Unit #: 442</b>
+  
+  <div class="message">
+    <%= Helpers.sanitize(message) %>
+  </div>
+  
+  <% if ( App.vars.ability.can("cud", "Notification") ) { %>
+    <div class="meta-btns">
+      <a href="#" class="acknowledge">
+        <i class="fa fa-check"></i> Acknowledge
+      </a>
+      <a href="#" class="reply">
+        <i class="fa fa-reply"></i> Reply
+      </a>
+    </div>
+  <% } %>
 </div>

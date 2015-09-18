@@ -24,7 +24,7 @@ class Ability
       end
 
       if user.has_role? :regional_manager, Property
-        can :read, [Property, User, Notification, Resident, Unit, Campaign]
+        can :read, [Property, User, Resident, Unit, Campaign]
         cannot [:cud, :send_email], Resident
         cannot [:create], [Ticket, ResidentActivity]
         can :list, [Property]
@@ -33,11 +33,11 @@ class Ability
         can :manage, Smartrent::Reward do |r|
           user.managed_rewards.find_by_id(r.id)
         end
-        can :manage, [Resident, Unit, Ticket, ResidentActivity, Campaign]
+        can :manage, [Resident, Unit, Ticket, ResidentActivity, Campaign, Notification]
         can :read, [Property, User, Notification, Resident]
 
       elsif user.has_role? :leasing_staff, Property
-        can :manage, [Resident, Ticket, ResidentActivity, Campaign]
+        can :manage, [Resident, Ticket, ResidentActivity, Campaign, Notification]
         can :read, [Property, Notification, Unit]
       end
 

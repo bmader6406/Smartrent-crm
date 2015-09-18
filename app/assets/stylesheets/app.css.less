@@ -352,7 +352,7 @@ fieldset[disabled] .btn-default.active {
   .message {
     padding: 10px 0;
   }
-  .reply-email, .play-call, .edit-ticket, .view-resident, .edit-roommate {
+  .reply-email, .play-call, .edit-ticket, .view-resident, .edit-roommate, .meta-btns {
     position: absolute;
     top: 17px;
     right: 20px;
@@ -1709,6 +1709,22 @@ li {
   
   h3 .btn {
     float: right;
+  }
+}
+
+/* notifcation */
+.meta-btns {
+  a {
+    margin-left: 10px;
+  }
+}
+
+#notifications {
+  margin-top: 20px;
+}
+.notification {
+  &.active {
+    background: #FFFFDD !important;
   }
 }
 

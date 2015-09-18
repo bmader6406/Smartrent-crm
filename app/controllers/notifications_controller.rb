@@ -1,6 +1,5 @@
 class NotificationsController < ApplicationController
   before_action :require_user
-  before_action :set_property
   before_action :set_notification, :except => [:index, :new, :create]
   before_action :set_page_title
   
@@ -45,7 +44,9 @@ class NotificationsController < ApplicationController
   end
   
   def create
-    @notification = @property.notifications.new(notification_params)
+    @notification = Notification.new(notification_params)
+    @notification.owner = current_user
+    @notification.last_actor = current_user
     
     respond_to do |format|
       if @notification.save
@@ -58,6 +59,8 @@ class NotificationsController < ApplicationController
   end
 
   def update
+    @notification.last_actor = current_user
+    
     respond_to do |format|
       if @notification.update_attributes(notification_params)
         format.json { head :no_content }
@@ -75,20 +78,81 @@ class NotificationsController < ApplicationController
     end
   end
   
+  def acknowledge
+    @notification.last_actor = current_user
+    @notification.state = "acknowledged"
+    
+    respond_to do |format|
+      if @notification.save
+        format.json { render template: "notifications/show.json.rabl", status: :updated }
+      else
+        format.json { render json: @notification.errors.full_messages, status: :unprocessable_entity }
+      end
+    end
+  end
+  
+  def reply
+    @notification.last_actor = current_user
+    @notification.state = "replied"
+    
+    respond_to do |format|
+      if @notification.save
+        
+        create_email_activity
+        
+        format.json { render template: "notifications/show.json.rabl", status: :updated }
+      else
+        format.json { render json: @notification.errors.full_messages, status: :unprocessable_entity }
+      end
+    end
+  end
+  
   private
     
     def notification_params
       params.require(:notification).permit!
     end
     
-    def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
-      
-      Time.zone = @property.setting.time_zone
+    def comment_params
+      params.require(:comment).permit!
+    end
+
+    def email_params
+      params.require(:email).permit!
+    end
+    
+    def create_email_activity
+      @property = Property.find(params[:property_id])
+
+      @resident = Resident.find(params[:resident_id])
+      @resident.curr_property_id = @property.id if @property
+
+
+      @activity = @resident.activities.new
+
+      comment = comment_params.clone
+
+      comment[:property_id] = @property.id
+      comment[:resident_id] = @resident.id
+      comment[:author_id] = current_user.id
+      comment[:author_type] = current_user.class.to_s
+
+      @comment = Comment.new(comment)
+
+
+      @comment.build_email(email_params)
+
+      if @comment.save
+        # should assign id/type manually
+        @activity.action = @comment.type
+        @activity.subject_id = @comment.id
+        @activity.subject_type = @comment.class.to_s
+        @activity.property_id = @property.id if @property
+      end
     end
 
     def set_notification
-      @notification = @property.notifications.find(params[:id])
+      @notification = current_user.notifications.find(params[:id])
       
       case action_name
         when "create"
@@ -103,19 +167,19 @@ class NotificationsController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Notifications" 
+      @page_title = "CRM - Notifications" 
     end
     
     def filter_notifications(per_page = 15)
       arr = []
       hash = {}
       
-      ["name"].each do |k|
+      ["property_id", "resident_id", "message", "state"].each do |k|
         next if params[k].blank?
         arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @notifications = @property.notifications.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
+      @notifications = current_user.notifications.where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
     end
 end

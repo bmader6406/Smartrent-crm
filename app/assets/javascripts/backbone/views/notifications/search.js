@@ -12,8 +12,7 @@ Crm.Views.NotificationSearch = Backbone.View.extend({
 
   onFormSubmit: function(e) {
     e.preventDefault();
-    msgbox('This page is under construction');
-    return false;
+
     _.each(this.$('form').serializeArray(), function(h){
       Crm.collInst.notifications.queryParams[h.name] = h.value;
     });

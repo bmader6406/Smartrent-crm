@@ -40,7 +40,7 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
           }
           
           self.hideForm();
-          Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', true);
+          Crm.routerInst.navigate(App.vars.notificationsPath, true);
         }
       });
     } else {
@@ -61,33 +61,15 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
 
     var form = new Backbone.Form({
       schema: {
-        full_name: { 
-          title: 'Name',
+        message: { 
+          title: 'Message',
           validators: ['required']
         }
       },
-      fieldsets: [
-        {
-          tab: 'basic-info',
-          legend: "Basic Infomation",
-          fields: ["full_name"]
-        }
-      ],
-      data: notification
+      template: JST['backbone/templates/notifications/form'],
+      data: notification,
+      templateData: notification
     }).render();
-    
-    //+,- icon
-    form.$('.accordion').on('show.bs.collapse', function(ev){
-      form.$('.panel-heading.expanded').removeClass('expanded');
-      $(ev.target).prev().addClass('expanded');
-      
-    }).on('hide.bs.collapse', function(ev){
-      $(ev.target).prev().removeClass('expanded');
-    });
-    
-    setTimeout(function(){
-      form.$('.panel-collapse.in').prev().addClass('expanded');
-    }, 100);
     
     this.form = form; //for events
 
@@ -121,11 +103,11 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
       $('#notifications .listing').show();
       $('#notifications .create-update').hide();
       
-      Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', false);
+      Crm.routerInst.navigate(App.vars.notificationsPath, false);
       
     } else {
       App.layout.show('west');
-      Crm.routerInst.navigate(App.vars.routeRoot + '/notifications/' + this.model.get('id'), true);
+      Crm.routerInst.navigate(App.vars.notificationsPath + '/' + this.model.get('id'), true);
     }
   },
   
@@ -137,7 +119,7 @@ Crm.Views.NotificationNewOrUpdate = Backbone.View.extend({
         self.model.destroy({
           success: function(model, response) {
             msgbox("Notification was archived successfully");
-            Crm.routerInst.navigate(App.vars.routeRoot + '/notifications', true);
+            Crm.routerInst.navigate(App.vars.notificationsPath, true);
           },
           error: function(model, response) {
             

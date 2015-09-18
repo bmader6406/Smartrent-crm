@@ -103,6 +103,10 @@
         </li>
       <% end %>
       
+      <li data-nav="notifications">
+        <a href="<%= raw main_app.notifications_path %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
+      </li>
+      
       
     <% else %>
       <%= render "layouts/smartrent/left_nav_links" %>

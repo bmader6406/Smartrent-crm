@@ -71,8 +71,6 @@ Rails.application.routes.draw do
       end
     end
     
-    resources :notifications
-    
     resources :notices, :as => "campaigns", :controller => "campaigns" do
       member do
         get :preview
@@ -108,6 +106,13 @@ Rails.application.routes.draw do
       post :set_status
       post :set_amount
       post :become_champion
+    end
+  end
+  
+  resources :notifications do
+    member do
+      post :acknowledge
+      post :reply
     end
   end
   
