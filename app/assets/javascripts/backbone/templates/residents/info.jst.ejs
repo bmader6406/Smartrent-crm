@@ -56,10 +56,12 @@
       </a>
     <% } %>
     <!-- smartrent tab is always hidden -->
+  <% if ( App.vars.isSmartrent && smartrent ) { %>
     <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
       <i class="fa fa-angle-right"></i>
       Smartrent
     </a>
+  <% } %>
   </div>
 <% } else { %>
   <div class="nav-details">
