@@ -141,6 +141,11 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
     $('#resident-details').html( JST["backbone/templates/residents/resident-detail"](this.model.toJSON()) );
     $('#resident-details').show();
+    var self = this;
+    $.getJSON(this.model.get('smartrent_path'), function(data){
+      $('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
+      $('.smartrent-info').show();
+    });
     $('#resident-details .view-smartrent').click(function(){
       $('.nav-details a[href="#smartrent"]').click();
     });
