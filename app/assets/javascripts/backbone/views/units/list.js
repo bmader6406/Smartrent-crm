@@ -38,7 +38,7 @@ Crm.Views.UnitsList = Backbone.View.extend({
         row: ClickableRow,
         columns: [{
           name: "code",
-          label: "Code",
+          label: "Unit #",
           cell: 'string',
           editable: false,
           sortable: false

@@ -151,11 +151,11 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     });
     $('#resident-details').isotope('destroy');
     $('#resident-details').isotope({
-      itemSelector: '.col-md-6',
+      itemSelector: '.col-md-4',
       //layoutMode: 'fitColumns',
       layoutMode: 'masonry',
       masonry: {
-          columnWidth: '.col-md-6'
+          columnWidth: '.col-md-4'
       }
     })
   },
