@@ -13,7 +13,7 @@ class HourlyJob
 
     Resque.enqueue(MetricGenerator, time.to_i)
 
-    if time.hour = 0
+    if time.hour == 0
       Resque.enqueue(Smartrent::DailyResidentCreator, Time.now)
       Resque.enqueue(ResidentPropertyStatusChanger, Time.now)
     end
