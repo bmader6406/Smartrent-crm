@@ -149,6 +149,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         $('.nav-details a[href="#smartrent"]').click();
       });
     });
+    $('#resident-details').isotope('destroy');
     $('#resident-details').isotope({
       itemSelector: '.col-md-6',
       //layoutMode: 'fitColumns',
