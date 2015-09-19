@@ -97,7 +97,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#resident-roommates > div').html( new Crm.Views.ResidentRoommatesList({ collection: Crm.collInst.residentRoommates }).render().el );
         }
 
-        $('#resident-history, #marketing-history, #smartrent, #toolbar').hide();
+        $('#resident-history, #marketing-history, #smartrent, #toolbar, #resident-details').hide();
         $('#resident-roommates').show();
 
         break;
@@ -125,7 +125,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> Smartrent record will be created on '+ this.model.get('move_in') +' </div>');
         }
 
-        $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
+        $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #resident-details').hide();
         smartrent.show();
 
         break;
@@ -145,10 +145,18 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     $.getJSON(this.model.get('smartrent_path'), function(data){
       $('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
       $('.smartrent-info').show();
+      $('#resident-details .view-smartrent').click(function(){
+        $('.nav-details a[href="#smartrent"]').click();
+      });
     });
-    $('#resident-details .view-smartrent').click(function(){
-      $('.nav-details a[href="#smartrent"]').click();
-    });
+    $('#resident-details').isotope({
+      itemSelector: '.col-md-6',
+      //layoutMode: 'fitColumns',
+      layoutMode: 'masonry',
+      masonry: {
+          columnWidth: '.col-md-6'
+      }
+    })
   },
 
   showDefaultView: function(){

@@ -67,4 +67,6 @@
 //= require intl-phone/libphonenumber/build/utils.js
 //= require daterangepicker
 //= require bootstrap-select
+//= require isotope.pkgd.min.js
+//= require fit-columns.js
 //= require app
