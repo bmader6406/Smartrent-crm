@@ -366,7 +366,7 @@ class ResidentsController < ApplicationController
         unit_id = params[:unit_id]
         
         # find unit_id  by unit code
-        if unit_id.to_i < 1000*1000*1000 && @property
+        if @property #unit_id.to_i < 1000*1000*1000 && 
           unit_id = Unit.where(:property_id => @property.id, :code => unit_id).first.id.to_s rescue unit_id
         end
         

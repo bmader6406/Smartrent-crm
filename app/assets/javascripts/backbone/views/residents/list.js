@@ -3,34 +3,48 @@ Crm.Views.ResidentsList = Backbone.View.extend({
   template: JST['backbone/templates/residents/list'],
 
   events: {
-    
+
   },
-  
+
   initialize: function () {
     this.listenTo(this.collection, 'reset', this.showTotal);
     this.listenTo(this.collection, 'request', App.showMask);
     this.listenTo(this.collection, 'sync', App.hideMask);
   },
-  
+
   showTotal: function(){
     var total = this.collection.state.totalRecords,
       found = total == 1 ? " Resident Found" : " Residents Found";
-      
+
     this.$('.total').text(this.collection.state.totalRecords + found);
   },
-  
+
   render: function(){
+    var ClickableRow = Backgrid.Row.extend({
+      events: {
+        "click": "onClick"
+      },
+      onClick: function () {
+        Backbone.trigger("rowclicked", this.model);
+      }
+    });
+
+    Backbone.on("rowclicked", function (model) {
+      $('#residents').append(model.attributes.name_url)
+      $('a[href="'+model.attributes.show_path+'"]').click();
+    });
     var self = this,
        grid = new Backgrid.Grid({
+         row: ClickableRow,
          columns: [{
-            name: "id",
-            label: "Resident ID",
+            name: "unit_code",
+            label: "Unit #",
             cell: 'string',
             editable: false
           }, {
-           name: "name_url",
+           name: "name",
            label: "Name",
-           cell: 'html',
+           cell: 'string',
            editable: false
          }, {
            name: "email",
@@ -59,7 +73,7 @@ Crm.Views.ResidentsList = Backbone.View.extend({
           }],
          collection: self.collection
        }),
-       
+
        paginator = new Backgrid.Extension.Paginator({
          collection: self.collection,
          controls: {
@@ -75,7 +89,7 @@ Crm.Views.ResidentsList = Backbone.View.extend({
     this.$(".paginator").append(paginator.render().$el);
 
     this.collection.fetch({reset: true});
-    
+
     return this;
   }
 });
