@@ -43,11 +43,6 @@ Crm.Views.UnitsList = Backbone.View.extend({
           editable: false,
           sortable: false
         }, {
-          name: "id",
-          label: "Unit ID",
-          cell: 'html',
-          editable: false
-        }, {
           name: "bed",
           label: "Bed",
           cell: 'string',
