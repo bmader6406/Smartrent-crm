@@ -29,10 +29,6 @@ Crm.Views.ResidentsList = Backbone.View.extend({
       }
     });
 
-    Backbone.on("rowclicked", function (model) {
-      $('#residents').append(model.attributes.name_url)
-      $('a[href="'+model.attributes.show_path+'"]').click();
-    });
     var self = this,
        grid = new Backgrid.Grid({
          row: ClickableRow,

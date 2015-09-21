@@ -986,6 +986,11 @@ window.Crm = {
     
     // trigger route matching
     Backbone.history.start({pushState: true, root: "/"});
+    
+    // global rowclicked listener
+    Backbone.on("rowclicked", function (model) {
+      router.navigate(model.get("show_path"), true);
+    });
   },
   
   unauthorizedAlert: function (){
