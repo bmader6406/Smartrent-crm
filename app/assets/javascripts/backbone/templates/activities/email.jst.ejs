@@ -1,18 +1,18 @@
 <div class="email-act resident-box">
-  <i class="fa fa-envelope-o"></i>
+  <i class="fa <% if (email.is_received) { %>fa-custom-email-received<%} else { %>fa-custom-email-sent<% } %>"></i>
   <div class="author">
     <% if (typeof(author) != "undefined") { %>
       <a href="#"><%= author.full_name %></a>
     <% } else { %>
       <a href="#"><%= email.from %></a>
     <% } %>
-    
+
     <%= Helpers.timeOrTimeAgo(created_at) %>
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
       <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
     <% } %>
   </div>
-  
+
   <div class="subject">
     <%= email.subject %>
   </div>

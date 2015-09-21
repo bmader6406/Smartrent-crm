@@ -1,35 +1,44 @@
 Crm.Views.UnitsList = Backbone.View.extend({
   id: 'units',
   template: JST['backbone/templates/units/list'],
-  
+
   events: {
-    
+
   },
-  
+
   initialize: function () {
     this.listenTo(this.collection, 'reset', this.showTotal);
     this.listenTo(this.collection, 'request', App.showMask);
     this.listenTo(this.collection, 'sync', App.hideMask);
   },
-  
+
   showTotal: function(){
     var total = this.collection.state.totalRecords,
       found = total == 1 ? " Unit Found" : " Units Found";
-      
+
     this.$('.total').text(this.collection.state.totalRecords + found);
   },
-  
+
   render: function () {
+    var ClickableRow = Backgrid.Row.extend({
+      events: {
+        "click": "onClick"
+      },
+      onClick: function () {
+        Backbone.trigger("rowclicked", this.model);
+      }
+    });
+
+    Backbone.on("rowclicked", function (model) {
+      $('#units').append(model.attributes.id_url)
+      $('a[href="'+model.attributes.show_path+'"]').click();
+    });
   	var self = this,
        grid = new Backgrid.Grid({
+        row: ClickableRow,
         columns: [{
-          name: "id_url",
-          label: "Unit ID",
-          cell: 'html',
-          editable: false
-        }, {
           name: "code",
-          label: "Code",
+          label: "Unit #",
           cell: 'string',
           editable: false,
           sortable: false
