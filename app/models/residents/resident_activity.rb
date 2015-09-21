@@ -42,7 +42,7 @@ class ResidentActivity
     end
   end
   
-  def eager_load(subject)
+  def eager_load(subject, clzz = nil)
     if subject.kind_of?(Comment)
       @subject = subject
       
@@ -51,7 +51,6 @@ class ResidentActivity
       
     elsif subject.kind_of?(User)
       @author = subject
-      
     end
   
     self

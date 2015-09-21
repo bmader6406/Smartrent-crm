@@ -78,79 +78,12 @@ class NotificationsController < ApplicationController
     end
   end
   
-  def acknowledge
-    @notification.last_actor = current_user
-    @notification.state = "acknowledged"
-    
-    respond_to do |format|
-      if @notification.save
-        format.json { render template: "notifications/show.json.rabl", status: :updated }
-      else
-        format.json { render json: @notification.errors.full_messages, status: :unprocessable_entity }
-      end
-    end
-  end
-  
-  def reply
-    @notification.last_actor = current_user
-    @notification.state = "replied"
-    
-    respond_to do |format|
-      if @notification.save
-        
-        create_email_activity
-        
-        format.json { render template: "notifications/show.json.rabl", status: :updated }
-      else
-        format.json { render json: @notification.errors.full_messages, status: :unprocessable_entity }
-      end
-    end
-  end
-  
   private
     
     def notification_params
       params.require(:notification).permit!
     end
     
-    def comment_params
-      params.require(:comment).permit!
-    end
-
-    def email_params
-      params.require(:email).permit!
-    end
-    
-    def create_email_activity
-      @property = Property.find(params[:property_id])
-
-      @resident = Resident.find(params[:resident_id])
-      @resident.curr_property_id = @property.id if @property
-
-
-      @activity = @resident.activities.new
-
-      comment = comment_params.clone
-
-      comment[:property_id] = @property.id
-      comment[:resident_id] = @resident.id
-      comment[:author_id] = current_user.id
-      comment[:author_type] = current_user.class.to_s
-
-      @comment = Comment.new(comment)
-
-
-      @comment.build_email(email_params)
-
-      if @comment.save
-        # should assign id/type manually
-        @activity.action = @comment.type
-        @activity.subject_id = @comment.id
-        @activity.subject_type = @comment.class.to_s
-        @activity.property_id = @property.id if @property
-      end
-    end
-
     def set_notification
       @notification = current_user.notifications.find(params[:id])
       
@@ -174,12 +107,37 @@ class NotificationsController < ApplicationController
       arr = []
       hash = {}
       
-      ["property_id", "resident_id", "message", "state"].each do |k|
+      ["property_id", "resident_id", "subject", "message", "state"].each do |k|
         next if params[k].blank?
         arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @notifications = current_user.notifications.where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
+      @notifications = current_user.notifications.includes(:property).where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
+      
+      # eager load residents
+      rids = @notifications.collect{|n| n.resident_id.to_s }
+      uids = []
+      
+      if !rids.empty?
+        residents = Resident.where(:id.in => rids).collect{|r| r } # don't use .all
+        @notifications.each do |n|
+          r = residents.detect{|r| n.resident_id == r._id.to_i }
+          if r
+            r.property_id = n.property_id
+            n.eager_load(r)
+            
+            uids << r.unit_id #must be after property_id is set
+          end
+        end
+        
+        # eager load units
+        units = Unit.where(:id => uids).all
+        residents.each do |r|
+          u = units.detect{|u| u.id == r.unit_id.to_i }
+          r.eager_load(u) if u
+        end
+      end
+      
     end
 end

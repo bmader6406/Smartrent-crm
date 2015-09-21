@@ -73,7 +73,7 @@ Crm.Views.MarketingProperty = Backbone.View.extend({
     })
   },
   
-  viewHistory: function(ev){
+  viewHistory: function(ev){ //obsolete (x-ray will handle this)
     var self = this,
       link = $(ev.target),
       residentBox = link.closest('.resident-box'),

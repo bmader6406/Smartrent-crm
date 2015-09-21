@@ -8,10 +8,14 @@ class CreateNotifications < ActiveRecord::Migration
       t.integer :owner_id
       
       t.string :state, :default => "pending"
+      t.string :subject
       t.text :message
-      
+
       # user
       t.integer :last_actor_id
+      
+      # for later use
+      t.integer :comment_id
       
       t.datetime :deleted_at
 
@@ -21,6 +25,7 @@ class CreateNotifications < ActiveRecord::Migration
     add_index "notifications", ["property_id", "resident_id"]
     add_index "notifications", ["property_id", "state", "created_at"]
     
+    add_index "notifications", ["comment_id"]
     
     create_table :notification_histories do |t|
       t.integer :notification_id

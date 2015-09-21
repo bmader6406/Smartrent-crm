@@ -1,3 +1,4 @@
+<!-- placeholder -->
 <div class="notification resident-box <%= state == "pending" ? "active" : "" %>">
   <i class="fa <%= state == "pending" ? "fa-bell" : "fa-bell-o" %>"></i>
   <div class="author">
@@ -13,20 +14,7 @@
     <% } %>
   </div>
   
-  <b>Property: The Frasier &nbsp; | &nbsp; Unit #: 442</b>
-  
   <div class="message">
     <%= Helpers.sanitize(message) %>
   </div>
-  
-  <% if ( App.vars.ability.can("cud", "Notification") ) { %>
-    <div class="meta-btns">
-      <a href="#" class="acknowledge">
-        <i class="fa fa-check"></i> Acknowledge
-      </a>
-      <a href="#" class="reply">
-        <i class="fa fa-reply"></i> Reply
-      </a>
-    </div>
-  <% } %>
 </div>

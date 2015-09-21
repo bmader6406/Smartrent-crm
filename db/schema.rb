@@ -231,8 +231,10 @@ ActiveRecord::Schema.define(version: 20150918122106) do
     t.integer  "resident_id",   limit: 8
     t.integer  "owner_id",      limit: 4
     t.string   "state",         limit: 255,   default: "pending"
+    t.string   "subject",       limit: 255
     t.text     "message",       limit: 65535
     t.integer  "last_actor_id", limit: 4
+    t.integer  "comment_id",    limit: 4
     t.datetime "deleted_at"
     t.datetime "created_at",                                      null: false
     t.datetime "updated_at",                                      null: false

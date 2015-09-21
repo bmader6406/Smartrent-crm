@@ -2,9 +2,9 @@
   <h3> Notification Search </h3>
   <form action="<%= App.vars.notificationsPath %>" id="notification-search-form">
     <div class="form-group">
-      <select class="form-control" name="state">
+      <select class="form-control" name="state" id="notification-state">
         <option value=""> Select State </option>
-        <option value="pending"> Pending </option>
+        <option value="pending" selected="selected"> Pending </option>
         <option value="acknowledged"> Acknowledged </option>
         <option value="replied"> Replied </option>
       </select>
@@ -21,6 +21,9 @@
     
     <div class="form-group">
       <input type="text" class="form-control" name="resident_id" placeholder="Resident ID"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="subject" placeholder="Subject"/>
     </div>
     <div class="form-group">
       <input type="text" class="form-control" name="message" placeholder="Message"/>

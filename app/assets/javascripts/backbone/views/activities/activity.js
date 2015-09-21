@@ -3,7 +3,8 @@ Crm.Views.Activity = Backbone.View.extend({
 
   events: {
     "click .delete": "_delete",
-    "click .reply-email": "replyEmail",
+    "click .acknowledge": "acknowledge",
+    "click .show-reply-form": "showReplyForm",
     "click .show-quoted": "showQuoted",
     "click .edit-note": "editNote",
     "click .cancel-note": "cancelNote",
@@ -60,21 +61,63 @@ Crm.Views.Activity = Backbone.View.extend({
     return false;
   },
   
-  replyEmail: function (ev) {
+  acknowledge: function(ev){
     var self = this,
       residentBox = $(ev.target).parents('.resident-box');
     
-    $('.new-email').click();
+    residentBox.mask('Loading...');
+
+    $.post(this.model.get('notification').acknowledge_path, function(data){
+      var activityView = new Crm.Views.Activity({ model: new Crm.Models.Activity(data) });
+      residentBox.parent().replaceWith(activityView.render().el);
+      
+    }, 'json').fail(function(){
+      msgbox("There was an error while updating the activity, please try again", "danger");
+      
+    }).always(function(){
+      residentBox.unmask();
+
+    });
+      
+    return false;
+  },
+  
+  showReplyForm: function (ev) {
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
     
-    setTimeout(function(){
-      var emailWrap = $('#email-wrap');
-      emailWrap.find('#subject').val($.trim( residentBox.find('.subject').text() ));
-      emailWrap.find('#from').val(App.vars.propertyEmail);
-      emailWrap.find('#to').val(self.model.get('email').from);
-      emailWrap.find('.redactor_editor').html('<br><br> <div class="show-quoted" title="show trimmed content" style="display:none">...</div>' +
-        '<blockquote class="hyly_quoted" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">'+ 
-        $.trim( residentBox.find('.message').html() ) + '</blockquote>');
-    }, 100);
+    if( !this.replyEmailForm ) {
+      this.replyEmailForm = new Crm.Views.ReplyEmailForm();
+      this.replyEmailForm.resident = Crm.collInst.residentActivities.resident;
+      
+      residentBox.append( this.replyEmailForm.render().el );
+      residentBox.find('form').attr('action', this.model.get('notification').reply_path);
+      
+      var emailWrap = residentBox.find('#email-wrap');
+        
+      emailWrap.find('#message').redactor({
+        focus: true, 
+        convertDivs: false,
+        convertLinks: false,
+        cleanup: false,
+        height: 250,
+        buttons: [
+          'html', '|', 'bold', 'italic', 'underline', 'deleted','|', 'fontcolor', 'backcolor', '|', 'link'
+        ]
+      });
+      
+      //setTimeout(function(){
+        emailWrap.find('#subject').val($.trim( residentBox.find('.subject').text() ));
+        emailWrap.find('#from').val(App.vars.propertyEmail);
+        emailWrap.find('#to').val(self.model.get('email').from);
+        emailWrap.find('.redactor_editor').html('<br><br> <div class="show-quoted" title="show trimmed content" style="display:none">...</div>' +
+          '<blockquote class="hyly_quoted" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">'+ 
+          $.trim( residentBox.find('.message').html() ) + '</blockquote>');
+      //}, 100);
+    
+    } else {
+      residentBox.find('#email-wrap').slideDown();
+    }
     
     return false;
   },

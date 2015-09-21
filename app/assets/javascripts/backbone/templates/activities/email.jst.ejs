@@ -1,5 +1,5 @@
-<div class="email-act resident-box">
-  <i class="fa <% if (email.is_received) { %>fa-custom-email-received<%} else { %>fa-custom-email-sent<% } %>"></i>
+<div class="email-act resident-box <%= notification.state == "pending" ? "active" : "" %>">
+  <i class="fa fa-custom-email-<%= email.is_received ? "received" : "sent" %>"></i>
   <div class="author">
     <% if (typeof(author) != "undefined") { %>
       <a href="#"><%= author.full_name %></a>
@@ -20,8 +20,37 @@
     <%= Helpers.sanitize(email.message) %>
   </div>
   <% if (typeof(author) != "undefined" && author.type == "Resident" && App.vars.ability.can("cud", "ResidentActivity")) { %>
-    <a href="#" class="reply-email">
-      <i class="fa fa-reply"></i> Reply
-    </a>
+    <div class="meta-btns">
+      <% if (notification.state == "pending") { %>
+        <a href="#" class="acknowledge">
+          <i class="fa fa-check"></i> Acknowledge
+        </a>
+      <% } %>
+      <a href="#" class="show-reply-form">
+        <i class="fa fa-reply"></i> Reply
+      </a>
+    </div>
   <% } %>
+  
+  <% if (notification.histories && notification.histories.length > 0) { %>
+    <div class="histories">
+      <span>Notification Log:</span>
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th width="160px"> Date & Time </th>
+          <th width="160px"> State </th>
+          <th> Manager </th>
+        </tr>
+        <% for (var i=0, h; h=notification.histories[i]; i++) { %>
+          <tr>
+            <td> <%= h.created_time %> </td>
+            <td> <%= h.pretty_state %> </td>
+            <td> <%= h.full_name %> - <%= h.email %> </td>
+          </tr>
+        <% } %>
+      </table>
+    </div>
+  <% } %>
+  
+  <!-- reply form will be insert here -->
 </div>

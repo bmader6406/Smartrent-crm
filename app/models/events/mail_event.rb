@@ -7,7 +7,7 @@ class MailEvent < Event
     @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
   end
   
-  def eager_load(subject)
+  def eager_load(subject, clzz = nil)
     @resident = subject
     self
   end

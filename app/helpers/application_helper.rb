@@ -109,6 +109,10 @@ module ApplicationHelper
     request.path.include?("/sr/") || request.host.include?("smartrent")
   end
   
+  def pending_messages
+    @pending_messages ||= current_user.notifications.where(:state => "pending").all
+  end
+  
 end
 
 

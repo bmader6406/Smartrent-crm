@@ -989,6 +989,9 @@ window.Crm = {
     
     // global rowclicked listener
     Backbone.on("rowclicked", function (model) {
+      //reset
+      App.vars.residentObj = null;
+      
       router.navigate(model.get("show_path"), true);
     });
   },

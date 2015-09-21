@@ -410,21 +410,28 @@ class ResidentsController < ApplicationController
       #pp ">>>>", @residents.limit(25).explain
       @residents = @residents.paginate(:page => params[:page], :per_page => per_page)
       
+      unit_ids = []
       if @property
         @residents.each do |r|
           r.curr_property_id = @property.id
+          unit_ids << r.unit_id
         end
       end
       
+      # eager load units
+      units = Unit.where(:id => unit_ids).all
+      
       # manual eager load smartrent resident
       smartrent = {}
-      
       Smartrent::Resident.where(:crm_resident_id => @residents.collect{|r| r.id.to_i }).each do |sr|
         smartrent[sr.crm_resident_id] = sr
       end
       
       @residents.each do |r|
         r.eager_load(smartrent[r.id.to_i])
+        
+        u = units.detect{|u| u.id == r.unit_id.to_i }
+        r.eager_load(u) if u
       end
       
     end

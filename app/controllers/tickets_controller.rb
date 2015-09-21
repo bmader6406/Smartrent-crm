@@ -186,8 +186,11 @@ class TicketsController < ApplicationController
       if !rids.empty?
         residents = Resident.where(:id.in => rids).collect{|r| r } # don't use .all
         @tickets.each do |t|
-          r = residents.detect{|r| t.resident_id = r._id.to_i }
-          t.eager_load(r) if r
+          r = residents.detect{|r| t.resident_id == r._id.to_i }
+          if r
+            r.property_id = t.property_id
+            t.eager_load(r)
+          end
         end
       end
       

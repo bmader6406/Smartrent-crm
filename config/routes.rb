@@ -36,7 +36,9 @@ Rails.application.routes.draw do
       resources :activities do
         member do
           post :update_note
-        end
+          post :acknowledge
+          post :reply
+        end        
       end
     end
   end
@@ -109,12 +111,7 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :notifications do
-    member do
-      post :acknowledge
-      post :reply
-    end
-  end
+  resources :notifications
   
   # email system
   resources :unsubscribes do
