@@ -29,10 +29,6 @@ Crm.Views.UnitsList = Backbone.View.extend({
       }
     });
 
-    Backbone.on("rowclicked", function (model) {
-      $('#units').append(model.attributes.id_url)
-      $('a[href="'+model.attributes.show_path+'"]').click();
-    });
   	var self = this,
        grid = new Backgrid.Grid({
         row: ClickableRow,
