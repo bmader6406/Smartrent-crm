@@ -36,12 +36,27 @@ class ResidentProperty
   #vehicle info
   field :minutes_to_work, :type => String
   field :transportation_to_work, :type => String
+  field :vehicles_count, :type => Integer
+
   field :vehicle1, :type => String
   field :license1, :type => String
+  field :badge_number_1, :type => String
+
   field :vehicle2, :type => String
   field :license2, :type => String
-  field :vehicles_count, :type => Integer
-  field :badge_number, :type => String
+  field :badge_number_2, :type => String
+
+  field :vehicle3, :type => String
+  field :license3, :type => String
+  field :badge_number_3, :type => String
+
+  field :vehicle4, :type => String
+  field :license4, :type => String
+  field :badge_number_4, :type => String
+
+  field :vehicle5, :type => String
+  field :license5, :type => String
+  field :badge_number_5, :type => String
   field :rental_type, :type => String
   
   # roommates

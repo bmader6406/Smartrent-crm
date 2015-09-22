@@ -62,7 +62,7 @@
     </ul>
   </div>
 </div>
-  
+
 <div class="col-md-4">
   <div class="card">
     <h3>
@@ -98,10 +98,104 @@
         <label>Type:</label>
         <%= property.type %>
       </li>
+      <li class="heading"> Vehicle Information</li>
+      <li>
+        <label>Number of Vehicles:</label>
+        <%= property.vehicles_count %>
+      </li>
+      <% if (property.vehicles_count > 0 && property.vehicle1) { %>
+        <li>
+          <label>V1. Make/Model/Year:</label>
+          <%= property.vehicle1 %>
+        </li>
+        <li>
+          <label>License Plate:</label>
+          <%= property.license1 %>
+        </li>
+        <li>
+          <label>Badge:</label>
+          <%= property.badge_number_1 %>
+        </li>
+      <% } %>
+
+      <% if(property.vehicles_count > 1 && property.vehicle2) { %>
+        <li>
+          <label>V2. Make/Model:</label>
+          <%= property.vehicle2 %>
+        </li>
+        <li>
+          <label>License Plate:</label>
+          <%= property.license2 %>
+        </li>
+        <li>
+          <label>Badge:</label>
+          <%= property.badge_number_2 %>
+        </li>
+      <% } %>
+
+      <% if(property.vehicles_count > 2 && property.vehicle3) { %>
+        <li>
+          <label>V3. Make/Model:</label>
+          <%= property.vehicle3 %>
+        </li>
+        <li>
+          <label>License Plate:</label>
+          <%= property.license3 %>
+        </li>
+        <li>
+          <label>Badge:</label>
+          <%= property.badge_number_3 %>
+        </li>
+      <% } %>
+      <% if(property.vehicles_count > 3 && property.vehicle4) { %>
+        <li>
+          <label>V4. Make/Model:</label>
+          <%= property.vehicle4 %>
+        </li>
+        <li>
+          <label>License Plate:</label>
+          <%= property.license4 %>
+        </li>
+        <li>
+          <label>Badge:</label>
+          <%= property.badge_number_4 %>
+        </li>
+      <% } %>
+      <% if(property.vehicles_count > 4 && property.vehicle5) { %>
+        <li>
+          <label>V5. Make/Model:</label>
+          <%= property.vehicle5 %>
+        </li>
+        <li>
+          <label>License Plate:</label>
+          <%= property.license5 %>
+        </li>
+        <li>
+          <label>Badge:</label>
+          <%= property.badge_number_5 %>
+        </li>
+      <% } %>
+        <li class="heading"> Pet Information</li>
+        <li>
+          <label>Pets Count:</label>
+          <%= property.pets_count %>
+        </li>
+        <li>
+          <label>Pet Type:</label>
+          <%= property.pet_type %>
+        </li>
+        <li>
+          <label>Pet Breed:</label>
+          <%= property.pet_breed %>
+        </li>
+        <li>
+          <label>Pet Name:</label>
+          <%= property.pet_name %>
+        </li>
     </ul>
   </div>
 </div>
-  
+
   <% if (App.vars.isCrm) { %>
 
 <div class="col-md-4">
@@ -131,31 +225,14 @@
           <label>Household Status:</label>
           <%= property.household_status %>
         </li>
-      
+
         <li class="heading"> Previous Residence</li>
         <li>
           <label>Moving From:</label>
           <%= property.moving_from %>
         </li>
-      
-        <li class="heading"> Pet Information</li>
-        <li>
-          <label>Pets Count:</label>
-          <%= property.pets_count %>
-        </li>
-        <li>
-          <label>Pet Type:</label>
-          <%= property.pet_type %>
-        </li>
-        <li>
-          <label>Pet Breed:</label>
-          <%= property.pet_breed %>
-        </li>
-        <li>
-          <label>Pet Name:</label>
-          <%= property.pet_name %>
-        </li>
-      
+
+
         <li class="heading"> Employment</li>
         <li>
           <label>Occupation Type:</label>
@@ -184,35 +261,6 @@
         <li>
           <label>Transportation to Work:</label>
           <%= property.transportation_to_work %>
-        </li>
-        <% if(property.vehicle1) { %>
-          <li>
-            <label>V1. Make/Model/Year:</label>
-            <%= property.vehicle1 %>
-          </li>
-          <li>
-            <label>License Plate 1:</label>
-            <%= property.license1 %>
-          </li>
-        <% } %>
-      
-        <% if(property.vehicle2) { %>
-          <li>
-            <label>V2. Make/Model:</label>
-            <%= property.vehicle2 %>
-          </li>
-          <li>
-            <label>License Plate 1:</label>
-            <%= property.license2 %>
-          </li>
-        <% } %>
-        <li>
-          <label>Badge #:</label>
-          <%= property.badge_number %>
-        </li>
-        <li>
-          <label>Number of Vehicles:</label>
-          <%= property.vehicles_count %>
         </li>
       </ul>
     </div>

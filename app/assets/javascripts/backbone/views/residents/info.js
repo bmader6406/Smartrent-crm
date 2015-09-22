@@ -161,7 +161,6 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
   },
 
   showDefaultView: function(){
-    debugger;
     this.$('.nav-details a:first').click();
     return false;
   },
