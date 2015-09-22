@@ -42,6 +42,12 @@
         <i class="fa fa-angle-right"></i>
         Resident Activity 
       </a>
+      <% if ( App.vars.isSmartrent && smartrent ) { %>
+        <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
+          <i class="fa fa-angle-right"></i>
+          SmartRent
+        </a>
+      <% } %>
       <a href="http://my.hy.ly/x-ray/1445903171874510885/leads?email=<%=email%>" target="_blank" class="btn btn-lg btn-default">
         <i class="fa fa-angle-right"></i>
         Marketing History
@@ -56,12 +62,6 @@
       </a>
     <% } %>
     <!-- smartrent tab is always hidden -->
-  <% if ( App.vars.isSmartrent && smartrent ) { %>
-    <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
-      <i class="fa fa-angle-right"></i>
-      Smartrent
-    </a>
-  <% } %>
   </div>
 <% } else { %>
   <div class="nav-details">
@@ -73,6 +73,12 @@
       <i class="fa fa-angle-right"></i>
       Tickets
     </a>
+  <% if ( App.vars.isSmartrent && smartrent ) { %>
+    <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
+      <i class="fa fa-angle-right"></i>
+      SmartRent
+    </a>
+  <% } %>
   </div>
 <% } %>
 

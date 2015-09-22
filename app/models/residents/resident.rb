@@ -16,7 +16,7 @@ class Resident
   PROPERTY_FIELDS = [:property_id, :unit_id, :status, :status_date, :type, :signing_date, :move_in, :move_out, :rent,
     :household_size, :household_status, :moving_from, :pets_count, :pet_type, :pet_breed, :pet_name, :occupation_type, :employer, 
     :employer_city, :employer_state, :annual_income,  :minutes_to_work, :transportation_to_work, 
-    :vehicle1, :license1, :vehicle2, :license2, :vehicles_count, :badge_number, :rental_type,
+    :vehicle1, :license1, :badge_number_1, :vehicle2, :license2, :badge_number_2, :vehicle3, :license3, :badge_number_3, :vehicle4, :license4, :badge_number_4, :vehicle5, :license5, :badge_number_5, :vehicles_count, :rental_type,
     :lessee, :roommate, :arc_check, :occupant_type, :relationship, :office_phone, :fax, :work_hour, :other1, :other2, :other3, :other4, :other5 ]
     
   field :_id, :type => String

@@ -1,6 +1,6 @@
 <form class="form-horizontal resident-form">
   <div class="panel-group accordion">
-    
+
     <% if(App.vars.isPropertyPage){ %> <!-- property create, update form -->
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -15,13 +15,79 @@
               <div class="col-md-6">
                 <div class="heading"> Basic Information </div>
                 <div data-fields="full_name,email,primary_phone"> </div>
-              
+
                 <div class="heading"> Contact Information </div>
                 <div data-fields="street,city,state,zip,cell_phone,home_phone,work_phone"> </div>
               </div>
               <div class="col-md-6">
                 <div class="heading"> Lease Information </div>
                 <div data-fields="unit_id,signing_date,move_in,move_out,rent,status,type"> </div>
+                <div data-fields="pets_count,pet_type,pet_breed,pet_name"> </div>
+                <div class="vehicle-detail">
+                  <div class="form-group vehicle-1">
+                    <label for="employer_city" class="col-sm-4 control-label">
+                      V1. Make/Model/Year <br> &amp; License Plate # <br> &amp; Badge #
+                    </label>      
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-sm-4" data-editors="vehicle1"></div>
+                        <div class="col-sm-4" data-editors="license1"></div>
+                        <div class="col-sm-4" data-editors="badge_number_1"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group vehicle-2">
+                    <label for="employer_city" class="col-sm-4 control-label">
+                      V2. Make/Model/Year <br> &amp; License Plate # <br> &amp; Badge #
+                    </label>
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-sm-4" data-editors="vehicle2"></div>
+                        <div class="col-sm-4" data-editors="license2"></div>
+                        <div class="col-sm-4" data-editors="badge_number_2"> </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group vehicle-3">
+                    <label for="employer_city" class="col-sm-4 control-label">
+                      V3. Make/Model/Year <br> &amp; License Plate # <br> &amp; Badge #
+                    </label>
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-sm-4" data-editors="vehicle3"></div>
+                        <div class="col-sm-4" data-editors="license3"></div>
+                        <div class="col-sm-4" data-editors="badge_number_3"> </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group vehicle-4">
+                    <label for="employer_city" class="col-sm-4 control-label">
+                      V4. Make/Model/Year <br> &amp; License Plate # <br> &amp; Badge #
+                    </label>
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-sm-4" data-editors="vehicle4"></div>
+                        <div class="col-sm-4" data-editors="license4"></div>
+                        <div class="col-sm-4" data-editors="badge_number_4"> </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group vehicle-5">
+                    <label for="employer_city" class="col-sm-4 control-label">
+                      V5. Make/Model/Year <br> &amp; License Plate # <br> &amp; Badge #
+                    </label>
+                    <div class="col-sm-8">
+                      <div class="row">
+                        <div class="col-sm-4" data-editors="vehicle5"></div>
+                        <div class="col-sm-4" data-editors="license5"></div>
+                        <div class="col-sm-4" data-editors="badge_number_5"> </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div data-fields="vehicles_count"> </div>
               </div>
             </div>
           </div>
@@ -41,14 +107,12 @@
               <div class="col-md-6">
                 <div class="heading"> Occupant </div>
                 <div data-fields="gender,birthday,last4_ssn,household_status,household_size"> </div>
-                
+
                 <div class="heading"> Previous Residence </div>
                 <div data-fields="moving_from"> </div>
-                
-                <div class="heading"> Pet Information </div>
-                <div data-fields="pets_count,pet_type,pet_breed,pet_name"> </div>
+
               </div>
-              
+
               <div class="col-md-6">
                 <div class="heading"> Employment </div>
                 <div data-fields="occupation_type,employer"> </div>
@@ -65,47 +129,19 @@
                 </div>
 
                 <div data-fields="annual_income,minutes_to_work,transportation_to_work"> </div>
-                
-                <div class="vehicle-detail">
-                  <div class="form-group">
-                    <label for="employer_city" class="col-sm-4 control-label">
-                      V1. Make/Model/Year <br> & License Plate #
-                    </label>      
-                    <div class="col-sm-8">
-                      <div class="row">
-                        <div class="col-sm-6" data-editors="vehicle1"></div>
-                        <div class="col-sm-6" data-editors="license1"></div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div class="form-group">
-                    <label for="employer_city" class="col-sm-4 control-label">
-                      V2. Make/Model/Year <br> & License Plate #
-                    </label>      
-                    <div class="col-sm-8">
-                      <div class="row">
-                        <div class="col-sm-6" data-editors="vehicle2"></div>
-                        <div class="col-sm-6" data-editors="license2"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div data-fields="badge_number"> </div>
-                </div>
-                
-                <div data-fields="vehicles_count"> </div>
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>
-      
+
     <% } else { %>
-      
+
       <% if(isCreateNew){ %> <!-- org group create -->
         N/A
-        
+
       <% } else {  %> <!-- org group update -->
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -130,7 +166,7 @@
             <div class="panel-body" data-fields="street,city,state,zip,gender,birthday,cell_phone,home_phone,work_phone"> </div>
           </div>
         </div>
-        
+
       <% } %>
     <% } %>
   </div>
