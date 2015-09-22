@@ -45,7 +45,9 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
             $('#resident-history .activities').prepend(activityView.render().el)
           }
         });
-
+        
+        Crm.collInst.quickNotifications.fetch({reset: true});
+        
       }, 'json').fail(function(){
         msgbox("There was an error while replying the email, please try again", "danger");
 

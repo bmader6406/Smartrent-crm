@@ -859,6 +859,34 @@ window.Crm = {
       self.highlightNav("notifications");
     });
     
+    //quick notification on top nav
+    Crm.collInst.quickNotifications = new Crm.Collections.QuickNotifications;
+    Crm.viewInst.quickNotificationsList = new Crm.Views.QuickNotificationsList({ collection: Crm.collInst.quickNotifications });
+    Crm.viewInst.quickNotificationsList.render();
+    
+    var notificationNav = $('#notification-nav'),
+      notifTemplate = '<div class="popover" id="quick-notif"><div class="arrow"></div>' +
+        '<h3 class="popover-title"></h3>' +
+        '<div class="popover-content">Loading...</div></div>';
+    
+    notificationNav.on('click', function(){
+      return false;
+    });
+    
+    notificationNav.popover({
+      html: true,
+      title: '<a href="'+ App.vars.notificationsPath +'" id="see-all" class="page-reload">See All</a> Notifications',
+      content: "Loading...",
+      template: notifTemplate,
+      trigger: 'click',
+      placement: 'bottom',
+      container: 'body'
+    });
+
+    notificationNav.on('shown.bs.popover', function(){
+      $('#quick-notif .popover-content').html( Crm.viewInst.quickNotificationsList.el );
+    });
+
     //users
     Crm.collInst.users = new Crm.Collections.Users();
 

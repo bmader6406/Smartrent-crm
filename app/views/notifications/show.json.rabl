@@ -6,10 +6,11 @@ node do |n|
     :show_path => property_resident_path(n.property_id, n.resident_id), #TODO: highlight comment on resident page (:comment_id => n.comment_id)
     :state => n.state,
     :subject => n.subject,
-    :message => strip_tags(n.message.to_s),
+    :message => strip_tags(n.message.to_s.gsub(/<br>|<br\/>|&nbsp;/," ")),
     :property_name => (n.property.name rescue nil),
     :unit_code => (n.resident.unit_code rescue nil),
     :resident_name => (n.resident.full_name rescue nil),
-    :created_time => n.created_at.strftime("%m/%d/%Y %l:%M %p")
+    :created_time => n.created_at.strftime("%m/%d/%Y %l:%M %p"),
+    :created_at => n.created_at.iso8601
   }
 end
