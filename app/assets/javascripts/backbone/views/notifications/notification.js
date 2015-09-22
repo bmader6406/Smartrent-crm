@@ -1,3 +1,4 @@
+// placeholder
 Crm.Views.Notification = Backbone.View.extend({
   template: JST["backbone/templates/notifications/notification"],
 
@@ -7,6 +8,7 @@ Crm.Views.Notification = Backbone.View.extend({
 
   initialize: function() {
 	  this.listenTo(this.model, 'change', this.render);
+	  this.listenTo(this.model, 'rerender', this.render);
 	},
   
   render: function () {

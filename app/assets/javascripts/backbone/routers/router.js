@@ -25,11 +25,6 @@ Crm.Router = Backbone.Router.extend({
     'properties/:property_id/tickets/new(/)': 'newTicket',
     'properties/:property_id/tickets/:id/edit(/)': 'editTicket',
     'properties/:property_id/tickets/:id(/)': 'showTicket',
-    
-    'properties/:property_id/notifications(/)': 'showNotifications',
-    'properties/:property_id/notifications/new(/)': 'newNotification',
-    'properties/:property_id/notifications/edit(/)': 'editNotification',
-    'properties/:property_id/notifications/:id(/)': 'showNotification',
      
     'properties/:property_id/units(/)': 'showUnits',
     'properties/:property_id/units/new(/)': 'newUnit',
@@ -43,8 +38,6 @@ Crm.Router = Backbone.Router.extend({
     
     'properties/:property_id/reports(/)': 'showReports',
     
-    
-    
     'residents(/)': 'showResidents',
     'residents/new(/)': 'newResident',
     'residents/:id/edit(/)': 'editResident',
@@ -54,5 +47,10 @@ Crm.Router = Backbone.Router.extend({
     'residents/:id/properties(/)': 'showResidentProperties',
 
     'reports(/)': 'showReports',
+    
+    'notifications(/)': 'showNotifications',
+    'notifications/new(/)': 'newNotification',
+    'notifications/edit(/)': 'editNotification',
+    'notifications/:id(/)': 'showNotification'
   }
 });

@@ -64,6 +64,8 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           Crm.collInst.residentActivities.url = self.model.get('activities_path') + "?history=" + "resident";
           $('#resident-history').html( new Crm.Views.ActivitiesList({ collection: Crm.collInst.residentActivities }).render().el );
         }
+        
+        Crm.collInst.residentActivities.resident = this.model;
 
         $('#marketing-history, #resident-roommates, #smartrent, #resident-details').hide();
         $('#resident-history, #toolbar').show();

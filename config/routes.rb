@@ -36,7 +36,9 @@ Rails.application.routes.draw do
       resources :activities do
         member do
           post :update_note
-        end
+          post :acknowledge
+          post :reply
+        end        
       end
     end
   end
@@ -70,8 +72,6 @@ Rails.application.routes.draw do
         get :residents
       end
     end
-    
-    resources :notifications
     
     resources :notices, :as => "campaigns", :controller => "campaigns" do
       member do
@@ -110,6 +110,8 @@ Rails.application.routes.draw do
       post :become_champion
     end
   end
+  
+  resources :notifications
   
   # email system
   resources :unsubscribes do

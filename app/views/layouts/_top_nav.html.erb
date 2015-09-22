@@ -46,7 +46,7 @@
           	    <div class="items">
             	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
             	      <% next if !prop.is_crm? && !prop.is_smartrent?  %>
-            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> 
+            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>" data-crm="<%= prop.is_crm? ? 1 : 0 %>"> 
             	        <%= prop.name %>
             	        
             	        <span class="label">
@@ -60,6 +60,15 @@
           </div>
       	</div> <!-- /.list-filter -->
       </li>
+      
+      <li>
+        <a href="<%= raw main_app.notifications_path %>" class="page-reload notification-nav">
+          <i class="fa <%= pending_messages.length > 0 ? "fa-bell" : "fa-bell-o" %>"></i> 
+          Notifications 
+          <span id="pending-count" style="<%= "display:none" if pending_messages.length.zero? %>">(<%= pending_messages.length %>)</span>
+        </a>
+      </li>
+      
     </ul>
   <% end %>
 

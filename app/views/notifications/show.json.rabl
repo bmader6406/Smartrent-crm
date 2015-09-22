@@ -3,9 +3,13 @@ object @notification
 node do |n|
   {
     :id => n.id.to_s,
-    :show_path => property_notification_path(@property, n),
-    :edit_path => edit_property_notification_path(@property, n)
+    :show_path => property_resident_path(n.property_id, n.resident_id), #TODO: highlight comment on resident page (:comment_id => n.comment_id)
+    :state => n.state,
+    :subject => n.subject,
+    :message => strip_tags(n.message.to_s),
+    :property_name => (n.property.name rescue nil),
+    :unit_code => (n.resident.unit_code rescue nil),
+    :resident_name => (n.resident.full_name rescue nil),
+    :created_time => n.created_at.strftime("%m/%d/%Y %l:%M %p")
   }
 end
-
-attributes :created_at

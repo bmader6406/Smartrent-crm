@@ -8,7 +8,7 @@ class HourlyJob
   end
 
   def self.perform(time = Time.now.utc)
-
+    time = Time.parse(time) if time.kind_of?(String)
     time = time.in_time_zone('Eastern Time (US & Canada)')
 
     Resque.enqueue(MetricGenerator, time.to_i)
@@ -21,11 +21,14 @@ class HourlyJob
     #Just to make sure that this task runs before the monthly status updater
     #So we'll execute this at the end of the week
     #And if in any case the end of the week turns out to be first day of the month, we'll execute it on the previous day
+    
+    # LOT OF TYPO TALAL! (it was day_to_excute, time.hour = 0)
+    
     day_to_execute = time.end_of_week.day
-    if day_to_excute == 1
+    if day_to_execute == 1
       day_to_execute = time.end_of_month.day
     end
-    if time.day == day_to_excute && time.hour == 0
+    if time.day == day_to_execute && time.hour == 0
       Resque.enqueue(Smartrent::WeeklyPropertyXmlImporter, Time.now)
       Resque.enqueue(UnitLoadWorker, Time.now)
       Resque.enqueue(UnitRefreshWorker, Time.now)

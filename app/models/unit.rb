@@ -5,7 +5,8 @@ class Unit < ActiveRecord::Base
   validates :property_id, :bed, :bath, :sq_ft, :status, :rental_type, :presence => true
   #validates :code, :uniqueness => {:scope => [:property_id] }, :allow_nil => true
   
-  default_scope { where(:deleted_at => nil).order("created_at desc") }
+  default_scope { where(:deleted_at => nil) }
+  
   def self.keyed_by_code
     units = {}
     all.each do |unit|

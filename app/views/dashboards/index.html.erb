@@ -6,12 +6,12 @@
 $(function(){
   App.vars.propertiesPath = "<%= properties_path %>";
   App.vars.usersPath = "<%= users_path %>";
+  App.vars.notificationsPath = "<%= notifications_path %>";
   
   <% if @property %>
     App.vars.residentsPath = "<%= property_residents_path(@property) %>";
     App.vars.ticketsPath = "<%= property_tickets_path(@property) %>";
     App.vars.unitsPath = "<%= property_units_path(@property) %>";
-    App.vars.notificationsPath = "<%= property_notifications_path(@property) %>";
     App.vars.campaignsUrl = "<%= property_campaigns_path(@property) %>";
     App.vars.templatePreviewUrl = "<%= preview_template_property_campaigns_path(@property) %>";
 
@@ -52,15 +52,23 @@ $(function(){
 
   //build from property dropdown
   App.vars.properties = [];
+  App.vars.crmProperties = [];
 
   var propertyDd = $('#property-dd');
 
   propertyDd.find('a[data-val]').each(function(){
-    App.vars.properties.push({
-      val: $(this).attr('data-val'),
-      label: $(this).attr('data-label')
-    });
+    var t = $(this),
+      hash = { val: t.attr('data-val'), label: t.attr('data-label') };
+    
+    App.vars.properties.push(hash);
+    
+    if(t.attr('data-crm') == "1"){
+      App.vars.crmProperties.push(hash);
+    }
   });
+  
+  App.vars.properties = _.sortBy(App.vars.properties, "val");
+  App.vars.crmProperties = _.sortBy(App.vars.crmProperties, "val");
 
   App.vars.roles = <%= raw Role::LIST.collect{|r| {:val => r, :label => Role::DICT[r]} }.to_json %>;
   App.vars.roleDict = <%= raw Role::DICT.to_json %>;

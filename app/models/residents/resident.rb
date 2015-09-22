@@ -112,8 +112,15 @@ class Resident
     Resident.where(:_id => id.to_i).first
   end
 
+  # fixed N+1 query
   def unit_code
-    Unit.where(:id => unit_id).first.code rescue ""
+    @unit_code ||= begin
+      if @unit
+        @unit.code
+      else
+        !unit_id.blank? ? (Unit.where(:id => unit_id).first.code rescue "") : nil
+      end
+    end
   end
 
   def curr_property(pid = curr_property_id)
@@ -145,9 +152,13 @@ class Resident
   #==== relationship between mysql, mongodb document
 
 
-  def eager_load(subject)
+  def eager_load(subject, clzz = nil)
     if subject.kind_of?(Smartrent::Resident)
       @smartrent_resident = subject
+
+    elsif subject.kind_of?(Unit)
+      @unit = subject
+      
     end
   
     self

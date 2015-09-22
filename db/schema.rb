@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150916105448) do
+ActiveRecord::Schema.define(version: 20150918122106) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -215,6 +215,33 @@ ActiveRecord::Schema.define(version: 20150916105448) do
   end
 
   add_index "monitor_metrics", ["created_at"], name: "index_monitor_metrics_on_created_at", using: :btree
+
+  create_table "notification_histories", force: :cascade do |t|
+    t.integer  "notification_id", limit: 4
+    t.string   "state",           limit: 255
+    t.integer  "actor_id",        limit: 4
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "notification_histories", ["notification_id", "state"], name: "index_notification_histories_on_notification_id_and_state", using: :btree
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "property_id",   limit: 4
+    t.integer  "resident_id",   limit: 8
+    t.integer  "owner_id",      limit: 4
+    t.string   "state",         limit: 255,   default: "pending"
+    t.string   "subject",       limit: 255
+    t.text     "message",       limit: 65535
+    t.integer  "last_actor_id", limit: 4
+    t.integer  "comment_id",    limit: 4
+    t.datetime "deleted_at"
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+  end
+
+  add_index "notifications", ["property_id", "resident_id"], name: "index_notifications_on_property_id_and_resident_id", using: :btree
+  add_index "notifications", ["property_id", "state", "created_at"], name: "index_notifications_on_property_id_and_state_and_created_at", using: :btree
 
   create_table "properties", force: :cascade do |t|
     t.integer  "user_id",                   limit: 4

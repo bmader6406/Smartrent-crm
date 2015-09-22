@@ -1,6 +1,6 @@
 module DashboardsHelper
   def property_units
-    @property.units.collect{|c| {:val => c.id.to_s, :label => c.code} }
+    @property.units.order('code asc').collect{|c| {:val => c.id.to_s, :label => c.code} }
   end
   
   def property_audiences

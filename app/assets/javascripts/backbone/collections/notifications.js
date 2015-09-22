@@ -1,5 +1,22 @@
-Crm.Collections.Notifications = Backbone.Collection.extend({
+Crm.Collections.Notifications = Backbone.PageableCollection.extend({
+  model: Crm.Models.Notification,
+  mode: "server",
+  // Initial pagination states
+  state: {
+    pageSize: 15,
+    sortKey: "created_at",
+    order: 1
+  },
+  
+  initialize: function(){
+    this.url = App.vars.notificationsPath;
+  },
 
-  model: Crm.Models.Notification
+  parseState: function (resp, queryParams, state, options) {
+    return {totalRecords: resp.total};
+  },
 
+  parseRecords: function (resp, options) {
+    return resp.items;
+  }
 });

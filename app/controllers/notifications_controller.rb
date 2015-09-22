@@ -1,6 +1,5 @@
 class NotificationsController < ApplicationController
   before_action :require_user
-  before_action :set_property
   before_action :set_notification, :except => [:index, :new, :create]
   before_action :set_page_title
   
@@ -45,7 +44,9 @@ class NotificationsController < ApplicationController
   end
   
   def create
-    @notification = @property.notifications.new(notification_params)
+    @notification = Notification.new(notification_params)
+    @notification.owner = current_user
+    @notification.last_actor = current_user
     
     respond_to do |format|
       if @notification.save
@@ -58,6 +59,8 @@ class NotificationsController < ApplicationController
   end
 
   def update
+    @notification.last_actor = current_user
+    
     respond_to do |format|
       if @notification.update_attributes(notification_params)
         format.json { head :no_content }
@@ -81,14 +84,8 @@ class NotificationsController < ApplicationController
       params.require(:notification).permit!
     end
     
-    def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
-      
-      Time.zone = @property.setting.time_zone
-    end
-
     def set_notification
-      @notification = @property.notifications.find(params[:id])
+      @notification = current_user.notifications.find(params[:id])
       
       case action_name
         when "create"
@@ -103,19 +100,44 @@ class NotificationsController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Notifications" 
+      @page_title = "CRM - Notifications" 
     end
     
     def filter_notifications(per_page = 15)
       arr = []
       hash = {}
       
-      ["name"].each do |k|
+      ["property_id", "resident_id", "subject", "message", "state"].each do |k|
         next if params[k].blank?
         arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @notifications = @property.notifications.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
+      @notifications = current_user.notifications.includes(:property).where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
+      
+      # eager load residents
+      rids = @notifications.collect{|n| n.resident_id.to_s }
+      uids = []
+      
+      if !rids.empty?
+        residents = Resident.where(:id.in => rids).collect{|r| r } # don't use .all
+        @notifications.each do |n|
+          r = residents.detect{|r| n.resident_id == r._id.to_i }
+          if r
+            r.property_id = n.property_id
+            n.eager_load(r)
+            
+            uids << r.unit_id #must be after property_id is set
+          end
+        end
+        
+        # eager load units
+        units = Unit.where(:id => uids).all
+        residents.each do |r|
+          u = units.detect{|u| u.id == r.unit_id.to_i }
+          r.eager_load(u) if u
+        end
+      end
+      
     end
 end

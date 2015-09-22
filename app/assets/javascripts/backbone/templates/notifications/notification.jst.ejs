@@ -1,3 +1,20 @@
-<div class="notification">
-  notification info
+<!-- placeholder -->
+<div class="notification resident-box <%= state == "pending" ? "active" : "" %>">
+  <i class="fa <%= state == "pending" ? "fa-bell" : "fa-bell-o" %>"></i>
+  <div class="author">
+    <% if (typeof(owner) != "undefined") { %>
+      <a href="#"><%= owner.full_name %></a>
+    <% } else { %>
+      <a href="#"><%= resident.full_name || resident.email %></a>
+    <% } %>
+    
+    <%= Helpers.timeOrTimeAgo(created_at) %>
+    <% if (App.vars.ability.can("cud", "Notification")) { %>
+      <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
+    <% } %>
+  </div>
+  
+  <div class="message">
+    <%= Helpers.sanitize(message) %>
+  </div>
 </div>

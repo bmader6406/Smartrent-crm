@@ -114,20 +114,6 @@ fieldset[disabled] .btn-default.active {
   .pagination {
     margin: 20px;
   }
-  .backgrid tbody > tr {
-    cursor: pointer;
-  }
-  .backgrid tbody > tr:hover {
-    background-color: #FFFDE3;
-  }
-}
-#units {
-  .backgrid tbody > tr {
-    cursor: pointer;
-  }
-  .backgrid tbody > tr:hover {
-    background-color: #FFFDE3;
-  }
 }
 
 #resident-form {
@@ -366,10 +352,33 @@ fieldset[disabled] .btn-default.active {
   .message {
     padding: 10px 0;
   }
-  .reply-email, .play-call, .edit-ticket, .view-resident, .edit-roommate {
+  .play-call, .edit-ticket, .view-resident, .edit-roommate, .meta-btns {
     position: absolute;
     top: 17px;
     right: 20px;
+  }
+  &.active {
+    background-color: #FFFDE3 !important;
+  }
+}
+
+.meta-btns {
+  a {
+    margin-left: 10px;
+  }
+}
+.histories {
+  border-top: 1px dashed #ddd;
+  padding-top: 10px;
+  margin-top: 15px;
+  
+  & > span {
+    display: block;
+    margin-bottom: 5px;
+  }
+  span, td, th {
+    color: #aaa !important;
+    font-size: 12px !important;
   }
 }
 
@@ -932,6 +941,12 @@ fieldset[disabled] .btn-default.active {
   }
   .status {
     width: 100px;
+  }
+  tbody > tr {
+    cursor: pointer;
+  }
+  tbody > tr:hover {
+    background-color: #FFFDE3;
   }
 }
 
@@ -1733,6 +1748,17 @@ li {
   
   h3 .btn {
     float: right;
+  }
+}
+
+/* notifcation */
+
+.notification-nav {
+  i {
+    margin-right: 5px;
+  }
+  .fa-bell {
+    color: yellow;
   }
 }
 
