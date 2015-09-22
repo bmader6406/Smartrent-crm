@@ -240,6 +240,7 @@ ActiveRecord::Schema.define(version: 20150918122106) do
     t.datetime "updated_at",                                      null: false
   end
 
+  add_index "notifications", ["comment_id"], name: "index_notifications_on_comment_id", using: :btree
   add_index "notifications", ["property_id", "resident_id"], name: "index_notifications_on_property_id_and_resident_id", using: :btree
   add_index "notifications", ["property_id", "state", "created_at"], name: "index_notifications_on_property_id_and_state_and_created_at", using: :btree
 
