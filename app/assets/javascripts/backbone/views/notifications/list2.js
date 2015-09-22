@@ -10,6 +10,8 @@ Crm.Views.QuickNotificationsList = Backbone.View.extend({
     this.listenTo(this.collection, 'reset', this.showTotal);
     this.listenTo(this.collection, 'reset', this.addNotifications);
     this.listenTo(this.collection, 'add', this.add);
+    
+    this.autoRefresh();
   },
 
   showTotal: function(){
@@ -39,6 +41,38 @@ Crm.Views.QuickNotificationsList = Backbone.View.extend({
     } else {
       this.collection.each(this.add, this);
     }
+  },
+  
+  autoRefresh: function () {
+    var self = this,
+      notifyDiv = $('#notify');
+      
+    if (this.refreshTimer) clearInterval(this.refreshTimer);
+
+    this.refreshTimer = setInterval(function () {
+      var firstNotif = self.collection.at(0);
+      
+      if(firstNotif) {
+        $.getJSON(App.vars.notificationsPath + "/poll", {time: firstNotif.get('created_at') }, function(data){
+          
+          $.each(data, function(i, n){
+            var msg = "<a class='new-notif' href='"+ n.show_path +"'>" +
+                          "<b>" + n.resident_name + " | " + n.subject + "</b>" + 
+                          "<br>" + Helpers.truncate(Helpers.sanitize(n.message), 50) + 
+                          "<br> <small>" + Helpers.timeOrTimeAgo(n.created_at) + "</small> " +
+                       "</a>";
+            
+            notifyDiv.notify({
+              type: "success",
+              message: { html: msg },
+              fadeOut: { enabled: false }
+            }).show();
+          });
+          
+          self.collection.fetch({reset: true});
+        });
+      }
+    }, 30000 ); //refresh every 30 seconds
   },
   
   render: function () {

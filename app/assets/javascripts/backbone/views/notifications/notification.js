@@ -3,7 +3,7 @@ Crm.Views.Notification = Backbone.View.extend({
   tagName: 'li',
   
   events: {
-    'click': 'showResidentDetail'
+    'click .notif': 'showResidentDetail'
   },
 
   initialize: function() {

@@ -1,10 +1,6 @@
 <!-- placeholder -->
 <div class="notif <%= state == "pending" ? "active" : "" %>">
-  <div class="author">
-    <b><%= resident_name %></b> at <b><%= property_name %></b> wrote
-  </div>
-  
-  <div class="subject"><%= Helpers.sanitize(subject) %></div>
+  <div class="subject"><%= resident_name %> | <%= Helpers.sanitize(subject) %></div>
   <div class="message">
     <%= Helpers.truncate(Helpers.sanitize(message), 60) %>
   </div>
