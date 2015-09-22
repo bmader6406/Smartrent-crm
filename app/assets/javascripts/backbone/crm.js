@@ -860,33 +860,8 @@ window.Crm = {
     });
     
     //quick notification on top nav
-    Crm.collInst.quickNotifications = new Crm.Collections.QuickNotifications;
-    Crm.viewInst.quickNotificationsList = new Crm.Views.QuickNotificationsList({ collection: Crm.collInst.quickNotifications });
-    Crm.viewInst.quickNotificationsList.render();
+    this.setupQuickNotification();
     
-    var notificationNav = $('#notification-nav'),
-      notifTemplate = '<div class="popover" id="quick-notif"><div class="arrow"></div>' +
-        '<h3 class="popover-title"></h3>' +
-        '<div class="popover-content">Loading...</div></div>';
-    
-    notificationNav.on('click', function(){
-      return false;
-    });
-    
-    notificationNav.popover({
-      html: true,
-      title: '<a href="'+ App.vars.notificationsPath +'" id="see-all" class="page-reload">See All</a> Notifications',
-      content: "Loading...",
-      template: notifTemplate,
-      trigger: 'click',
-      placement: 'bottom',
-      container: 'body'
-    });
-
-    notificationNav.on('shown.bs.popover', function(){
-      $('#quick-notif .popover-content').html( Crm.viewInst.quickNotificationsList.el );
-    });
-
     //users
     Crm.collInst.users = new Crm.Collections.Users();
 
@@ -1036,5 +1011,61 @@ window.Crm = {
       $('#center').removeClass('previewing');
       App.layout.sizePane('west', 305);
     }
+  },
+  
+  setupQuickNotification: function() {
+    Crm.collInst.quickNotifications = new Crm.Collections.QuickNotifications;
+    Crm.viewInst.quickNotificationsList = new Crm.Views.QuickNotificationsList({ collection: Crm.collInst.quickNotifications });
+    Crm.viewInst.quickNotificationsList.render();
+    
+    var notificationNav = $('#notification-nav'),
+      notifTemplate = '<div class="popover" id="quick-notif"><div class="arrow"></div>' +
+        '<h3 class="popover-title"></h3>' +
+        '<div class="popover-content">Loading...</div></div>',
+      notifTitle = '<a href="'+ App.vars.notificationsPath +'" id="see-all" class="page-reload">See All</a> Notifications';
+      
+    if($.cookie("notif_sound_off")){
+      notifTitle += '<a href="#" class="toggle-sound"><i class="fa fa-volume-off"></a>';
+      
+    } else {
+      notifTitle += '<a href="#" class="toggle-sound"><i class="fa fa-volume-up"></a>';
+    }
+    
+    notificationNav.on('click', function(){
+      return false;
+    });
+    
+    notificationNav.popover({
+      html: true,
+      title: notifTitle,
+      content: "Loading...",
+      template: notifTemplate,
+      trigger: 'click',
+      placement: 'bottom',
+      container: 'body'
+    });
+
+    notificationNav.on('shown.bs.popover', function(){
+      var quickNotif = $('#quick-notif');
+      
+      quickNotif.find('.popover-content').html( Crm.viewInst.quickNotificationsList.el );
+      quickNotif.on('click', '.toggle-sound', function(){
+        var soundOff = !$.cookie("notif_sound_off") ? 1 : "";
+        
+        if(soundOff, $.cookie("notif_sound_off")) {
+          quickNotif.find('.toggle-sound i').removeClass('fa-volume-off').addClass('fa-volume-up');
+        } else {
+          quickNotif.find('.toggle-sound i').removeClass('fa-volume-up').addClass('fa-volume-off');
+        }
+
+        $.cookie("notif_sound_off", soundOff, { 
+          expires: 365,
+          path: '/' 
+        });
+        
+        return false;
+      });
+    });
+    
   }
 };
