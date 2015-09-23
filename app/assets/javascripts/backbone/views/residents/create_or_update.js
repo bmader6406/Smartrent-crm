@@ -6,7 +6,8 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
 		"submit form": "createOrUpdate",
 		"click .archive": "archive",
 		"click .cancel": "hideForm",
-		"change #vehicles_count": "showVehicles"
+		"change #vehicles_count": "showVehicles",
+		"change #pets_count": "onPetCountChange"
 	},
 
   resident: function(){
@@ -190,7 +191,7 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
         },
         household_status: {
           type: 'Select',
-          title: 'Household Satus',
+          title: 'Household Status',
           options: App.vars.metricOptions["household_status"]
         },
         moving_from: {
@@ -201,18 +202,58 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
         pets_count: {
           type: 'Select',
           title: 'Pets Count',
-          options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+          options: [0, 1, 2, 3]
         },
-        pet_type:{
+        pet_1_type:{
           type: 'Select',
           title: 'Pet Type',
           options: App.vars.metricOptions["pet"]
         },
-        pet_breed: {
-          title: 'Pet Breed'
+        pet_1_breed: {
+          title: 'Pet Breed',
+          editorAttrs: {
+            placeholder: "Pet Breed"
+          }
         },
-        pet_name: {
-          title: 'Pet Name'
+        pet_1_name: {
+          title: 'Pet Name',
+          editorAttrs: {
+            placeholder: "Pet Name"
+          }
+        },
+        pet_2_type:{
+          type: 'Select',
+          title: 'Pet Type',
+          options: App.vars.metricOptions["pet"]
+        },
+        pet_2_breed: {
+          title: 'Pet Breed',
+          editorAttrs: {
+            placeholder: "Pet Breed"
+          }
+        },
+        pet_2_name: {
+          title: 'Pet Name',
+          editorAttrs: {
+            placeholder: "Pet Name"
+          }
+        },
+        pet_3_type:{
+          type: 'Select',
+          title: 'Pet Type',
+          options: App.vars.metricOptions["pet"]
+        },
+        pet_3_breed: {
+          title: 'Pet Breed',
+          editorAttrs: {
+            placeholder: "Pet Breed"
+          }
+        },
+        pet_3_name: {
+          title: 'Pet Name',
+          editorAttrs: {
+            placeholder: "Pet Name"
+          }
         },
         occupation_type: {
           type: 'Select',
@@ -351,6 +392,9 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
       this.showBadgeNumbers(parseInt(resident.vehicles_count));
     }
 
+    if( parseInt(resident.pets_count) > 0)
+      this.showPets(parseInt(resident.pets_count));
+
     return this;
   },
   showBadgeNumbers: function(vehicle_count) {
@@ -367,6 +411,22 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
         this.$('.vehicle-2').show();
       case 1:
         this.$('.vehicle-1').show();
+        break;
+      default:
+    }
+  },
+  onPetCountChange: function(ev){
+    this.showPets(parseInt($(ev.target).val(), 10));
+  },
+  showPets: function(pet_count) {
+    this.$('div[class*="pet-"]').hide();
+    switch (parseInt(pet_count)) {
+      case 3:
+        this.$('.pet-3').show();
+      case 2:
+        this.$('.pet-2').show();
+      case 1:
+        this.$('.pet-1').show();
         break;
       default:
     }

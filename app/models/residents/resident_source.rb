@@ -24,9 +24,19 @@ class ResidentSource
   field :household_status, :type => String
   field :moving_from, :type => String
   field :pets_count, :type => Integer
-  field :pet_type, :type => String
-  field :pet_breed, :type => String
-  field :pet_name, :type => String
+
+  field :pet_1_type, :type => String
+  field :pet_1_breed, :type => String
+  field :pet_1_name, :type => String
+
+  field :pet_2_type, :type => String
+  field :pet_2_breed, :type => String
+  field :pet_2_name, :type => String
+
+  field :pet_3_type, :type => String
+  field :pet_3_breed, :type => String
+  field :pet_3_name, :type => String
+
   field :occupation_type, :type => String
   field :employer, :type => String
   field :employer_city, :type => String
