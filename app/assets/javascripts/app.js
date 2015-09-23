@@ -182,7 +182,7 @@ App.hideMask = function() {
 var Helpers = {
   timeOrTimeAgo: function(str){
     var time = moment(str),
-      timeStr = time.format("MMMM Do YYYY, h:mm:ss a");
+      timeStr = time.format("MMMM Do YYYY, h:mm a");
 
     if((moment().diff(time, 'day') >= 2)){
       return '<span>'+ timeStr +'</span>';

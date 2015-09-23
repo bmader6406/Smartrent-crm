@@ -1,9 +1,9 @@
-// placeholder
 Crm.Views.Notification = Backbone.View.extend({
   template: JST["backbone/templates/notifications/notification"],
-
+  tagName: 'li',
+  
   events: {
-
+    'click .notif': 'showResidentDetail'
   },
 
   initialize: function() {
@@ -14,6 +14,11 @@ Crm.Views.Notification = Backbone.View.extend({
   render: function () {
   	this.$el.html(this.template(this.model.toJSON()));
   	return this;
+  },
+  
+  showResidentDetail: function() {
+    App.vars.residentObj = null;
+    window.location.href = this.model.get("show_path");
   }
   
 });

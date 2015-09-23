@@ -1,6 +1,6 @@
 class NotificationsController < ApplicationController
   before_action :require_user
-  before_action :set_notification, :except => [:index, :new, :create]
+  before_action :set_notification, :except => [:index, :new, :create, :poll]
   before_action :set_page_title
   
   def index
@@ -75,6 +75,35 @@ class NotificationsController < ApplicationController
     
     respond_to do |format|
       format.json { head :no_content }
+    end
+  end
+  
+  def poll
+    time = Time.parse(params[:time]) rescue Time.now
+    @notifications = current_user.notifications.where("state = 'pending' AND created_at > ?", time.to_s(:db) ).includes(:property).order('created_at desc')
+    
+    # eager load residents
+    rids = @notifications.collect{|n| n.resident_id.to_s }
+    uids = []
+    
+    if !rids.empty?
+      residents = Resident.where(:id.in => rids).collect{|r| r } # don't use .all
+      @notifications.each do |n|
+        r = residents.detect{|r| n.resident_id == r._id.to_i }
+        if r
+          r.property_id = n.property_id
+          n.eager_load(r)
+          
+          uids << r.unit_id #must be after property_id is set
+        end
+      end
+      
+      # eager load units
+      units = Unit.where(:id => uids).all
+      residents.each do |r|
+        u = units.detect{|u| u.id == r.unit_id.to_i }
+        r.eager_load(u) if u
+      end
     end
   end
   

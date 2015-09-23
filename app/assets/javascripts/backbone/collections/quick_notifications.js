@@ -1,9 +1,9 @@
-Crm.Collections.Notifications = Backbone.PageableCollection.extend({
+Crm.Collections.QuickNotifications = Backbone.PageableCollection.extend({
   model: Crm.Models.Notification,
   mode: "server",
   // Initial pagination states
   state: {
-    pageSize: 15,
+    pageSize: 25,
     sortKey: "created_at",
     order: 1
   },

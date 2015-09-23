@@ -111,7 +111,11 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :notifications
+  resources :notifications do
+    collection do
+      get :poll
+    end
+  end
   
   # email system
   resources :unsubscribes do

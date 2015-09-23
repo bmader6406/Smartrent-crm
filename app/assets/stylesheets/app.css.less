@@ -368,17 +368,36 @@ fieldset[disabled] .btn-default.active {
   }
 }
 .histories {
-  border-top: 1px dashed #ddd;
-  padding-top: 10px;
   margin-top: 15px;
+  overflow: hidden;
   
-  & > span {
-    display: block;
-    margin-bottom: 5px;
+  & > div {
+    border-top: 1px dashed #ddd;
+    display: none;
+    padding-top: 10px;
+    
+    & > span {
+      display: block;
+      margin-bottom: 5px;
+    }
   }
-  span, td, th {
+  a, span, td, th {
     color: #aaa !important;
     font-size: 12px !important;
+  }
+}
+
+
+.email-act {
+  #email-wrap {
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    margin-top: 5px;
+    padding: 20px;
+  }
+  .show-logs, .hide-logs {
+    float: right;
   }
 }
 
@@ -1753,13 +1772,72 @@ li {
 
 /* notifcation */
 
-.notification-nav {
+#notification-nav {
   i {
     margin-right: 5px;
   }
   .fa-bell {
     color: yellow;
   }
+}
+
+.popover {
+  max-width: 520px;
+}
+#see-all {
+  float: right;
+}
+#quick-notif {
+  margin-top: 12px;
+  min-height: 100px;
+  width: 400px;
+  
+  ul {
+    margin: 0;
+    max-height: 500px;
+    overflow: auto;
+    
+    li:first-child .notif {
+      border-top: 0 none;
+    }
+  }
+  .popover-content {
+    padding: 0;
+  }
+}
+
+.notif {
+  cursor: pointer;
+  border-top: 1px solid #ccc;
+  padding: 9px 14px;
+  
+  &:hover {
+    background-color: #f4f4f4;
+  }
+  /* not needed
+  &.active {
+    background-color: #FDFFED;
+  }*/
+  
+  .timeago {
+    color: #bbb;
+    font-size: 12px;
+  }
+  .subject {
+    font-weight: 500;
+    margin: 5px 0 0;
+  }
+}
+
+.new-notif {
+  display: block;
+  text-decoration: none !important;
+  color: #fff;
+  width: 300px;
+}
+.toggle-sound {
+  font-size: 16px;
+  margin-left: 10px;
 }
 
 /* SR merge */

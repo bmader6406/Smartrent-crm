@@ -5,6 +5,8 @@ Crm.Views.Activity = Backbone.View.extend({
     "click .delete": "_delete",
     "click .acknowledge": "acknowledge",
     "click .show-reply-form": "showReplyForm",
+    "click .show-logs": "showLogs",
+    "click .hide-logs": "hideLogs",
     "click .show-quoted": "showQuoted",
     "click .edit-note": "editNote",
     "click .cancel-note": "cancelNote",
@@ -71,6 +73,8 @@ Crm.Views.Activity = Backbone.View.extend({
       var activityView = new Crm.Views.Activity({ model: new Crm.Models.Activity(data) });
       residentBox.parent().replaceWith(activityView.render().el);
       
+      Crm.collInst.quickNotifications.fetch({reset: true});
+      
     }, 'json').fail(function(){
       msgbox("There was an error while updating the activity, please try again", "danger");
       
@@ -118,6 +122,26 @@ Crm.Views.Activity = Backbone.View.extend({
     } else {
       residentBox.find('#email-wrap').slideDown();
     }
+    
+    return false;
+  },
+  
+  showLogs: function(ev){
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
+    
+    residentBox.find('.show-logs').hide();
+    residentBox.find('.histories > div').fadeIn();
+      
+    return false;
+  },
+  
+  hideLogs: function(ev){
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
+    
+    residentBox.find('.histories > div').hide();
+    residentBox.find('.show-logs').show();
     
     return false;
   },

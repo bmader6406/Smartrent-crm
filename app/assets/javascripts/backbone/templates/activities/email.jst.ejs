@@ -34,21 +34,25 @@
   
   <% if (notification.histories && notification.histories.length > 0) { %>
     <div class="histories">
-      <span>Notification Log:</span>
-      <table class="table table-bordered table-condensed">
-        <tr>
-          <th width="160px"> Date & Time </th>
-          <th width="160px"> State </th>
-          <th> Manager </th>
-        </tr>
-        <% for (var i=0, h; h=notification.histories[i]; i++) { %>
+      <a href="#" class="show-logs"> Show Logs</a>
+      <div>
+        <a href="#" class="hide-logs">Hide Logs</a>
+        <span>Log:</span>
+        <table class="table table-bordered table-condensed">
           <tr>
-            <td> <%= h.created_time %> </td>
-            <td> <%= h.pretty_state %> </td>
-            <td> <%= h.full_name %> - <%= h.email %> </td>
+            <th width="180px"> Date & Time </th>
+            <th width="180px"> State </th>
+            <th> Manager </th>
           </tr>
-        <% } %>
-      </table>
+          <% for (var i=0, h; h=notification.histories[i]; i++) { %>
+            <tr>
+              <td> <%= h.created_time %> </td>
+              <td> <%= h.pretty_state %> </td>
+              <td> <%= h.full_name %> - <%= h.email %> </td>
+            </tr>
+          <% } %>
+        </table>
+      </div>
     </div>
   <% } %>
   
