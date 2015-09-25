@@ -15,6 +15,7 @@ class UnitRefreshWorker
   end
 
   def self.perform(time = nil)
+    time = Time.parse(time) if time.kind_of?(String)
     # download xml from ftp
     
     #Floorplan contains all the floor_plans

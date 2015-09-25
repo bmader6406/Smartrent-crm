@@ -19,8 +19,13 @@ class MetricGenerator
       PropertySetting.where("time_zone IN (?)", midnight_time_zones).includes(:property).each do |setting|
           
         Time.zone = setting.time_zone
-      
-        calculate(setting.property)
+        
+        if setting.property
+          pp "Calculating... #{setting.property.name}"
+          calculate(setting.property)
+        else
+          pp "Property (#{setting.property_id}) Not FOund"
+        end
       end
     
     rescue Exception => e
