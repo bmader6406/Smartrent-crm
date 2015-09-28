@@ -64,7 +64,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           Crm.collInst.residentActivities.url = self.model.get('activities_path') + "?history=" + "resident";
           $('#resident-history').html( new Crm.Views.ActivitiesList({ collection: Crm.collInst.residentActivities }).render().el );
         }
-        
+
         Crm.collInst.residentActivities.resident = this.model;
 
         $('#marketing-history, #resident-roommates, #smartrent, #resident-details').hide();
@@ -138,6 +138,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     return false;
   },
   viewResidentDetails: function(){
+    Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent').hide();
     $('#resident-info .nav-details .btn').removeClass('btn-primary').addClass('btn-default');
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
