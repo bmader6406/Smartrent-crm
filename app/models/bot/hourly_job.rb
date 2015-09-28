@@ -7,7 +7,7 @@ class HourlyJob
     :crm_scheduled
   end
 
-  def self.perform(time = time.utc)
+  def self.perform(time = Time.now.utc)
     time = Time.parse(time) if time.kind_of?(String)
     time = time.in_time_zone('Eastern Time (US & Canada)')
 
