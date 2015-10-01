@@ -79,22 +79,22 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
     var self = this;
     $.getJSON(self.resident.attributes.roommates_path, function(data){
       if (data.length > 0) {
-        var roommates = []
-        var cc = self.$('[name="cc"]')
-        var to = self.$('[name="to"]').val()
-        var ccValue = cc.val().trim();
-        var ccEmails = []
-        var emails = ccValue.split(",")
+        var roommates = [],
+          cc = self.$('[name="cc"]'),
+          to = self.$('[name="to"]').val(),
+          ccValue = cc.val().trim(),
+          ccEmails = [],
+          emails = ccValue.split(",");
         for (var i in emails) {
-          email = emails[i]
+          email = emails[i];
           if (email.length > 0)
-            ccEmails.push(email.trim())
+            ccEmails.push(email.trim());
         }
         for (var i in data) {
           if (ccEmails.indexOf(data[i].email) == -1 && data[i].email != to)
-            ccEmails.push(data[i].email)
+            ccEmails.push(data[i].email);
         }
-        cc.val(ccEmails.join(","))
+        cc.val(ccEmails.join(", "));
       }
     });
     return false;

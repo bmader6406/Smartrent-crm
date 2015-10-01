@@ -1774,10 +1774,13 @@ li {
 
 #notification-nav {
   i {
-    margin-right: 5px;
+    margin-right: 0px;
   }
   .fa-bell {
     color: yellow;
+  }
+  &:hover, &:focus {
+    text-decoration:none;
   }
 }
 
@@ -1788,9 +1791,16 @@ li {
   float: right;
 }
 #quick-notif {
-  margin-top: 12px;
-  min-height: 100px;
-  width: 400px;
+    left: auto !important;
+    margin-top: 12px;
+    min-height: 100px;
+    right: 30px !important;
+    top: 50px !important;
+    width: 400px;
+
+  .arrow {
+    left: 287px !important;
+  }
   
   ul {
     margin: 0;
@@ -1913,7 +1923,7 @@ li {
 .LV_valid {
   display: none;
 }
-input#top_unit_code {
+#top_unit_code {
   margin-top: 12px;
   margin-left: 12px;
   width: 221px;
