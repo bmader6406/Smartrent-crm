@@ -31,11 +31,11 @@ window.Crm = {
       }
     });
     $("form#top_nav_unit_form").submit(function(){
-      action = this.action
-      url = action + "/units/code/" + $('#top_unit_code').val() + ".json";
       $.ajax({
-        url: url,
+        url: this.action + "/units/code/" + $.trim( $('#top_unit_code').val().replace("#", "") ),
+        dataType: 'json',
         success: function(data){
+          App.vars.unitObj = data;
           router.navigate(data.show_path, true);
         },
         error: function(data) {
@@ -366,7 +366,7 @@ window.Crm = {
       }
 
       var property = Crm.collInst.properties.get(id);
-      Crm.collInst.units.fetch();
+      
 
       if(!property && App.vars.propertyObj){
         property = new Crm.Models.Property( App.vars.propertyObj );
