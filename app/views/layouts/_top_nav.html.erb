@@ -76,7 +76,7 @@
         <a href="<%= raw main_app.notifications_path %>" class="page-reload" id="notification-nav">
           <i class="fa <%= pending_messages.length > 0 ? "fa-bell" : "fa-bell-o" %>"></i> 
           <span id="pending-count" style="<%= "display:none" if pending_messages.length.zero? %>">(<%= pending_messages.length %>)</span>
-        </a>
+        </a> |
       <a href="<%= main_app.profile_path %>" class="page-reload">
         <%= current_user.first_name %> 
       </a>
