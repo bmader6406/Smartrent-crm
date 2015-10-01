@@ -39,7 +39,7 @@ window.Crm = {
           router.navigate(data.show_path, true);
         },
         error: function(data) {
-          msgbox("Unit not found", "danger");
+          msgbox("No unit found. Please enter another unit number.", "danger");
         }
       })
       return false;

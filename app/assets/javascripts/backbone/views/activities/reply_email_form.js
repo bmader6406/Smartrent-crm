@@ -3,7 +3,8 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
   events:	{
 		"submit form": "sendEmail",
 		"click .cancel": "cancel",
-		"click .show-quoted": "showQuoted"
+		"click .show-quoted": "showQuoted",
+		"click #add-roommates": "addRoomMates"
 	},
 
   activity: function(){
@@ -74,6 +75,30 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
     return false;
   },
 
+  addRoomMates: function(ev){
+    var self = this;
+    $.getJSON(self.resident.attributes.roommates_path, function(data){
+      if (data.length > 0) {
+        var roommates = []
+        var cc = self.$('[name="cc"]')
+        var to = self.$('[name="to"]').val()
+        var ccValue = cc.val().trim();
+        var ccEmails = []
+        var emails = ccValue.split(",")
+        for (var i in emails) {
+          email = emails[i]
+          if (email.length > 0)
+            ccEmails.push(email.trim())
+        }
+        for (var i in data) {
+          if (ccEmails.indexOf(data[i].email) == -1 && data[i].email != to)
+            ccEmails.push(data[i].email)
+        }
+        cc.val(ccEmails.join(","))
+      }
+    });
+    return false;
+  },
   render: function () {
     var resident = this.resident,
       form = new Backbone.Form({
@@ -92,8 +117,24 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
           },
           cc: {
             validators: [
-              {type: 'email', message: 'CC email is not valid'}
-            ]
+              function checkEmail(value, formValues) {
+                  var err = {
+                      type: 'cc',
+                      message: ''
+                  };
+                  var emails = value.split(",")
+                  var invalidEmails = []
+                  if (emails.length > 0) {
+                    for (var i in emails) {
+                      if (emails[i].length > 0 && !App.validateEmail(emails[i]))
+                        invalidEmails.push(emails[i])
+                    }
+                  }
+                  if (invalidEmails.length > 0) {
+                    err.message = invalidEmails.join(',') + ' in cc are invalid email addresses'
+                    return err;
+                  }
+              }]
           },
           subject: {
             validators: [{type: 'required', message: 'Subject is required'}]

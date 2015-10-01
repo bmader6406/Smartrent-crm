@@ -74,6 +74,7 @@ Crm.Views.EmailForm = Backbone.View.extend({
       if (data.length > 0) {
         var roommates = []
         var cc = self.$('[name="cc"]')
+        var to = self.$('[name="to"]').val()
         var ccValue = cc.val().trim();
         var ccEmails = []
         var emails = ccValue.split(",")
@@ -83,7 +84,7 @@ Crm.Views.EmailForm = Backbone.View.extend({
             ccEmails.push(email.trim())
         }
         for (var i in data) {
-          if (ccEmails.indexOf(data[i].email) == -1)
+          if (ccEmails.indexOf(data[i].email) == -1 && data[i].email != to)
             ccEmails.push(data[i].email)
         }
         cc.val(ccEmails.join(","))
