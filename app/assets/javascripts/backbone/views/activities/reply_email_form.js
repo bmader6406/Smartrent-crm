@@ -85,15 +85,16 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
           ccValue = cc.val().trim(),
           ccEmails = [],
           emails = ccValue.split(",");
-        for (var i in emails) {
-          email = emails[i];
+
+        _.each(emails, function(email) {
           if (email.length > 0)
             ccEmails.push(email.trim());
-        }
-        for (var i in data) {
-          if (!_.find(ccEmails, function(email){return value.email == email}) && data[i].email != to)
-            ccEmails.push(data[i].email);
-        }
+        });
+        _.each(data, function(value){
+          if (!_.contains(ccEmails, value.email) && value.email != to)
+            ccEmails.push(value.email);
+        });
+        
         cc.val(ccEmails.join(", "));
       }
     });
