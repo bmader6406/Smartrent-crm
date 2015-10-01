@@ -60,10 +60,14 @@
           </div>
       	</div> <!-- /.list-filter -->
       </li>
-      
-      <li>
-      </li>
-      
+      <% if @property.present? %>
+        <li>
+        <form id="top_nav_unit_form" action="<%= main_app.property_path(@property) %>">
+          <input type="text" pattern=".{3,}" required title="3 characters minimum" class="form-control" placeholder="Unit #" name="unit_code" id="top_unit_code" />
+          </form>
+        </li>
+      <% end %>
+
     </ul>
   <% end %>
 

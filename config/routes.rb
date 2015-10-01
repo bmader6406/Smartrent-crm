@@ -38,7 +38,7 @@ Rails.application.routes.draw do
           post :update_note
           post :acknowledge
           post :reply
-        end        
+        end
       end
     end
   end
@@ -70,6 +70,9 @@ Rails.application.routes.draw do
     resources :units do
       member do
         get :residents
+      end
+      collection do
+        get "code/:code", :as => :show_by_code, :to => :show_by_code
       end
     end
     

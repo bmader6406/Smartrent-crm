@@ -1,7 +1,7 @@
 class UnitsController < ApplicationController
   before_action :require_user
   before_action :set_property
-  before_action :set_unit, :except => [:index, :new, :create]
+  before_action :set_unit, :except => [:index, :new, :create, :show_by_code]
   before_action :set_page_title
   
   def index
@@ -24,6 +24,17 @@ class UnitsController < ApplicationController
       }
       format.json {}
     end
+  end
+
+  def show_by_code
+    @unit = Unit.find_by_property_id_and_code(params[:property_id], params[:code])
+    respond_to do |format|
+      format.html {
+        render :file => "dashboards/index"
+      }
+      format.json {render "show"}
+    end
+
   end
   
   def new
