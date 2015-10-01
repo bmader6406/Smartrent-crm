@@ -72,22 +72,21 @@ Crm.Views.EmailForm = Backbone.View.extend({
     var self = this;
     $.getJSON(self.resident.attributes.roommates_path, function(data){
       if (data.length > 0) {
-        var roommates = []
-        var cc = self.$('[name="cc"]')
-        var to = self.$('[name="to"]').val()
-        var ccValue = cc.val().trim();
-        var ccEmails = []
-        var emails = ccValue.split(",")
-        for (var i in emails) {
-          email = emails[i]
+      var roommates = [],
+        cc = self.$('[name="cc"]'),
+        to = self.$('[name="to"]').val(),
+        ccValue = cc.val().trim(),
+        ccEmails = [],
+        emails = ccValue.split(",");
+        _.each(emails, function(email) {
           if (email.length > 0)
-            ccEmails.push(email.trim())
-        }
-        for (var i in data) {
-          if (ccEmails.indexOf(data[i].email) == -1 && data[i].email != to)
-            ccEmails.push(data[i].email)
-        }
-        cc.val(ccEmails.join(","))
+            ccEmails.push(email.trim());
+        });
+        _.each(data, function(value){
+          if (ccEmails.indexOf(value.email) == -1 && value.email != to)
+            ccEmails.push(value.email);
+        });
+        cc.val(ccEmails.join(", "));
       }
     });
     return false;
@@ -119,10 +118,10 @@ Crm.Views.EmailForm = Backbone.View.extend({
                   var emails = value.split(",")
                   var invalidEmails = []
                   if (emails.length > 0) {
-                    for (var i in emails) {
-                      if (emails[i].length > 0 && !App.validateEmail(emails[i]))
-                        invalidEmails.push(emails[i])
-                    }
+                    _.each(emails, function(email){
+                      if (email.length > 0 && !App.validateEmail(email.trim()))
+                        invalidEmails.push(email.trim())
+                    });
                   }
                   if (invalidEmails.length > 0) {
                     err.message = invalidEmails.join(',') + ' in cc are invalid email addresses'
