@@ -3,30 +3,31 @@ Crm.Views.EmailForm = Backbone.View.extend({
   events:	{
 		"submit form": "sendEmail",
 		"click .cancel": "cancel",
-		"click .show-quoted": "showQuoted"
+		"click .show-quoted": "showQuoted",
+		"click #add-roommates": "addRoomMates"
 	},
-	
+
   activity: function(){
     return this.model !== undefined ? this.model.toJSON() : new Crm.Models.Activity().toJSON();
   },
-  
+
   cancel: function(){
     $('#toolbar .btn.selected').click();
     //$(this.form.el).resetForm();
     $(this.form.el).find("#subject, #message").val("");
     this.$('.redactor_editor').empty();
-    
+
     return false;
   },
-  
+
   sendEmail: function (ev) {
     var editor = this.$('.redactor_editor');
     editor.find('.show-quoted').remove();
     this.$('#message').val( editor.html() ); //refresh
-    
+
     var self = this,
       method = this.collection.create,
-      params = { 
+      params = {
         comment: {type: 'email'},
         email: self.$('form').toJSON()
       },
@@ -45,7 +46,7 @@ Crm.Views.EmailForm = Backbone.View.extend({
           //$(self.form.el).resetForm();
           $(self.form.el).find("#subject, #message").val("");
           self.$('.redactor_editor').empty();
-          
+
           self.$el.slideUp();
           $('#toolbar .btn').removeClass('selected');
         }
@@ -60,10 +61,33 @@ Crm.Views.EmailForm = Backbone.View.extend({
 
     return false;
   },
-  
+
   showQuoted: function(ev){
     this.$('.show-quoted').each(function(){
       $(this).attr('style', 'display:none !important;').next().show();
+    });
+    return false;
+  },
+  addRoomMates: function(ev){
+    var self = this;
+    $.getJSON(self.resident.attributes.roommates_path, function(data){
+      if (data.length > 0) {
+        var roommates = []
+        var cc = self.$('[name="cc"]')
+        var ccValue = cc.val().trim();
+        var ccEmails = []
+        var emails = ccValue.split(",")
+        for (var i in emails) {
+          email = emails[i]
+          if (email.length > 0)
+            ccEmails.push(email.trim())
+        }
+        for (var i in data) {
+          if (ccEmails.indexOf(data[i].email) == -1)
+            ccEmails.push(data[i].email)
+        }
+        cc.val(ccEmails.join(","))
+      }
     });
     return false;
   },
@@ -72,19 +96,40 @@ Crm.Views.EmailForm = Backbone.View.extend({
     var resident = this.resident,
       form = new Backbone.Form({
         schema: {
-          from: { 
+          from: {
             validators: [
               {type: 'required', message: 'Sender is required'},
               {type: 'email', message: 'Sender email is not valid'}
             ]
           },
-          to: { 
+          to: {
             validators: [
               {type: 'required', message: 'Recipient is required'},
               {type: 'email', message: 'Recipient email is not valid'}
             ]
           },
-          subject: { 
+          cc: {
+            validators: [
+              function checkEmail(value, formValues) {
+                  var err = {
+                      type: 'cc',
+                      message: ''
+                  };
+                  var emails = value.split(",")
+                  var invalidEmails = []
+                  if (emails.length > 0) {
+                    for (var i in emails) {
+                      if (emails[i].length > 0 && !App.validateEmail(emails[i]))
+                        invalidEmails.push(emails[i])
+                    }
+                  }
+                  if (invalidEmails.length > 0) {
+                    err.message = invalidEmails.join(',') + ' in cc are invalid email addresses'
+                    return err;
+                  }
+              }]
+          },
+          subject: {
             validators: [{type: 'required', message: 'Subject is required'}]
           },
           message: {

@@ -4,6 +4,21 @@ class Email < ActiveRecord::Base
   
   validates :comment_id, :subject, :from, :to, :message, :presence => true
   validates :from, :to, :format => { :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
+  validate :validate_cc_emails
+
+  def validate_cc_emails
+    if cc.present?
+      emails = cc.split(",")
+      if emails.present?
+        emails.each do |email|
+          email = email.strip
+          if email.present? && !Devise::email_regexp.match(email)
+            errors.add(:cc, "#{email} is not valid")
+          end
+        end
+      end
+    end
+  end
   
   before_create :generate_token
   

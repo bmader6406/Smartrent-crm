@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150918122106) do
+ActiveRecord::Schema.define(version: 20150930141649) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -158,6 +158,7 @@ ActiveRecord::Schema.define(version: 20150918122106) do
     t.string   "message_id", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "cc",         limit: 65535
   end
 
   add_index "emails", ["comment_id"], name: "index_emails_on_comment_id", using: :btree

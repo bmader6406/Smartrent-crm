@@ -48,7 +48,7 @@ class Notifier < ActionMailer::Base
     Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])  
     @message = message
     
-    mail(:to => email, :from => meta["from"], :subject => subject, :bcc => meta["bcc"], :reply_to => meta["reply_to"])
+    mail(:to => email, :from => meta["from"], :subject => subject, :cc => meta["cc"], :bcc => meta["bcc"], :reply_to => meta["reply_to"])
   end
   
   def campaign_newsletter(campaign, resident, meta)

@@ -22,7 +22,7 @@ class EmailConversationMailer
       message = message.gsub("{%view_unsubscribe_links%}", "")
     end
     
-    Notifier.email_conversation(email.subject, message, email.to, {"from" => email.from, "reply_to" => email.reply_to}).deliver_now
+    Notifier.email_conversation(email.subject, message, email.to, {"from" => email.from, "reply_to" => email.reply_to, "cc" => email.cc}).deliver_now
   end
 
 end

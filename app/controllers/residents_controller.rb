@@ -160,7 +160,7 @@ class ResidentsController < ApplicationController
 
     Resident.ordered("first_name asc").where("properties" => {
       "$elemMatch" => {
-        "property_id" => @property.id.to_s, 
+        "property_id" => @property.id.to_s,
         "unit_id" => @resident.curr_property.unit_id.to_s
       }
     }).each do |r|
