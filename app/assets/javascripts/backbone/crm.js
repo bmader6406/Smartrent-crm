@@ -672,7 +672,7 @@ window.Crm = {
         $('#center').html(unitDetail.render().$el);
 
       } else {
-        router.navigate('units', true);
+        window.location.href = '/properties/' + propertyId + '/units/' + id;
       }
 
       self.highlightNav("units");
