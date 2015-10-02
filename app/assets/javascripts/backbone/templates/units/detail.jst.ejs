@@ -32,3 +32,19 @@
     </ul>
   </div>
 </div>
+<div class="col-md-12">
+  <div class="card">
+    <div class="ticket-head">
+      <h3 class="pull-left"> Tickets </h3>
+      <% if (App.vars.ability.can("cud", "Ticket")) { %>
+        <a href="<%= App.vars.ticketsPath %>/new" class="btn btn-primary add-new pull-right"> Add New Ticket </a>
+      <% } %>
+    </div>
+    <br />
+    <br />
+    <div class="unit-tickets">
+      <div class="grid"></div>
+      <div class="paginator"></div>
+    </div>
+  </div>
+</div>

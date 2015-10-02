@@ -3,6 +3,8 @@ class TicketsController < ApplicationController
   before_action :set_property
   before_action :set_ticket, :except => [:index, :new, :create]
   before_action :set_page_title
+  before_action :set_unit, :only => [:index]
+  before_action :set_resident, :only => [:show]
   
   def index
 
@@ -124,6 +126,14 @@ class TicketsController < ApplicationController
       Time.zone = @property.setting.time_zone
     end
 
+    def set_unit
+      @unit = @property.units.find(params[:unit_id]) if params[:unit_id].present?
+    end
+
+    def set_resident
+      @resident = @property.residents.find(params[:resident_id]) if params[:resident_id].present?
+    end
+
     def set_ticket
       @ticket = @property.tickets.find(params[:id])
       
@@ -178,8 +188,13 @@ class TicketsController < ApplicationController
         arr << "resident_id IN (:resident_id)"
         hash[:resident_id] = residents.collect{|r| r._id.to_i }
       end
+      if @unit.present?
+        @tickets = @property.tickets.where("status = ? or (status <> ? and created_at >= ?)", "open", "open", Time.now - 60*60*60*24)
+      else
+        @tickets = @property.tickets
+      end
       
-      @tickets = @property.tickets.includes(:property, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
+      @tickets = @tickets.includes(:property, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
       
       # eager load residents
       rids = @tickets.collect{|t| t.resident_id.to_s }

@@ -11,6 +11,7 @@ node do |n|
     :created_date => n.created_at.strftime('%m/%d/%Y'),
     :category => n.category.name,
     :category_id => n.category_id.to_s,
+    :show_path => "#{tickets_property_resident_path(@property, n.resident_id)}/#{n.id}",
     
     :assigner => {
       :full_name => n.assigner.full_name,

@@ -28,6 +28,7 @@ Rails.application.routes.draw do
         get :marketing_statuses
         get :smartrent
       end
+      resources :tickets
       
       collection do
         get :search
@@ -71,8 +72,9 @@ Rails.application.routes.draw do
       member do
         get :residents
       end
+      resources :tickets
       collection do
-        get "code/:code", :as => :show_by_code, :to => :show_by_code
+        get "code/:code", :as => :show_by_code, :action => :show_by_code
       end
     end
     

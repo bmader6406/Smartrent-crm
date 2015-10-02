@@ -117,8 +117,8 @@ window.Crm = {
       self.highlightNav("residents");
       App.layout.show('west');
     });
-
-    router.on('route:showResidentTickets', function(propertyId, id) {
+//@TODO: Remove it when the other methods is verified
+    router.on('route:showResidentTickets_', function(propertyId, id) {
       if(!id) {
         id = propertyId;
         propertyId = null;
@@ -184,6 +184,74 @@ window.Crm = {
       App.layout.show('west');
     });
 
+    router.on('route:showResidentTickets', function(propertyId, residentId, id) {
+      if(!residentId) {
+        residentId = propertyId;
+        propertyId = null;
+      }
+      if(!id) {
+        id = residentId;
+        residentId = null;
+      }
+
+      if(!App.vars.ability.can("read", "Resident")){
+        Crm.unauthorizedAlert();
+        return false;
+      }
+
+      var resident = Crm.collInst.residents.get(residentId);
+
+      if(!resident && App.vars.residentObj){
+        resident = new Crm.Models.Resident( App.vars.residentObj );
+        //manual set url if model not found in collection
+        resident.url = Crm.collInst.residents.url + '/' + resident.get('id');
+      }
+
+      if(resident){
+        var residentInfo = new Crm.Views.ResidentInfo({
+          model: resident
+        });
+
+        Crm.collInst.residentTickets = new Crm.Collections.ResidentTickets;
+        Crm.collInst.residentTickets.url = resident.get('tickets_path');
+
+        var residentTicketsList = new Crm.Views.ResidentTicketsList({
+          model: resident,
+          collection: Crm.collInst.residentTickets
+        });
+
+        $('#west').html(residentInfo.render().$el);
+        $('#center').html(residentTicketsList.render().$el);
+
+        $('#resident-info .nav-details').find('a').removeClass('btn-primary').addClass('btn-default')
+          .end().find('.ticket-nav').removeClass('btn-default').addClass('btn-primary');
+
+
+        // show ticket detail or new ticket
+        if(id){
+          setTimeout(function(){
+            var editLink = $('.edit-ticket[data-id='+ id +']:visible'),
+              container = editLink.parents('.resident-box').parent();
+
+            editLink.click();
+
+            //hightlight
+      			container.animate({ backgroundColor: "#FFFDDD" }, 500, function(){
+      				$(this).animate({ backgroundColor: 'transparent' }, 1000);
+      			});
+
+            $('#center').scrollTo(editLink, {duration: 400, offset: -20});
+
+          }, 1200);
+        }
+
+      } else {
+        window.location.reload();
+      }
+
+      self.highlightNav("residents");
+      App.layout.show('west');
+    });
     router.on('route:showResidentRoommates', function(propertyId, id) {
       if(!id) {
         id = propertyId;
@@ -366,7 +434,7 @@ window.Crm = {
       }
 
       var property = Crm.collInst.properties.get(id);
-      
+
 
       if(!property && App.vars.propertyObj){
         property = new Crm.Models.Property( App.vars.propertyObj );
@@ -1008,7 +1076,6 @@ window.Crm = {
     Backbone.on("rowclicked", function (model) {
       //reset
       App.vars.residentObj = null;
-
       router.navigate(model.get("show_path"), true);
     });
   },
