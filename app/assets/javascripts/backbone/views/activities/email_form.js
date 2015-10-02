@@ -83,8 +83,7 @@ Crm.Views.EmailForm = Backbone.View.extend({
             ccEmails.push(email.trim());
         });
         _.each(data, function(value){
-          debugger;
-          if (!_.find(ccEmails, function(email){return value.email == email}) && value.email != to)
+          if (!_.contains(ccEmails, value.email) && value.email != to)
             ccEmails.push(value.email);
         });
         cc.val(ccEmails.join(", "));

@@ -94,15 +94,15 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
       });
     }
     
-    if( this.$('#email-wrap:visible')[0] ){
-      this.$('#email-wrap').slideUp();
+    if( this.$('#form-wrap #email-wrap:visible')[0] ){
+      this.$('#form-wrap #email-wrap').slideUp();
       this.$('#toolbar .btn').removeClass('selected');
       this.$('.activities .resident-box').fadeIn();
       
     } else {
       this.formWrap.find('> div').hide();
       this.$('#toolbar .btn').removeClass('selected').end().find('.new-email').addClass('selected');
-      this.$('#email-wrap').slideDown();
+      this.$('#form-wrap #email-wrap').slideDown();
       this.$('.activities .resident-box').hide();
       this.$('.activities .email-act').fadeIn();
     }
