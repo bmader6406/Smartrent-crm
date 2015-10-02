@@ -87,28 +87,7 @@ class UnitsController < ApplicationController
   end
   
   def residents
-    @residents = [] # must assign array manually, otherwise curr_property will not work on rabl view
-    primary_residents = []
-    roommates = []
-    
-    Resident.ordered("first_name asc").where("properties" => {
-      "$elemMatch" => { 
-        "property_id" => @property.id.to_s, 
-        "unit_id" => @unit.id.to_s
-      }
-    }).each do |r|
-      r.curr_property_id = @property.id
-      
-      next if !r.curr_property
-      
-      if r.curr_property.roommate?
-        roommates << r
-      else
-        primary_residents << r
-      end
-    end
-    
-    @residents = primary_residents + roommates
+    @residents = @unit.residents
 
     respond_to do |format|
       format.html {

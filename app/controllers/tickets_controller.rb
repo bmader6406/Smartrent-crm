@@ -189,7 +189,8 @@ class TicketsController < ApplicationController
         hash[:resident_id] = residents.collect{|r| r._id.to_i }
       end
       if @unit.present?
-        @tickets = @property.tickets.where("status = ? or (status <> ? and created_at >= ?)", "open", "open", Time.now - 60*60*60*24)
+        unit_resident_ids = @unit.residents.collect{|r| r.id}
+        @tickets = @property.tickets.where(:resident_id => unit_resident_ids).where("status = ? or (status <> ? and created_at >= ?)", "open", "open", Time.now - 60*60*60*24)
       else
         @tickets = @property.tickets
       end
