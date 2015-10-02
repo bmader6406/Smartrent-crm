@@ -32,7 +32,13 @@ class UnitsController < ApplicationController
       format.html {
         render :file => "dashboards/index"
       }
-      format.json {render "show"}
+      format.json {
+        if @unit
+          render "show"
+        else
+          render :json => {}
+        end
+      }
     end
 
   end

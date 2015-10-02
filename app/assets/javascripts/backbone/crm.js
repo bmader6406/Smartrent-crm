@@ -35,8 +35,13 @@ window.Crm = {
         url: this.action + "/units/code/" + $.trim( $('#top_unit_code').val().replace("#", "") ),
         dataType: 'json',
         success: function(data){
-          App.vars.unitObj = data;
-          router.navigate(data.show_path, true);
+          if( data.id ) {
+            App.vars.unitObj = data;
+            router.navigate(data.show_path, true);
+            
+          } else {
+            msgbox("No unit found. Please enter another unit number.", "danger");
+          }
         },
         error: function(data) {
           msgbox("No unit found. Please enter another unit number.", "danger");

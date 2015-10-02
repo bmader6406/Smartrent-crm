@@ -39,15 +39,10 @@ class Unit < ActiveRecord::Base
         "property_id" => self.property.id.to_s, 
         "unit_id" => self.id.to_s
       }
-    }).each do |r|
+    }).collect { |r|
       r.curr_property_id = self.property.id
-      
-      next if !r.curr_property
-      
-      if !r.curr_property.roommate?
-        return r
-      end
-    end
+      r.curr_property && r.curr_property.roommate? ? r : nil
+    }.compact.first
   end
   
   def self.keyed_by_code
