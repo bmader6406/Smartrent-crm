@@ -41,7 +41,7 @@ class Unit < ActiveRecord::Base
       }
     }).collect { |r|
       r.curr_property_id = self.property.id
-      r.curr_property && r.curr_property.roommate? ? r : nil
+      r.curr_property && !r.curr_property.roommate? ? r : nil
     }.compact.first
   end
   
