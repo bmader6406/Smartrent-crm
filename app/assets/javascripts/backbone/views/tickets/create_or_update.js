@@ -108,9 +108,6 @@ Crm.Views.TicketNewOrUpdate = Backbone.View.extend({
         success: function (model, response) {
           if(self.isCreateNew){
             msgbox('Ticket was created successfully!');
-            if (App.vars.unit.isTicket = true) {
-              App.vars.unit.successCallBack();
-            }
 
           } else {
             msgbox('Ticket was updated successfully!');
