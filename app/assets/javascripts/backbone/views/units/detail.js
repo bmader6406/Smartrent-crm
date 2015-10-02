@@ -26,7 +26,7 @@ Crm.Views.UnitDetail = Backbone.View.extend({
     //Load Tickets
       var UnitTicketCollection = Backbone.PageableCollection.extend({
         url: App.vars.routeRoot + "/units/" + self.model.get("id") + "/tickets",
-        mode: "server", // page entirely on the client side
+        mode: "server",
         model: Crm.Models.Ticket,
         parseRecords: function (resp, options) {
           return resp.items;
