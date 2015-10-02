@@ -2,6 +2,10 @@ Crm.Views.UnitDetail = Backbone.View.extend({
   template: JST["backbone/templates/units/detail"],
   id: 'unit-detail',
 
+  events: {
+    'click .add-new-ticket': 'addNewTicket'
+  },
+
   initialize: function() {
 	  this.listenTo(this.model, 'change', this.render);
 	},
@@ -90,5 +94,30 @@ Crm.Views.UnitDetail = Backbone.View.extend({
     unitTicketCollection.fetch({reset: true});
 
   	return this;
+  },
+
+  addNewTicket: function() {
+    var self = this;
+    bootbox.prompt({
+      title: "Enter resident ID or resident email",
+      callback: function(result) {
+        if (result) {
+          if (!App.validateEmail(result.trim())) {
+            msgbox("Invalid Email", "danger")
+            return false
+          } else {
+            $.get(self.model.get("search_resident_path"), {search:  result.trim()}, function(data){
+              var resident_path = data.resident_path;
+              if(resident_path){
+                Crm.routerInst.navigate(resident_path.replace(/crm\/\d+\//, '').replace(/^\//,'').replace('\#\!\/',''), true);
+              } else {
+                msgbox("No Residents Found!", "danger");
+              }
+
+            }, 'json');
+          }
+        }
+      }
+    });
   }
 });

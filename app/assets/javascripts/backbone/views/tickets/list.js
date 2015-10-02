@@ -1,28 +1,28 @@
 Crm.Views.TicketsList = Backbone.View.extend({
   id: 'tickets',
   template: JST['backbone/templates/tickets/list'],
-  
+
   events: {
     'click .add-new': '_new'
   },
-  
+
   initialize: function () {
     this.listenTo(this.collection, 'reset', this.showTotal);
     this.listenTo(this.collection, 'request', App.showMask);
     this.listenTo(this.collection, 'sync', App.hideMask);
   },
-  
+
   _new: function () {
     var newTicket = $('#new-ticket-modal'),
       form = newTicket.find('form');
-    
+
     newTicket.modal('show');
     form.find(':text').focus();
-    
+
     if(!form.attr('data-init')){
       form.on('submit', function(){
         var searchVal = $.trim(form.find(':text').val());
-        
+
         if(searchVal){
           form.find('.search').text('Searching...');
 
@@ -30,9 +30,9 @@ Crm.Views.TicketsList = Backbone.View.extend({
             if(data.resident_path){
               newTicket.modal('hide');
               Crm.routerInst.navigate(data.resident_path.replace(/crm\/\d+\//, '').replace(/^\//,'').replace('\#\!\/',''), true);
-              
+
             } else {
-              msgbox("No Residents Found!");
+              msgbox("No Residents Found!", "danger");
 
             }
 
@@ -42,23 +42,23 @@ Crm.Views.TicketsList = Backbone.View.extend({
         } else {
           msgbox('Please enter resident ID or resident email!', 'danger');
         }
-        
+
         return false;
       });
-      
+
       form.attr('data-init', 1);
     }
-    
+
     return false;
   },
-  
+
   showTotal: function(){
     var total = this.collection.state.totalRecords,
       found = total == 1 ? " Ticket Found" : " Tickets Found";
-      
+
     this.$('.total').text(this.collection.state.totalRecords + found);
   },
-  
+
   render: function () {
     var self = this,
       grid = new Backgrid.Grid({
@@ -98,7 +98,7 @@ Crm.Views.TicketsList = Backbone.View.extend({
         }],
         collection: self.collection
       }),
-      
+
       paginator = new Backgrid.Extension.Paginator({
         collection: self.collection,
         controls: {
@@ -107,14 +107,14 @@ Crm.Views.TicketsList = Backbone.View.extend({
         },
         windowSize: 5
       });
-    
+
     this.$el.html(this.template());
 
     this.$(".grid").append(grid.render().$el);
     this.$(".paginator").append(paginator.render().$el);
 
     this.collection.fetch({reset: true});
-    
+
   	return this;
   }
 });

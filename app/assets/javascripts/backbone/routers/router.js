@@ -31,6 +31,7 @@ Crm.Router = Backbone.Router.extend({
     'properties/:property_id/units/new(/)': 'newUnit',
     'properties/:property_id/units/:id/edit(/)': 'editUnit',
     'properties/:property_id/units/:id(/)': 'showUnit',
+    'properties/:property_id/units/:id/tickets/new(/)': 'newUnitTicket',
 
     'properties/:property_id/notices(/)': 'showCampaigns',
     'properties/:property_id/notices/new(/)': 'newCampaign',
