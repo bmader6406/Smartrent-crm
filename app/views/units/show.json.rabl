@@ -9,7 +9,7 @@ node do |n|
     :search_resident_path => search_property_residents_path(@property),
     :add_ticket_path => ""
   }
-  attrs[:add_ticket_path] = property_resident_path(@property, n.primary_resident.id, :anchor => 'addTicket') if n.primary_resident.present?
+  attrs[:add_ticket_path] = property_resident_path(@property, n.primary_resident._id, :anchor => 'addTicket') if n.primary_resident.present?
   attrs
 end
 if @unit.present?
