@@ -3,7 +3,7 @@ object @ticket
 node do |n|
   {
     :id => n.id.to_s,
-    :id_url => link_to(n.id, "#{tickets_property_resident_path(@property, n.resident_id)}/#{n.id}"),
+    :id_url => link_to(n.id, tickets_property_resident_path(@property, n.resident_id, :anchor => n.id)),
     :resident_id => n.resident_id.to_s,
     :resident_url => link_to(n.resident_id, tickets_property_resident_path(@property, n.resident_id)),
     :status => n.status,

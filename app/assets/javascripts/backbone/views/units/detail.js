@@ -3,7 +3,7 @@ Crm.Views.UnitDetail = Backbone.View.extend({
   id: 'unit-detail',
 
   events: {
-    'click .add-new-ticket': 'addNewTicket'
+    //'click .add-new-ticket': 'newTicket'
   },
 
   initialize: function() {
@@ -34,21 +34,28 @@ Crm.Views.UnitDetail = Backbone.View.extend({
         model: Crm.Models.Ticket,
         parseRecords: function (resp, options) {
           return resp.items;
+        },
+        parseState: function (resp, queryParams, state, options) {
+          return {totalRecords: resp.total};
+        },
+        state: {
+          pageSize: 5,
+          sortKey: "request_date",
         }
       });
       var unitTicketCollection = new UnitTicketCollection(),
         grid = new Backgrid.Grid({
         row: ClickableRow,
         columns: [{
-          name: "resident_id",
-          label: "Resident ID",
+          name: "description",
+          label: "Description",
           cell: 'html',
-          editable: false
-        }, {
-          name: "id",
-          label: "Ticket ID",
-          cell: 'html',
-          editable: false
+          editable: false,
+          formatter: _.extend({}, Backgrid.CellFormatter.prototype, {
+            fromRaw: function (rawValue, model) {
+              return rawValue.trunc(10);
+            }
+          })
         }, {
           name: "status",
           label: "Status",
@@ -60,12 +67,6 @@ Crm.Views.UnitDetail = Backbone.View.extend({
               return '<span class="status '+ rawValue.replace(" ", "-") +'">' + rawValue + '</span>';
             }
           })
-        }, {
-          name: "first_name",
-          label: "First Name",
-          cell: 'string',
-          editable: false,
-          sortable: false
         }, {
           name: "created_date",
           label: "Request Date",
@@ -92,32 +93,43 @@ Crm.Views.UnitDetail = Backbone.View.extend({
     this.listenTo(unitTicketCollection, 'request', App.showMask);
     this.listenTo(unitTicketCollection, 'sync', App.hideMask);
     unitTicketCollection.fetch({reset: true});
+    this.unitTicketCollection = unitTicketCollection;
 
   	return this;
   },
-
-  addNewTicket: function() {
+  newTicket: function(ev){
     var self = this;
-    bootbox.prompt({
-      title: "Enter resident ID or resident email",
-      callback: function(result) {
-        if (result) {
-          if (!App.validateEmail(result.trim())) {
-            msgbox("Invalid Email", "danger")
-            return false
-          } else {
-            $.get(self.model.get("search_resident_path"), {search:  result.trim()}, function(data){
-              var resident_path = data.resident_path;
-              if(resident_path){
-                Crm.routerInst.navigate(resident_path.replace(/crm\/\d+\//, '').replace(/^\//,'').replace('\#\!\/',''), true);
-              } else {
-                msgbox("No Residents Found!", "danger");
-              }
+    Crm.routerInst.navigate(this.model.get("add_ticket_path"))
+    /*this.formWrap = this.$('#form-wrap');
+    if( !this.ticketForm ) {
+      Crm.collInst.residentTickets = new Crm.Collections.ResidentTickets;
+      Crm.collInst.residentTickets.url = App.vars.routeRoot + "/tickets";
 
-            }, 'json');
-          }
-        }
-      }
-    });
-  }
+      this.ticketForm = new Crm.Views.TicketNew({
+        collection: Crm.collInst.residentTickets
+      });
+      this.ticketForm.resident = new Crm.Models.Resident(this.model.get("primary_resident") );
+
+      this.formWrap.append( this.ticketForm.render().el );
+    }
+
+    if( this.$('#ticket-wrap:visible')[0] ){
+      this.$('#ticket-wrap').slideUp();
+      this.$('.add-new-ticket').removeClass('selected');
+
+    } else {
+      this.formWrap.find('> div').hide();
+      this.$('.add-new-ticket').removeClass('selected').end().find('.new-ticket').addClass('selected');
+      this.$('#ticket-wrap').slideDown(function(){
+        $('#center').scrollTo('#form-wrap', {duration: 400});
+      });
+    }
+    App.vars.unit = {};
+    App.vars.unit.isTicket = true;
+    App.vars.unit.successCallBack = function(){
+      self.unitTicketCollection.fetch({reset: true});
+    }
+    */
+
+  },
 });

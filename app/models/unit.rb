@@ -32,6 +32,23 @@ class Unit < ActiveRecord::Base
     
     primary_residents + roommates
   end
+
+  def primary_resident
+    Resident.ordered("first_name asc").where("properties" => {
+      "$elemMatch" => { 
+        "property_id" => self.property.id.to_s, 
+        "unit_id" => self.id.to_s
+      }
+    }).each do |r|
+      r.curr_property_id = self.property.id
+      
+      next if !r.curr_property
+      
+      if !r.curr_property.roommate?
+        return r
+      end
+    end
+  end
   
   def self.keyed_by_code
     units.collect{|u| u.code}
