@@ -52,13 +52,14 @@ Crm.Views.QuickNotificationsList = Backbone.View.extend({
     this.refreshTimer = setInterval(function () {
       var firstNotif = self.collection.at(0);
       
-      if(firstNotif) {
+      //set App.vars.stopPoll = true in the console to stop the polling
+      if(firstNotif && !App.vars.stopPoll) {
         $.getJSON(App.vars.notificationsPath + "/poll", {time: firstNotif.get('created_at') }, function(data){
           
           if( data.length > 0 ){
             if( !$.cookie("notif_sound_off") ) {
               var aSound = document.createElement('audio');
-               aSound.setAttribute('src', '/beep.wav');
+               aSound.setAttribute('src', '/ding.wav');
                aSound.play();
             }
 

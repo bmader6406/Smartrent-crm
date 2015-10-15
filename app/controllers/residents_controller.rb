@@ -210,13 +210,44 @@ class ResidentsController < ApplicationController
 
   # for add new ticket page
   def search
-    if params[:search].include?("@")
-      @resident = Resident.where(:email_lc => params[:search]).first
-    else
-      @resident = Resident.where(:_id => params[:search]).first
+    col_dict = {
+      :unit_id => "0",
+      :name => "1",
+      :email => "2"
+    }
+    
+    if params[:filter]
+      col_dict.keys.each do |k|
+        search = params[:filter][ col_dict[k] ]
+        next if search.blank?
+        
+        if k == :name
+          fn, ln = search.split(" ", 2)
+          
+          if !ln.blank?
+            params[:first_name] = fn
+            params[:last_name] = ln
+            
+          else
+            params[:first_name] = fn
+          end
+          
+        else
+          params[k] = search
+        end
+        
+      end
     end
     
-    render  :json => {:resident_path => @resident ? property_resident_path(@property, @resident, :anchor => "addTicket") : nil }
+    # tablesorter page index start with 0
+    params[:page] = params[:page].to_i + 1
+    
+    filter_residents(10)
+    
+    #render  :json => {:resident_path => @resident ? property_resident_path(@property, @resident, :anchor => "addTicket") : nil }
+    
+    render template: "residents/table.json.rabl" 
+    
   end
   
   # marketing stream (aka x-ray)
@@ -315,7 +346,13 @@ class ResidentsController < ApplicationController
     
     def set_page_title
       if @property
-        @page_title = "CRM - #{@property.name} - Residents"
+        if @resident
+          @page_title = "CRM - Resident - #{@resident.name_or_email}"
+          
+        else
+          @page_title = "CRM - #{@property.name} - Residents"
+        end
+        
       else
         @page_title = "CRM - Residents"
       end

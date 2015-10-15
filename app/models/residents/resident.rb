@@ -260,6 +260,10 @@ class Resident
   def full_name=(name)
     self.first_name, self.last_name = name.split(' ', 2)
   end
+  
+  def name_or_email
+    !full_name.blank? ? full_name : email
+  end
 
   def status_dict
     @status_dict ||= {

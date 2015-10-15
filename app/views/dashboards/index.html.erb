@@ -8,6 +8,10 @@ $(function(){
   App.vars.usersPath = "<%= users_path %>";
   App.vars.notificationsPath = "<%= notifications_path %>";
   
+  <% if request.host == "crm-dev.bozzuto.com" %>
+    App.vars.stopPoll = true;
+  <% end %>
+  
   <% if @property %>
     App.vars.residentsPath = "<%= property_residents_path(@property) %>";
     App.vars.ticketsPath = "<%= property_tickets_path(@property) %>";

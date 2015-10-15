@@ -14,41 +14,44 @@ Crm.Views.TicketsList = Backbone.View.extend({
 
   _new: function () {
     var newTicket = $('#new-ticket-modal'),
-      form = newTicket.find('form');
-
+      table = newTicket.find('.tablesorter');
+    
     newTicket.modal('show');
-    form.find(':text').focus();
-
-    if(!form.attr('data-init')){
-      form.on('submit', function(){
-        var searchVal = $.trim(form.find(':text').val());
-
-        if(searchVal){
-          form.find('.search').text('Searching...');
-
-          $.get(form.attr('action'), {search: searchVal }, function(data){
-            if(data.resident_path){
-              newTicket.modal('hide');
-              Crm.routerInst.navigate(data.resident_path.replace(/crm\/\d+\//, '').replace(/^\//,'').replace('\#\!\/',''), true);
-
-            } else {
-              msgbox("No Residents Found!", "danger");
-
-            }
-
-            form.find('.search').text('Search');
-
-          }, 'json');
-        } else {
-          msgbox('Please enter resident ID or resident email!', 'danger');
-        }
-
-        return false;
+    
+    if(!newTicket.attr('data-init')){
+      //tablesorter pager & filter
+      table.tablesorter({
+        sortList: [[1, 0]],
+      	widgets: ['zebra', 'filter'],
+        headers: {
+          0: { sorter: false },
+          1: { sorter: false },
+          2: { sorter: false },
+          3: { sorter: false }
+        },
+      	widgetOptions: {
+      	  filter_searchDelay : 400,
+      	  filter_cssFilter: 'form-control'
+      	}
       });
 
-      form.attr('data-init', 1);
+      table.tablesorterPager({
+        container: newTicket.find(".pager"),
+        ajaxUrl : newTicket.attr('data-search') +  '?page={page}&{filterList:filter}&{sortList:sort}',
+        ajaxProcessing: function(data){
+          if(data.total == 0){
+            table.find('> tbody').empty();
+          }
+          return [ data.total, data.rows ];
+        },
+        output: '{startRow} to {endRow} ({totalRows})',
+        size: 10,
+        savePages: false
+      });
+      
+      newTicket.attr('data-init', 1);
     }
-
+    
     return false;
   },
 

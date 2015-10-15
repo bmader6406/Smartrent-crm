@@ -44,7 +44,7 @@ class ActivitiesController < ApplicationController
           end
         
           # cache subjects
-          pp "subject: ", subject
+          #pp "subject: ", subject
           subject.keys.each do |k|
             if k == "Comment"
               comments = Comment.where(:id => subject[k].uniq).includes(:email, :call, :assets)
