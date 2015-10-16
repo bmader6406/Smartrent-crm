@@ -138,29 +138,35 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     return false;
   },
   viewResidentDetails: function(){
+    var self = this,
+      residentDetails = $('#resident-details');
+      
     Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent').hide();
     $('#resident-info .nav-details .btn').removeClass('btn-primary').addClass('btn-default');
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
-    $('#resident-details').html( JST["backbone/templates/residents/resident-detail"](this.model.toJSON()) );
-    $('#resident-details').show();
-    var self = this;
+    
+    residentDetails.html( JST["backbone/templates/residents/resident-detail"](this.model.toJSON()) ).show();
+    
     $.getJSON(this.model.get('smartrent_path'), function(data){
-      $('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
-      $('.smartrent-info').show();
-      $('#resident-details .view-smartrent').click(function(){
-        $('.nav-details a[href="#smartrent"]').click();
-      });
+      residentDetails.find('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) ).show();
     });
-    $('#resident-details').isotope('destroy');
-    $('#resident-details').isotope({
+    
+    if(residentDetails.attr('data-isotope')){
+      residentDetails.isotope('destroy');
+    }
+    
+    residentDetails.isotope({
       itemSelector: '.col-md-4',
       //layoutMode: 'fitColumns',
       layoutMode: 'masonry',
       masonry: {
           columnWidth: '.col-md-4'
       }
-    })
+    });
+    
+    //mark as init
+    residentDetails.attr('data-isotope', 1);
   },
 
   showDefaultView: function(){

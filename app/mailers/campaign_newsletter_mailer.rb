@@ -124,8 +124,8 @@ class CampaignNewsletterMailer < QueuedMailer
       attrs[:property_id] = prop_id
 
       Resident.collection.where({"_id" => {"$in" => prop_resident_ids[prop_id] }}).update({
-          '$inc' => {"activities_count" => 1}, 
-          "$push" => {"activities" => attrs}
+          '$inc' => {"marketing_activities_count" => 1}, 
+          "$push" => {"marketing_activities" => attrs}
         }, {:multi => true, :upsert => true})
     end
   end

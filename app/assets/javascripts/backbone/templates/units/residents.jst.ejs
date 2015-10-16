@@ -11,7 +11,10 @@
         <a href="<%= r.show_path %>" target="_blank"> <%= r.full_name || r.email %> </a> <br>
         Email: <%= r.email %> <br>
         Move In: <%= r.property.move_in %> <br>
-        Move Out: <%= r.property.move_out %>
+        Move Out: <%= r.property.move_out %> <br>
+        <% if (App.vars.ability.can("cud", "Ticket")) { %>
+          <a href="<%= r.add_ticket_path %>" class="btn btn-primary btn-sm" style="margin-top:5px;"> Add New Ticket </a> 
+        <% } %>
       </li>
     <% } %>
   </ul>
