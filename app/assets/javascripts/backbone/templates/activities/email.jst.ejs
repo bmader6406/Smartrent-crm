@@ -36,44 +36,42 @@
   <div class="message">
     <%= Helpers.sanitize(email.message) %>
   </div>
-  <% if ( notification ) { %>
-    <% if (typeof(author) != "undefined" && author.type == "Resident" && App.vars.ability.can("cud", "ResidentActivity")) { %>
-      <div class="meta-btns">
-        <% if (notification.state == "pending") { %>
-          <a href="#" class="acknowledge">
-            <i class="fa fa-check"></i> Acknowledge
-          </a>
-        <% } %>
-        <a href="#" class="show-reply-form">
-          <i class="fa fa-reply"></i> Reply
+  <% if (typeof(author) != "undefined" && author.type == "Resident" && App.vars.ability.can("cud", "ResidentActivity")) { %>
+    <div class="meta-btns">
+      <% if (notification.state == "pending") { %>
+        <a href="#" class="acknowledge">
+          <i class="fa fa-check"></i> Acknowledge
         </a>
-      </div>
-    <% } %>
-  
-    <% if (notification.histories && notification.histories.length > 0) { %>
-      <div class="histories">
-        <a href="#" class="show-logs"> Show Logs</a>
-        <div>
-          <a href="#" class="hide-logs">Hide Logs</a>
-          <span>Log:</span>
-          <table class="table table-bordered table-condensed">
+      <% } %>
+      <a href="#" class="show-reply-form">
+        <i class="fa fa-reply"></i> Reply
+      </a>
+    </div>
+  <% } %>
+
+  <% if (notification.histories && notification.histories.length > 0) { %>
+    <div class="histories">
+      <a href="#" class="show-logs"> Show Logs</a>
+      <div>
+        <a href="#" class="hide-logs">Hide Logs</a>
+        <span>Log:</span>
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th width="180px"> Date & Time </th>
+            <th width="180px"> State </th>
+            <th> Manager </th>
+          </tr>
+          <% for (var i=0, h; h=notification.histories[i]; i++) { %>
             <tr>
-              <th width="180px"> Date & Time </th>
-              <th width="180px"> State </th>
-              <th> Manager </th>
+              <td> <%= h.created_time %> </td>
+              <td> <%= h.pretty_state %> </td>
+              <td> <%= h.full_name %> - <%= h.email %> </td>
             </tr>
-            <% for (var i=0, h; h=notification.histories[i]; i++) { %>
-              <tr>
-                <td> <%= h.created_time %> </td>
-                <td> <%= h.pretty_state %> </td>
-                <td> <%= h.full_name %> - <%= h.email %> </td>
-              </tr>
-            <% } %>
-          </table>
-        </div>
+          <% } %>
+        </table>
       </div>
-    <% } %>
-  <% } %>  
+    </div>
+  <% } %>
   
   <!-- reply form will be insert here -->
 </div>

@@ -179,7 +179,7 @@ Crm.Views.Activity = Backbone.View.extend({
         ]
       });
 
-      var shareHtml = "<br><br>---<br>Attached documents:";
+      var shareHtml = "<br><br>---<br>Share documents:";
       
       $.each(self.model.get('document').assets, function(i, a){
         shareHtml += "<br> - <a href='"+a.url+"' target='_blank'> "+ a.name +"</a>";

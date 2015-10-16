@@ -36,17 +36,14 @@ Crm.Views.ShareForm = Backbone.View.extend({
       form.mask('Please wait...');
 
       $.post(form.attr('action'), params, function(data){
-        $.each(data, function(i, d){
-          var activityView = new Crm.Views.Activity({ model: new Crm.Models.Activity(d) });
+        var activityView = new Crm.Views.Activity({ model: new Crm.Models.Activity(data) });
 
-          if( i == 0 ) { //updated activity
-            form.closest('.resident-box').parent().replaceWith(activityView.render().el);
-
-          } else { //new reply
-            $('#resident-history .activities').prepend(activityView.render().el)
-          }
-        });
-
+        $('#resident-history .activities').prepend(activityView.render().el);
+        
+        msgbox('Email was sent successfully!');
+        
+        self.cancel();
+        
         Crm.collInst.quickNotifications.fetch({reset: true});
 
       }, 'json').fail(function(){
