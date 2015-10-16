@@ -4,7 +4,7 @@ Crm.Views.EmailForm = Backbone.View.extend({
 		"submit form": "sendEmail",
 		"click .cancel": "cancel",
 		"click .show-quoted": "showQuoted",
-		"click #add-roommates": "addRoomMates"
+		"click #cc-roommates": "ccRoommates"
 	},
 
   activity: function(){
@@ -68,24 +68,30 @@ Crm.Views.EmailForm = Backbone.View.extend({
     });
     return false;
   },
-  addRoomMates: function(ev){
+  
+  ccRoommates: function(ev){
     var self = this;
     $.getJSON(self.resident.attributes.roommates_path, function(data){
       if (data.length > 0) {
-      var roommates = [],
-        cc = self.$('[name="cc"]'),
-        to = self.$('[name="to"]').val(),
-        ccValue = cc.val().trim(),
-        ccEmails = [],
-        emails = ccValue.split(",");
-        _.each(emails, function(email) {
-          if (email.length > 0)
-            ccEmails.push(email.trim());
+        var roommates = [],
+          cc = self.$('[name="cc"]'),
+          to = self.$('[name="to"]').val(),
+          ccValue = cc.val().trim(),
+          ccEmails = [],
+          emails = ccValue.split(",");
+          
+        _.each(emails, function(e) {
+          if (e.length > 0) {
+            ccEmails.push(e.trim());
+          }
         });
-        _.each(data, function(value){
-          if (!_.contains(ccEmails, value.email) && value.email != to)
-            ccEmails.push(value.email);
+        
+        _.each(data, function(r){
+          if (!_.contains(ccEmails, r.email) && App.getEmailFromStr(r.email) != App.getEmailFromStr(to)) {
+            ccEmails.push(r.full_name + " <" + r.email + ">");
+          }
         });
+        
         cc.val(ccEmails.join(", "));
       }
     });
@@ -98,36 +104,45 @@ Crm.Views.EmailForm = Backbone.View.extend({
         schema: {
           from: {
             validators: [
-              {type: 'required', message: 'Sender is required'},
-              {type: 'email', message: 'Sender email is not valid'}
+              function checkEmail(value, formValues) {
+                var arr = App.getInvalidEmails(value);
+
+                if(arr.length > 0) {
+                  return {
+                    type: 'required',
+                    message: 'Sender email is not valid'
+                  }
+                }
+              }
             ]
           },
           to: {
             validators: [
-              {type: 'required', message: 'Recipient is required'},
-              {type: 'email', message: 'Recipient email is not valid'}
+              function checkEmail(value, formValues) {
+                var arr = App.getInvalidEmails(value);
+
+                if(arr.length > 0) {
+                  return {
+                    type: 'required',
+                    message: 'Recipient is required'
+                  }
+                }
+              }
             ]
           },
           cc: {
             validators: [
               function checkEmail(value, formValues) {
-                  var err = {
-                      type: 'cc',
-                      message: ''
-                  };
-                  var emails = value.split(",")
-                  var invalidEmails = []
-                  if (emails.length > 0) {
-                    _.each(emails, function(email){
-                      if (email.length > 0 && !App.validateEmail(email.trim()))
-                        invalidEmails.push(email.trim())
-                    });
+                var arr = App.getInvalidEmails(value);
+
+                if(arr.length > 0) {
+                  return {
+                    type: 'required',
+                    message: arr.join(',') + ' in CC are invalid email addresses'
                   }
-                  if (invalidEmails.length > 0) {
-                    err.message = invalidEmails.join(',') + ' in cc are invalid email addresses'
-                    return err;
-                  }
-              }]
+                }
+              }
+            ]
           },
           subject: {
             validators: [{type: 'required', message: 'Subject is required'}]
@@ -139,8 +154,8 @@ Crm.Views.EmailForm = Backbone.View.extend({
         },
         template: JST['backbone/templates/activities/email_form'],
         data: {
-          from: App.vars.propertyEmail,
-          to: resident.get("email")
+          from: App.vars.propertyObj.name + " <" + App.vars.propertyEmail + ">",
+          to: resident.get("full_name") + " <" + resident.get("email") + ">"
         }
       }).render();
 

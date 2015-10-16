@@ -5,6 +5,9 @@ Crm.Views.Activity = Backbone.View.extend({
     "click .delete": "_delete",
     "click .acknowledge": "acknowledge",
     "click .show-reply-form": "showReplyForm",
+    "click .show-headers": "showHeaders",
+    "click .change-recipient": "changeRecipient",
+    "click .show-share-form": "showShareForm",
     "click .show-logs": "showLogs",
     "click .hide-logs": "hideLogs",
     "click .show-quoted": "showQuoted",
@@ -97,7 +100,8 @@ Crm.Views.Activity = Backbone.View.extend({
       residentBox.append( this.replyEmailForm.render().el );
       residentBox.find('form').attr('action', this.model.get('notification').reply_path);
       
-      var emailWrap = residentBox.find('#email-wrap');
+      var emailWrap = residentBox.find('#email-wrap'),
+        resident = Crm.collInst.residentActivities.resident;
         
       emailWrap.find('#message').redactor({
         focus: true, 
@@ -112,8 +116,19 @@ Crm.Views.Activity = Backbone.View.extend({
       
       //setTimeout(function(){
         emailWrap.find('#subject').val($.trim( residentBox.find('.subject').text() ));
-        emailWrap.find('#from').val(App.vars.propertyEmail);
+        emailWrap.find('#from').val(App.vars.propertyObj.name + " <" + App.vars.propertyEmail + ">");
         emailWrap.find('#to').val(self.model.get('email').from);
+        
+        //show warning message
+        if(self.model.get('email').from.indexOf(resident.email) == -1 ){
+          var msg = "You are responding to " + self.model.get('email').from +
+            " . <a href='#' class='alert-link change-recipient'>Click here</a>" +
+            " to change the recipient to <b>" + resident.get('full_name') + " &lt;" + resident.get('email') + "&gt; </b>";
+          
+          emailWrap.find('#to').after("<div class='alert alert-warning'>" + msg + "</div>");
+        }
+        
+        emailWrap.find('#cc').val(self.model.get('email').cc);
         emailWrap.find('.redactor_editor').html('<br><br> <div class="show-quoted" title="show trimmed content" style="display:none">...</div>' +
           '<blockquote class="hyly_quoted" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">'+ 
           $.trim( residentBox.find('.message').html() ) + '</blockquote>');
@@ -123,6 +138,59 @@ Crm.Views.Activity = Backbone.View.extend({
       residentBox.find('#email-wrap').slideDown();
     }
     
+    return false;
+  },
+  
+  showHeaders: function(ev) {
+    this.$('.headers').toggle();
+    return false;
+  },
+  
+  changeRecipient: function(){
+    var resident = Crm.collInst.residentActivities.resident;
+    this.$("#to").val(resident.get('full_name') + " <" + resident.get('email') + ">");
+    this.$('#cc-roommates').click();
+    this.$('.alert').slideUp();
+  },
+  
+  showShareForm: function (ev) {
+    var self = this,
+      residentBox = $(ev.target).parents('.resident-box');
+
+    if( !this.shareForm ) {
+      this.shareForm = new Crm.Views.ShareForm();
+      this.shareForm.resident = Crm.collInst.residentActivities.resident;
+      
+      residentBox.append( this.shareForm.render().el );
+      
+      var emailWrap = residentBox.find('#email-wrap'),
+        resident = Crm.collInst.residentActivities.resident;
+        
+      residentBox.find('form').attr('action', resident.get('activities_path'));
+
+      emailWrap.find('#message').redactor({
+        focus: true, 
+        convertDivs: false,
+        convertLinks: false,
+        cleanup: false,
+        height: 250,
+        buttons: [
+          'html', '|', 'bold', 'italic', 'underline', 'deleted','|', 'fontcolor', 'backcolor', '|', 'link'
+        ]
+      });
+
+      var shareHtml = "<br><br>---<br>Attached documents:";
+      
+      $.each(self.model.get('document').assets, function(i, a){
+        shareHtml += "<br> - <a href='"+a.url+"' target='_blank'> "+ a.name +"</a>";
+      });
+      
+      emailWrap.find('.redactor_editor').html(shareHtml);
+
+    } else {
+      residentBox.find('#email-wrap').slideDown();
+    }
+
     return false;
   },
   

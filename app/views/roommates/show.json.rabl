@@ -5,7 +5,9 @@ node do |n|
     :id => n.id.to_s,
     :name_url => link_to(n.full_name, property_roommate_path(@property, n)),
     :show_path => property_roommate_path(@property, n),
-    :edit_path => edit_property_roommate_path(@property, n)
+    :edit_path => edit_property_roommate_path(@property, n),
+    :add_ticket_path => property_resident_path(@property, n, :anchor => 'addTicket'),
+    :show_path2 => property_resident_path(@property, n)
   }
   
   # core fields

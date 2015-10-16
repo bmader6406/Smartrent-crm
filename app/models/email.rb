@@ -3,18 +3,17 @@ class Email < ActiveRecord::Base
   belongs_to :comment
   
   validates :comment_id, :subject, :from, :to, :message, :presence => true
-  validates :from, :to, :format => { :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
-  validate :validate_cc_emails
+  validates :from, :to, :presence => true
+  
+  validate :validate_email_format
 
-  def validate_cc_emails
-    if cc.present?
-      emails = cc.split(",")
-      if emails.present?
-        emails.each do |email|
-          email = email.strip
-          if email.present? && !Devise::email_regexp.match(email)
-            errors.add(:cc, "#{email} is not valid")
-          end
+  def validate_email_format
+    regex = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+    
+    ["from", "to", "cc"].each do |f|
+      self[f].to_s.split(",").each do |email|
+        if !email.to_s.strip.gsub(/(.*<|>.*)/, '').match(regex)
+          errors.add(f.to_sym, "#{email} is not valid")
         end
       end
     end

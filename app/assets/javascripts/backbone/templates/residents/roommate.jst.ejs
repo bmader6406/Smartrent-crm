@@ -3,7 +3,7 @@
   
   <ul class="list-unstyled">
     <li>
-      Full Name: <span><%= first_name %> <%= last_name %></span>
+      Full Name: <a href="<%= show_path2 %>" target="_blank"><%= first_name %> <%= last_name %></a>
       <% if ( property.roommate ) { %>
         <span class="badge" style="margin-left: 10px;">roommate</span>
       <% } %>

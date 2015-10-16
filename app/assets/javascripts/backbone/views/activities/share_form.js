@@ -1,4 +1,4 @@
-Crm.Views.ReplyEmailForm = Backbone.View.extend({
+Crm.Views.ShareForm = Backbone.View.extend({
   id: 'email-wrap',
   events:	{
 		"submit form": "sendEmail",

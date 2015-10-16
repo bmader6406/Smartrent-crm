@@ -334,13 +334,13 @@ fieldset[disabled] .btn-default.active {
       font-weight: 300;
       margin-left: 5px;
     }
-    .delete {
+    .delete, .show-headers {
       color: #999;
       margin: 0 0 0 5px;
       visibility: hidden;
     }
     &:hover {
-      .delete {
+      .delete, .show-headers {
         visibility: visible;
       }
     }
@@ -352,7 +352,7 @@ fieldset[disabled] .btn-default.active {
   .message {
     padding: 10px 0;
   }
-  .play-call, .edit-ticket, .view-resident, .edit-roommate, .meta-btns {
+  .play-call, .edit-ticket, .view-resident, .edit-roommate, .meta-btns, .show-share-form {
     position: absolute;
     top: 17px;
     right: 20px;
@@ -398,6 +398,23 @@ fieldset[disabled] .btn-default.active {
   }
   .show-logs, .hide-logs {
     float: right;
+  }
+  .headers {
+    display: none;
+    border-bottom: 1px dashed #ddd;
+    color: #aaa;
+    padding-bottom: 10px;
+    
+    span {
+      margin-right: 20px;
+    }
+    b {
+      font-weight: 600;
+    }
+  }
+  .alert {
+    margin: 10px 0 0;
+    padding: 5px 10px;
   }
 }
 
@@ -460,6 +477,9 @@ fieldset[disabled] .btn-default.active {
   }
 }
 
+
+
+/***/
 .vehicle-detail {
   display: none;
 }
@@ -783,6 +803,10 @@ fieldset[disabled] .btn-default.active {
   }
 }
 
+.unit-tickets {
+  clear: both;
+  padding: 10px 0 0 0;
+}
 #ticket-wrap {
   h4 {
     color: #aaa;

@@ -15,7 +15,8 @@ node do |n|
       :properties_path => properties_property_resident_path(@property, n),
       :marketing_properties_path => marketing_properties_property_resident_path(@property, n),
       :activities_path => property_resident_activities_path(@property, n),
-      :smartrent_path => smartrent_property_resident_path(@property, n)
+      :smartrent_path => smartrent_property_resident_path(@property, n),
+      :add_ticket_path => property_resident_path(@property, n, :anchor => 'addTicket')
     })
   else
     attrs.merge!({

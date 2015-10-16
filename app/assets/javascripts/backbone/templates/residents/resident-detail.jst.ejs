@@ -1,240 +1,12 @@
-
 <% if(!App.vars.isPropertyPage) { %>
-<div class="col-md-4">
-  <div class="card">
-    <h3>Contact Info </h3>
-    <ul class="list-unstyled">
-      <li>
-        <label>Address:</label>
-        <%= street %> <%= city %>, <%= state %> <%= zip %>
-      </li>
-      <li>
-        <label>Gender:</label>
-        <%= gender %>
-      </li>
-      <li>
-        <label>Birthday:</label>
-        <%= birthday %>
-      </li>
-      <li>
-        <label>SSN#:</label>
-        <%= last4_ssn %>
-      </li>
-      <li>
-        <label>Cell Phone:</label>
-        <%= cell_phone %>
-      </li>
-      <li>
-        <label>Home Phone:</label>
-        <%= home_phone %>
-      </li>
-      <li>
-        <label>Work Phone:</label>
-        <%= work_phone %>
-      </li>
-    </ul>
-  </div>
-</div>
-
-<% } else { %>
-<div class="col-md-4">
-  <div class="card">
-    <h3>
-      Contact Info
-    </h3>
-    <ul class="list-unstyled">
-      <li>
-        <label>Address:</label>
-        <%= street %> <%= city %>, <%= state %> <%= zip %>
-      </li>
-      <li>
-        <label>Cell Phone:</label>
-        <%= cell_phone %>
-      </li>
-      <li>
-        <label>Home Phone:</label>
-        <%= home_phone %>
-      </li>
-      <li>
-        <label>Work Phone:</label>
-        <%= work_phone %>
-      </li>
-    </ul>
-  </div>
-</div>
-
-<div class="col-md-4">
-  <div class="card">
-    <h3>
-      Lease Info
-    </h3>
-    <ul class="list-unstyled">
-      <li>
-        <label>Unit Number:</label>
-        <% var unit = _.find(App.vars.propertyUnits, function(u) { return u["val"] == property.unit_id }) %>
-        <%= unit ? unit.label : "" %>
-      </li>
-      <li>
-        <label>Contract Signing Date:</label>
-        <%= property.signing_date %>
-      </li>
-      <li>
-        <label>Move-in Date:</label>
-        <%= property.move_in %>
-      </li>
-      <li>
-        <label>Move-out Date:</label>
-        <%= property.move_out %>
-      </li>
-      <li>
-        <label>Rent:</label>
-        <%= property.rent %>
-      </li>
-      <li>
-        <label>Status:</label>
-        <%= property.status %>
-      </li>
-      <li>
-        <label>Type:</label>
-        <%= property.type %>
-      </li>
-      <li class="heading"> Vehicle Information</li>
-      <li>
-        <label>Number of Vehicles:</label>
-        <%= property.vehicles_count %>
-      </li>
-      <% if (property.vehicles_count > 0 && property.vehicle1) { %>
-        <li>
-          <label>V1. Make/Model/Year:</label>
-          <%= property.vehicle1 %>
-        </li>
-        <li>
-          <label>License Plate:</label>
-          <%= property.license1 %>
-        </li>
-        <li>
-          <label>Badge:</label>
-          <%= property.badge_number_1 %>
-        </li>
-      <% } %>
-
-      <% if(property.vehicles_count > 1 && property.vehicle2) { %>
-        <li>
-          <label>V2. Make/Model:</label>
-          <%= property.vehicle2 %>
-        </li>
-        <li>
-          <label>License Plate:</label>
-          <%= property.license2 %>
-        </li>
-        <li>
-          <label>Badge:</label>
-          <%= property.badge_number_2 %>
-        </li>
-      <% } %>
-
-      <% if(property.vehicles_count > 2 && property.vehicle3) { %>
-        <li>
-          <label>V3. Make/Model:</label>
-          <%= property.vehicle3 %>
-        </li>
-        <li>
-          <label>License Plate:</label>
-          <%= property.license3 %>
-        </li>
-        <li>
-          <label>Badge:</label>
-          <%= property.badge_number_3 %>
-        </li>
-      <% } %>
-      <% if(property.vehicles_count > 3 && property.vehicle4) { %>
-        <li>
-          <label>V4. Make/Model:</label>
-          <%= property.vehicle4 %>
-        </li>
-        <li>
-          <label>License Plate:</label>
-          <%= property.license4 %>
-        </li>
-        <li>
-          <label>Badge:</label>
-          <%= property.badge_number_4 %>
-        </li>
-      <% } %>
-      <% if(property.vehicles_count > 4 && property.vehicle5) { %>
-        <li>
-          <label>V5. Make/Model:</label>
-          <%= property.vehicle5 %>
-        </li>
-        <li>
-          <label>License Plate:</label>
-          <%= property.license5 %>
-        </li>
-        <li>
-          <label>Badge:</label>
-          <%= property.badge_number_5 %>
-        </li>
-      <% } %>
-        <li class="heading"> Pet Information</li>
-        <li>
-          <label>Pets Count:</label>
-          <%= property.pets_count %>
-        </li>
-        <% if (property.pets_count >= 1 && property.pet_1_type) { %>
-        <li>
-          <label>Pet Type:</label>
-          <%= property.pet_1_type %>
-        </li>
-        <li>
-          <label>Pet Breed:</label>
-          <%= property.pet_1_breed %>
-        </li>
-        <li>
-          <label>Pet Name:</label>
-          <%= property.pet_1_name %>
-        </li>
-        <% } %>
-        <% if (property.pets_count >= 2) { %>
-        <li>
-          <label>Pet Type:</label>
-          <%= property.pet_2_type %>
-        </li>
-        <li>
-          <label>Pet Breed:</label>
-          <%= property.pet_2_breed %>
-        </li>
-        <li>
-          <label>Pet Name:</label>
-          <%= property.pet_2_name %>
-        </li>
-        <% } %>
-        <% if (property.pets_count >= 3) { %>
-        <li>
-          <label>Pet Type:</label>
-          <%= property.pet_3_type %>
-        </li>
-        <li>
-          <label>Pet Breed:</label>
-          <%= property.pet_3_breed %>
-        </li>
-        <li>
-          <label>Pet Name:</label>
-          <%= property.pet_3_name %>
-        </li>
-        <% } %>
-    </ul>
-  </div>
-</div>
-
-  <% if (App.vars.isCrm) { %>
-
-<div class="col-md-4">
+  <div class="col-md-4">
     <div class="card">
-      <h3>
-        Demographics
-      </h3>
+      <h3>Contact Info </h3>
       <ul class="list-unstyled">
-        <li class="heading"> Occupant </li>
+        <li>
+          <label>Address:</label>
+          <%= street %> <%= city %>, <%= state %> <%= zip %>
+        </li>
         <li>
           <label>Gender:</label>
           <%= gender %>
@@ -244,71 +16,297 @@
           <%= birthday %>
         </li>
         <li>
-          <label>SSN:</label>
-          <%= ssn %>
+          <label>SSN#:</label>
+          <%= last4_ssn %>
         </li>
         <li>
-          <label>Household Size:</label>
-          <%= property.household_size %>
+          <label>Cell Phone:</label>
+          <%= cell_phone %>
         </li>
         <li>
-          <label>Household Status:</label>
-          <%= property.household_status %>
-        </li>
-
-        <li class="heading"> Previous Residence</li>
-        <li>
-          <label>Moving From:</label>
-          <%= property.moving_from %>
-        </li>
-
-
-        <li class="heading"> Employment</li>
-        <li>
-          <label>Occupation Type:</label>
-          <%= property.occupation_type %>
+          <label>Home Phone:</label>
+          <%= home_phone %>
         </li>
         <li>
-          <label>Employer:</label>
-          <%= property.employer %>
-        </li>
-        <li>
-          <label>Employer City:</label>
-          <%= property.employer_city %>
-        </li>
-        <li>
-          <label>Employer State:</label>
-          <%= property.employer_state %>
-        </li>
-        <li>
-          <label>Annual Income:</label>
-          <%= property.annual_income %>
-        </li>
-        <li>
-          <label>Minutes to Work:</label>
-          <%= property.minutes_to_work %>
-        </li>
-        <li>
-          <label>Transportation to Work:</label>
-          <%= property.transportation_to_work %>
+          <label>Work Phone:</label>
+          <%= work_phone %>
         </li>
       </ul>
     </div>
   </div>
-  <% } %>
-  <% if ( App.vars.isSmartrent && smartrent ) { %>
+
+<% } else { %>
   <div class="col-md-4">
     <div class="card">
       <h3>
-        SmartRent
+        Contact Info
       </h3>
-      <ul class="list-unstyled smartrent-info"> <!-- will be loaded when the user view the resident detail -->
-        Loading...
+      <ul class="list-unstyled">
         <li>
-          <a href="#" class="btn btn-primary btn-lg view-smartrent"> View Details</a>
+          <label>Address:</label>
+          <%= street %> <%= city %>, <%= state %> <%= zip %>
+        </li>
+        <li>
+          <label>Cell Phone:</label>
+          <%= cell_phone %>
+        </li>
+        <li>
+          <label>Home Phone:</label>
+          <%= home_phone %>
+        </li>
+        <li>
+          <label>Work Phone:</label>
+          <%= work_phone %>
         </li>
       </ul>
     </div>
   </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <h3>
+        Lease Info
+      </h3>
+      <ul class="list-unstyled">
+        <li>
+          <label>Unit Number:</label>
+          <% var unit = _.find(App.vars.propertyUnits, function(u) { return u["val"] == property.unit_id }) %>
+          <%= unit ? unit.label : "" %>
+        </li>
+        <li>
+          <label>Contract Signing Date:</label>
+          <%= property.signing_date %>
+        </li>
+        <li>
+          <label>Move-in Date:</label>
+          <%= property.move_in %>
+        </li>
+        <li>
+          <label>Move-out Date:</label>
+          <%= property.move_out %>
+        </li>
+        <li>
+          <label>Rent:</label>
+          <%= property.rent %>
+        </li>
+        <li>
+          <label>Status:</label>
+          <%= property.status %>
+        </li>
+        <li>
+          <label>Type:</label>
+          <%= property.type %>
+        </li>
+        <li class="heading"> Vehicle Information</li>
+        <li>
+          <label>Number of Vehicles:</label>
+          <%= property.vehicles_count %>
+        </li>
+        <% if (property.vehicles_count > 0 && property.vehicle1) { %>
+          <li>
+            <label>V1. Make/Model/Year:</label>
+            <%= property.vehicle1 %>
+          </li>
+          <li>
+            <label>License Plate:</label>
+            <%= property.license1 %>
+          </li>
+          <li>
+            <label>Badge:</label>
+            <%= property.badge_number_1 %>
+          </li>
+        <% } %>
+
+        <% if(property.vehicles_count > 1 && property.vehicle2) { %>
+          <li>
+            <label>V2. Make/Model:</label>
+            <%= property.vehicle2 %>
+          </li>
+          <li>
+            <label>License Plate:</label>
+            <%= property.license2 %>
+          </li>
+          <li>
+            <label>Badge:</label>
+            <%= property.badge_number_2 %>
+          </li>
+        <% } %>
+
+        <% if(property.vehicles_count > 2 && property.vehicle3) { %>
+          <li>
+            <label>V3. Make/Model:</label>
+            <%= property.vehicle3 %>
+          </li>
+          <li>
+            <label>License Plate:</label>
+            <%= property.license3 %>
+          </li>
+          <li>
+            <label>Badge:</label>
+            <%= property.badge_number_3 %>
+          </li>
+        <% } %>
+        <% if(property.vehicles_count > 3 && property.vehicle4) { %>
+          <li>
+            <label>V4. Make/Model:</label>
+            <%= property.vehicle4 %>
+          </li>
+          <li>
+            <label>License Plate:</label>
+            <%= property.license4 %>
+          </li>
+          <li>
+            <label>Badge:</label>
+            <%= property.badge_number_4 %>
+          </li>
+        <% } %>
+        <% if(property.vehicles_count > 4 && property.vehicle5) { %>
+          <li>
+            <label>V5. Make/Model:</label>
+            <%= property.vehicle5 %>
+          </li>
+          <li>
+            <label>License Plate:</label>
+            <%= property.license5 %>
+          </li>
+          <li>
+            <label>Badge:</label>
+            <%= property.badge_number_5 %>
+          </li>
+        <% } %>
+          <li class="heading"> Pet Information</li>
+          <li>
+            <label>Pets Count:</label>
+            <%= property.pets_count %>
+          </li>
+          <% if (property.pets_count >= 1 && property.pet_1_type) { %>
+          <li>
+            <label>Pet Type:</label>
+            <%= property.pet_1_type %>
+          </li>
+          <li>
+            <label>Pet Breed:</label>
+            <%= property.pet_1_breed %>
+          </li>
+          <li>
+            <label>Pet Name:</label>
+            <%= property.pet_1_name %>
+          </li>
+          <% } %>
+          <% if (property.pets_count >= 2) { %>
+          <li>
+            <label>Pet Type:</label>
+            <%= property.pet_2_type %>
+          </li>
+          <li>
+            <label>Pet Breed:</label>
+            <%= property.pet_2_breed %>
+          </li>
+          <li>
+            <label>Pet Name:</label>
+            <%= property.pet_2_name %>
+          </li>
+          <% } %>
+          <% if (property.pets_count >= 3) { %>
+          <li>
+            <label>Pet Type:</label>
+            <%= property.pet_3_type %>
+          </li>
+          <li>
+            <label>Pet Breed:</label>
+            <%= property.pet_3_breed %>
+          </li>
+          <li>
+            <label>Pet Name:</label>
+            <%= property.pet_3_name %>
+          </li>
+          <% } %>
+      </ul>
+    </div>
+  </div>
+
+  <% if (App.vars.isCrm) { %>
+    <div class="col-md-4">
+      <div class="card">
+        <h3>
+          Demographics
+        </h3>
+        <ul class="list-unstyled">
+          <li class="heading"> Occupant </li>
+          <li>
+            <label>Gender:</label>
+            <%= gender %>
+          </li>
+          <li>
+            <label>Birthday:</label>
+            <%= birthday %>
+          </li>
+          <li>
+            <label>SSN:</label>
+            <%= ssn %>
+          </li>
+          <li>
+            <label>Household Size:</label>
+            <%= property.household_size %>
+          </li>
+          <li>
+            <label>Household Status:</label>
+            <%= property.household_status %>
+          </li>
+
+          <li class="heading"> Previous Residence</li>
+          <li>
+            <label>Moving From:</label>
+            <%= property.moving_from %>
+          </li>
+
+
+          <li class="heading"> Employment</li>
+          <li>
+            <label>Occupation Type:</label>
+            <%= property.occupation_type %>
+          </li>
+          <li>
+            <label>Employer:</label>
+            <%= property.employer %>
+          </li>
+          <li>
+            <label>Employer City:</label>
+            <%= property.employer_city %>
+          </li>
+          <li>
+            <label>Employer State:</label>
+            <%= property.employer_state %>
+          </li>
+          <li>
+            <label>Annual Income:</label>
+            <%= property.annual_income %>
+          </li>
+          <li>
+            <label>Minutes to Work:</label>
+            <%= property.minutes_to_work %>
+          </li>
+          <li>
+            <label>Transportation to Work:</label>
+            <%= property.transportation_to_work %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  <% } %>
+  <% if ( App.vars.isSmartrent && smartrent ) { %>
+    <div class="col-md-4">
+      <div class="card">
+        <h3>
+          SmartRent
+        </h3>
+        <ul class="list-unstyled smartrent-info"> <!-- will be loaded when the user view the resident detail -->
+          Loading...
+          <li>
+            <a href="#" class="btn btn-primary btn-lg view-smartrent"> View Details</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   <% } %>
 <% } %>

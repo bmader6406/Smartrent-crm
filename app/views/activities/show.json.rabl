@@ -42,6 +42,7 @@ node(:email, :if => lambda {|n| n.subject.email rescue false }) do |n|
     :from => comment.email.from,
     :is_received => comment.author.kind_of?(Resident),
     :to => comment.email.to,
+    :cc => comment.email.cc,
     :subject => comment.email.subject,
     :message => comment.email.message
   }

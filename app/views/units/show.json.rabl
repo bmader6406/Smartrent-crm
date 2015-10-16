@@ -6,10 +6,9 @@ node do |n|
     :show_path => property_unit_path(@property, n),
     :residents_path => residents_property_unit_path(@property, n),
     :edit_path => edit_property_unit_path(@property, n),
-    :search_resident_path => search_property_residents_path(@property),
-    :add_ticket_path => ""
+    :search_resident_path => search_property_residents_path(@property)
   }
-  attrs[:add_ticket_path] = property_resident_path(@property, n.primary_resident._id, :anchor => 'addTicket') if n.primary_resident.present?
+
   attrs
 end
 if @unit.present?

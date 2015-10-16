@@ -21,7 +21,13 @@
 <% } %>
 
 <div class="card">
-  <b href="#" class="blue-text"><%= unit_text %></b>
+  <% if(App.vars.isPropertyPage) { %>
+    <% if (App.vars.residentObj && App.vars.residentObj.property.roommate) { %>
+      <span class="badge" style="float:right">roommate</span>
+    <% } %>
+    <b href="#" class="blue-text"><%= unit_text %></b>
+  <% } %>
+  
   <h3> <a href="#" class="resident-details"><%= full_name %></a> </h3>
   <ul class="list-unstyled">
     <li class="blue-text" style="word-break: break-all;">
@@ -33,8 +39,6 @@
   </ul>
 </div>
 
-
-
 <% if(App.vars.isPropertyPage) { %>
   <div class="nav-details">
     <% if (App.vars.isCrm) { %>
@@ -42,12 +46,14 @@
         <i class="fa fa-angle-right"></i>
         Resident Activity 
       </a>
-      <% if ( App.vars.isSmartrent && smartrent ) { %>
+      
+      <% if (smartrent) { %>
         <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
           <i class="fa fa-angle-right"></i>
           SmartRent
         </a>
       <% } %>
+      
       <a href="http://my.hy.ly/x-ray/1445903171874510885/leads?email=<%=email%>" target="_blank" class="btn btn-lg btn-default">
         <i class="fa fa-angle-right"></i>
         Marketing History
@@ -60,8 +66,13 @@
         <i class="fa fa-angle-right"></i>
         Tickets
       </a>
+      
+    <% } else if (App.vars.isSmartrent && smartrent) { %>
+      <a href="#smartrent" class="btn btn-lg btn-default tab-nav">
+        <i class="fa fa-angle-right"></i>
+        SmartRent
+      </a>
     <% } %>
-    <!-- smartrent tab is always hidden -->
   </div>
 <% } else { %>
   <div class="nav-details">
