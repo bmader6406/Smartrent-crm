@@ -1,0 +1,11 @@
+<ul class="nav nav-tabs">
+  <li class="<%= "active" if controller_name == "templates" %>">
+    <a href="<%= nimda_templates_path %>">Templates</a>
+  </li>
+  <li class="<%= "active" if action_name.include?("units") %>">
+    <a href="<%= units_nimda_path %>">Units</a>
+  </li>
+  <li class="<%= "active" if action_name.include?("yardi") %>">
+    <a href="<%= yardi_nimda_path %>">Yardi</a>
+  </li>    
+</ul>

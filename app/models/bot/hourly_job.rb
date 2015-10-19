@@ -31,8 +31,7 @@ class HourlyJob
     end
     if time.day == day_to_execute && time.hour == 0
       Resque.enqueue(Smartrent::WeeklyPropertyXmlImporter, time)
-      Resque.enqueue(UnitLoadWorker, time)
-      Resque.enqueue(UnitRefreshWorker, time)
+      Resque.enqueue(UnitLoader, time)
     end
 
     if time.day == 1 && time.hour == 0 #execute at the begining of month

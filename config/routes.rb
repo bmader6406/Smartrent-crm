@@ -164,12 +164,20 @@ Rails.application.routes.draw do
   end
   
   # admin
+  resource :nimda, :controller => :nimda do
+    get :units
+    post :load_units
+    post :test_units_ftp
+    
+    get :yardi
+    post :load_yardi
+  end
+  
   namespace :nimda do
     resources :templates do
       member do
         get :preview
       end
-      
     end
   end
   

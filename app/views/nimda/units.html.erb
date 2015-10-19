@@ -1,0 +1,93 @@
+<div class="page-header">
+  <h3> Unit Management </h3>
+</div>
+
+<div class="well">
+  <%= form_tag load_units_nimda_path, :method => :post, :id => "load-units-form" do %>
+    <div class="form-group">
+      <label> FTP Host </label>
+      <%= text_field_tag "ftp_setting[host]", Unit.ftp_setting["host"], :class => "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <label> FTP Username </label>
+      <%= text_field_tag "ftp_setting[username]", Unit.ftp_setting["username"], :class => "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <label> FTP Password </label>
+      <%= password_field_tag "ftp_setting[password]", Unit.ftp_setting["password"], :class => "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <label> FTP File Name </label>
+      <%= text_field_tag "ftp_setting[file_name]", Unit.ftp_setting["file_name"], :class => "form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <label> Import Status Recipient </label>
+      <%= text_field_tag "recipient", "", :class => "form-control", :placehoder => "email@address.com" %>
+    </div>
+    
+    <%= button_tag "Load Units", :name => nil, :class => "btn btn-primary" %>
+    <a href="<%= test_units_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+  <% end %>
+</div>
+
+
+<script type="text/javascript">
+  $(function(){
+    var form = $('#load-units-form');
+    
+    form.on('submit', function(){
+      var blanks = [];
+      
+      form.find('input:visible').each(function(){
+        var input = $(this);
+        
+        if( $.trim(input.val()) == "") {
+          blanks.push( input );
+        }
+      });
+      
+      if(blanks.length > 0) {
+        msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+        return false;
+      }
+      
+      bootbox.confirm("Sure you want to load units? There is no undo.", function(result) {
+        if (result) {
+          form.ajaxSubmit({
+            dataType: 'json',
+            beforeSerialize: function(){
+              form.mask('Please wait...');
+            },
+            success: function(){
+              form.unmask();
+              msgbox('Units are being loaded... We will send the Import Status to ' + form.find('input[name=recipient]').val() + ' shortly.');
+            }
+          });
+        }
+      });
+      
+      return false;
+    });
+    
+    form.on('click', '.test', function(){
+      form.mask('Please wait...');
+      
+      $.post(this.href, form.serializeArray(), function(data){
+        if(data.success){
+          msgbox('FTP Credentials are correct');
+        } else {
+          msgbox('FTP Credentials are not correct!', 'danger');
+        }
+        
+        form.unmask();
+      }, 'json');
+      
+      return false;
+    });
+    
+  });
+</script>

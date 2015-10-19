@@ -59,8 +59,8 @@ Crm.Views.QuickNotificationsList = Backbone.View.extend({
           if( data.length > 0 ){
             if( !$.cookie("notif_sound_off") ) {
               var aSound = document.createElement('audio');
-               aSound.setAttribute('src', '/ding.wav');
-               aSound.play();
+              aSound.setAttribute('src', '/ding.wav');
+              aSound.play();
             }
 
             $.each(data, function(i, n){

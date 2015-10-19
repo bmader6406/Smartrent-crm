@@ -7,6 +7,15 @@ class Unit < ActiveRecord::Base
   #validates :code, :uniqueness => {:scope => [:property_id] }, :allow_nil => true
   
   default_scope { where(:deleted_at => nil) }
+  
+  def self.ftp_setting
+    {
+      "host" => "feeds.livebozzuto.com",
+      "username" => "CRMbozchh",
+      "password" => "NAQpPt41",
+      "file_name" => "mits4_1.xml"
+    }
+  end
 
   def residents
     # must assign array manually, otherwise curr_property will not work on rabl view

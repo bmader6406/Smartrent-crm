@@ -1,6 +1,8 @@
-<%= link_to "Create A New Template", nimda_templates_path, :class => "btn btn-primary", :method => :post %>
+<div class="page-header">
+  <h3> Templates Management </h3>
+</div>
 
-<br><br>
+<%= link_to "Create A New Template", nimda_templates_path, :class => "btn btn-primary", :method => :post %>
 
 <div style="padding:10px 0;">
   <%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>

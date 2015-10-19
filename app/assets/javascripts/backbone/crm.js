@@ -1073,8 +1073,13 @@ window.Crm = {
       quickNotif.on('click', '.toggle-sound', function(){
         var soundOff = !$.cookie("notif_sound_off") ? 1 : "";
 
-        if(soundOff, $.cookie("notif_sound_off")) {
+        if( !soundOff ) {
           quickNotif.find('.toggle-sound i').removeClass('fa-volume-off').addClass('fa-volume-up');
+          
+          var aSound = document.createElement('audio');
+          aSound.setAttribute('src', '/ding.wav');
+          aSound.play();
+          
         } else {
           quickNotif.find('.toggle-sound i').removeClass('fa-volume-up').addClass('fa-volume-off');
         }
