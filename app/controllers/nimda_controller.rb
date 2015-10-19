@@ -40,8 +40,27 @@ class NimdaController < ApplicationController
   def yardi
   end
   
-  def load_yardi
+  def test_yardi_ftp
+    begin
+      ftp = Net::FTP.new()
+      ftp.passive = true
+      ftp.connect(params[:ftp_setting][:host])
+      ftp.login(params[:ftp_setting][:username], params[:ftp_setting][:password])
+      ftp.close
+    
+      render :json => {:success => true}
+      
+    rescue Exception => e
+      pp "ftp test ERROR: ", e
+      
+      render :json => {:success => false}
+    end
   end
   
+  def load_yardi
+    Resque.enqueue(YardiLoader, Time.now, params[:ftp_setting], params[:recipient])
+    
+    render :json => {:success => true}
+  end
   
 end

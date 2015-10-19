@@ -171,6 +171,7 @@ Rails.application.routes.draw do
     
     get :yardi
     post :load_yardi
+    post :test_yardi_ftp
   end
   
   namespace :nimda do

@@ -3,25 +3,25 @@
 </div>
 
 <div class="well">
-  <%= form_tag load_units_nimda_path, :method => :post, :id => "load-units-form" do %>
+  <%= form_tag load_yardi_nimda_path, :method => :post, :id => "load-units-form" do %>
     <div class="form-group">
       <label> FTP Host </label>
-      <%= text_field_tag "ftp_setting[host]", Unit.ftp_setting["host"], :class => "form-control" %>
+      <%= text_field_tag "ftp_setting[host]", Resident.ftp_setting["host"], :class => "form-control" %>
     </div>
     
     <div class="form-group">
       <label> FTP Username </label>
-      <%= text_field_tag "ftp_setting[username]", Unit.ftp_setting["username"], :class => "form-control" %>
+      <%= text_field_tag "ftp_setting[username]", Resident.ftp_setting["username"], :class => "form-control" %>
     </div>
     
     <div class="form-group">
       <label> FTP Password </label>
-      <%= password_field_tag "ftp_setting[password]", Unit.ftp_setting["password"], :class => "form-control" %>
+      <%= password_field_tag "ftp_setting[password]", Resident.ftp_setting["password"], :class => "form-control" %>
     </div>
     
     <div class="form-group">
       <label> FTP File Name </label>
-      <%= text_field_tag "ftp_setting[host]", Unit.ftp_setting["host"], :class => "form-control" %>
+      <%= text_field_tag "ftp_setting[host]", Resident.ftp_setting["host"], :class => "form-control" %>
     </div>
     
     <div class="form-group">
@@ -30,12 +30,13 @@
     </div>
     
     <%= button_tag "Load Units", :name => nil, :class => "btn btn-primary" %>
-    <a href="<%= test_units_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+    <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
   <% end %>
 </div>
 
 
 <script type="text/javascript">
+  var tintest = false; //to advoid accidental import
   $(function(){
     var form = $('#load-units-form');
     
@@ -56,7 +57,7 @@
       }
       
       bootbox.confirm("Sure you want to load units? There is no undo.", function(result) {
-        if (result) {
+        if (result && tintest) {
           form.ajaxSubmit({
             dataType: 'json',
             beforeSerialize: function(){
