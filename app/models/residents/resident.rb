@@ -41,6 +41,7 @@ class Resident
     :employer_city,
     :employer_state,
     :annual_income,
+    :previous_residence,
     :minutes_to_work,
     :transportation_to_work,
     :vehicle1,

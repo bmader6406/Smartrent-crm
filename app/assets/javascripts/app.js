@@ -221,7 +221,7 @@ var Helpers = {
   },
 
   truncate: function(str, length) {
-    if(str.length > length){
+    if(str && str.length > length){
       return $.trim(str).substring(0, length).split(" ").slice(0, -1).join(" ") + "...";
     } else {
       return str;

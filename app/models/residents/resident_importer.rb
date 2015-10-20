@@ -11,24 +11,82 @@ class ResidentImporter
   def self.perform(file_path, type = "yardi")
 
     if type == "yardi"
-
+      
+      # yardi file format
+      # 0   Property Code
+      # 1   Unit Code
+      # 2   Tenant Code
+      # 3   Tenant Name
+      # 4   Tenant Address 1
+      # 5   Tenant Address 2
+      # 6   City
+      # 7   State
+      # 8   Zip Code
+      # 9   Tenant Status
+      # 10  Email
+      # 11  Move In
+      # 12  Move Out
+      # 13  Household Size
+      # 14  Pets
+      # 15  Rent
+      # 16  Lead Type
+      # 17  Gender
+      # 18  Birthday
+      # 19  Last 4 digits of Social Security Number
+      # 20  Household Size
+      # 21  Household Status
+      # 22  Previous Residence (Address1, Address2, City, State, ZIP)
+      # 23  Moving From
+      # 24  Pets Count
+      # 25  Pet Type
+      # 26  Pet Breed
+      # 27  Occupation Type
+      # 28  Employer
+      # 29  Employer City
+      # 30  Employer State
+      # 31  Annual Income
+      # 32  Minutes to Work
+      # 33  Transportation to Work
+      # 34  License Plate 1
+      # 35  Number of Vehicles
+      
       resident_map = {
-       :yardi_property_id => 0,
-       :unit_code => 1,
-       :origin_id => 2,
-       :full_name => 3,
-       :street => 4,
-       :city => 6,
-       :state => 7,
-       :zip => 8,
-       :status => 9,
-       :email => 10,
-       :move_in => 11,
-       :move_out => 12,
-       :household_size => 13,
-       :pets_count => 14
+        :yardi_property_id => 0,
+        :unit_code => 1,
+        :origin_id => 2,
+        :full_name => 3,
+        :street => 4,
+        :city => 6,
+        :state => 7,
+        :zip => 8,
+        :status => 9,
+        :email => 10,
+        :move_in => 11,
+        :move_out => 12,
+        :household_size => 13,
+        :pets_count => 14,
+        :type => 16,
+        :gender => 17,
+        :birthday => 18,
+        :last4_ssn => 19,
+        :household_size => 20,
+        :household_status => 21,
+        :previous_residence => 22,
+        :moving_from => 23,
+        :pets_count => 24,
+        :pet_1_type => 25,
+        :pet_1_breed => 26,
+        :occupation_type => 27,
+        :employer => 28,
+        :employer_city => 29,
+        :employer_state => 30,
+        :annual_income => 31,
+        :minutes_to_work => 32,
+        :transportation_to_work => 33,
+        :license1 => 34,
+        :vehicles_count => 35
       }
-
+      
       prop_map = {}
 
       Property.where(:is_crm => 1).each do |p|
@@ -76,6 +134,10 @@ class ResidentImporter
 
                 if [:birthday].include?(f)
                   resident[f] = Date.strptime(row[resident_map[f]], '%m/%d/%Y') rescue nil
+                  
+                  if !resident[f]
+                    resident[f] = Date.parse(row[resident_map[f]]) rescue nil
+                  end
                 end
               end
             end

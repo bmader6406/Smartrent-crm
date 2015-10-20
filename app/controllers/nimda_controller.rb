@@ -1,11 +1,11 @@
 require 'net/ftp'
 
 class NimdaController < ApplicationController
-  before_action :require_ssl
-
-  http_basic_authenticate_with :name => NIMDA_U, :password => NIMDA_P
+  before_action :require_user
+  before_action :require_admin
+  before_action :set_page_title
   
-  layout "nimda"
+  layout "application"
   
   def show
     redirect_to nimda_templates_url
@@ -62,5 +62,11 @@ class NimdaController < ApplicationController
     
     render :json => {:success => true}
   end
+  
+  protected
+  
+    def set_page_title
+      @page_title = "CRM - Admin"
+    end
   
 end

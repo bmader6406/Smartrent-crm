@@ -21,30 +21,3 @@
  line-height: 30px;
  margin-top: 10px;
 }
-
-#template-form {
-  float: left;
-  width: 440px;
-}
-
-#template-form .hint {
-  font-size:11px; 
-  color:#999; 
-  margin:0
-}
-
-#template-form .actions {
-	padding: 15px 0;
-}
-
-#template-preview {
-  border: 1px solid #eee;
-  margin-left: 500px;
-  text-align: center;
-  position: relative;
-}
-
-#template-preview  iframe {
-  height:1024px;
-  width: 100%;
-}

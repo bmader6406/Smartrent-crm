@@ -58,32 +58,55 @@ module ApplicationHelper
   
   def metric_options
     #TODO: make it editable
-    {"resident_status"=>{"" => "--Select Status--","Current" => "Current", "Future" => "Future", "Past" => "Past", "Notice" => "Notice"},
-     "resident_type"=>{"" => "--Select Type--","Walk-in" => "Walk-in", "Phone" => "Phone", "Email" => "Email"},
-     "occupation_type"=>
-      ["None",
-       "Admin/Support Staff",
-       "Blue Collar",
-       "Education",
-       "Finance/Accounting",
-       "Full-Time Homemaker",
-       "Government Employee",
-       "Government Funding",
-       "Medical",
-       "Military",
-       "Professional",
-       "Public Service",
-       "Real Estate",
-       "Retail Trade",
-       "Retired",
-       "Sales",
-       "Self-Employed",
-       "Student",
-       "Technology",
-       "Minor Child"],
-     "minutes_to_work"=>["","1-15", "16-30", "31-45", "61+"],
-     "household_status"=>
-      {
+    {
+      "resident_status" => {
+        "" => "--Select Status--",
+        "Current" => "Current",
+        "Future" => "Future",
+        "Past" => "Past",
+        "Notice" => "Notice"
+      },
+      "resident_type" => {
+        "" => "--Select Type--",
+        "Walk-in" => "Walk-in",
+        "Phone" => "Phone",
+        "Email" => "Email"
+      },
+      "occupation_type" => [
+        "None",
+        "Admin/Support Staff",
+        "Blue Collar",
+        "Education",
+        "Finance/Accounting",
+        "Full-Time Homemaker",
+        "Government Employee",
+        "Government Funding",
+        "Medical",
+        "Military",
+        "Professional",
+        "Public Service",
+        "Real Estate",
+        "Retail Trade",
+        "Retired",
+        "Sales",
+        "Self-Employed",
+        "Student",
+        "Technology",
+        "Minor Child"
+      ],
+      "minutes_to_work"=> [
+        "",
+        "1-15 minutes",
+        "16-30 minutes",
+        "31-45 minutes", 
+        "46-60 minutes",
+        "61+ minutes",
+        "Child",
+        "Corporate Apartment",
+        "Does not work",
+        "Work from home"
+      ],
+      "household_status" => {
         "" => "--Select House Hold Status--",
         "Married" => "Married",
         "Married W/ Child(ren)" => "Married W/ Child(ren)",
@@ -96,12 +119,47 @@ module ApplicationHelper
         "Single" => "Single",
         "Single W/ Child(ren)" => "Single W/ Child(ren)"
       },
-     "pet"=>{"" => "--Select Pets--","Dogs" => "Dogs", "Cats" => "Cats","Dogs & Cats" => "Dogs & Cats"},
-     "gender"=>{"" => "--Select Gender--", "Male" => "Male", "Female" => "Female", "Other" => "Other"},
-     "transportation_to_work"=>{"" => "--Select Transportation to Work--","Public" => "Public","Own Vehicle" => "Own Vehicle","Walk" => "Walk", "Carpool" => "Carpool"},
-     "moving_from"=>{"" => "--Select Moving From--","Apartment" => "Apartment","College" => "College","House" => "House","Parents" => "Parents"},
-     "occupant_type"=>{"" => "--Select Occupant Type--", "Type 1" => "Type 1","Type 2" => "Type 2", "Type 3" => "Type 3","Type 4" => "Type 4","Type 5" => "Type 5"},
-     "relationship"=>{"" => "--Select Relationship--", "Relationship 1" => "Relationship 1", "Relationship 2" => "Relationship 2", "Relationship 3" => "Relationship 3"}
+      "pet"=>{
+        "" => "--Select Pets--",
+        "Dog" => "Dog",
+        "Cat" => "Cat",
+        "Dog & Cat" => "Dog & Cat",
+        "None" => "None"
+      },
+      "gender"=>{
+        "" => "--Select Gender--",
+        "Male" => "Male",
+        "Female" => "Female",
+        "Other" => "Other"
+      },
+      "transportation_to_work" => {
+        "" => "--Select Transportation to Work--",
+        "Public" => "Public",
+        "Own Vehicle" => "Own Vehicle",
+        "Walk" => "Walk",
+        "Carpool" => "Carpool"
+      },
+      "moving_from" => {
+        "" => "--Select Moving From--",
+        "Apartment" => "Apartment",
+        "College" => "College",
+        "House" => "House",
+        "Parents" => "Parents"
+      },
+      "occupant_type" => {
+        "" => "--Select Occupant Type--",
+        "Type 1" => "Type 1",
+        "Type 2" => "Type 2",
+        "Type 3" => "Type 3",
+        "Type 4" => "Type 4",
+        "Type 5" => "Type 5"
+      },
+      "relationship" => {
+        "" => "--Select Relationship--",
+        "Relationship 1" => "Relationship 1", 
+        "Relationship 2" => "Relationship 2", 
+        "Relationship 3" => "Relationship 3"
+      }
     }
   end
   

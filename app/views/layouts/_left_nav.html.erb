@@ -107,6 +107,11 @@
         <a href="<%= raw main_app.notifications_path %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
       </li>
       
+      <% if current_user.is_admin? %> <!-- visible to admin only -->
+        <li class="<%= "active" if request.path.include?("/nimda") %>">
+          <a href="<%= raw main_app.nimda_path %>" class="page-reload"> <i class="fa fa-cogs fa-fw"></i> Admin </a>
+        </li>
+      <% end %>
       
     <% else %>
       <%= render "layouts/smartrent/left_nav_links" %>

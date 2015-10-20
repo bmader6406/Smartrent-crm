@@ -1,0 +1,118 @@
+<script type="text/javascript">
+App.vars.propertiesPath = "<%= properties_path %>";
+App.vars.usersPath = "<%= users_path %>";
+App.vars.notificationsPath = "<%= notifications_path %>";
+
+<% if request.host == "crm-dev.bozzuto.com" %>
+  App.vars.stopPoll = true;
+<% end %>
+
+$(function(){  
+  <% if @property %>
+    App.vars.residentsPath = "<%= property_residents_path(@property) %>";
+    App.vars.ticketsPath = "<%= property_tickets_path(@property) %>";
+    App.vars.unitsPath = "<%= property_units_path(@property) %>";
+    App.vars.campaignsUrl = "<%= property_campaigns_path(@property) %>";
+    App.vars.templatePreviewUrl = "<%= preview_template_property_campaigns_path(@property) %>";
+
+    App.vars.assetsPath = "<%= property_assets_path(@property) %>";
+    App.vars.importAssetsPath = "<%= import_property_assets_path(@property) %>";
+
+    App.vars.reportsPath = "<%= property_reports_path(@property) %>";
+    
+    App.vars.propertyId = "<%= @property.id %>";
+    App.vars.propertyEmail = "<%= @property.email %>";
+    App.vars.propertyPhone = "<%= @property.phone %>";
+    
+    App.vars.propertyUnits = <%= raw property_units.to_json %>;
+    App.vars.propertyAudiences = <%= raw property_audiences.to_json  %>;
+
+    App.vars.propertyTzHack = "<%= j(render "dashboards/tz") %>";
+    App.vars.routeRoot = "/properties/<%= @property.id %>";
+    
+    App.vars.isSmartrent = <%= @property.is_smartrent? %>;
+    App.vars.isCrm = <%= @property.is_crm? %>;
+  
+  <% else %>
+    App.vars.routeRoot = "";
+    App.vars.reportsPath = "<%= reports_path %>";
+  <% end %>
+  
+  App.vars.metricOptions = <%= raw metric_options.to_json %>;
+  
+
+  App.vars.isPropertyPage = <%= @property ? true : false %>;
+
+  App.vars.ticketStatuses = <%= raw Ticket::STATUSES.collect{|s| {:val => s.downcase, :label => s} }.to_json %>;
+  App.vars.ticketUrgencies = <%= raw Ticket::URGENCIES.collect{|s| {:val => s.downcase, :label => s} }.to_json %>;
+  App.vars.ticketAssignees = <%= raw ticket_assignees.to_json %>;
+  App.vars.ticketCategories = <%= raw Category.all.collect{|c| {:val => c.id.to_s, :label => c.name} }.to_json %>;
+
+  App.vars.regions = <%= raw ([{:val => "", :label => ""}] + Region.all.collect{|c| {:val => c.id.to_s, :label => c.name} }).to_json %>;;
+
+  //build from property dropdown
+  App.vars.properties = [];
+  App.vars.crmProperties = [];
+
+  var propertyDd = $('#property-dd');
+
+  propertyDd.find('a[data-val]').each(function(){
+    var t = $(this),
+      hash = { val: t.attr('data-val'), label: t.attr('data-label') };
+    
+    App.vars.properties.push(hash);
+    
+    if(t.attr('data-crm') == "1"){
+      App.vars.crmProperties.push(hash);
+    }
+  });
+  
+  App.vars.properties = _.sortBy(App.vars.properties, "val");
+  App.vars.crmProperties = _.sortBy(App.vars.crmProperties, "val");
+
+  App.vars.roles = <%= raw Role::LIST.collect{|r| {:val => r, :label => Role::DICT[r]} }.to_json %>;
+  App.vars.roleDict = <%= raw Role::DICT.to_json %>;
+
+  App.vars.tempDiv = $('#temp-div');
+
+  App.vars.userId = <%= current_user.id.to_s %>;
+  App.vars.ability = new Ability({rules: <%= raw ability_to_array(current_ability).to_json %>});
+  App.vars.unauthorizedPath = "<%= users_path %>";
+
+  <% if @property %>
+    App.vars.propertyObj = <%= raw render(:template => 'properties/show.json.rabl') %>;
+  <% end %>
+
+  <% if @resident %>
+    App.vars.residentObj = <%= raw render(:template => 'residents/show.json.rabl') %>;
+  <% end %>
+
+  <% if @ticket %>
+    App.vars.ticketObj = <%= raw render(:template => 'tickets/show.json.rabl') %>;
+  <% end %>
+
+  <% if @roommate %>
+    App.vars.roommateObj = <%= raw render(:template => 'roommates/show.json.rabl') %>;
+  <% end %>
+
+  <% if @unit %>
+    App.vars.unitObj = <%= raw render(:template => 'units/show.json.rabl') %>;
+  <% end %>
+
+  <% if @notification %>
+    App.vars.notificationObj = <%= raw render(:template => 'notifications/show.json.rabl') %>;
+  <% end %>
+
+  <% if @campaign %>
+    App.vars.campaignObj = <%= raw render(:template => 'campaigns/show.json.rabl') %>;
+  <% end %>
+
+  <% if @user %>
+    App.vars.userObj = <%= raw render(:template => 'users/show.json.rabl') %>;
+  <% end %>
+  
+  App.vars.smartrentStatuses = <%= raw Smartrent::Resident.changable_smartrent_statuses.to_json %>;
+
+  App.vars.states = <%= raw ([{:val => "", :label => ""}] + US_STATES.keys.sort.collect{|k| {:val => k, :label => US_STATES[k]} }).to_json %>;
+});
+</script>

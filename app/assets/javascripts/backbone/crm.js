@@ -17,7 +17,7 @@ window.Crm = {
         target = link.attr('target'),
         sameProp = !App.vars.isPropertyPage || href.indexOf(App.vars.propertyId) > -1,
         pageReload = link.hasClass('page-reload'),
-        passThrough = href.indexOf('logout') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/sr') > -1 || location.hostname.indexOf('smartrent') > -1 || target // chain 'or's for other black list routes
+        passThrough = href.indexOf('logout') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/sr') > -1 || href.indexOf('/nimda') > -1 || location.hostname.indexOf('smartrent') > -1 || target // chain 'or's for other black list routes
 
       // Allow shift+click for new tabs, etc.
       if (sameProp && !passThrough && !pageReload && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
@@ -1011,7 +1011,7 @@ window.Crm = {
 
     // trigger route matching
     Backbone.history.start({pushState: true, root: "/"});
-
+    
     // global rowclicked listener
     Backbone.on("rowclicked", function (model) {
       //reset

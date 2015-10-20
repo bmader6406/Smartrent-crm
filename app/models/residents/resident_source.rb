@@ -43,6 +43,8 @@ class ResidentSource
   field :employer_state, :type => String
   field :annual_income, :type => Float
   
+  field :previous_residence, :type => String
+  
   #vehicle info
   field :minutes_to_work, :type => String
   field :transportation_to_work, :type => String

@@ -75,9 +75,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_admin
-    if current_user and current_user.is_admin?
-      return true
-    end
+    return true if current_user and current_user.is_admin?
     raise CanCan::AccessDenied
   end
       
