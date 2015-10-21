@@ -17,6 +17,7 @@ class MetricGenerator
       midnight_time_zones = UtcOffset.midnight_time_zones(time.hour)
     
       PropertySetting.where("time_zone IN (?)", midnight_time_zones).includes(:property).each do |setting|
+        next if !setting.property || !setting.property.is_crm?
           
         Time.zone = setting.time_zone
         
@@ -24,7 +25,7 @@ class MetricGenerator
           pp "Calculating... #{setting.property.name}"
           calculate(setting.property)
         else
-          pp "Property (#{setting.property_id}) Not FOund"
+          pp "Property (#{setting.property_id}) Not Found"
         end
       end
     

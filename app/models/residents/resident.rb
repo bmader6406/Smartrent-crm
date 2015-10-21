@@ -23,6 +23,7 @@ class Resident
     :move_in,
     :move_out,
     :rent,
+    :lead_source,
     :household_size,
     :household_status,
     :moving_from,

@@ -68,14 +68,15 @@ module ApplicationHelper
       },
       "resident_type" => {
         "" => "--Select Type--",
-        "Walk-in" => "Walk-in",
+        "Email" => "Email",
         "Phone" => "Phone",
-        "Email" => "Email"
+        "Walk-in" => "Walk-in"
       },
       "occupation_type" => [
         "None",
         "Admin/Support Staff",
         "Blue Collar",
+        "Corporate",
         "Education",
         "Finance/Accounting",
         "Full-Time Homemaker",
@@ -83,6 +84,7 @@ module ApplicationHelper
         "Government Funding",
         "Medical",
         "Military",
+        "Minor Child",
         "Professional",
         "Public Service",
         "Real Estate",
@@ -92,7 +94,7 @@ module ApplicationHelper
         "Self-Employed",
         "Student",
         "Technology",
-        "Minor Child"
+        "Unemployed"
       ],
       "minutes_to_work"=> [
         "",
@@ -108,16 +110,16 @@ module ApplicationHelper
       ],
       "household_status" => {
         "" => "--Select House Hold Status--",
-        "Married" => "Married",
-        "Married W/ Child(ren)" => "Married W/ Child(ren)",
-        "Married W/ Roommate" => "Married W/ Roommate" ,
-        "Roommates" => "Roommates",
-        "Roommates W/ Child(ren)" => "Roommates W/ Child(ren)",
-        "Separated/Divorced" => "Separated/Divorced",
-        "Separated/Divorced W/ Child(ren)" => "Separated/Divorced W/ Child(ren)",
         "Corporate" => "Corporate",
+        "Married" => "Married",
+        "Married w/ Child(ren)" => "Married w/ Child(ren)",
+        "Married w/ Roommate" => "Married w/ Roommate" ,
+        "Roommates" => "Roommates",
+        "Roommates w/ Child(ren)" => "Roommates w/ Child(ren)",
+        "Separated/Divorced" => "Separated/Divorced",
+        "Separated/Divorced w/ Child(ren)" => "Separated/Divorced w/ Child(ren)",
         "Single" => "Single",
-        "Single W/ Child(ren)" => "Single W/ Child(ren)"
+        "Single w/ Child(ren)" => "Single w/ Child(ren)"
       },
       "pet"=>{
         "" => "--Select Pets--",
@@ -134,14 +136,16 @@ module ApplicationHelper
       },
       "transportation_to_work" => {
         "" => "--Select Transportation to Work--",
-        "Public" => "Public",
+        "Carpool" => "Carpool",
+        "Does Not Work" => "Does Not Work",
         "Own Vehicle" => "Own Vehicle",
         "Walk" => "Walk",
-        "Carpool" => "Carpool"
+        "Public" => "Public"
       },
       "moving_from" => {
         "" => "--Select Moving From--",
         "Apartment" => "Apartment",
+        "Centreville" => "Centreville",
         "College" => "College",
         "House" => "House",
         "Parents" => "Parents"

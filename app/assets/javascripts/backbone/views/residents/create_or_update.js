@@ -187,7 +187,7 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
         household_size: {
           type: 'Select',
           title: 'Household Size',
-          options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          options: ["", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         },
         household_status: {
           type: 'Select',

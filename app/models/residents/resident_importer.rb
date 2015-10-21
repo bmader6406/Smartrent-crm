@@ -65,7 +65,7 @@ class ResidentImporter
         :move_out => 12,
         :household_size => 13,
         :pets_count => 14,
-        :type => 16,
+        :lead_source => 16,
         :gender => 17,
         :birthday => 18,
         :last4_ssn => 19,

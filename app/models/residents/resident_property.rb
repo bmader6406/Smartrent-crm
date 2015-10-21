@@ -16,6 +16,8 @@ class ResidentProperty
   field :move_out, :type => Date
   field :rent, :type => Integer
   
+  field :lead_source, :type => String
+  
   # extra
   field :unit_id, :type => String
   
