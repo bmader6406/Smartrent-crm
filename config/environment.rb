@@ -34,7 +34,7 @@ TWILIO_P2P_SID = Rails.env.production? ? "APf050c35b938ebb859aa802e25f7f7d71" : 
 
 # Resident stream - email conversation
 CONVO_EMAIL = "conversation@hy.ly"
-CONVO_PWD = "C0nversation"
+CONVO_PWD = "C0nversAtion"
 
 # SES monitor
 OPS_U = 'ops@hy.ly'
