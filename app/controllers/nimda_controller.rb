@@ -12,6 +12,11 @@ class NimdaController < ApplicationController
   end
   
   def units
+    @import = Import.find_or_initialize_by(type: "load_units_one_time")
+    @import.save if @import.new_record?
+    
+    @daily_import = Import.find_or_initialize_by(type: "load_units_weekly")
+    @daily_import.save if @daily_import.new_record?
   end
   
   def test_units_ftp
@@ -32,12 +37,24 @@ class NimdaController < ApplicationController
   end
   
   def load_units
-    Resque.enqueue(UnitLoader, Time.now, params[:ftp_setting], params[:recipient])
+    import = Import.find_by_type(params[:type])
+    import.update_attributes(:ftp_setting => params[:ftp_setting])
+    
+    if params[:active]
+      import.update_attributes(:active => params[:active])
+    else
+      Resque.enqueue(UnitLoader, Time.now, import.id)
+    end
     
     render :json => {:success => true}
   end
   
   def yardi
+    @import = Import.find_or_initialize_by(type: "load_yardi_one_time")
+    @import.save if @import.new_record?
+    
+    @daily_import = Import.find_or_initialize_by(type: "load_yardi_daily")
+    @daily_import.save if @daily_import.new_record?
   end
   
   def test_yardi_ftp
@@ -58,7 +75,14 @@ class NimdaController < ApplicationController
   end
   
   def load_yardi
-    Resque.enqueue(YardiLoader, Time.now, params[:ftp_setting], params[:recipient])
+    import = Import.find_by_type(params[:type])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
+    
+    if params[:active]
+      import.update_attributes(:active => params[:active])
+    else
+      Resque.enqueue(YardiLoader, Time.now, import.id)
+    end
     
     render :json => {:success => true}
   end

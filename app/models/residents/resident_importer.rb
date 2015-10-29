@@ -8,11 +8,11 @@ class ResidentImporter
   end
 
   #TODO: create and set unit_id
-  def self.perform(file_path, type = "yardi")
+  def self.perform(file_path, type = "yardi", resident_map = {}, meta = {})
 
     if type == "yardi"
       
-      # yardi file format
+      # Yardi file format
       # 0   Property Code
       # 1   Unit Code
       # 2   Tenant Code
@@ -50,50 +50,17 @@ class ResidentImporter
       # 34  License Plate 1
       # 35  Number of Vehicles
       
-      resident_map = {
-        :yardi_property_id => 0,
-        :unit_code => 1,
-        :origin_id => 2,
-        :full_name => 3,
-        :street => 4,
-        :city => 6,
-        :state => 7,
-        :zip => 8,
-        :status => 9,
-        :email => 10,
-        :move_in => 11,
-        :move_out => 12,
-        :household_size => 13,
-        :pets_count => 14,
-        :lead_source => 16,
-        :gender => 17,
-        :birthday => 18,
-        :last4_ssn => 19,
-        :household_size => 20,
-        :household_status => 21,
-        :previous_residence => 22,
-        :moving_from => 23,
-        :pets_count => 24,
-        :pet_1_type => 25,
-        :pet_1_breed => 26,
-        :occupation_type => 27,
-        :employer => 28,
-        :employer_city => 29,
-        :employer_state => 30,
-        :annual_income => 31,
-        :minutes_to_work => 32,
-        :transportation_to_work => 33,
-        :license1 => 34,
-        :vehicles_count => 35
-      }
-      
       prop_map = {}
 
       Property.where(:is_crm => 1).each do |p|
         prop_map[p.yardi_property_id.to_s.gsub(/^0*/, '')] = p.id
       end
+      
+      resident_map.keys.each do |k|
+        resident_map[k] = resident_map[k].to_i # for array access
+      end
 
-      index = 0
+      index, new_resident, existing_resident, errs = 0, 0, 0, []
 
       File.foreach(file_path) do |line|
         index += 1
@@ -102,13 +69,13 @@ class ResidentImporter
           CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
             next if index == 1 || row.join.blank?
 
-            property_id = prop_map[row[ resident_map[:yardi_property_id] ].to_s.gsub(/^0*/, '') ]
+            property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.gsub(/^0*/, '') ]
 
             next if !property_id
 
-            origin_id = row[ resident_map[:origin_id] ]
-            unit_code = row[ resident_map[:unit_code] ]
-            email = row[ resident_map[:email] ]
+            origin_id = row[ resident_map["origin_id"] ]
+            unit_code = row[ resident_map["unit_code"] ]
+            email = row[ resident_map["email"] ]
 
             next if email.blank?
 
@@ -123,7 +90,8 @@ class ResidentImporter
             #consolidate resident by email
             resident = Resident.with(:consistency => :strong).where(:email_lc => email.to_s.downcase ).unify_ordered.first
             resident = Resident.new if !resident
-
+            new_record = resident.new_record?
+            
             Resident::CORE_FIELDS.each do |f|
               if resident_map[f]
                 if [:full_name].include?(f)
@@ -164,6 +132,14 @@ class ResidentImporter
             if resident.save
               #create submit
               resident.sources.create(property_attrs) if property_attrs[:property_id]
+              
+              if new_record
+                new_resident += 1
+              else
+                existing_resident += 1
+              end
+            else
+              errs << resident.errors.full_messages.join(", ")
             end
 
           end
@@ -174,6 +150,26 @@ class ResidentImporter
           pp ">>> line: #{line}, ERROR:", error_details
         end
       end
+      
+      
+      errFile = nil
+      errCSV = nil
+      file_name = meta["file_name"]
+      recipient = meta["recipient"]
+
+      if errs.length > 0
+        errFile ="errors_#{file_name}"
+
+        errCSV = CSV.generate do |csv|
+          errs.each {|row| csv << row}
+        end
+      end
+      
+      Notifier.system_message("[CRM] Yardi Importing Success",
+        email_body(new_resident, existing_resident, errs.length, file_name),
+        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver
+
+      pp ">>>", email_body(new_resident, existing_resident, errs.length, file_name)
 
     elsif type == "smartrent"
       resident_map = {
@@ -290,6 +286,36 @@ class ResidentImporter
         end
       end
     end
+    
+  end
 
+  def self.email_body(new_resident, existing_resident, error_resident, file_name)
+    new_and_existing_resident = new_resident + existing_resident
+
+    return <<-MESSAGE
+Your file has been loaded:
+<br>
+- #{new_and_existing_resident} #{resident_text(new_and_existing_resident)} were imported successfully.
+<br>
+- #{new_resident} of #{new_and_existing_resident} imported #{resident_text(new_and_existing_resident)} were added to the residents list.
+<br>
+- #{existing_resident} of #{new_and_existing_resident} imported #{resident_text(new_and_existing_resident)} replaced existing residents.
+<br>
+- #{error_resident} #{resident_text(error_resident)} were not imported.
+
+<br> 
+- Source: #{file_name}.
+<br>
+<br>
+<br>
+CRM Help Team
+<br>
+help@hy.ly
+
+    MESSAGE
+  end
+
+  def self.resident_text(count)
+    count != 1 ? "residents" : "residents"
   end
 end

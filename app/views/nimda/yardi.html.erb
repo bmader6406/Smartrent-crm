@@ -1,94 +1,229 @@
-<div class="page-header">
-  <h3> Yardi Management </h3>
-</div>
+<% 
+  csv_columns = [["No update", ""]]
+  0.upto(49) do |i|
+    csv_columns << ["Column #{i+1}", i]
+  end
+%>
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container import-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="well">
+              <h3> One Time Import </h3>
+              <%= form_tag load_yardi_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_yardi_one_time" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @import.ftp_setting["host"], :class => "form-control" %>
+                </div>
 
-<div class="well">
-  <%= form_tag load_yardi_nimda_path, :method => :post, :id => "load-units-form" do %>
-    <div class="form-group">
-      <label> FTP Host </label>
-      <%= text_field_tag "ftp_setting[host]", Resident.ftp_setting["host"], :class => "form-control" %>
-    </div>
-    
-    <div class="form-group">
-      <label> FTP Username </label>
-      <%= text_field_tag "ftp_setting[username]", Resident.ftp_setting["username"], :class => "form-control" %>
-    </div>
-    
-    <div class="form-group">
-      <label> FTP Password </label>
-      <%= password_field_tag "ftp_setting[password]", Resident.ftp_setting["password"], :class => "form-control" %>
-    </div>
-    
-    <div class="form-group">
-      <label> FTP File Name </label>
-      <%= text_field_tag "ftp_setting[host]", Resident.ftp_setting["host"], :class => "form-control" %>
-    </div>
-    
-    <div class="form-group">
-      <label> Import Status Recipient </label>
-      <%= text_field_tag "recipient", "", :class => "form-control", :placehoder => "email@address.com" %>
-    </div>
-    
-    <%= button_tag "Load Units", :name => nil, :class => "btn btn-primary" %>
-    <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
-  <% end %>
-</div>
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @import.ftp_setting["username"], :class => "form-control" %>
+                </div>
 
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @import.ftp_setting["file_name"], :class => "form-control" %>
+                  <p class="help-block">
+                    %Y%m%d will be replace by the actual date when the import run ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "ftp_setting[recipient]", @import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finished</span>
+                </div>
+
+                <div class="form-group">
+                  <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <th>
+                        CRM field
+                      </th>
+                      <th width="200px">
+                        CSV column
+                      </th>
+                    </thead>
+                    <tbody>
+                      <% @import.field_map.keys.each do |key| %>
+                        <tr>
+                          <td>
+                            <%= key.gsub("_", " ").titleize %>
+                          </td>
+                          <td>
+                            <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @import.field_map[key].to_s), :class => "form-control"  %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+                <%= button_tag "Import & Overwrite ALL Resident Data", :name => nil, :class => "btn btn-primary" %>
+                <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="well">
+              <h3> Nightly Import </h3>
+              <%= form_tag load_yardi_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_yardi_daily" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @daily_import.ftp_setting["username"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @daily_import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
+                  <p class="help-block">
+                    %Y%m%d will be replace by the actual date when the import run ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finished</span>
+                </div>
+
+                <div class="form-group">
+                  <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <th>
+                        CRM field
+                      </th>
+                      <th width="200px">
+                        CSV column
+                      </th>
+                    </thead>
+                    <tbody>
+                      <% @daily_import.field_map.keys.each do |key| %>
+                        <tr>
+                          <td>
+                            <%= key.gsub("_", " ").titleize %>
+                          </td>
+                          <td>
+                            <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="form-group">
+                  <label>
+                    <%= hidden_field_tag "active", 0 %>
+                    <%= check_box_tag "active", 1, @daily_import.active?, :style => "margin: 0 4px 0 0;" %>
+                    Import file nightly at 3:00 AM
+                  </label>
+                </div>
+                
+                <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
+                <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= render "dashboards/js_vars" %>
 
 <script type="text/javascript">
-  var tintest = false; //to advoid accidental import
   $(function(){
-    var form = $('#load-units-form');
-    
-    form.on('submit', function(){
-      var blanks = [];
+    $('.import-form').each(function(){
+      var form = $(this);
       
-      form.find('input:visible').each(function(){
-        var input = $(this);
-        
-        if( $.trim(input.val()) == "") {
-          blanks.push( input );
+      form.on('submit', function(){
+        var blanks = [];
+
+        form.find('input:visible').each(function(){
+          var input = $(this);
+
+          if( $.trim(input.val()) == "") {
+            blanks.push( input );
+          }
+        });
+
+        if(blanks.length > 0) {
+          msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+          return false;
         }
-      });
-      
-      if(blanks.length > 0) {
-        msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+
+        bootbox.confirm("Sure you want to load Yardi residents? There is no undo.", function(result) {
+          if (result) {
+            form.ajaxSubmit({
+              dataType: 'json',
+              beforeSerialize: function(){
+                form.mask('Please wait...');
+              },
+              success: function(){
+                form.unmask();
+                
+                if(form.find("input[name=type]").val().indexOf("one_time") > -1) {
+                  msgbox('Yardi Residents are being loaded... We will send the Import Status to ' + form.find('input[name*=recipient]').val() + ' shortly.');
+                  
+                } else {
+                  msgbox('Daily Import setting was updated successfully');
+                }
+                
+              }
+            });
+          }
+        });
+
         return false;
-      }
-      
-      bootbox.confirm("Sure you want to load units? There is no undo.", function(result) {
-        if (result && tintest) {
-          form.ajaxSubmit({
-            dataType: 'json',
-            beforeSerialize: function(){
-              form.mask('Please wait...');
-            },
-            success: function(){
-              form.unmask();
-              msgbox('Units are being loaded... We will send the Import Status to ' + form.find('name[recipient]').val() + ' shortly.');
-            }
-          });
-        }
       });
-      
-      return false;
+
+      form.on('click', '.test', function(){
+        form.mask('Please wait...');
+
+        $.post(this.href, form.serializeArray(), function(data){
+          if(data.success){
+            msgbox('FTP Credentials are correct');
+          } else {
+            msgbox('FTP Credentials are not correct!', 'danger');
+          }
+
+          form.unmask();
+        }, 'json');
+
+        return false;
+      });
     });
     
-    form.on('click', '.test', function(){
-      form.mask('Please wait...');
-      
-      $.post(this.href, form.serializeArray(), function(data){
-        if(data.success){
-          msgbox('FTP Credentials are correct');
-        } else {
-          msgbox('FTP Credentials are not correct!', 'danger');
-        }
-        
-        form.unmask();
-      }, 'json');
-      
-      return false;
-    });
+    
+    App.initPageLayout(null, null, null, true);
     
   });
 </script>

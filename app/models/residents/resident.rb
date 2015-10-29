@@ -494,31 +494,6 @@ class Resident
     end
   end
   
-  def self.ftp_setting
-    {
-      "host" => "feeds.livebozzuto.com",
-      "username" => "CRMbozchh",
-      "password" => "NAQpPt41",
-      "file_name" => "yardi.csv",
-      "resident_map" => {
-       :yardi_property_id => 0,
-       :unit_code => 1,
-       :origin_id => 2,
-       :full_name => 3,
-       :street => 4,
-       :city => 6,
-       :state => 7,
-       :zip => 8,
-       :status => 9,
-       :email => 10,
-       :move_in => 11,
-       :move_out => 12,
-       :household_size => 13,
-       :pets_count => 14
-      }
-    }
-  end
-
   private
   
     def downcase_name_email

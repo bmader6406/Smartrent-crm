@@ -21,9 +21,21 @@ class HourlyJob
       Resque.enqueue(ResidentPropertyStatusChanger, time)
     end
 
-    if time.wday == 0  && time.hour == 0 #Sunday of the current week
+    if time.wday == 0 && time.hour == 0 #Sunday of the current week
       Resque.enqueue(Smartrent::WeeklyPropertyXmlImporter, time)
-      Resque.enqueue(UnitLoader, time)
+    end
+    
+    if time.hour == 3
+      # run yardi import daily at 3AM
+      Import.where(:type => "load_yardi_daily", :active => true).each do |import|
+        Resque.enqueue(YardiLoader, time, import.type)
+      end
+      
+      if time.wday == 0 # run weekly at 3AM on Sunday
+        Import.where(:type => "load_units_weekly", :active => true).each do |import|
+          Resque.enqueue(UnitLoader, time, import.type)
+        end
+      end
     end
 
     if time.day == 1 && time.hour == 1 #execute at the begining of month

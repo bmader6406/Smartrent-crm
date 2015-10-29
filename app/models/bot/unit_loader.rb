@@ -12,9 +12,11 @@ class UnitLoader
     :crm_immediate
   end
 
-  def self.perform(time = nil, ftp_setting = Unit.ftp_setting, recipient = 'tn@hy.ly, admin@hy.ly');
+  def self.perform(time = nil, import_id);
     time = Time.parse(time) if time.kind_of?(String)
-    # download xml from ftp
+    import = Import.find(import_id)
+    ftp_setting = import.ftp_setting
+    recipient = ftp_setting["recipient"]
     
     #Floorplan contains all the floor_plans
     unit_map = {
@@ -33,7 +35,7 @@ class UnitLoader
     
     begin
       file_name = ftp_setting["file_name"]
-      tmp_file = "#{TMP_DIR}#{Time.now.to_i}_#{file_name}"
+      tmp_file = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
       
       Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
         ftp.passive = true
