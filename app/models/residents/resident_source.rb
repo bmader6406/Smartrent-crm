@@ -7,9 +7,9 @@ class ResidentSource
   field :status, :type => String
   field :status_date, :type => DateTime #don't change to date, property iq require datetime
   
-  # property/source info
-  # source keeps the history of changes
-  # property keeps the last changes
+  # these fields should be identical to the resident_property
+  # - the source record will keep up the *history* of resident_property
+  
   field :type, :type => String
   field :signing_date, :type => Date
   field :move_in, :type => Date
@@ -20,6 +20,7 @@ class ResidentSource
   
   # extra
   field :unit_id, :type => String
+  field :tenant_code, :type => String
   
   # demographics
   field :household_size, :type => String
@@ -136,11 +137,13 @@ class ResidentSource
         attrs[:status] = status
         attrs[:status_date] = status_date
       end
+      
       ##Code to cater the minimum move in
-      minimum_move_in = resident.sources.collect{|s| s.move_in if !s.move_in.blank?}.compact.sort.first
-      attrs[:move_in] = minimum_move_in if minimum_move_in
+      # TODO: check smartrent to see why we need to have minimum_move_in
+      # minimum_move_in = resident.sources.collect{|s| s.move_in if !s.move_in.blank?}.compact.sort.first
+      # attrs[:move_in] = minimum_move_in if minimum_move_in
     
-      existing = resident.properties.detect{|p| p.property_id == property_id}
+      existing = resident.properties.detect{|p| p.property_id == property_id && p.unit_id == unit_id && !unit_id.blank? }
 
       if existing
         existing.update_attributes(attrs)

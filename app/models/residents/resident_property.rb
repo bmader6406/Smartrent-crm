@@ -10,6 +10,10 @@ class ResidentProperty
   # property/source info
   # source keeps the history of changes
   # property keeps the last changes
+  # - resident can live in mutiple units of the same property, result in mutiple properties with diferrent unit_id
+  # - again, property keeps the last the property - unit they live in
+  # - if we want to check the move in/out history, changed fields... check the resident_source
+
   field :type, :type => String
   field :signing_date, :type => Date
   field :move_in, :type => Date
@@ -20,6 +24,7 @@ class ResidentProperty
   
   # extra
   field :unit_id, :type => String
+  field :tenant_code, :type => String # Yardi ID
   
   # demographics
   field :household_size, :type => String
@@ -99,9 +104,9 @@ class ResidentProperty
   field :clicks_count, :type => Integer, :default => 0
 
 
-  
-  
   embedded_in :resident
+  
+  validates :property_id, :status , :move_in, :unit_id, :presence => true
 
   before_save :set_rental_type
   before_save :update_smartrent_resident

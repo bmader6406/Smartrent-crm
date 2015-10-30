@@ -10,12 +10,31 @@ class Resident
 
   include MultiTenant::RandomPrimaryKeyHelper
   
-  CORE_FIELDS = [:email, :last_name, :first_name, :full_name, :gender, :birthday, :ssn, :last4_ssn, :alt_email,
-    :primary_phone, :cell_phone, :home_phone, :work_phone, :street, :city, :state, :zip, :country]
+  CORE_FIELDS = [
+    :email,
+    :last_name,
+    :first_name,
+    :full_name,
+    :gender,
+    :birthday,
+    :ssn,
+    :last4_ssn,
+    :alt_email,
+    :primary_phone,
+    :cell_phone,
+    :home_phone,
+    :work_phone,
+    :street,
+    :city,
+    :state,
+    :zip,
+    :country
+  ]
     
   PROPERTY_FIELDS = [
     :property_id,
     :unit_id,
+    :tenant_code,
     :status,
     :status_date,
     :type,
@@ -159,7 +178,9 @@ class Resident
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
   scope :unify_ordered, -> { order_by({:created_at => :asc}) }
+  
   attr_accessor :curr_property_id, :property_id, :from_import
+  
   validates :email, {:uniqueness => true}
 
   # don't set default sort order
