@@ -20,7 +20,7 @@ Crm.Router = Backbone.Router.extend({
     'properties/:property_id/residents/:resident_id/tickets/:id(/)': 'showResidentTickets',
     'properties/:property_id/residents/:id/tickets(/)': 'showResidentTickets',
     'properties/:property_id/residents/:id/roommates(/)': 'showResidentRoommates',
-    'properties/:property_id/residents/:id/properties(/)': 'showResidentProperties',
+    'properties/:property_id/residents/:id/properties(/)': 'showResidentUnits',
 
     'properties/:property_id/tickets(/)': 'showTickets',
     'properties/:property_id/tickets/new(/)': 'newTicket',
@@ -46,7 +46,7 @@ Crm.Router = Backbone.Router.extend({
     'residents/:id(/)': 'showResident',
     'residents/:id/tickets(/)': 'showResidentTickets',
     'residents/:id/roommates(/)': 'showResidentRoommates',
-    'residents/:id/properties(/)': 'showResidentProperties',
+    'residents/:id/properties(/)': 'showResidentUnits',
 
     'reports(/)': 'showReports',
 

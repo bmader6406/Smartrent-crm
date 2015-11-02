@@ -66,34 +66,34 @@ class Audience < ActiveRecord::Base
   def residents
     @residents ||= begin
       
-      property_hint = {"properties.property_id" => 1 }
+      property_hint = {"units.property_id" => 1 }
       
       if self.kind_of?(PreDefinedAudience)
         if all_resident?
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            "status"  => {'$in' => ['Current', 'Past', 'Future', 'Notice']}, "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            "status"  => {'$in' => ['Current', 'Past', 'Future', 'Notice']}, "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
       
         
         elsif current_resident?
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            "status" => "Current", "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            "status" => "Current", "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
             
         elsif future_resident?
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            "status" => "Future", "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            "status" => "Future", "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
               
         elsif past_resident?
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            "status" => "Past", "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            "status" => "Past", "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
           
         elsif notice_resident?
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            "status" => "Notice", "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            "status" => "Notice", "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
             
         elsif na_resident?
 
-          property.residents.where("properties" => {'$elemMatch' => {"property_id" => property_id.to_s, 
-            'status' => {'$in' => ['N/A', '', nil]}, "subscribed" => true }} ).extras(:hint => { "properties.property_id" => 1, "properties.status" => 1 })
+          property.residents.where("units" => {'$elemMatch' => {"property_id" => property_id.to_s, 
+            'status' => {'$in' => ['N/A', '', nil]}, "subscribed" => true }} ).extras(:hint => { "units.property_id" => 1, "units.status" => 1 })
         end
       end
       

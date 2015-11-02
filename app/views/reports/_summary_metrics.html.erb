@@ -48,7 +48,7 @@
                 &nbsp;
               </th>
               <th style="border-bottom: 0 none;">
-                <%= number_with_delimiter avg(@metric["properties.annual_income"].sum{|m| m.total*m.dimension.to_i }, @metric["properties.annual_income"].sum{|m| m.total }) %>
+                <%= number_with_delimiter avg(@metric["units.annual_income"].sum{|m| m.total*m.dimension.to_i }, @metric["units.annual_income"].sum{|m| m.total }) %>
               </th>
             </tr>
           </thead>
@@ -67,8 +67,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.occupation_type"].sum{|m| m.total }  %>
-            <% @metric["properties.occupation_type"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.occupation_type"].sum{|m| m.total }  %>
+            <% @metric["units.occupation_type"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -103,8 +103,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.minutes_to_work"].sum{|m| m.total }  %>
-            <% @metric["properties.minutes_to_work"].sort{|a, b| a.dimension.scan(/\d+/).first.to_i <=> b.dimension.scan(/\d+/).first.to_i }.each do |m| %>
+            <% group_total = @metric["units.minutes_to_work"].sum{|m| m.total }  %>
+            <% @metric["units.minutes_to_work"].sort{|a, b| a.dimension.scan(/\d+/).first.to_i <=> b.dimension.scan(/\d+/).first.to_i }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -177,8 +177,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.household_status"].sum{|m| m.total }  %>
-            <% @metric["properties.household_status"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.household_status"].sum{|m| m.total }  %>
+            <% @metric["units.household_status"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -213,8 +213,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.household_size"].sum{|m| m.total }  %>
-            <% @metric["properties.household_size"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.household_size"].sum{|m| m.total }  %>
+            <% @metric["units.household_size"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -275,8 +275,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.pet_type"].sum{|m| m.total }  %>
-            <% @metric["properties.pet_type"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.pet_type"].sum{|m| m.total }  %>
+            <% @metric["units.pet_type"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -357,8 +357,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.transportation_to_work"].sum{|m| m.total }  %>
-            <% @metric["properties.transportation_to_work"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.transportation_to_work"].sum{|m| m.total }  %>
+            <% @metric["units.transportation_to_work"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>
@@ -393,8 +393,8 @@
             </tr>
           </thead>
           <tbody>
-            <% group_total = @metric["properties.moving_from"].sum{|m| m.total }  %>
-            <% @metric["properties.moving_from"].sort{|a, b| b.total <=> a.total }.each do |m| %>
+            <% group_total = @metric["units.moving_from"].sum{|m| m.total }  %>
+            <% @metric["units.moving_from"].sort{|a, b| b.total <=> a.total }.each do |m| %>
               <tr>
                 <td>
                   <%= m.dimension %>

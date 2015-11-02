@@ -22,7 +22,7 @@ class ResidentImporter
       # 6   City
       # 7   State
       # 8   Zip Code
-      # 9   Tenant Status
+      # 9   Unit Status
       # 10  Email
       # 11  Move In
       # 12  Move Out
@@ -73,7 +73,7 @@ class ResidentImporter
 
             next if !property_id
 
-            tenant_code = row[ resident_map["tenant_code"] ]
+            unit_code = row[ resident_map["unit_code"] ]
             unit_code = row[ resident_map["unit_code"] ]
             email = row[ resident_map["email"] ]
 
@@ -115,10 +115,10 @@ class ResidentImporter
             # don't use symboy as hash key
             property_attrs = {
               "property_id" => property_id,
-              "roommate" => tenant_code.to_s.match(/^r/) ? true : false
+              "roommate" => unit_code.to_s.match(/^r/) ? true : false
             }
 
-            Resident::PROPERTY_FIELDS.each do |f|
+            Resident::UNIT_FIELDS.each do |f|
               f = f.to_s # must f convert to string
               property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
@@ -267,7 +267,7 @@ class ResidentImporter
               "property_id" => property_id
             }
 
-            Resident::PROPERTY_FIELDS.each do |f|
+            Resident::UNIT_FIELDS.each do |f|
               f = f.to_s
               property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 

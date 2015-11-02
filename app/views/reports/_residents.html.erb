@@ -18,13 +18,13 @@
       <% @residents.each do |r| %>
         <tr class="<%= cycle("even", nil) -%>">
           <td>
-            <%= @property_dict[r["properties"]["property_id"]] %>
+            <%= @property_dict[r["units"]["property_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
           </td>
           <td>
-            <%= @unit_dict[r["properties"]["unit_id"]] %>
+            <%= @unit_dict[r["units"]["unit_id"]] %>
           </td>
           <td>
             <%= r["street"] %>
@@ -39,13 +39,13 @@
             <%= r["zip"] %>
           </td>
           <td>
-            <%= r["properties"]["status"] %>
+            <%= r["units"]["status"] %>
           </td>
           <td>
             <%= r["email"] %>
           </td>
           <td>
-            <%= r["properties"]["move_in"].strftime("%m/%d/%Y") rescue nil %>
+            <%= r["units"]["move_in"].strftime("%m/%d/%Y") rescue nil %>
           </td>
         </tr>
       <% end %>
@@ -71,10 +71,10 @@
       <% @residents.each do |r| %>
         <tr class="<%= cycle("even", nil) -%>">
           <td>
-            <%= @property_dict[r["properties"]["property_id"]] %>
+            <%= @property_dict[r["units"]["property_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
           </td>
           <td>
             <%= r["email"] %>
@@ -128,14 +128,14 @@
       <% @residents.each do |r| %>
         <tr class="<%= cycle("even", nil) -%>">
           <td>
-            <%= @property_dict[r["properties"]["property_id"]] %>
+            <%= @property_dict[r["units"]["property_id"]] %>
           </td>
           
           <td>
-            <%= @unit_dict[r["properties"]["unit_id"]] %>
+            <%= @unit_dict[r["units"]["unit_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["properties"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
           </td>
           <td>
             <%= r["gender"] %>
@@ -144,34 +144,34 @@
             <%= r["birthday"].strftime("%m/%d/%Y") rescue nil %>
           </td>
           <td>
-            <%= r["properties"]["household_status"] %>
+            <%= r["units"]["household_status"] %>
           </td>
           <td>
-            <%= r["properties"]["occupation_type"] %>
+            <%= r["units"]["occupation_type"] %>
           </td>
           <td>
-            <%= r["properties"]["minutes_to_work"] %>
+            <%= r["units"]["minutes_to_work"] %>
           </td>
           <td>
-            <%= r["properties"]["transportation_to_work"] %>
+            <%= r["units"]["transportation_to_work"] %>
           </td>
           <td>
-            <%= r["properties"]["pets_count"] %>
+            <%= r["units"]["pets_count"] %>
           </td>
           <td>
-            <%= r["properties"]["pet_type"] %>
+            <%= r["units"]["pet_type"] %>
           </td>
           <td>
-            <%= r["properties"]["moving_from"] %>
+            <%= r["units"]["moving_from"] %>
           </td>
           <td>
-            <%= r["properties"]["vehicles_count"] %>
+            <%= r["units"]["vehicles_count"] %>
           </td>
           <td>
-            <%= r["properties"]["annual_income"] %>
+            <%= r["units"]["annual_income"] %>
           </td>
           <td>
-            <%= r["properties"]["household_size"] %>
+            <%= r["units"]["household_size"] %>
           </td>
           <td>
             <%= r["email"] %>

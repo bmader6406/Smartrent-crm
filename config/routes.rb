@@ -22,9 +22,9 @@ Rails.application.routes.draw do
       member do 
         get :tickets
         get :roommates
-        get :properties
+        get :units
         
-        get :marketing_properties
+        get :marketing_units
         get :marketing_statuses
         get :smartrent
       end

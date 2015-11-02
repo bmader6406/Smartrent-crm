@@ -1,4 +1,4 @@
-class ResidentPropertyStatusChanger
+class ResidentUnitStatusChanger
 
   def self.queue
     :crm_immediate
@@ -8,8 +8,8 @@ class ResidentPropertyStatusChanger
     time = Time.parse(time) if time.kind_of?(String)
     for_date = (time || Time.now).to_date
     
-    ::Resident.or({'properties.move_in' => for_date}, {'properties.move_out' => for_date}).each do |r|
-      r.properties.each do |p|
+    ::Resident.or({"units.move_in" => for_date}, {"units.move_out" => for_date}).each do |r|
+      r.units.each do |p|
         pp "move_in: #{p.move_in}, move out: #{p.move_out}"
         p.check_and_update_resident_status
         p.save

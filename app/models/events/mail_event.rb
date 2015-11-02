@@ -31,19 +31,7 @@ class MailEvent < Event
           
         when "UniqueOpenEvent"
           if resident && campaign.kind_of?(NewsletterCampaign)
-            open_mail = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "open_mail" }
-            
-            if open_mail
-              prop = resident.properties.detect{|p| p.property_id.to_i == open_mail.property_id.to_i }
-              
-              if prop
-                prop.opens_count += 1
-                prop.finalize_score
-              else
-                resident.opens_count += 1
-                resident.finalize_score
-              end
-            end
+            # do some thing, such as increase resident score
           end
           
         when "LinkClickEvent"
@@ -54,19 +42,7 @@ class MailEvent < Event
           
         when "UniqueLinkClickEvent"
           if resident && campaign.kind_of?(NewsletterCampaign)
-            click_link = resident.marketing_activities.detect{|a| a.subject_id.to_i == campaign_id && a.action == "click_link" }
-            
-            if click_link
-              prop = resident.properties.detect{|p| p.property_id.to_i == click_link.property_id.to_i }
-              
-              if prop
-                prop.clicks_count += 1
-                prop.finalize_score
-              else
-                resident.clicks_count += 1
-                resident.finalize_score
-              end
-            end
+            # do some thing, such as increase resident score
           end
           
         when "BlacklistedEvent"

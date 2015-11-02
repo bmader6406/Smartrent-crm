@@ -11,6 +11,7 @@ class MarketingActivity
   field :target_id, :type => String
   field :target_type, :type => String
   
+  field :unit_id, :type => String
   field :property_id, :type => String
 
   embedded_in :resident
@@ -145,18 +146,18 @@ class MarketingActivity
         if subject.kind_of?(Campaign)
           self.property_id = subject.property_id.to_s # default to property's campaign
           
-          if !resident.properties.empty? # switch page
-            prop = resident.properties.detect{|p| p.property_id.to_i == subject.property_id }
+          if !resident.units.empty? # switch page
+            unit = resident.units.detect{|t| t.property_id.to_i == subject.property_id }
           
-            if !prop # check cross send
+            if !unit # check cross send
               audience = resident.to_cross_audience(subject)
 
               if audience && audience.property_id
-                prop = resident.properties.detect{|p| p.property_id.to_i == audience.property_id }
+                unit = resident.units.detect{|t| t.property_id.to_i == audience.property_id }
               end
             end
           
-            self.property_id = prop.property_id if prop
+            self.property_id = unit.property_id if unit
           end
         end
         

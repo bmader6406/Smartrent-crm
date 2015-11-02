@@ -11,7 +11,7 @@ class RoommatesController < ApplicationController
       format.json {
         @roommates = []
         
-        Resident.ordered("first_name asc").where("properties" => {
+        Resident.ordered("first_name asc").where("units" => {
           "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id] }
         }).each do |r|
           r.curr_property_id = @property.id
@@ -22,7 +22,7 @@ class RoommatesController < ApplicationController
         roommates = []
         
         @roommates.each do |r|
-          if r.curr_property.roommate?
+          if r.curr_unit.roommate?
             roommates << r
           else
             primary_residents << r
@@ -89,7 +89,7 @@ class RoommatesController < ApplicationController
       :roommate => true
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
+    Resident::UNIT_FIELDS.each do |f|
       property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
       if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
@@ -131,7 +131,7 @@ class RoommatesController < ApplicationController
       :roommate => true
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
+    Resident::UNIT_FIELDS.each do |f|
       property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
       if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
@@ -154,8 +154,9 @@ class RoommatesController < ApplicationController
   end
 
   def destroy
+    # TODO fix
     if @property
-      @roommate.properties.detect{|p| p.property_id.to_i == @property.id }.destroy
+      @roommate.units.detect{|t| t.property_id.to_i == @property.id }.destroy
     else
       @roommate.update_attribute(:deleted_at, Time.now)
     end

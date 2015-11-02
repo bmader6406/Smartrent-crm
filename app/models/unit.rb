@@ -9,11 +9,11 @@ class Unit < ActiveRecord::Base
   default_scope { where(:deleted_at => nil) }
   
   def residents
-    # must assign array manually, otherwise curr_property will not work on rabl view
+    # must assign array manually, otherwise curr_unit will not work on rabl view
     primary_residents = []
     roommates = []
     
-    Resident.ordered("first_name asc").where("properties" => {
+    Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => { 
         "property_id" => self.property.id.to_s, 
         "unit_id" => self.id.to_s
@@ -21,9 +21,9 @@ class Unit < ActiveRecord::Base
     }).each do |r|
       r.curr_property_id = self.property.id
       
-      next if !r.curr_property
+      next if !r.curr_unit
       
-      if r.curr_property.roommate?
+      if r.curr_unit.roommate?
         roommates << r
       else
         primary_residents << r
@@ -34,14 +34,14 @@ class Unit < ActiveRecord::Base
   end
 
   def primary_resident
-    Resident.ordered("first_name asc").where("properties" => {
+    Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => { 
         "property_id" => self.property.id.to_s, 
         "unit_id" => self.id.to_s
       }
     }).collect { |r|
       r.curr_property_id = self.property.id
-      r.curr_property && !r.curr_property.roommate? ? r : nil
+      r.curr_unit && !r.curr_unit.roommate? ? r : nil
     }.compact.first
   end
   

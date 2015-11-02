@@ -66,7 +66,7 @@ class ResidentsController < ApplicationController
       :property_id => params[:property_id]
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
+    Resident::UNIT_FIELDS.each do |f|
       property_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
       if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
@@ -108,7 +108,7 @@ class ResidentsController < ApplicationController
       :property_id => params[:property_id]
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
+    Resident::UNIT_FIELDS.each do |f|
       property_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
       if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
@@ -128,7 +128,7 @@ class ResidentsController < ApplicationController
 
   def destroy
     if @property
-      @resident.properties.detect{|p| p.property_id.to_i == @property.id }.destroy
+      @resident.units.detect{|t| t.property_id.to_i == @property.id }.destroy
     else
       @resident.update_attribute(:deleted_at, Time.now)
     end
@@ -153,12 +153,12 @@ class ResidentsController < ApplicationController
   end
   
   def roommates
-    @roommates = [] # must assign array manually, otherwise curr_property will not work on rabl view
+    @roommates = [] # must assign array manually, otherwise curr_unit will not work on rabl view
 
-    Resident.ordered("first_name asc").where("properties" => {
+    Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => {
         "property_id" => @property.id.to_s,
-        "unit_id" => @resident.curr_property.unit_id.to_s
+        "unit_id" => @resident.curr_unit.unit_id.to_s
       }
     }).each do |r|
       r.curr_property_id = @property.id
@@ -169,7 +169,7 @@ class ResidentsController < ApplicationController
     roommates = []
     
     @roommates.each do |r|
-      if r.curr_property.roommate?
+      if r.curr_unit.roommate?
         roommates << r
       else
         primary_residents << r
@@ -188,15 +188,15 @@ class ResidentsController < ApplicationController
     end
   end
   
-  def properties
-    @properties = @resident.properties
+  def units
+    @units = @resident.units
     
     respond_to do |format|
       format.html {
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/resident_properties.json.rabl")
+        render(template: "residents/resident_units.json.rabl")
       }
     end
   end
@@ -292,15 +292,15 @@ class ResidentsController < ApplicationController
     }
   end
   
-  def marketing_properties
-    @properties = @resident.properties
+  def marketing_units
+    @units = @resident.units
 
-    #eager load properties
-    properties = Property.where(:id => @properties.collect{|p| p.property_id }.compact).collect{|prop| prop }
+    #eager load units
+    properties = Property.where(:id => @units.collect{|t| t.property_id }.compact).collect{|prop| prop }
 
-    @properties = @properties.collect{|p|
-      p.property = properties.detect{|prop| prop.id == p.property_id.to_i}
-      p.property ? p : nil
+    @units = @units.collect{|t|
+      t.property = properties.detect{|prop| prop.id == t.property_id.to_i}
+      t.property ? t : nil
     }.compact.sort{|a, b| a.property.name <=> b.property.name }
     
     respond_to do |format|
@@ -308,7 +308,7 @@ class ResidentsController < ApplicationController
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/marketing_properties.json.rabl")
+        render(template: "residents/marketing_units.json.rabl")
       }
     end
   end
@@ -374,7 +374,7 @@ class ResidentsController < ApplicationController
       conditions = {}
       hint = {}
       
-      conditions["properties.property_id"] = @property.id.to_s if @property
+      conditions["units.property_id"] = @property.id.to_s if @property
       
       if !params[:email].blank?
         conditions[:email_lc] = params[:email].downcase
@@ -404,20 +404,20 @@ class ResidentsController < ApplicationController
           unit_id = Unit.where(:property_id => @property.id, :code => unit_id).first.id.to_s rescue unit_id
         end
         
-        conditions["properties.unit_id"] = unit_id
+        conditions["units.unit_id"] = unit_id
       end
       
       if !params[:status].blank? && @property # filter by property + resident status
-        conditions.delete("properties.property_id")
+        conditions.delete("units.property_id")
         
-        conditions["properties"] = {
+        conditions["units"] = {
           "$elemMatch" => {
             "property_id" => @property.id.to_s,
             "status" => params[:status]
           }
         }
         
-        hint = {"properties.property_id" => 1, "properties.status" => 1 }
+        hint = {"units.property_id" => 1, "units.status" => 1 }
       end
       
       if conditions[:first_name_lc] # search first name

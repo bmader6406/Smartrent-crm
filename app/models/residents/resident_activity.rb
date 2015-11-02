@@ -12,6 +12,7 @@ class ResidentActivity
   field :author_id, :type => String
   field :author_type, :type => String
 
+  field :unit_id, :type => String
   field :property_id, :type => String
 
   embedded_in :resident

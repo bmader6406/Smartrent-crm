@@ -19,8 +19,8 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 	  //cache, will be reset when new resident view render
 	  Crm.collInst.residentActivities = null;
 	  Crm.collInst.marketingActivities = null;
-	  Crm.collInst.residentProperties = null;
-	  Crm.collInst.marketingProperties = null;
+	  Crm.collInst.residentUnits = null;
+	  Crm.collInst.marketingUnits = null;
 	  Crm.collInst.residentRoommates = null;
 	},
 
@@ -81,10 +81,10 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         break;
 
       /*case '#marketing-history':
-        if( !Crm.collInst.marketingProperties ){
-          Crm.collInst.marketingProperties = new Crm.Collections.MarketingProperties;
-          Crm.collInst.marketingProperties.url = self.model.get('marketing_properties_path');
-          $('#marketing-history').html( new Crm.Views.MarketingPropertiesList({ collection: Crm.collInst.marketingProperties }).render().el );
+        if( !Crm.collInst.marketingUnits ){
+          Crm.collInst.marketingUnits = new Crm.Collections.MarketingUnits;
+          Crm.collInst.marketingUnits.url = self.model.get('marketing_units_path');
+          $('#marketing-history').html( new Crm.Views.MarketingUnitsList({ collection: Crm.collInst.marketingUnits }).render().el );
         }
 
         $('#resident-history, #resident-roommates, #smartrent, #toolbar').hide();
@@ -104,11 +104,11 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 
         break;
 
-      case '#resident-properties':
-        if( !Crm.collInst.residentProperties ){
-          Crm.collInst.residentProperties = new Crm.Collections.ResidentProperties;
-          Crm.collInst.residentProperties.url = self.model.get('properties_path');
-          $('#resident-properties').html( new Crm.Views.ResidentPropertiesList({ collection: Crm.collInst.residentProperties }).render().el );
+      case '#resident-units':
+        if( !Crm.collInst.residentUnits ){
+          Crm.collInst.residentUnits = new Crm.Collections.ResidentUnits;
+          Crm.collInst.residentUnits.url = self.model.get('units_path');
+          $('#resident-units').html( new Crm.Views.ResidentUnitsList({ collection: Crm.collInst.residentUnits }).render().el );
         }
 
         break;

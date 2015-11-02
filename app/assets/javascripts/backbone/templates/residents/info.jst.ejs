@@ -22,7 +22,7 @@
 
 <div class="card">
   <% if(App.vars.isPropertyPage) { %>
-    <% if (App.vars.residentObj && App.vars.residentObj.property.roommate) { %>
+    <% if (App.vars.residentObj && App.vars.residentObj.unit.roommate) { %>
       <span class="badge" style="float:right">roommate</span>
     <% } %>
     <b href="#" class="blue-text"><%= unit_text %></b>
@@ -76,9 +76,9 @@
   </div>
 <% } else { %>
   <div class="nav-details">
-    <a href="#resident-properties" class="btn btn-lg btn-primary tab-nav">
+    <a href="#resident-units" class="btn btn-lg btn-primary tab-nav">
       <i class="fa fa-angle-right"></i>
-      Resident Properties
+      Resident Units
     </a>
     <a href="<%= tickets_path %>" class="btn btn-lg btn-default ticket-nav">
       <i class="fa fa-angle-right"></i>

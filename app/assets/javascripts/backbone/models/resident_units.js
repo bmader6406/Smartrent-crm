@@ -1,4 +1,4 @@
-Crm.Models.MarketingProperty = Backbone.Model.extend({
+Crm.Models.ResidentUnit = Backbone.Model.extend({
   
   defaults: {
     

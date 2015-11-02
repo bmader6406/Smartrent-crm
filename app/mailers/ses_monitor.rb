@@ -129,7 +129,7 @@ class SesMonitor
           pp "FOUND: #{e.email}, property_id: #{property_id}"
           e.marketing_activities.create(:action => "bad_email_found")
           e.update_attribute(:subscribed, false)
-          e.properties.update_all(:subscribed => false)
+          e.units.update_all(:subscribed => false)
           
           unsubscribed = true if !unsubscribed
         end

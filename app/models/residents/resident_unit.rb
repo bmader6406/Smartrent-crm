@@ -1,17 +1,18 @@
-class ResidentProperty
+class ResidentUnit
 
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  field :unit_id, :type => String
   field :property_id, :type => String
+  
   field :status, :type => String
   field :status_date, :type => DateTime #don't change to date, property iq require datetime
   
   # property/source info
   # source keeps the history of changes
-  # property keeps the last changes
-  # - resident can live in mutiple units of the same property, result in mutiple properties with diferrent unit_id
-  # - again, property keeps the last the property - unit they live in
+  # unit keeps the last changes
+  # - resident can live in mutiple units of the same property, result in mutiple units with diferrent unit_id
   # - if we want to check the move in/out history, changed fields... check the resident_source
 
   field :type, :type => String
@@ -24,7 +25,7 @@ class ResidentProperty
   
   # extra
   field :unit_id, :type => String
-  field :tenant_code, :type => String # Yardi ID
+  field :unit_code, :type => String # Yardi ID
   
   # demographics
   field :household_size, :type => String
@@ -97,13 +98,6 @@ class ResidentProperty
   field :subscribed, :type => Boolean, :default => true
   field :subscribed_at, :type => DateTime
   
-  # resident score
-  field :score, :type => Integer, :default => 0
-  field :sends_count, :type => Integer, :default => 0
-  field :opens_count, :type => Integer, :default => 0
-  field :clicks_count, :type => Integer, :default => 0
-
-
   embedded_in :resident
   
   validates :property_id, :status , :move_in, :unit_id, :presence => true
@@ -132,11 +126,6 @@ class ResidentProperty
 
   #====
   
-  def finalize_score
-    self.score = sends_count*Resident::SEND_SCORE + opens_count*Resident::OPEN_SCORE +  clicks_count*Resident::CLICK_SCORE
-    self.save
-  end
-
   def check_and_update_resident_status
     if move_out.present? && move_in.present?
       if move_in <= Time.now && move_out >= Time.now
@@ -154,12 +143,12 @@ class ResidentProperty
   private
 
     def increase_counter_cache
-      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"properties_count" => 1}}, {:multi => true})
+      Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"units_count" => 1}}, {:multi => true})
     end
 
     def decrease_counter_cache
       if resident #when delete all properties, resident will be nil
-        Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"properties_count" => -1}}, {:multi => true})
+        Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"units_count" => -1}}, {:multi => true})
       end
     end
   

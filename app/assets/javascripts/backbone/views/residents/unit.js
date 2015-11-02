@@ -1,5 +1,5 @@
-Crm.Views.ResidentProperty = Backbone.View.extend({
-  template: JST["backbone/templates/residents/property"],
+Crm.Views.ResidentUnit = Backbone.View.extend({
+  template: JST["backbone/templates/residents/unit"],
   tagName: 'li',
   
   events: {

@@ -3,7 +3,9 @@ class ResidentSource
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  field :unit_id, :type => String
   field :property_id, :type => String
+  
   field :status, :type => String
   field :status_date, :type => DateTime #don't change to date, property iq require datetime
   
@@ -20,7 +22,7 @@ class ResidentSource
   
   # extra
   field :unit_id, :type => String
-  field :tenant_code, :type => String
+  field :unit_code, :type => String
   
   # demographics
   field :household_size, :type => String
@@ -95,7 +97,7 @@ class ResidentSource
 
   # because mongoid 2.4.12 does not support cascading callback on parent object
   # so make sure we make changes to the embedded document directly to trigger the callbacks
-  after_create :create_property, :if => lambda { |s| s.property_id }
+  after_create :create_unit, :if => lambda { |s| s.property_id }
   after_create :increase_counter_cache, :if => lambda { |s| !s.unify_resident }
   after_create :create_activity, :if => lambda { |s| !s.unify_resident }
 
@@ -119,12 +121,12 @@ class ResidentSource
       resident.activities.create(:action => "add_new") if resident.activities_count.zero? #if must be here
     end
     
-    def create_property
-      #pp ">>> create_property"
+    def create_unit
+      #pp ">>> create_unit"
       attrs = { :property_id => property_id }
       
       # save & update property fields only
-      Resident::PROPERTY_FIELDS.each do |f|
+      Resident::UNIT_FIELDS.each do |f|
         if self[f].kind_of?(String) && !self[f].blank?
           attrs[f] = self[f]
           
@@ -143,20 +145,20 @@ class ResidentSource
       # minimum_move_in = resident.sources.collect{|s| s.move_in if !s.move_in.blank?}.compact.sort.first
       # attrs[:move_in] = minimum_move_in if minimum_move_in
     
-      existing = resident.properties.detect{|p| p.property_id == property_id && p.unit_id == unit_id && !unit_id.blank? }
+      existing = resident.units.detect{|t| t.property_id == property_id && t.unit_id == unit_id && !unit_id.blank? }
 
       if existing
         existing.update_attributes(attrs)
         
         if !existing.errors.empty?
-          pp "resident_id: #{resident.id} > create_property > update error:", existing.errors.full_messages.join(", ")
+          pp "resident_id: #{resident.id} > create_unit > update error:", existing.errors.full_messages.join(", ")
         end
         
       else
-        prop = resident.properties.create(attrs)
+        unit = resident.units.create(attrs)
         
-        if !prop.errors.empty?
-          pp "resident_id: #{resident.id} > create_property > create error:", prop.errors.full_messages.join(", ")
+        if !unit.errors.empty?
+          pp "resident_id: #{resident.id} > create_unit > create error:", unit.errors.full_messages.join(", ")
         end
       end
       
@@ -179,7 +181,7 @@ class ResidentSource
       #pp ">>>>> destroy_dependent"
       if property_id
         if !resident.sources.where(:property_id => property_id, :_id.ne => id.to_s).first
-          ep = resident.properties.where(:property_id => property_id).first
+          ep = resident.units.where(:property_id => property_id).first
           ep.destroy if ep
         end
       end

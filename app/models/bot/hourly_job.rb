@@ -18,7 +18,7 @@ class HourlyJob
 
     if time.hour == 0
       Resque.enqueue(Smartrent::DailyResidentCreator, time)
-      Resque.enqueue(ResidentPropertyStatusChanger, time)
+      Resque.enqueue(ResidentUnitStatusChanger, time)
     end
 
     if time.wday == 0 && time.hour == 0 #Sunday of the current week

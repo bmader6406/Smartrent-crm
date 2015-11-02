@@ -254,7 +254,7 @@ window.Crm = {
       App.layout.show('west');
     });
 
-    router.on('route:showResidentProperties', function(propertyId, id) {
+    router.on('route:showResidentUnits', function(propertyId, id) {
       if(!id) {
         id = propertyId;
         propertyId = null;
@@ -278,16 +278,16 @@ window.Crm = {
           model: resident
         });
 
-        residentProperties = new Crm.Collections.ResidentProperties;
-        residentProperties.url = resident.get('properties_path');
+        residentUnits = new Crm.Collections.ResidentUnits;
+        residentUnits.url = resident.get('units_path');
 
-        var residentPropertiesList = new Crm.Views.ResidentPropertiesList({
+        var residentUnitsList = new Crm.Views.ResidentUnitsList({
           model: resident,
-          collection: residentProperties
+          collection: residentUnits
         });
 
         $('#west').html(residentInfo.render().$el);
-        $('#center').html(residentPropertiesList.render().$el);
+        $('#center').html(residentUnitsList.render().$el);
 
       } else {
         window.location.reload();

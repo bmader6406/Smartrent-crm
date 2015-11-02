@@ -43,9 +43,9 @@ class MetricGenerator
     # summary reports
     ResidentMetric.where(:property_id => property.id).delete_all
     
-    ["properties.occupation_type", "properties.minutes_to_work",
-      "properties.household_status", "properties.household_size", 
-      "gender", "properties.transportation_to_work", "properties.moving_from"].each do |field|
+    ["units.occupation_type", "units.minutes_to_work",
+      "units.household_status", "units.household_size", 
+      "gender", "units.transportation_to_work", "units.moving_from"].each do |field|
         
         count_by(property, field).each do |hash|
           ResidentMetric.create({
@@ -78,7 +78,7 @@ class MetricGenerator
       (500000..1000000000000)
     ]
     
-    count_by(property, "properties.annual_income").each do |hash|
+    count_by(property, "units.annual_income").each do |hash|
       income = hash["_id"]["dimension"]
       range = income_range.detect{|r| r.include?(income) }
       
@@ -96,7 +96,7 @@ class MetricGenerator
       
       ResidentMetric.create({
         :property_id => property.id,
-        :type => "properties.annual_income",
+        :type => "units.annual_income",
         :status => hash["_id"]["status"],
         :rental_type => hash["_id"]["rental_type"],
         :dimension => hash["_id"]["dimension"],
@@ -174,7 +174,7 @@ class MetricGenerator
     total_pet_type(property).each do |hash|
       ResidentMetric.create({
         :property_id => property.id,
-        :type => "properties.pet_type",
+        :type => "units.pet_type",
         :status => hash["_id"]["status"],
         :rental_type => hash["_id"]["rental_type"],
         :dimension => hash["_id"]["dimension"],
@@ -230,31 +230,31 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
           "#{field}" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
+          "units.property_id" => property.id.to_s,
           "#{field}" => {"$nin" => [nil, ""]}
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type",
+            :status => "$units.status",
+            :rental_type => "$units.rental_type",
             :dimension => "$#{field}"
           }, 
           :count => { 
@@ -269,31 +269,31 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
           "birthday" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
+          "units.property_id" => property.id.to_s,
           "birthday" => {"$type" => 9}
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type",
+            :status => "$units.status",
+            :rental_type => "$units.rental_type",
             :dimension => { "$year" => "$birthday" }
           }, 
           :count => { 
@@ -308,34 +308,34 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
-          "properties.vehicles_count" => 1
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
+          "units.vehicles_count" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
-          "properties.vehicles_count" => {"$gt" => 0}
+          "units.property_id" => property.id.to_s,
+          "units.vehicles_count" => {"$gt" => 0}
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type"
+            :status => "$units.status",
+            :rental_type => "$units.rental_type"
           }, 
           :count => { 
-            "$sum" => "$properties.vehicles_count"
+            "$sum" => "$units.vehicles_count"
           }
         } 
       }
@@ -346,34 +346,34 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
-          "properties.pets_count" => 1
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
+          "units.pets_count" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
-          "properties.pets_count" => { "$gt" => 0 }
+          "units.property_id" => property.id.to_s,
+          "units.pets_count" => { "$gt" => 0 }
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type"
+            :status => "$units.status",
+            :rental_type => "$units.rental_type"
           }, 
           :count => { 
-            "$sum" => "$properties.pets_count"
+            "$sum" => "$units.pets_count"
           }
         } 
       }
@@ -384,29 +384,29 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s
+          "units.property_id" => property.id.to_s
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type"
+            :status => "$units.status",
+            :rental_type => "$units.rental_type"
           }, 
           :count => { 
             "$sum" => 1
@@ -420,31 +420,31 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
-          "properties.pets_count" => 1
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
+          "units.pets_count" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
-          "properties.pets_count" => { "$gt" => 0 }
+          "units.property_id" => property.id.to_s,
+          "units.pets_count" => { "$gt" => 0 }
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type"
+            :status => "$units.status",
+            :rental_type => "$units.rental_type"
           }, 
           :count => { 
             "$sum" => 1 
@@ -458,34 +458,34 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1,
-          "properties.pet_type" => 1,
-          "properties.pets_count" => 1
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1,
+          "units.pet_type" => 1,
+          "units.pets_count" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
-          "properties.pets_count" => { "$gt" => 0 },
-          "properties.pet_type" => {"$nin" => [nil, ""]}
+          "units.property_id" => property.id.to_s,
+          "units.pets_count" => { "$gt" => 0 },
+          "units.pet_type" => {"$nin" => [nil, ""]}
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :status => "$properties.status",
-            :rental_type => "$properties.rental_type",
-            :dimension => "$properties.pet_type"
+            :status => "$units.status",
+            :rental_type => "$units.rental_type",
+            :dimension => "$units.pet_type"
           }, 
           :count => { 
             "$sum" => 1 
@@ -499,29 +499,29 @@ class MetricGenerator
     Resident.collection.aggregate([
       {
         "$match"=> {
-          "properties.property_id"=> property.id.to_s
+          "units.property_id"=> property.id.to_s
         }
       },
       {
         "$project"=> {
-          "properties.property_id" => 1,
-          "properties.status" => 1,
-          "properties.rental_type" => 1
+          "units.property_id" => 1,
+          "units.status" => 1,
+          "units.rental_type" => 1
         }
       },
       {
-        "$unwind"=>"$properties"
+        "$unwind"=>"$units"
       },
       {
         "$match"=> {
-          "properties.property_id" => property.id.to_s,
-          "properties.status" => "Current"
+          "units.property_id" => property.id.to_s,
+          "units.status" => "Current"
         }
       },
       { 
         "$group" => { 
           :_id => {
-            :rental_type => "$properties.rental_type"
+            :rental_type => "$units.rental_type"
           }, 
           :count => { 
             "$sum" => 1 

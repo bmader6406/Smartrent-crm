@@ -10,18 +10,18 @@ class ResidentExporter
   end
   
   def self.pipeline
-    project = { "_id" => 1, "properties._id" => 1 }
+    project = { "_id" => 1, "units._id" => 1 }
     
     Resident::CORE_FIELDS.each do |f|
       project[f] = 1
     end
     
-    Resident::PROPERTY_FIELDS.each do |f|
-      project["properties.#{f}"] = 1
+    Resident::UNIT_FIELDS.each do |f|
+      project["units.#{f}"] = 1
     end
     
     match1 = {
-      "properties" => {
+      "units" => {
         '$elemMatch' => {
           "property_id" => {"$in" => @params["property_ids"] }
         }
@@ -29,13 +29,13 @@ class ResidentExporter
     }
 
     match2 = {
-      "properties.property_id" => {"$in" => @params["property_ids"] }
+      "units.property_id" => {"$in" => @params["property_ids"] }
     }
     
     # statuses
     if !@params["statuses"].blank?
-      match1["properties"]["$elemMatch"]["status"] = {"$in" => @params["statuses"] }
-      match2["properties.status"] = {"$in" => @params["statuses"] }
+      match1["units"]["$elemMatch"]["status"] = {"$in" => @params["statuses"] }
+      match2["units.status"] = {"$in" => @params["statuses"] }
     end
     
     # move in range
@@ -44,8 +44,8 @@ class ResidentExporter
       start_date = Date.parse(start_date).to_time
       end_date = Date.parse(end_date).to_time
       
-      match1["properties"]["$elemMatch"]["move_in"] = { "$gte" => start_date, "$lte" => end_date }
-      match2["properties.move_in"] = { "$gte" => start_date, "$lte" => end_date }
+      match1["units"]["$elemMatch"]["move_in"] = { "$gte" => start_date, "$lte" => end_date }
+      match2["units.move_in"] = { "$gte" => start_date, "$lte" => end_date }
     end
     
     # birthday
@@ -66,21 +66,21 @@ class ResidentExporter
     
     # rental type
     if !@params["rental_types"].blank?
-      match1["properties"]["$elemMatch"]["rental_type"] = {"$in" => @params["rental_types"] }
-      match2["properties.rental_type"] = {"$in" => @params["rental_types"] }
+      match1["units"]["$elemMatch"]["rental_type"] = {"$in" => @params["rental_types"] }
+      match2["units.rental_type"] = {"$in" => @params["rental_types"] }
     end
     
     return [
       { "$match" => match1 },
       { "$project" => project },
-      { "$unwind" => "$properties"},
+      { "$unwind" => "$units"},
       { "$match" => match2 }
     ]
   end
   
   def self.residents_count
     Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
-      { "$group" => { :_id => "$properties._id" } },
+      { "$group" => { :_id => "$units._id" } },
       { "$group" => { :_id => 1, :count => { "$sum" => 1 } } }
     ])[0]["count"] rescue 0
   end
@@ -92,7 +92,7 @@ class ResidentExporter
       sort = { "month" => 1, "day_of_month" => 1, "_id" => 1 }
       
     elsif @params["type"] == "emails"
-      sort = { "properties.move_in" => 1, "_id" => 1 }
+      sort = { "units.move_in" => 1, "_id" => 1 }
     end
     
     Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
@@ -162,21 +162,21 @@ class ResidentExporter
         residents_listing(limit, skip).each do |r|
           if @params["type"] == "emails"
             csv << [
-              property_dict[r["properties"]["property_id"]],
+              property_dict[r["units"]["property_id"]],
               [r["first_name"], r["last_name"]].join(" "),
-              unit_dict[r["properties"]["unit_id"]],
+              unit_dict[r["units"]["unit_id"]],
               r["street"],
               r["city"],
               r["state"],
               r["zip"],
-              r["properties"]["status"],
+              r["units"]["status"],
               r["email"],
-              (r["properties"]["move_in"].strftime("%m/%d/%Y") rescue nil)
+              (r["units"]["move_in"].strftime("%m/%d/%Y") rescue nil)
             ]
             
           elsif @params["type"] == "birthday"
             csv << [
-              property_dict[r["properties"]["property_id"]],
+              property_dict[r["units"]["property_id"]],
               [r["first_name"], r["last_name"]].join(" "),
               r["email"],
               r["street"],
@@ -189,21 +189,21 @@ class ResidentExporter
             
           elsif @params["type"] == "details"
             csv << [
-              property_dict[r["properties"]["property_id"]],
-              unit_dict[r["properties"]["unit_id"]],
+              property_dict[r["units"]["property_id"]],
+              unit_dict[r["units"]["unit_id"]],
               [r["first_name"], r["last_name"]].join(" "),
               r["gender"],
               (r["birthday"].strftime("%m/%d/%Y") rescue nil),
-              r["properties"]["household_status"],
-              r["properties"]["occupation_type"],
-              r["properties"]["minutes_to_work"],
-              r["properties"]["transportation_to_work"],
-              r["properties"]["pets_count"],
-              r["properties"]["pet_type"],
-              r["properties"]["moving_from"],
-              r["properties"]["vehicles_count"],
-              r["properties"]["annual_income"],
-              r["properties"]["household_size"],
+              r["units"]["household_status"],
+              r["units"]["occupation_type"],
+              r["units"]["minutes_to_work"],
+              r["units"]["transportation_to_work"],
+              r["units"]["pets_count"],
+              r["units"]["pet_type"],
+              r["units"]["moving_from"],
+              r["units"]["vehicles_count"],
+              r["units"]["annual_income"],
+              r["units"]["household_size"],
               r["email"]
               
             ]

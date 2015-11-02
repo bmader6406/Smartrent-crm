@@ -143,9 +143,8 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
     
     var form = new Backbone.Form({
       schema: {
-        unit_id: {
-          type: 'Hidden',
-          validators: [{type: 'required', message: 'Please set the Unit code for the resident before adding roommates'}]
+        unit_id: { // prefill unit_id, don't add validation 
+          type: 'Hidden'
         },
         last_name: {
           title: 'Last Name',

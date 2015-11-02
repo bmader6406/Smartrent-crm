@@ -21,11 +21,11 @@ node do |n|
 end
 
 # property fields
-child :curr_property => :property do |p|
-  [Resident::PROPERTY_FIELDS, :created_at, :roommate].flatten.each do |f|
-    node(f){|n| p.send(f) || nil }
+child :curr_unit => :unit do |t|
+  [Resident::UNIT_FIELDS, :created_at, :roommate].flatten.each do |f|
+    node(f){|n| t.send(f) || nil }
   end
   
-  node(:move_in){|p| p.move_in.strftime("%m/%d/%Y") rescue nil }
-  node(:move_out){|p| p.move_out.strftime("%m/%d/%Y") rescue nil }
+  node(:move_in){|t| t.move_in.strftime("%m/%d/%Y") rescue nil }
+  node(:move_out){|t| t.move_out.strftime("%m/%d/%Y") rescue nil }
 end

@@ -1,28 +1,28 @@
-Crm.Views.MarketingPropertiesList = Backbone.View.extend({
+Crm.Views.ResidentUnitsList = Backbone.View.extend({
   tagName: 'ul',
   className: 'list-unstyled',
-  id: 'marketing-properties',
+  id: 'resident-units',
   
   events: {
     
   },
   
   initialize: function () {
-    this.listenTo(this.collection, 'reset', this.addProperties);
+    this.listenTo(this.collection, 'reset', this.addUnits);
     this.listenTo(this.collection, 'add', this.add);
   },
   
   add: function (model) {
-		this.$el.append(new Crm.Views.MarketingProperty({ model: model }).render().el);
-		
-    if(model.get('id') == App.vars.propertyId){
-      this.$('.resident-box:last').addClass('current');
-    }
+    var propertyView = new Crm.Views.ResidentUnit({ model: model });
+
+		this.$el.append(propertyView.render().el);
   },
   
-  addProperties: function(){
+  addUnits: function(){
+    this.$el.empty().html('<li class="well well-sm heading">Resident Units</li>');
+    
     if(this.collection.length == 0){
-      this.$el.html('<div class="well">No Properties Found</div>');
+      this.$el.html('<div class="well">No Resident Units Found</div>');
     } else {
       this.collection.each(this.add, this);
     }

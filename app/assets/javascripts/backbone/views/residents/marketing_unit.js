@@ -1,5 +1,5 @@
-Crm.Views.MarketingProperty = Backbone.View.extend({
-  template: JST["backbone/templates/residents/marketing_property"],
+Crm.Views.MarketingUnit = Backbone.View.extend({
+  template: JST["backbone/templates/residents/marketing_unit"],
   tagName: 'li',
   
   events: {
