@@ -68,7 +68,7 @@ class Import < ActiveRecord::Base
     {
       "yardi_property_id" => "0",
       "unit_code" => "1",
-      "origin_id" => "2",
+      "tenant_code" => "2",
       "full_name" => "3",
       "street" => "4",
       "city" => "6",

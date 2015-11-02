@@ -147,9 +147,20 @@ class ResidentSource
 
       if existing
         existing.update_attributes(attrs)
+        
+        if !existing.errors.empty?
+          pp "resident_id: #{resident.id} > create_property > update error:", existing.errors.full_messages.join(", ")
+        end
+        
       else
-        resident.properties.create(attrs)
+        prop = resident.properties.create(attrs)
+        
+        if !prop.errors.empty?
+          pp "resident_id: #{resident.id} > create_property > create error:", prop.errors.full_messages.join(", ")
+        end
       end
+      
+      true
     end
   
     def increase_counter_cache

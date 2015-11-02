@@ -73,34 +73,36 @@ class ResidentImporter
 
             next if !property_id
 
-            origin_id = row[ resident_map["origin_id"] ]
+            tenant_code = row[ resident_map["tenant_code"] ]
             unit_code = row[ resident_map["unit_code"] ]
             email = row[ resident_map["email"] ]
 
             next if email.blank?
-
-            # Don't create unit. Unit must be imported from mits4_1.xml before importing resident
-            #unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
-            #unit.save(:validate => false)
             
-            unit = Unit.find_by(property_id: property_id, code: unit_code)
-
+            # UnitLoader use the mits4_1.xml, this file contains unit details
+            # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
+            unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
+            unit.save(:validate => false)
+            
             pp "#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
             #consolidate resident by email
             resident = Resident.with(:consistency => :strong).where(:email_lc => email.to_s.downcase ).unify_ordered.first
+            pp ">>> email_lc: #{email.to_s.downcase}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
+            
             resident = Resident.new if !resident
             new_record = resident.new_record?
             
             Resident::CORE_FIELDS.each do |f|
+              f = f.to_s # must f convert to string
               if resident_map[f]
-                if [:full_name].include?(f)
+                if ["full_name"].include?(f)
                   resident.full_name = row[resident_map[f]]
                 else
                   resident[f] = row[resident_map[f]]
                 end
 
-                if [:birthday].include?(f)
+                if ["birthday"].include?(f)
                   resident[f] = Date.strptime(row[resident_map[f]], '%m/%d/%Y') rescue nil
                   
                   if !resident[f]
@@ -109,29 +111,33 @@ class ResidentImporter
                 end
               end
             end
-
+            
+            # don't use symboy as hash key
             property_attrs = {
-              :property_id => property_id,
-              :roommate => origin_id.to_s.match(/^r/) ? true : false
+              "property_id" => property_id,
+              "roommate" => tenant_code.to_s.match(/^r/) ? true : false
             }
 
             Resident::PROPERTY_FIELDS.each do |f|
+              f = f.to_s # must f convert to string
               property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
               #pp "property field: #{f}, #{property_attrs[f]}"
 
-              if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
+              if ["signing_date", "move_in", "move_out"].include?(f) && property_attrs[f]
                 property_attrs[f] = Date.strptime(property_attrs[f], '%Y%m%d') rescue nil
               end
 
-              if [:unit_id].include?(f) && unit
+              if ["unit_id"].include?(f) && unit
                 property_attrs[f] = unit.id
               end
             end
-
+            
+            #pp ">>> before saving:", resident.attributes
+            
             if resident.save
               #create submit
-              resident.sources.create(property_attrs) if property_attrs[:property_id]
+              resident.sources.create(property_attrs) if property_attrs["property_id"]
               
               if new_record
                 new_resident += 1
@@ -139,7 +145,7 @@ class ResidentImporter
                 existing_resident += 1
               end
             else
-              errs << resident.errors.full_messages.join(", ")
+              errs << [resident.errors.full_messages.join(", ")]
             end
 
           end
@@ -161,27 +167,29 @@ class ResidentImporter
         errFile ="errors_#{file_name}"
 
         errCSV = CSV.generate do |csv|
-          errs.each {|row| csv << row}
+          errs.each {|row| csv << row }
         end
+        
+        #pp "errs", errs
       end
       
       Notifier.system_message("[CRM] Yardi Importing Success",
         email_body(new_resident, existing_resident, errs.length, file_name),
-        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver
+        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV})#.deliver
 
       pp ">>>", email_body(new_resident, existing_resident, errs.length, file_name)
 
     elsif type == "smartrent"
       resident_map = {
-       :property_name => 0,
-       :unit_code => 2,
-       :full_name => 1,
-       :street => 3,
-       :city => 4,
-       :state => 5,
-       :zip => 6,
-       :email => 7,
-       :move_in => 8
+       "property_name" => 0,
+       "unit_code" => 2,
+       "full_name" => 1,
+       "street" => 3,
+       "city" => 4,
+       "state" => 5,
+       "zip" => 6,
+       "email" => 7,
+       "move_in" => 8
       }
 
       custom_name = {
@@ -225,12 +233,12 @@ class ResidentImporter
           CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
             next if index <= 2 || row.join.blank?
 
-            property_id = prop_map[row[ resident_map[:property_name] ].to_s.gsub(/^0*/, '') ]
+            property_id = prop_map[row[ resident_map["property_name"] ].to_s.gsub(/^0*/, '') ]
 
             next if !property_id
 
-            unit_code = row[ resident_map[:unit_code] ]
-            email = row[ resident_map[:email] ]
+            unit_code = row[ resident_map["unit_code"] ]
+            email = row[ resident_map["email"] ]
 
             next if email.blank?
 
@@ -244,29 +252,32 @@ class ResidentImporter
             resident = Resident.new if !resident
 
             Resident::CORE_FIELDS.each do |f|
+              f = f.to_s # must f convert to string
               if resident_map[f]
-                if [:full_name].include?(f)
+                if ["full_name"].include?(f)
                   resident.full_name = row[resident_map[f]]
                 else
                   resident[f] = row[resident_map[f]]
                 end
               end
             end
-
+            
+            # don't use symboy as hash key
             property_attrs = {
-              :property_id => property_id
+              "property_id" => property_id
             }
 
             Resident::PROPERTY_FIELDS.each do |f|
+              f = f.to_s
               property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
               #pp "property field: #{f}, #{property_attrs[f]}"
 
-              if [:move_in].include?(f) && property_attrs[f]
+              if ["move_in"].include?(f) && property_attrs[f]
                 property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
               end
 
-              if [:unit_id].include?(f) && unit
+              if ["unit_id"].include?(f) && unit
                 pp "UNIT: #{unit}, #{f}"
                 property_attrs[f] = unit.id
               end
@@ -274,7 +285,7 @@ class ResidentImporter
 
             if resident.save
               #create submit
-              resident.sources.create(property_attrs) if property_attrs[:property_id]
+              resident.sources.create(property_attrs) if property_attrs["property_id"]
             end
 
           end

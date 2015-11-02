@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151029172451) do
+ActiveRecord::Schema.define(version: 20151030191908) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -143,6 +143,7 @@ ActiveRecord::Schema.define(version: 20151029172451) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.integer  "unit_id",     limit: 4
   end
 
   add_index "comments", ["ancestry"], name: "index_comments_on_ancestry", using: :btree
@@ -248,6 +249,7 @@ ActiveRecord::Schema.define(version: 20151029172451) do
     t.datetime "deleted_at"
     t.datetime "created_at",                                      null: false
     t.datetime "updated_at",                                      null: false
+    t.integer  "unit_id",       limit: 4
   end
 
   add_index "notifications", ["comment_id"], name: "index_notifications_on_comment_id", using: :btree
@@ -559,6 +561,7 @@ ActiveRecord::Schema.define(version: 20151029172451) do
     t.datetime "deleted_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "unit_id",           limit: 4
   end
 
   add_index "tickets", ["property_id"], name: "index_tickets_on_property_id", using: :btree

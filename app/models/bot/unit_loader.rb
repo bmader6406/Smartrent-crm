@@ -54,12 +54,20 @@ class UnitLoader
       
         p["ILS_Unit"].each_with_index do |u, undx|
           origin_id = u.nest(unit_map[:origin_id])
+          code = u.nest(unit_map[:code])
           pp "pndx: #{pndx + 1}, undx: #{undx +1 }, origin_id: #{origin_id}"
         
           next if !origin_id.present?
         
-          # if unit exist, update it. Otherwise create new unit
-          unit = Unit.where(:origin_id => origin_id).first
+          # if unit's code exist, update it. 
+          # Otherwise create new unit
+          
+          # don't use origin_id, it will end up with duplicate Unit code for a specific property
+          # for example: 44892, 538 vs 53136, 538
+          #unit = Unit.where(:property_id => property.id, :origin_id => origin_id).first
+          
+          # Check Yardi's unit (which may first created by the ResidentImporter)
+          unit = Unit.where(:property_id => property.id, :code => code).first 
           unit = Unit.new if !unit
           unit.property_id = property.id if property
         
