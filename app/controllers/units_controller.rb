@@ -22,25 +22,12 @@ class UnitsController < ApplicationController
       format.html {
         render :file => "dashboards/index"
       }
-      format.json {}
-    end
-  end
-
-  def show_by_code
-    @unit = Unit.find_by_property_id_and_code(params[:property_id], params[:code])
-    respond_to do |format|
-      format.html {
-        render :file => "dashboards/index"
-      }
       format.json {
-        if @unit
-          render "show"
-        else
+        if !@unit # for search by unit code
           render :json => {}
         end
       }
     end
-
   end
   
   def new
@@ -118,7 +105,11 @@ class UnitsController < ApplicationController
     end
 
     def set_unit
-      @unit = @property.units.find(params[:id])
+      if params[:id].include?("code_")
+        @unit = @property.units.find_by_code(params[:id].gsub("code_", ""))
+      else
+        @unit = @property.units.find(params[:id])
+      end
       
       case action_name
         when "create"

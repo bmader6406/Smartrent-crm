@@ -1,14 +1,10 @@
 object @resident
 
+# backgrid requires the unique :id
 node do |n|
-  attrs = {
-    #:id => n.id.to_s
-    :id => "#{n.id.to_s}_#{n.unit_code}" #temp
-  }
-  
-  if @property
-    attrs.merge!({
-      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, property_resident_path(@property, n), {:style => "display:none"}),
+  if @property # proeprty view, resident use the residentID_unitID format
+    attrs = {
+      :id => n.to_param,
       :show_path => property_resident_path(@property, n),
       :edit_path => edit_property_resident_path(@property, n),
       :tickets_path => tickets_property_resident_path(@property, n),
@@ -17,19 +13,17 @@ node do |n|
       :marketing_units_path => marketing_units_property_resident_path(@property, n),
       :activities_path => property_resident_activities_path(@property, n),
       :smartrent_path => smartrent_property_resident_path(@property, n),
-      :add_ticket_path => property_resident_path(@property, n, :anchor => 'addTicket')
-    })
-  else
-    attrs.merge!({
-      :name_url => link_to(n.full_name.blank? ? "N/A" : n.full_name, resident_path(n), {:style => "display:none"}),
+      :add_ticket_path => property_resident_path(@property, n, :anchor => 'addTicket'),
+      :property_name => @property.name
+    }
+  else #org group view (no conversation, no smartrent..., it shows only the resident units listing)
+    attrs = {
+      :id => n.to_param,
       :show_path => resident_path(n),
-      :edit_path => edit_resident_path(n),
-      :tickets_path => tickets_resident_path(n),
-      :roommates_path => roommates_resident_path(n),
       :units_path => units_resident_path(n),
-      :marketing_units_path => marketing_units_resident_path(n),
-      :activities_path => resident_activities_path(n)
-    })
+      :tickets_path => tickets_resident_path(n),
+      :property_name => (@property_dict[n.property_id].name rescue "Deleted Property")
+    }
   end
   
   # core fields

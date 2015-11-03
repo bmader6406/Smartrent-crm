@@ -97,6 +97,7 @@ class Comment < ActiveRecord::Base
         Notification.create({
           :property_id => property_id,
           :resident_id => resident_id,
+          :unit_id => unit_id,
           :state => "pending",
           :subject => email.subject,
           :message => email.message,

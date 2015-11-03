@@ -72,10 +72,8 @@ Rails.application.routes.draw do
       member do
         get :residents
       end
+      
       resources :tickets
-      collection do
-        get "code/:code", :as => :show_by_code, :action => :show_by_code
-      end
     end
     
     resources :notices, :as => "campaigns", :controller => "campaigns" do

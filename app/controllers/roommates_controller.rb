@@ -14,7 +14,7 @@ class RoommatesController < ApplicationController
         Resident.ordered("first_name asc").where("units" => {
           "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id] }
         }).each do |r|
-          r.curr_unit_id = @property.id
+          r.curr_unit_id = params[:unit_id]
           @roommates << r
         end
         
@@ -66,7 +66,7 @@ class RoommatesController < ApplicationController
     @roommate = Resident.with(:consistency => :strong).where(:email_lc => roommate_params[:email].downcase ).unify_ordered.first
     @roommate = Resident.new if !@roommate
     
-    @roommate.curr_unit_id = @property.id
+    @roommate.curr_unit_id = params[:unit_id]
     
     Resident::CORE_FIELDS.each do |f|
       if !roommate_params[f].blank?
@@ -179,7 +179,8 @@ class RoommatesController < ApplicationController
     
     def set_roommate
       @roommate = Resident.find(params[:id])
-      @roommate.curr_unit_id = @property.id
+      #optional (check later)
+      #@roommate.curr_unit_id = params[:unit_id]
       
       case action_name
         when "create"

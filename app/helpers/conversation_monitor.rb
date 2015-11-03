@@ -43,6 +43,7 @@ class ConversationMonitor
           comment = Comment.new({
             :type => "email",
             :property_id => email.comment.property_id,
+            :unit_id => email.comment.unit_id,
             :resident_id => email.comment.resident_id,
             :parent => email.comment,
             :author_id => email.comment.resident.id,
@@ -62,6 +63,7 @@ class ConversationMonitor
           
           email.comment.resident.activities.create({
             :property_id => comment.property_id,
+            :unit_id => comment.unit_id,
             :action => comment.type,
             :subject_id => comment.id,
             :subject_type => comment.class.to_s

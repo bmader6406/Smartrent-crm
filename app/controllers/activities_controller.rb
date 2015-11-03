@@ -142,6 +142,7 @@ class ActivitiesController < ApplicationController
     
     comment[:property_id] = @property.id
     comment[:resident_id] = @resident.id
+    comment[:unit_id] = @unit.id
     comment[:author_id] = current_user.id
     comment[:author_type] = current_user.class.to_s
     
@@ -192,7 +193,8 @@ class ActivitiesController < ApplicationController
       @activity.action = @comment.type
       @activity.subject_id = @comment.id
       @activity.subject_type = @comment.class.to_s
-      @activity.property_id = @property.id if @property
+      @activity.property_id = @property.id
+      @activity.unit_id = @unit.id
       
       if comment[:asset_ids] 
         @property.assets.where(:id => comment[:asset_ids].split(",")).update_all(:comment_id => @comment.id)
@@ -262,6 +264,7 @@ class ActivitiesController < ApplicationController
 
     comment[:property_id] = @property.id
     comment[:resident_id] = @resident.id
+    comment[:unit_id] = @unit.id
     comment[:author_id] = current_user.id
     comment[:author_type] = current_user.class.to_s
 
@@ -274,7 +277,8 @@ class ActivitiesController < ApplicationController
         @reply_activity.action = @comment.type
         @reply_activity.subject_id = @comment.id
         @reply_activity.subject_type = @comment.class.to_s
-        @reply_activity.property_id = @property.id if @property
+        @reply_activity.property_id = @property.id
+        @reply_activity.unit_id = @unit.id
       end
 
       if !@comment.errors.empty?
@@ -316,8 +320,13 @@ class ActivitiesController < ApplicationController
     end
     
     def set_resident
-      @resident = Resident.find(params[:resident_id])
-      @resident.curr_unit_id = @property.id
+      # params[:resident_id] is a pair of resident id and unit id
+      resident_id, unit_id = params[:resident_id].split("_", 2)
+      
+      @resident = Resident.find(resident_id)
+      @unit = @property.units.find(unit_id)
+      
+      @resident.curr_unit_id = @unit.id # important
     end
 
     def set_activity
@@ -348,7 +357,7 @@ class ActivitiesController < ApplicationController
       activities = []
       
       if history == "resident"
-        @resident.activities.where(:property_id => @property.id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
+        @resident.activities.where(:property_id => @property.id, :unit_id => @resident.unit_id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
           next if !a.subject_type
           activities << a
         end

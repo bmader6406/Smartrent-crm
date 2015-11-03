@@ -7,11 +7,11 @@ node do |n|
     :resident_id => n.resident_id.to_s,
     :resident_url => link_to(n.resident_id, tickets_property_resident_path(@property, n.resident_id)),
     :status => n.status,
-    :first_name => n.resident.first_name,
+    :first_name => (n.resident.first_name rescue "Archived Resident"),
     :created_date => n.created_at.strftime('%m/%d/%Y'),
     :category => n.category.name,
     :category_id => n.category_id.to_s,
-    :show_path => "#{tickets_property_resident_path(@property, n.resident_id)}/#{n.id}",
+    :show_path => ("#{tickets_property_resident_path(@property, n.resident)}/#{n.id}" rescue "#"),
     
     :assigner => {
       :full_name => n.assigner.full_name,
@@ -36,4 +36,4 @@ node(:property, :if => lambda {|n| n.property }) do |n|
   }
 end
 
-attributes :created_at, :title, :description, :urgency, :entry_instruction, :additional_emails, :additional_phones
+attributes :created_at, :title, :description, :urgency, :entry_instruction, :additional_emails, :additional_phones, :unit_id

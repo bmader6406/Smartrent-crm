@@ -32,7 +32,7 @@ node(:call, :if => lambda {|n| n.subject.call rescue false }) do |n|
     :message => comment.message,
     :recording_duration => comment.call.recording_duration,
     :recording_url => comment.call.recording_url,
-    :update_path => update_note_property_resident_activity_path(n.property_id, @resident.id, n.id)
+    :update_path => update_note_property_resident_activity_path(n.property_id, @resident, n.id)
   }
 end
 
@@ -56,8 +56,8 @@ node(:notification) do |n|
   if notification
     hash = {
       :state => notification.state,
-      :acknowledge_path => acknowledge_property_resident_activity_path(n.property_id, @resident.id, n.id),
-      :reply_path => reply_property_resident_activity_path(n.property_id, @resident.id, n.id),
+      :acknowledge_path => acknowledge_property_resident_activity_path(n.property_id, @resident, n.id),
+      :reply_path => reply_property_resident_activity_path(n.property_id, @resident, n.id),
       :histories => []
     }
 
@@ -95,7 +95,7 @@ node(:note, :if => lambda {|n| n.subject.note? rescue false }) do |n|
   comment = n.subject
   {
     :message => comment.message,
-    :update_path => update_note_property_resident_activity_path(n.property_id, @resident.id, n.id)
+    :update_path => update_note_property_resident_activity_path(n.property_id, @resident, n.id)
   }
 end
 

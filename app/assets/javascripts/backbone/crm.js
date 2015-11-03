@@ -32,7 +32,7 @@ window.Crm = {
     });
     $("form#top_nav_unit_form").submit(function(){
       $.ajax({
-        url: this.action + "/units/code/" + $.trim( $('#top_unit_code').val().replace("#", "") ),
+        url: this.action + "/units/code_" + $.trim( $('#top_unit_code').val().replace("#", "") ),
         dataType: 'json',
         success: function(data){
           if( data.id ) {

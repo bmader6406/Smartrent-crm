@@ -54,7 +54,7 @@ class TicketsController < ApplicationController
     ticket_params.delete(:assets)
     ticket_params.delete(:asset_ids)
     ticket_params.delete(:remove_asset_ids)
-    
+
     @ticket = Ticket.new(ticket_params)
     @ticket.assigner_id = current_user.id
     @ticket.property_id = @property.id
@@ -131,7 +131,15 @@ class TicketsController < ApplicationController
     end
 
     def set_resident
-      @resident = @property.residents.find(params[:resident_id]) if params[:resident_id].present?
+      # params[:resident_id] is a pair of resident id and unit id
+      if params[:resident_id].present?
+        resident_id, unit_id = params[:resident_id].split("_", 2)
+      
+        @resident = Resident.find(resident_id)
+        @unit = @property.units.find(unit_id)
+      
+        @resident.curr_unit_id = @unit.id # important
+      end
     end
 
     def set_ticket

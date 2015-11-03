@@ -180,6 +180,10 @@ class Resident
   def self.find_by_id(id)
     Resident.where(:_id => id.to_i).first
   end
+  
+  def to_param
+    "#{id}_#{unit_id}"
+  end
 
   # fixed N+1 query
   def unit_code
@@ -187,7 +191,7 @@ class Resident
       if @unit
         @unit.code
       else
-        !unit_id.blank? ? (Unit.where(:id => unit_id).first.code rescue "") : nil
+        Unit.where(:id => unit_id).first.code rescue nil
       end
     end
   end

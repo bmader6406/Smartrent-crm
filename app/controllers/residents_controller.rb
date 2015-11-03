@@ -140,7 +140,7 @@ class ResidentsController < ApplicationController
   
   def tickets
     @tickets = @resident.tickets.includes(:property, :assigner, :assignee, :category, :assets)
-    @tickets = @tickets.where(:property_id => @property.id) if @property
+    @tickets = @tickets.where(:property_id => @property.id, :unit_id => @resident.unit_id) if @property
 
     respond_to do |format|
       format.html {
@@ -158,10 +158,10 @@ class ResidentsController < ApplicationController
     Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => {
         "property_id" => @property.id.to_s,
-        "unit_id" => @resident.curr_unit.unit_id.to_s
+        "unit_id" => @resident.unit_id.to_s
       }
     }).each do |r|
-      r.curr_unit_id = @property.id
+      r.curr_unit_id = @resident.unit_id.to_s
       @roommates << r
     end
     
@@ -326,8 +326,16 @@ class ResidentsController < ApplicationController
     end
 
     def set_resident
-      @resident = Resident.find(params[:id])
-      @resident.curr_unit_id = @property.id if @property
+      # params[:id] is a pair of resident id and unit id OR don't have _unit_id
+      resident_id, unit_id = params[:id].split("_", 2)
+      
+      @resident = Resident.find(resident_id)
+      
+      # resident listing and details support both org group and property level
+      if @property && unit_id
+        @unit = @property.units.find(unit_id)
+        @resident.curr_unit_id = @unit.id # important
+      end
       
       case action_name
         when "create"
@@ -425,16 +433,22 @@ class ResidentsController < ApplicationController
         pipeline = [
           { "$project" => project },
           { "$match" => {"units.property_id" => @property.id.to_s} },
-          { "$unwind" => "$units" },
-          { "$match" => match },
+          { "$unwind" => "$units" }
         ]
+        
+        if !match.empty?
+          pipeline << { "$match" => match }
+        end
         
       else
         pipeline = [
           { "$project" => project },
-          { "$unwind" => "$units" },
-          { "$match" => match },
+          { "$unwind" => "$units" }
         ]
+        
+        if !match.empty?
+          pipeline << { "$match" => match }
+        end
       end
       
       @total_residents = Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
@@ -470,7 +484,11 @@ class ResidentsController < ApplicationController
           next if !resident_dict[ r._id ].include?( u.unit_id )
           
           # must reload if a resident has multiple units
-          r = Resident.find(r._id) if j > 0
+          if j > 0
+            r2 = r
+            r = r2.clone # to create new object (memoization workaround), never save the temp record
+            r.id = r2.id
+          end
           
           r.curr_unit_id = u.unit_id
           @residents << r
@@ -487,8 +505,15 @@ class ResidentsController < ApplicationController
         smartrent_dict[sr.email.to_s.downcase] = sr
       end
 
-      units = Unit.where(:id => unit_ids).all
-            
+      units = Unit.includes(:property).where(:id => unit_ids).all
+      @property_dict = {}
+      
+      units.each do |u|
+        @property_dict[u.property.id.to_s] = u.property
+      end
+      
+      #pp "@property_dict", @property_dict
+      
       @residents.each do |r|
         # eager load smartrent
         r.eager_load( smartrent_dict[r.email_lc] )

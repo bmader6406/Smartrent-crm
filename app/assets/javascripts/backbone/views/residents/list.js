@@ -28,45 +28,59 @@ Crm.Views.ResidentsList = Backbone.View.extend({
         Backbone.trigger("rowclicked", this.model);
       }
     });
-
+    
+    var columns = [{
+        name: "unit_code",
+        label: "Unit #",
+        cell: 'string',
+        editable: false,
+        sortable: false
+      }, {
+       name: "name",
+       label: "Name",
+       cell: 'string',
+       editable: false,
+      sortable: false
+     }, {
+       name: "email",
+       label: "Email",
+       cell: 'string',
+       editable: false,
+       sortable: false
+     }, {
+       name: "primary_phone",
+       label: "Primary Phone",
+       cell: 'string',
+       editable: false,
+       sortable: false
+     }, {
+        name: "status",
+        label: "Status",
+        cell: 'string',
+        editable: false,
+        sortable: false
+      }, {
+        name: "move_in",
+        label: "Move In",
+        cell: 'string',
+        editable: false,
+        sortable: false
+      }];
+    
+    if( !App.vars.isPropertyPage ) {
+      columns.splice(0, 0, {
+        name: "property_name",
+        label: "Property Name",
+        cell: 'string',
+        editable: false,
+        sortable: false
+      });
+    }
+    
     var self = this,
        grid = new Backgrid.Grid({
          row: ClickableRow,
-         columns: [{
-            name: "unit_code",
-            label: "Unit #",
-            cell: 'string',
-            editable: false
-          }, {
-           name: "name",
-           label: "Name",
-           cell: 'string',
-           editable: false
-         }, {
-           name: "email",
-           label: "Email",
-           cell: 'string',
-           editable: false,
-           sortable: false
-         }, {
-           name: "primary_phone",
-           label: "Primary Phone",
-           cell: 'string',
-           editable: false,
-           sortable: false
-         }, {
-            name: "status",
-            label: "Status",
-            cell: 'string',
-            editable: false,
-            sortable: false
-          }, {
-            name: "move_in",
-            label: "Move In",
-            cell: 'string',
-            editable: false,
-            sortable: false
-          }],
+         columns: columns,
          collection: self.collection
        }),
 

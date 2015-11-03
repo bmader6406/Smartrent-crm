@@ -3,7 +3,7 @@ object @notification
 node do |n|
   {
     :id => n.id.to_s,
-    :show_path => property_resident_path(n.property_id, n.resident_id), #TODO: highlight comment on resident page (:comment_id => n.comment_id)
+    :show_path => (property_resident_path(n.property_id, n.resident) rescue "#"), #TODO: highlight comment on resident page (:comment_id => n.comment_id)
     :state => n.state,
     :subject => n.subject,
     :message => strip_tags(n.message.to_s.gsub(/<br>|<br\/>|&nbsp;/," ")),

@@ -178,7 +178,8 @@ Crm.Views.TicketNewOrUpdate = Backbone.View.extend({
       ticket.status = "open";
       ticket.urgency = "low";
       ticket.can_enter = "1";
-      ticket.resident_id = this.resident.get('id'); //assign on new form view
+      ticket.resident_id = this.resident.get('id').split("_")[0]; //assign on new form view
+      ticket.unit_id = this.resident.get('id').split("_")[1]; //assign on new form view
     }
 
     if(!ticket.assets){
@@ -188,6 +189,7 @@ Crm.Views.TicketNewOrUpdate = Backbone.View.extend({
     var form = new Backbone.Form({
       schema: {
         resident_id: 'Hidden',
+        unit_id: 'Hidden',
         status: {
           type: 'Select',
           options: App.vars.ticketStatuses

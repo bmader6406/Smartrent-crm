@@ -60,7 +60,8 @@ class Ticket < ActiveRecord::Base
           :author_type => author.class.to_s,
           :subject_id => id,
           :subject_type => self.class.to_s,
-          :property_id => property_id
+          :property_id => property_id,
+          :unit_id => unit_id
         })
       end
     end

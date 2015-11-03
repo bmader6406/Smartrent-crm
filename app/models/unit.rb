@@ -19,7 +19,7 @@ class Unit < ActiveRecord::Base
         "unit_id" => self.id.to_s
       }
     }).each do |r|
-      r.curr_unit_id = self.property.id
+      r.curr_unit_id = self.id.to_s
       
       next if !r.curr_unit
       
@@ -40,12 +40,9 @@ class Unit < ActiveRecord::Base
         "unit_id" => self.id.to_s
       }
     }).collect { |r|
-      r.curr_unit_id = self.property.id
+      r.curr_unit_id = self.id.to_s
       r.curr_unit && !r.curr_unit.roommate? ? r : nil
     }.compact.first
   end
-  
-  def self.keyed_by_code
-    units.collect{|u| u.code}
-  end
+
 end

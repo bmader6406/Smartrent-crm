@@ -1,4 +1,4 @@
-<div class="resident-box">
+<div class="resident-box" data-unit-id="<%= unit_id %>">
   <i class="fa fa-building-o"></i>
   <div class="author">
     <a href="#"><%= name %></a>
@@ -6,6 +6,9 @@
   </div>
   
   <ul class="list-unstyled">
+    <li>
+      Unit #: <span class="capitalize"><%= unit_code %></span>
+    </li>
     <li>
       Type: <span class="capitalize"><%= type %></span>
     </li>
