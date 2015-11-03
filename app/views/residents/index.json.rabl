@@ -1,4 +1,4 @@
-node(:total) {|m| @residents.total_entries }
+node(:total) {|m| @total_residents }
 
 child @residents, :root => :items, :object_root => false do
   extends "residents/show"

@@ -161,7 +161,7 @@ class ResidentsController < ApplicationController
         "unit_id" => @resident.curr_unit.unit_id.to_s
       }
     }).each do |r|
-      r.curr_property_id = @property.id
+      r.curr_unit_id = @property.id
       @roommates << r
     end
     
@@ -208,7 +208,7 @@ class ResidentsController < ApplicationController
   # for add new ticket page
   def search
     col_dict = {
-      :unit_id => "0",
+      :unit_code => "0",
       :name => "1",
       :email => "2"
     }
@@ -327,7 +327,7 @@ class ResidentsController < ApplicationController
 
     def set_resident
       @resident = Resident.find(params[:id])
-      @resident.curr_property_id = @property.id if @property
+      @resident.curr_unit_id = @property.id if @property
       
       case action_name
         when "create"
@@ -371,101 +371,130 @@ class ResidentsController < ApplicationController
     end
 
     def filter_residents(per_page = 15)
-      conditions = {}
-      hint = {}
+      match = {}
       
-      conditions["units.property_id"] = @property.id.to_s if @property
+      match["units.property_id"] = @property.id.to_s if @property
       
       if !params[:email].blank?
-        conditions[:email_lc] = params[:email].downcase
+        match[:email_lc] = params[:email].downcase
       end
       
       if !params[:first_name].blank?
-        conditions[:first_name_lc] = params[:first_name].downcase
+        match[:first_name_lc] = params[:first_name].downcase
       end
       
       if !params[:last_name].blank?
-        conditions[:last_name_lc] = params[:last_name].downcase
+        match[:last_name_lc] = params[:last_name].downcase
       end
       
       if !params[:primary_phone].blank?
-        conditions[:primary_phone] = params[:primary_phone]
+        match[:primary_phone] = params[:primary_phone]
       end
       
       if !params[:resident_id].blank?
-        conditions[:_id] = params[:resident_id]
+        match[:_id] = params[:resident_id]
       end
       
-      if !params[:unit_id].blank?
-        unit_id = params[:unit_id]
-        
-        # find unit_id  by unit code
-        if @property #unit_id.to_i < 1000*1000*1000 && 
-          unit_id = Unit.where(:property_id => @property.id, :code => unit_id).first.id.to_s rescue unit_id
-        end
-        
-        conditions["units.unit_id"] = unit_id
+      if !params[:unit_code].blank?
+        unit_id = Unit.where(:property_id => @property.id, :code => params[:unit_code]).first.id.to_s rescue -1
+        match["units.unit_id"] = unit_id
       end
       
-      if !params[:status].blank? && @property # filter by property + resident status
-        conditions.delete("units.property_id")
-        
-        conditions["units"] = {
-          "$elemMatch" => {
-            "property_id" => @property.id.to_s,
-            "status" => params[:status]
-          }
-        }
-        
-        hint = {"units.property_id" => 1, "units.status" => 1 }
+      if !params[:status].blank?
+        match["units.status"] = params[:status]
       end
       
-      if conditions[:first_name_lc] # search first name
-        hint = {:first_name_lc => 1}
-      end
+      # manual paging
+      limit = params[:page].to_i*per_page.to_i
+      skip = limit - per_page.to_i
       
-      if conditions[:last_name_lc] # search last name
-        hint = {:last_name_lc => 1}
-      end
+      resident_dict = {} # is used to load resident and their units
       
-      if conditions[:email_lc] #search by email
-        hint = {:email_lc => 1}
-      end
+      project = {
+        "email_lc" => 1,
+        "first_name_lc" => 1,
+        "last_name_lc" => 1,
+        "primary_phone" => 1,
+        "units._id" => 1,
+        "units.unit_id" => 1,
+        "units.property_id" => 1,
+        "units.status" => 1
+      }
       
-      if conditions[:_id] #search by email
-        hint = {}
-      end
-
-      @residents = Resident.where(conditions).ordered("first_name asc, last_name asc")
-
-      # specify the index explicitly
-      @residents = @residents.extras(:hint => hint) if !hint.empty?
-      
-      #pp ">>>>", @residents.limit(25).explain
-      @residents = @residents.paginate(:page => params[:page], :per_page => per_page)
-      
-      unit_ids = []
       if @property
-        @residents.each do |r|
-          r.curr_property_id = @property.id
-          unit_ids << r.unit_id
+        pipeline = [
+          { "$project" => project },
+          { "$match" => {"units.property_id" => @property.id.to_s} },
+          { "$unwind" => "$units" },
+          { "$match" => match },
+        ]
+        
+      else
+        pipeline = [
+          { "$project" => project },
+          { "$unwind" => "$units" },
+          { "$match" => match },
+        ]
+      end
+      
+      @total_residents = Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
+        { "$group" => { :_id => "$units._id" } },
+        { "$group" => { :_id => 1, :count => { "$sum" => 1 } } }
+      ])[0]["count"] rescue 0
+      
+      #pp "@total_residents #{@total_residents}"
+      #pp "match, skip, limit", match, limit, skip
+
+      Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
+        { "$sort" => { "first_name" => 1, "last_name" => 1 } },
+        { "$limit" => limit },
+        { "$skip" => skip }
+      ]).each do |hash|
+        if resident_dict[ hash["_id"] ]
+          resident_dict[ hash["_id"] ] << hash["units"]["unit_id"]
+          
+        else
+          resident_dict[ hash["_id"] ] = [ hash["units"]["unit_id"] ]
         end
       end
       
-      # eager load units
-      units = Unit.where(:id => unit_ids).all
+      @residents = []
+      unit_ids = []
       
-      # manual eager load smartrent resident
-      smartrent = {}
-      Smartrent::Resident.where(:email => @residents.collect{|r| r.email }).each do |sr|
-        smartrent[sr.email.to_s.downcase] = sr
+      #pp ">>> resident_dict", resident_dict
+
+      Resident.with(:consistency => :eventual).without(:sources, :activities).where(:_id.in => resident_dict.keys).each do |r|
+        next if !resident_dict[ r._id ]
+        
+        r.units.each_with_index do |u, j|
+          next if !resident_dict[ r._id ].include?( u.unit_id )
+          
+          # must reload if a resident has multiple units
+          r = Resident.find(r._id) if j > 0
+          
+          r.curr_unit_id = u.unit_id
+          @residents << r
+          
+          unit_ids << u.unit_id
+        end
       end
       
+      #pp ">>> @residents", @residents
+      
+      # build smartrent dict
+      smartrent_dict = {}
+      Smartrent::Resident.where(:email => @residents.collect{|r| r.email }).each do |sr|
+        smartrent_dict[sr.email.to_s.downcase] = sr
+      end
+
+      units = Unit.where(:id => unit_ids).all
+            
       @residents.each do |r|
-        r.eager_load(smartrent[r.email_lc])
-        
-        u = units.detect{|u| u.id == r.unit_id.to_i }
-        r.eager_load(u) if u
+        # eager load smartrent
+        r.eager_load( smartrent_dict[r.email_lc] )
+
+        # eager load unit
+        r.eager_load(units.detect{|u| u.id == r.curr_unit_id.to_i })
       end
       
     end

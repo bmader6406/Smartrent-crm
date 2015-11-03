@@ -19,7 +19,7 @@ class Unit < ActiveRecord::Base
         "unit_id" => self.id.to_s
       }
     }).each do |r|
-      r.curr_property_id = self.property.id
+      r.curr_unit_id = self.property.id
       
       next if !r.curr_unit
       
@@ -40,7 +40,7 @@ class Unit < ActiveRecord::Base
         "unit_id" => self.id.to_s
       }
     }).collect { |r|
-      r.curr_property_id = self.property.id
+      r.curr_unit_id = self.property.id
       r.curr_unit && !r.curr_unit.roommate? ? r : nil
     }.compact.first
   end

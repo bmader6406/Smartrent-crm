@@ -20,10 +20,10 @@ node do |n|
   attrs
 end
 
-# property fields
-child :curr_unit => :unit do |t|
-  [Resident::UNIT_FIELDS, :created_at, :roommate].flatten.each do |f|
-    node(f){|n| t.send(f) || nil }
+# unit fields
+child :curr_unit => :unit do |u|
+  [Resident::UNIT_FIELDS, :created_at].flatten.each do |f|
+    node(f){|n| u.send(f) || nil }
   end
   
   node(:move_in){|u| u.move_in.strftime("%m/%d/%Y") rescue nil }

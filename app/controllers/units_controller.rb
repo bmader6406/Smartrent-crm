@@ -100,7 +100,7 @@ class UnitsController < ApplicationController
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/index2.json.rabl")
+        render(template: "residents/unit_residents.json.rabl")
       }
     end
   end

@@ -169,7 +169,7 @@ class Resident
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
   scope :unify_ordered, -> { order_by({:created_at => :asc}) }
   
-  attr_accessor :curr_property_id, :property_id, :from_import
+  attr_accessor :curr_unit_id, :property_id, :from_import
   
   validates :email, {:uniqueness => true}
 
@@ -192,8 +192,8 @@ class Resident
     end
   end
 
-  def curr_unit(pid = curr_property_id)
-    @curr_unit ||= units.detect{|u| u.property_id.to_s == pid.to_s } || units.first
+  def curr_unit(uid = curr_unit_id)
+    @curr_unit ||= units.detect{|u| u.unit_id.to_s == uid.to_s } || units.first
   end
 
   def context(campaign)
@@ -318,8 +318,8 @@ class Resident
     if property
       units.detect{|u| u.property_id == property.id.to_s }.subscribed? rescue false
 
-    elsif curr_property_id
-      units.detect{|u| u.property_id == curr_property_id.to_s }.subscribed? rescue false
+    elsif curr_unit_id
+      units.detect{|u| u.property_id == curr_unit_id.to_s }.subscribed? rescue false
 
     else
       self[:subscribed]

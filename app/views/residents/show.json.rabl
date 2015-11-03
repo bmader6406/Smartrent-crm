@@ -2,7 +2,8 @@ object @resident
 
 node do |n|
   attrs = {
-    :id => n.id.to_s
+    #:id => n.id.to_s
+    :id => "#{n.id.to_s}_#{n.unit_code}" #temp
   }
   
   if @property
@@ -39,18 +40,23 @@ node do |n|
   attrs[:name] = n.full_name.blank? ? "N/A" : n.full_name
   
   attrs[:birthday] = n.birthday.strftime("%m/%d/%Y") rescue nil
+  
   if n.status == "Past"
     if n.unit_code.present?
       attrs[:unit_text] = "Past Resident ##{n.unit_code}"
+      
     else
       attrs[:unit_text] = "Past Resident"
     end
+    
   elsif n.status == "Future"
     if n.unit_code.present?
       attrs[:unit_text] = "Future Resident ##{n.unit_code}"
+      
     else
       attrs[:unit_text] = "Future Resident"
     end
+    
   else
     attrs[:unit_text] = "Unit ##{n.unit_code}"
   end
@@ -66,25 +72,13 @@ node do |n|
   attrs
 end
 
-# property fields
-child :curr_unit => :unit do |p|
+# unit fields
+child :curr_unit => :unit do |u|
   [Resident::UNIT_FIELDS, :created_at].flatten.each do |f|
-    node(f){|n| p.send(f) || nil }
+    node(f){|n| u.send(f) || nil }
   end
   
   node(:signing_date){|u| u.signing_date.strftime("%m/%d/%Y") rescue nil }
   node(:move_in){|u| u.move_in.strftime("%m/%d/%Y") rescue nil }
   node(:move_out){|u| u.move_out.strftime("%m/%d/%Y") rescue nil }
 end
-
-# This generate a lot of rewards query
-# child :smartrent_resident => :smartrent do |sr|
-#   node do |n|
-#     {
-#       :total_rewards => number_to_currency(sr.total_rewards, :precision => 0),
-#       :monthly_awards_amount => number_to_currency(sr.monthly_awards_amount, :precision => 0),
-#       :sign_up_bonus => number_to_currency(sr.sign_up_bonus, :precision => 0),
-#       :initial_reward => number_to_currency(sr.initial_reward, :precision => 0)
-#     }
-#   end
-# end

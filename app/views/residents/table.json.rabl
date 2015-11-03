@@ -1,4 +1,4 @@
-node(:total) {|m| @residents.total_entries }
+node(:total) {|m| @total_residents }
 
 node(:rows) {
   @residents.collect do |d|

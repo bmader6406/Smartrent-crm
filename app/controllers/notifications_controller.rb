@@ -101,8 +101,7 @@ class NotificationsController < ApplicationController
       # eager load units
       units = Unit.where(:id => uids).all
       residents.each do |r|
-        u = units.detect{|u| u.id == r.unit_id.to_i }
-        r.eager_load(u) if u
+        r.eager_load( units.detect{|u| u.id == r.unit_id.to_i } )
       end
     end
   end
@@ -163,8 +162,7 @@ class NotificationsController < ApplicationController
         # eager load units
         units = Unit.where(:id => uids).all
         residents.each do |r|
-          u = units.detect{|u| u.id == r.unit_id.to_i }
-          r.eager_load(u) if u
+          r.eager_load( units.detect{|u| u.id == r.unit_id.to_i } )
         end
       end
       

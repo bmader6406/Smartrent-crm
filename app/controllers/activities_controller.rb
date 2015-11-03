@@ -317,7 +317,7 @@ class ActivitiesController < ApplicationController
     
     def set_resident
       @resident = Resident.find(params[:resident_id])
-      @resident.curr_property_id = @property.id
+      @resident.curr_unit_id = @property.id
     end
 
     def set_activity
