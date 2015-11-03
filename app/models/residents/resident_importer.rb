@@ -73,7 +73,7 @@ class ResidentImporter
 
             next if !property_id
 
-            unit_code = row[ resident_map["unit_code"] ]
+            tenant_code = row[ resident_map["tenant_code"] ]
             unit_code = row[ resident_map["unit_code"] ]
             email = row[ resident_map["email"] ]
 
@@ -113,23 +113,23 @@ class ResidentImporter
             end
             
             # don't use symboy as hash key
-            property_attrs = {
+            unit_attrs = {
               "property_id" => property_id,
-              "roommate" => unit_code.to_s.match(/^r/) ? true : false
+              "roommate" => tenant_code.to_s.match(/^r/) ? true : false
             }
 
             Resident::UNIT_FIELDS.each do |f|
               f = f.to_s # must f convert to string
-              property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
+              unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
-              #pp "property field: #{f}, #{property_attrs[f]}"
+              #pp "property field: #{f}, #{unit_attrs[f]}"
 
-              if ["signing_date", "move_in", "move_out"].include?(f) && property_attrs[f]
-                property_attrs[f] = Date.strptime(property_attrs[f], '%Y%m%d') rescue nil
+              if ["signing_date", "move_in", "move_out"].include?(f) && unit_attrs[f]
+                unit_attrs[f] = Date.strptime(unit_attrs[f], '%Y%m%d') rescue nil
               end
 
               if ["unit_id"].include?(f) && unit
-                property_attrs[f] = unit.id
+                unit_attrs[f] = unit.id
               end
             end
             
@@ -137,7 +137,7 @@ class ResidentImporter
             
             if resident.save
               #create submit
-              resident.sources.create(property_attrs) if property_attrs["property_id"]
+              resident.sources.create(unit_attrs) if unit_attrs["property_id"]
               
               if new_record
                 new_resident += 1
@@ -175,7 +175,7 @@ class ResidentImporter
       
       Notifier.system_message("[CRM] Yardi Importing Success",
         email_body(new_resident, existing_resident, errs.length, file_name),
-        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV})#.deliver
+        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
 
       pp ">>>", email_body(new_resident, existing_resident, errs.length, file_name)
 
@@ -263,29 +263,29 @@ class ResidentImporter
             end
             
             # don't use symboy as hash key
-            property_attrs = {
+            unit_attrs = {
               "property_id" => property_id
             }
 
             Resident::UNIT_FIELDS.each do |f|
               f = f.to_s
-              property_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
+              unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
-              #pp "property field: #{f}, #{property_attrs[f]}"
+              #pp "property field: #{f}, #{unit_attrs[f]}"
 
-              if ["move_in"].include?(f) && property_attrs[f]
-                property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+              if ["move_in"].include?(f) && unit_attrs[f]
+                unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
               end
 
               if ["unit_id"].include?(f) && unit
                 pp "UNIT: #{unit}, #{f}"
-                property_attrs[f] = unit.id
+                unit_attrs[f] = unit.id
               end
             end
 
             if resident.save
               #create submit
-              resident.sources.create(property_attrs) if property_attrs["property_id"]
+              resident.sources.create(unit_attrs) if unit_attrs["property_id"]
             end
 
           end

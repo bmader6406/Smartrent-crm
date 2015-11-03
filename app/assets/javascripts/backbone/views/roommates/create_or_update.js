@@ -136,8 +136,8 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
     }
     
     if(this.isCreateNew){
-      if(this.resident.get('property')){
-        roommate.unit_id = this.resident.get('property').unit_id; //assign on new form view
+      if(this.resident.get('unit')){
+        roommate.unit_id = this.resident.get('unit').unit_id; //assign on new form view
       }
     }
     
@@ -175,6 +175,11 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
         },
         ssn: {
           title: 'SSN#'
+        },
+        status: {
+          type: 'Select',
+          validators: [{type: 'required', message: 'Status is required'}],
+          options: App.vars.metricOptions["resident_status"]
         },
         move_in: {
           title: 'Move-in Date',

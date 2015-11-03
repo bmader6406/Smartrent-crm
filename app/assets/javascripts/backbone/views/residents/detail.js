@@ -196,7 +196,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
   newRoommate: function(ev){
     if( !this.roommateForm ) {
       //switch to roommates resource
-      Crm.collInst.residentRoommates.url = App.vars.routeRoot + "/roommates?unit_id=" + this.model.get('property').unit_id;
+      Crm.collInst.residentRoommates.url = App.vars.routeRoot + "/roommates?unit_id=" + this.model.get('unit').unit_id;
 
       this.roommateForm = new Crm.Views.RoommateNew({
         collection: Crm.collInst.residentRoommates

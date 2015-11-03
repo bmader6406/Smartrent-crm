@@ -62,15 +62,15 @@ class ResidentsController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id]
     }
     
     Resident::UNIT_FIELDS.each do |f|
-      property_attrs[f] = resident_params[f] if !resident_params[f].blank?
+      unit_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
@@ -78,7 +78,7 @@ class ResidentsController < ApplicationController
       if @resident.save
         #create a source to keep this history
         # property record will create right after source created vi callback
-        @resident.sources.create(property_attrs) if property_attrs[:property_id]
+        @resident.sources.create(unit_attrs) if unit_attrs[:property_id]
         
         format.json { render template: "residents/show.json.rabl", status: :created }
       else
@@ -104,21 +104,21 @@ class ResidentsController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id]
     }
     
     Resident::UNIT_FIELDS.each do |f|
-      property_attrs[f] = resident_params[f] if !resident_params[f].blank?
+      unit_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
     respond_to do |format|
       if @resident.save
-        @resident.sources.create(property_attrs)  if property_attrs[:property_id]
+        @resident.sources.create(unit_attrs)  if unit_attrs[:property_id]
         format.json { render template: "residents/show.json.rabl" }
       else
         format.json { render json: @resident.errors.full_messages, status: :unprocessable_entity }
@@ -128,7 +128,7 @@ class ResidentsController < ApplicationController
 
   def destroy
     if @property
-      @resident.units.detect{|t| t.property_id.to_i == @property.id }.destroy
+      @resident.units.detect{|u| u.property_id.to_i == @property.id }.destroy
     else
       @resident.update_attribute(:deleted_at, Time.now)
     end
@@ -296,11 +296,11 @@ class ResidentsController < ApplicationController
     @units = @resident.units
 
     #eager load units
-    properties = Property.where(:id => @units.collect{|t| t.property_id }.compact).collect{|prop| prop }
+    properties = Property.where(:id => @units.collect{|u| u.property_id }.compact).collect{|prop| prop }
 
-    @units = @units.collect{|t|
-      t.property = properties.detect{|prop| prop.id == t.property_id.to_i}
-      t.property ? t : nil
+    @units = @units.collect{|u|
+      u.property = properties.detect{|prop| prop.id == u.property_id.to_i}
+      u.property ? t : nil
     }.compact.sort{|a, b| a.property.name <=> b.property.name }
     
     respond_to do |format|
@@ -457,12 +457,12 @@ class ResidentsController < ApplicationController
       
       # manual eager load smartrent resident
       smartrent = {}
-      Smartrent::Resident.where(:crm_resident_id => @residents.collect{|r| r.id.to_i }).each do |sr|
-        smartrent[sr.crm_resident_id] = sr
+      Smartrent::Resident.where(:email => @residents.collect{|r| r.email }).each do |sr|
+        smartrent[sr.email.to_s.downcase] = sr
       end
       
       @residents.each do |r|
-        r.eager_load(smartrent[r.id.to_i])
+        r.eager_load(smartrent[r.email_lc])
         
         u = units.detect{|u| u.id == r.unit_id.to_i }
         r.eager_load(u) if u

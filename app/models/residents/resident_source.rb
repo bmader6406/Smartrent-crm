@@ -145,7 +145,7 @@ class ResidentSource
       # minimum_move_in = resident.sources.collect{|s| s.move_in if !s.move_in.blank?}.compact.sort.first
       # attrs[:move_in] = minimum_move_in if minimum_move_in
     
-      existing = resident.units.detect{|t| t.property_id == property_id && t.unit_id == unit_id && !unit_id.blank? }
+      existing = resident.units.detect{|u| u.property_id == property_id && u.unit_id == unit_id && !unit_id.blank? }
 
       if existing
         existing.update_attributes(attrs)

@@ -83,24 +83,24 @@ class RoommatesController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }
     
     Resident::UNIT_FIELDS.each do |f|
-      property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
+      unit_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
     respond_to do |format|
       if @roommate.save
         #create submit
-        @roommate.sources.create(property_attrs) if property_attrs[:property_id]
+        @roommate.sources.create(unit_attrs) if unit_attrs[:property_id]
         format.json { render template: "roommates/show.json.rabl", status: :created }
       else
         format.json { render json: @roommate.errors.full_messages, status: :unprocessable_entity }
@@ -125,27 +125,27 @@ class RoommatesController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }
     
     Resident::UNIT_FIELDS.each do |f|
-      property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
+      unit_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
       
-      if [:lessee, :arc_check].include?(f) && property_attrs[f]
-        property_attrs[f] = property_attrs[f].to_s == "0" ? false : true
+      if [:lessee, :arc_check].include?(f) && unit_attrs[f]
+        unit_attrs[f] = unit_attrs[f].to_s == "0" ? false : true
       end
     end
     
     respond_to do |format|
       if @roommate.save
-        @roommate.sources.create(property_attrs) if property_attrs[:property_id]
+        @roommate.sources.create(unit_attrs) if unit_attrs[:property_id]
         format.json { render template: "roommates/show.json.rabl" }
       else
         format.json { render json: @roommate.errors.full_messages, status: :unprocessable_entity }
@@ -156,7 +156,7 @@ class RoommatesController < ApplicationController
   def destroy
     # TODO fix
     if @property
-      @roommate.units.detect{|t| t.property_id.to_i == @property.id }.destroy
+      @roommate.units.detect{|u| u.property_id.to_i == @property.id }.destroy
     else
       @roommate.update_attribute(:deleted_at, Time.now)
     end

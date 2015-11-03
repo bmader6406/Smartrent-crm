@@ -72,9 +72,9 @@ child :curr_unit => :unit do |p|
     node(f){|n| p.send(f) || nil }
   end
   
-  node(:signing_date){|t| p.signing_date.strftime("%m/%d/%Y") rescue nil }
-  node(:move_in){|t| t.move_in.strftime("%m/%d/%Y") rescue nil }
-  node(:move_out){|t| t.move_out.strftime("%m/%d/%Y") rescue nil }
+  node(:signing_date){|u| u.signing_date.strftime("%m/%d/%Y") rescue nil }
+  node(:move_in){|u| u.move_in.strftime("%m/%d/%Y") rescue nil }
+  node(:move_out){|u| u.move_out.strftime("%m/%d/%Y") rescue nil }
 end
 
 # This generate a lot of rewards query

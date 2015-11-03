@@ -26,6 +26,6 @@ child :curr_unit => :unit do |t|
     node(f){|n| t.send(f) || nil }
   end
   
-  node(:move_in){|t| t.move_in.strftime("%m/%d/%Y") rescue nil }
-  node(:move_out){|t| t.move_out.strftime("%m/%d/%Y") rescue nil }
+  node(:move_in){|u| u.move_in.strftime("%m/%d/%Y") rescue nil }
+  node(:move_out){|u| u.move_out.strftime("%m/%d/%Y") rescue nil }
 end

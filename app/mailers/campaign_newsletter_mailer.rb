@@ -84,14 +84,14 @@ class CampaignNewsletterMailer < QueuedMailer
       unit = nil
       
       if !resident.units.empty?
-        unit = resident.units.detect{|t| t.property_id.to_i == property.id }
+        unit = resident.units.detect{|u| u.property_id.to_i == property.id }
       
         #find unit from cross property send
         if !unit
           audience = resident.to_cross_audience(campaign)
         
           if audience && audience.property_id
-            unit = resident.units.detect{|t| t.property_id.to_i == audience.property_id }
+            unit = resident.units.detect{|u| u.property_id.to_i == audience.property_id }
           end
         end
       end

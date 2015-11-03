@@ -147,13 +147,13 @@ class MarketingActivity
           self.property_id = subject.property_id.to_s # default to property's campaign
           
           if !resident.units.empty? # switch page
-            unit = resident.units.detect{|t| t.property_id.to_i == subject.property_id }
+            unit = resident.units.detect{|u| u.property_id.to_i == subject.property_id }
           
             if !unit # check cross send
               audience = resident.to_cross_audience(subject)
 
               if audience && audience.property_id
-                unit = resident.units.detect{|t| t.property_id.to_i == audience.property_id }
+                unit = resident.units.detect{|u| u.property_id.to_i == audience.property_id }
               end
             end
           

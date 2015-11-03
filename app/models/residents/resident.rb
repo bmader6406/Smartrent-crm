@@ -193,7 +193,7 @@ class Resident
   end
 
   def curr_unit(pid = curr_property_id)
-    @curr_unit ||= units.detect{|t| t.property_id.to_s == pid.to_s } || units.first
+    @curr_unit ||= units.detect{|u| u.property_id.to_s == pid.to_s } || units.first
   end
 
   def context(campaign)
@@ -294,7 +294,7 @@ class Resident
     status = nil
     statues = []
 
-    units.each{|t| statues << t.status }
+    units.each{|u| statues << u.status }
 
     if statues.any? {|s| s == "Current"}
       status = "resident_current"
@@ -316,10 +316,10 @@ class Resident
   ### email system
   def subscribed?(property = nil)
     if property
-      units.detect{|t| t.property_id == property.id.to_s }.subscribed? rescue false
+      units.detect{|u| u.property_id == property.id.to_s }.subscribed? rescue false
 
     elsif curr_property_id
-      units.detect{|t| t.property_id == curr_property_id.to_s }.subscribed? rescue false
+      units.detect{|u| u.property_id == curr_property_id.to_s }.subscribed? rescue false
 
     else
       self[:subscribed]
@@ -331,7 +331,7 @@ class Resident
   end
 
   def any_subscribed?(property_ids)
-    (property_ids.include?(property_id) ? self[:subscribed] : false) || units.any?{|t| t.subscribed? && property_ids.include?(t.property_id) }
+    (property_ids.include?(property_id) ? self[:subscribed] : false) || units.any?{|u| u.subscribed? && property_ids.include?(u.property_id) }
   end
 
   def unsubscribe(campaign, action = nil)
@@ -344,14 +344,14 @@ class Resident
         updated = true
       end
 
-      if units.any?{|t| t.subscribed }
+      if units.any?{|u| u.subscribed }
         self.units.update_all(:subscribed => false)
         updated = true
       end
 
     else
       if campaign.property
-        unit = units.detect{|t| t.property_id ==  campaign.property.id.to_s || campaign.tmp_property_id.to_s == t.property_id }
+        unit = units.detect{|u| u.property_id ==  campaign.property.id.to_s || campaign.tmp_property_id.to_s == u.property_id }
 
         if unit && unit.subscribed?
           unit.update_attribute(:subscribed, false)
@@ -386,7 +386,7 @@ class Resident
 
     if bozzuto_properties
       bozzuto_properties.each do |property|
-        unit = units.detect{|t| t.property_id ==  property.id.to_s }
+        unit = units.detect{|u| u.property_id ==  property.id.to_s }
 
         if unit && !unit.subscribed?
           unit.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
@@ -398,7 +398,7 @@ class Resident
 
     else
       if campaign.property
-        unit = units.detect{|t| t.property_id ==  campaign.property.id.to_s  || campaign.tmp_property_id.to_s == t.property_id  }
+        unit = units.detect{|u| u.property_id ==  campaign.property.id.to_s  || campaign.tmp_property_id.to_s == u.property_id  }
 
         if unit && !unit.subscribed?
           unit.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
@@ -489,15 +489,8 @@ class Resident
   end
   
   # @smartrent_resident is used to eager load the smartrent resident
-  #TODO:
-  # - add index on crm_resident_id
-  # - awards point should be stored in database, don't query the db to calculate the point everytime
   def smartrent_resident
-    if defined? @smartrent_resident
-      @smartrent_resident
-    else
-      Smartrent::Resident.find_by_crm_resident_id(id)
-    end
+    @smartrent_resident ||= Smartrent::Resident.find_by_email(email)
   end
   
   private
