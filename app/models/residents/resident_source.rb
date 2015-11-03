@@ -125,13 +125,14 @@ class ResidentSource
       #pp ">>> create_unit"
       attrs = { :property_id => property_id }
       
-      # save & update property fields only
+      # save & update NOT BLANK unit fields only
       Resident::UNIT_FIELDS.each do |f|
         if self[f].kind_of?(String) && !self[f].blank?
           attrs[f] = self[f]
           
-        else
+        elsif self[f]
           attrs[f] = self[f]
+          
         end
       end
     

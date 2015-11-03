@@ -1,4 +1,5 @@
-# Import Yardi CSV file
+# # Import Yardi CSV file
+# https://app.asana.com/0/376484593635/62561912450046/f
 
 require 'csv'
 
@@ -52,13 +53,15 @@ class ResidentImporter
       
       prop_map = {}
 
-      Property.where(:is_crm => [0, 1]).each do |p|
+      Property.where(:is_crm => 1).each do |p|
         prop_map[p.yardi_property_id.to_s.gsub(/^0*/, '')] = p.id
       end
       
       resident_map.keys.each do |k|
         resident_map[k] = resident_map[k].to_i # for array access
       end
+      
+      prop_unit_code_map = {}
 
       index, new_resident, existing_resident, errs = 0, 0, 0, []
 
@@ -76,7 +79,7 @@ class ResidentImporter
             tenant_code = row[ resident_map["tenant_code"] ]
             unit_code = row[ resident_map["unit_code"] ]
             email = row[ resident_map["email"] ]
-
+            
             next if email.blank?
             
             # UnitLoader use the mits4_1.xml, this file contains unit details
@@ -93,6 +96,11 @@ class ResidentImporter
             resident = Resident.new if !resident
             new_record = resident.new_record?
             
+            # full and incremental upload behave the same
+            create_or_update = true
+            not_update_resident = false
+            
+            # build attrs from csv file (we will delete the data that we don't wnat to override below)
             Resident::CORE_FIELDS.each do |f|
               f = f.to_s # must f convert to string
               if resident_map[f]
@@ -104,14 +112,14 @@ class ResidentImporter
 
                 if ["birthday"].include?(f)
                   resident[f] = Date.strptime(row[resident_map[f]], '%m/%d/%Y') rescue nil
-                  
+                
                   if !resident[f]
                     resident[f] = Date.parse(row[resident_map[f]]) rescue nil
                   end
                 end
               end
             end
-            
+          
             # don't use symboy as hash key
             unit_attrs = {
               "property_id" => property_id,
@@ -128,25 +136,80 @@ class ResidentImporter
                 unit_attrs[f] = Date.strptime(unit_attrs[f], '%Y%m%d') rescue nil
               end
 
-              if ["unit_id"].include?(f) && unit
-                unit_attrs[f] = unit.id
+              if ["unit_id"].include?(f)
+                unit_attrs[f] = unit.id.to_s
               end
+            end
+            
+            if !new_record # record exists
+              if meta["full_upload"]
+                existing_unit = resident.units.detect{|u| u.unit_id.to_s == unit.id.to_s }
+                
+                if existing_unit 
+                  # clear existing history for the current property
+                  deleted_time = Time.now.utc
+                  resident.activities.where(unit_attrs["property_id"], :unit_id => unit_attrs["unit_id"]).delete_all
+                  
+                  Comment.where(:resident_id => resident.id, :property_id => unit_attrs["property_id"], :unit_id => unit_attrs["unit_id"]).update_all(:deleted_at => deleted_time)
+                  Ticket.where(:resident_id => resident.id, :property_id => unit_attrs["property_id"], :unit_id => unit_attrs["unit_id"]).update_all(:deleted_at => deleted_time)
+                  Notification.where(:resident_id => resident.id, :property_id => unit_attrs["property_id"], :unit_id => unit_attrs["unit_id"]).update_all(:deleted_at => deleted_time)
+                  
+                  create_or_update = false # don't override existing data
+                else
+                  # the system will create a new resident unit
+                end
+                
+              elsif meta["incremental_upload"]
+                existing_unit = resident.units.detect{|u| u.unit_id.to_s == unit.id.to_s }
+                
+                if existing_unit # update status, move in, move out only
+                  not_update_resident = true
+                  
+                  unit_attrs.keys.each do |k|
+                    if !["property_id", "unit_id", "roommate", "status", "move_in", "move_out"].include?(k)
+                      unit_attrs.delete(k)
+                    end
+                  end
+                  
+                else
+                  # the system will create a new resident unit
+                end
+                
+                # for missing tenancy alert
+                missing = {
+                  "unit_code" => unit_code
+                  "tenant_code" => tennat_code,
+                  "email" => email
+                }
+                if prop_unit_code_map[property_id]
+                  prop_unit_code_map[property_id] << missing
+                else
+                  prop_unit_code_map[property_id] = [unit_code]
+                end
+                
+              end
+              
             end
             
             #pp ">>> before saving:", resident.attributes
             
-            if resident.save
-              #create submit
-              resident.sources.create(unit_attrs) if unit_attrs["property_id"]
+            if create_or_update
+              if not_update_resident || resident.save # if not_update_resident is true, resident.save will NOT be called
+                #create submit
+                resident.sources.create(unit_attrs) if unit_attrs["property_id"]
               
-              if new_record
-                new_resident += 1
+                if new_record
+                  new_resident += 1
+                else
+                  existing_resident += 1
+                end
               else
-                existing_resident += 1
+                errs << [resident.errors.full_messages.join(", ")]
               end
-            else
-              errs << [resident.errors.full_messages.join(", ")]
-            end
+              
+            else # missing tenancy case, create alert message
+              
+            end # /if create_or_save
 
           end
 
@@ -171,6 +234,12 @@ class ResidentImporter
         end
         
         #pp "errs", errs
+      end
+      
+      total_missing = 0
+      prop_unit_code_map.keys.each do |property_id|
+        unit_codes = prop_unit_code_map[property_id].collect{|hash| hash["unit_code"] }
+        #Property.find(property_id).units.
       end
       
       Notifier.system_message("[CRM] Yardi Importing Success",

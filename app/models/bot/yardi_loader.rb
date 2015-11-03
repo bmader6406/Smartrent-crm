@@ -26,7 +26,17 @@ class YardiLoader
         puts "Ftp downloaded"
       end
       
-      Resque.enqueue(ResidentImporter, tmp_file, "yardi", import.field_map, { "file_name" => file_name, "recipient" => recipient })
+      meta = { "file_name" => file_name, "recipient" => recipient }
+      
+      if import.type == "load_yardi_daily"
+        meta["incremental_upload"] = 1
+        
+      elsif import.type == "load_yardi_one_time"
+        meta["full_upload"] = 1
+        
+      end
+      
+      Resque.enqueue(ResidentImporter, tmp_file, "yardi", import.field_map, meta)
       
     rescue Exception => e
       error_details = "#{e.class}: #{e}"
