@@ -3,8 +3,8 @@
     <thead>
       <tr>
         <th>Property Name </th>
-        <th>Full Name </th>
         <th>Unit # </th>
+        <th>Full Name </th>
         <th>Address </th>
         <th>City </th>
         <th>State </th>
@@ -21,10 +21,10 @@
             <%= @property_dict[r["units"]["property_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= @unit_dict[r["units"]["unit_id"]] %>
           </td>
           <td>
-            <%= @unit_dict[r["units"]["unit_id"]] %>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], "#{ r["_id"] }_#{ r["units"]["unit_id"] }"), :target => "_blank" %>
           </td>
           <td>
             <%= r["street"] %>
@@ -57,6 +57,7 @@
     <thead>
       <tr>
         <th>Property Name </th>
+        <th>Unit # </th>
         <th>Full Name </th>
         <th>Email </th>
         <th>Address</th>
@@ -74,7 +75,10 @@
             <%= @property_dict[r["units"]["property_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= @unit_dict[r["units"]["unit_id"]] %>
+          </td>
+          <td>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], "#{ r["_id"] }_#{ r["units"]["unit_id"] }"), :target => "_blank" %>
           </td>
           <td>
             <%= r["email"] %>
@@ -135,7 +139,7 @@
             <%= @unit_dict[r["units"]["unit_id"]] %>
           </td>
           <td>
-            <%= link_to [r["first_name"], r["last_name"]].join(" "), resident_path(r["units"]["property_id"], r["_id"]), :target => "_blank" %>
+            <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], "#{ r["_id"] }_#{ r["units"]["unit_id"] }"), :target => "_blank" %>
           </td>
           <td>
             <%= r["gender"] %>

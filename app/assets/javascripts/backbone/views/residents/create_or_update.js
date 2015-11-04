@@ -82,8 +82,9 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
   render: function () {
     var resident = this.resident();
 
-    if(resident.property){
-      $.extend(resident, resident.property);
+    if(resident.unit){
+      // flatten unit fields to make the edit form display the existing data
+      $.extend(resident, resident.unit);
     }
     var unitOptions = App.vars.propertyUnits || [];
 

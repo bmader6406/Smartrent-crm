@@ -16,7 +16,8 @@ class Unit < ActiveRecord::Base
     Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => { 
         "property_id" => self.property.id.to_s, 
-        "unit_id" => self.id.to_s
+        "unit_id" => self.id.to_s,
+        "status" => "Current"
       }
     }).each do |r|
       r.curr_unit_id = self.id.to_s
@@ -37,7 +38,8 @@ class Unit < ActiveRecord::Base
     Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => { 
         "property_id" => self.property.id.to_s, 
-        "unit_id" => self.id.to_s
+        "unit_id" => self.id.to_s,
+        "status" => "Current"
       }
     }).collect { |r|
       r.curr_unit_id = self.id.to_s

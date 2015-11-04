@@ -158,7 +158,8 @@ class ResidentsController < ApplicationController
     Resident.ordered("first_name asc").where("units" => {
       "$elemMatch" => {
         "property_id" => @property.id.to_s,
-        "unit_id" => @resident.unit_id.to_s
+        "unit_id" => @resident.unit_id.to_s,
+        "status" => "Current"
       }
     }).each do |r|
       r.curr_unit_id = @resident.unit_id.to_s

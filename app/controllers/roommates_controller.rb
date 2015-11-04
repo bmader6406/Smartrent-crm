@@ -12,7 +12,7 @@ class RoommatesController < ApplicationController
         @roommates = []
         
         Resident.ordered("first_name asc").where("units" => {
-          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id] }
+          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id], "status" => "Current" }
         }).each do |r|
           r.curr_unit_id = params[:unit_id]
           @roommates << r

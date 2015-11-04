@@ -49,7 +49,7 @@ class ResidentExporter
     end
     
     # birthday
-    if @params["type"] == "birthday"
+    if @params["type"] == "birthday" && !@params["month"].blank?
       # prepare month field for match2
       project["month"] = {"$month" => "$birthday"}
       project["day_of_month"] = {"$dayOfMonth" => "$birthday"}
@@ -143,10 +143,10 @@ class ResidentExporter
       end
       
       if @params["type"] == "emails"
-        csv << ["Property Name", "Full Name", "Unit #" , "Address", "City", "State", "Zip", "Status", "Email", "Move In"]
+        csv << ["Property Name", "Unit #", "Full Name" , "Address", "City", "State", "Zip", "Status", "Email", "Move In"]
         
       elsif @params["type"] == "birthday"
-        csv << ["Property Name", "Full Name", "Email", "Address", "City", "State", "Zip", "Birthday", "Age"]
+        csv << ["Property Name", "Unit #", "Full Name", "Email", "Address", "City", "State", "Zip", "Birthday", "Age"]
         
       elsif @params["type"] == "details"
         csv << ["Property Name", "Unit #", "Full Name", "Gender", "Birthday", "Household Status", "Occupation Type", "Minutes To Work", 
@@ -163,8 +163,8 @@ class ResidentExporter
           if @params["type"] == "emails"
             csv << [
               property_dict[r["units"]["property_id"]],
-              [r["first_name"], r["last_name"]].join(" "),
               unit_dict[r["units"]["unit_id"]],
+              [r["first_name"], r["last_name"]].join(" "),
               r["street"],
               r["city"],
               r["state"],
@@ -177,6 +177,7 @@ class ResidentExporter
           elsif @params["type"] == "birthday"
             csv << [
               property_dict[r["units"]["property_id"]],
+              unit_dict[r["units"]["unit_id"]],
               [r["first_name"], r["last_name"]].join(" "),
               r["email"],
               r["street"],

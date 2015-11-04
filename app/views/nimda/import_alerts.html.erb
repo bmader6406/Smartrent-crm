@@ -11,7 +11,7 @@
         
         <%= render "nimda/menu_nav" %>
         
-        <ul class="nav nav-pills" style="margin: 20px 0;">
+        <ul class="nav nav-pills" id="alert-tabs" style="margin: 20px 0;">
           <li class="active">
             <a href="#new-alerts" data-toggle="tab">New</a>
           </li>
@@ -70,6 +70,16 @@
       
       return false;
     });
+
+    $('#alert-tabs a').on('shown.bs.tab', function (e) {
+      if ( $(e.target).attr('href') == "#acknowledged-alerts" ) {
+        alerts.mask('Loading...');
+
+        $.get("<%= import_alerts_nimda_path %>", {acknowledged: 1 }, function(){
+          alerts.unmask();
+        }, 'script');
+      }
+    })
     
     App.initPageLayout(null, null, null, true);
     

@@ -131,8 +131,9 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
   render: function () {
     var roommate = this.roommate();
     
-    if(roommate.property){
-      $.extend(roommate, roommate.property);
+    if(roommate.unit){
+      // flatten unit fields to make the edit form display the existing data
+      $.extend(roommate, roommate.unit);
     }
     
     if(this.isCreateNew){
