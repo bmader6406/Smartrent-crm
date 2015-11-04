@@ -8,7 +8,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="well">
-              <h3> One Time Import </h3>
+              <h3> Delete & Reload Units </h3>
               <%= form_tag load_units_nimda_path, :method => :post, :class => "import-form" do %>
                 <%= hidden_field_tag "type", "load_units_one_time" %>
                 <div class="form-group">
@@ -34,7 +34,7 @@
                 <div class="form-group">
                   <label> Import Status Recipient </label>
                   <%= text_field_tag "recipient", @import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
-                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finished</span>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
                 </div>
 
                 <%= button_tag "Import & Overwrite ALL Unit Data", :name => nil, :class => "btn btn-primary" %>
@@ -45,7 +45,7 @@
           
           <div class="col-md-6">
             <div class="well">
-              <h3> Weekly Import </h3>
+              <h3> Refresh Units </h3>
               <%= form_tag load_units_nimda_path, :method => :post, :class => "import-form" do %>
                 <%= hidden_field_tag "type", "load_units_weekly" %>
                 <div class="form-group">
@@ -71,7 +71,7 @@
                 <div class="form-group">
                   <label> Import Status Recipient </label>
                   <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
-                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finished</span>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
                 </div>
 
                 <div class="form-group">
