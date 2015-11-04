@@ -3,15 +3,15 @@ object @ticket
 node do |n|
   {
     :id => n.id.to_s,
-    :id_url => link_to(n.id, tickets_property_resident_path(@property, n.resident_id, :anchor => n.id)),
+    :id_url => link_to(n.id, tickets_property_resident_path(n.property_id, n.resident, :anchor => n.id)),
     :resident_id => n.resident_id.to_s,
-    :resident_url => link_to(n.resident_id, tickets_property_resident_path(@property, n.resident_id)),
+    :resident_url => link_to(n.resident_id, tickets_property_resident_path(n.property_id, n.resident)),
     :status => n.status,
     :first_name => (n.resident.first_name rescue "Archived Resident"),
     :created_date => n.created_at.strftime('%m/%d/%Y'),
     :category => n.category.name,
     :category_id => n.category_id.to_s,
-    :show_path => ("#{tickets_property_resident_path(@property, n.resident)}/#{n.id}" rescue "#"),
+    :show_path => ("#{tickets_property_resident_path(n.property_id, n.resident)}/#{n.id}" rescue "#"),
     
     :assigner => {
       :full_name => n.assigner.full_name,
