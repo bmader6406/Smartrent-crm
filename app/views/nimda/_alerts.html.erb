@@ -2,7 +2,7 @@
   <% alerts.each do |a| %>
     <li>
       <div class="resident-box">
-        <i class="fa fa-exclamation-triangle"></i>
+        <i class="fa <%= a.acknowledged? ? "fa-check" : "fa-exclamation-triangle" %>"></i>
         <div class="author">
           <a href="#">Yardi Import</a>
           <span><%= a.created_at.to_s(:friendly_time) %></span>
@@ -19,8 +19,8 @@
         </div>
         
         <% if a.acknowledged? %>
-          <div class="help-block">
-            Acknowledged at <%= a.acknowledged_at.to_s(:friendly_time) %> by <%= a.actor.full_name %>
+          <div class="help-block" style="font-size: 12px;">
+            Acknowledged at <%= a.acknowledged_at.to_s(:friendly_time) %> by <b><%= a.actor.full_name %></b>
           </div>
         <% end %>
         

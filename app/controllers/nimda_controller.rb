@@ -90,11 +90,12 @@ class NimdaController < ApplicationController
   def import_alerts
     respond_to do |format|
       format.html {
-        @new_alerts = ImportAlert.where(:acknowledged => false).paginate(:page => params[:page], :per_page => 15)
-        @acknowledged_alerts = ImportAlert.where(:acknowledged => true).paginate(:page => params[:page], :per_page => 15)
+        @new_alerts = ImportAlert.order('created_at desc').where(:acknowledged => false).paginate(:page => params[:page], :per_page => 15)
+        @acknowledged_alerts = ImportAlert.order('acknowledged_at desc').where(:acknowledged => true).paginate(:page => params[:page], :per_page => 15)
       }
       format.js {
-        @alerts = ImportAlert.where(:acknowledged => params[:acknowledged]).paginate(:page => params[:page], :per_page => 15)
+        @alerts = ImportAlert.order(params[:acknowledged] == "1" ? 'acknowledged_at desc' : 'created_at desc')
+          .where(:acknowledged => params[:acknowledged]).paginate(:page => params[:page], :per_page => 15)
       }
     end
   end
@@ -116,6 +117,8 @@ class NimdaController < ApplicationController
   protected
   
     def set_page_title
+      Time.zone = "Eastern Time (US & Canada)" #temp
+      
       @page_title = "CRM - Admin"
     end
   
