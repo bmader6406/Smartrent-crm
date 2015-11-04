@@ -122,6 +122,10 @@ class ResidentUnit
   def unit
     @unit ||= unit_id.blank? ? nil : Unit.find_by_id(unit_id)
   end
+  
+  def unit_code
+    @unit_code ||= ( @unit || Unit.find(unit_id) ).code rescue nil
+  end
 
   #====
   
