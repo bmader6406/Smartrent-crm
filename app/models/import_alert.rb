@@ -7,8 +7,8 @@ class ImportAlert < ActiveRecord::Base
   def message
     return <<-MESSAGE
 Yardi is showing that Unit <b>#{unit_code}</b> does not have the Resident <b>#{tenant_code}</b> with email <b>#{email}</b> anymore. 
-If valid, please reflect these changes in the CRM. If this is not a valid change, 
-please make sure Yardi contains the correct resident for this unit.
+If the resident has moved out of the unit, please remove the resident from the CRM manually.
+If this resident has not moved out, please make sure this resident is assigned to the unit in Yardi.
     MESSAGE
   end
   
