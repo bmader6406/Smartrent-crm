@@ -1,0 +1,77 @@
+<% 
+  csv_columns = [["No update", ""]]
+  0.upto(49) do |i|
+    csv_columns << ["Column #{i+1}", i]
+  end
+%>
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container import-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <ul class="nav nav-pills" style="margin: 20px 0;">
+          <li class="active">
+            <a href="#new-alerts" data-toggle="tab">New</a>
+          </li>
+          <li>
+            <a href="#acknowledged-alerts" data-toggle="tab">Acknowledged</a>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="alert-panes">
+          <div class="tab-pane active" id="new-alerts" data-acknowledged="0">
+            <%= render "alerts", :alerts => @new_alerts %>
+          </div>
+          <div class="tab-pane" id="acknowledged-alerts" data-acknowledged="1">
+            <%= render "alerts", :alerts => @acknowledged_alerts %>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= render "dashboards/js_vars" %>
+
+<script type="text/javascript">
+  $(function(){
+    var alerts = $('#alert-panes');
+    
+    alerts.on('click', '.acknowledge', function(){
+      var t = $(this),
+        li = t.closest('.resident-box').parent();
+      
+      alerts.mask('Please wait...');
+      
+      $.post(t.attr('href'), function(){
+        alerts.unmask();
+
+        $('#acknowledged-alerts ul').prepend( li.clone() );
+        li.fadeOut();
+        
+        //msgbox("Import alert was successfully acknowledged!");
+        
+      }, 'json');
+      
+      return false;
+      
+    }).on('click', '.pagination li:not(.disabled) a', function(){
+      var t = $(this);
+      
+      alerts.mask('Loading...');
+      
+      $.get(t.attr('href'), {acknowledged: t.parents('.tab-pane').attr('data-acknowledged') }, function(){
+        alerts.unmask();
+      }, 'script');
+      
+      return false;
+    });
+    
+    App.initPageLayout(null, null, null, true);
+    
+  });
+</script>

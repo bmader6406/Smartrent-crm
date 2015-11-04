@@ -87,6 +87,32 @@ class NimdaController < ApplicationController
     render :json => {:success => true}
   end
   
+  def import_alerts
+    respond_to do |format|
+      format.html {
+        @new_alerts = ImportAlert.where(:acknowledged => false).paginate(:page => params[:page], :per_page => 15)
+        @acknowledged_alerts = ImportAlert.where(:acknowledged => true).paginate(:page => params[:page], :per_page => 15)
+      }
+      format.js {
+        @alerts = ImportAlert.where(:acknowledged => params[:acknowledged]).paginate(:page => params[:page], :per_page => 15)
+      }
+    end
+  end
+  
+  def acknowledge
+    import_alert = ImportAlert.find(params[:id])
+    import_alert.acknowledged = true
+    import_alert.acknowledged_at = Time.now
+    import_alert.actor = current_user
+    
+    if import_alert.save
+      render :json => {:success => true}
+      
+    else
+      render :json => {:success => false, :error => errors.full_messages }
+    end
+  end
+  
   protected
   
     def set_page_title

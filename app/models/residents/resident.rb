@@ -34,7 +34,7 @@ class Resident
   UNIT_FIELDS = [
     :property_id,
     :unit_id,
-    :unit_code,
+    :tenant_code,
     :status,
     :status_date,
     :type,
@@ -187,13 +187,7 @@ class Resident
 
   # fixed N+1 query
   def unit_code
-    @unit_code ||= begin
-      if @unit
-        @unit.code
-      else
-        Unit.where(:id => unit_id).first.code rescue nil
-      end
-    end
+    @unit_code ||= ( @unit || Unit.find(unit_id) ).code rescue nil
   end
 
   def curr_unit(uid = curr_unit_id)

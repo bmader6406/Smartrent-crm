@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151030191908) do
+ActiveRecord::Schema.define(version: 20151104032645) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -191,6 +191,18 @@ ActiveRecord::Schema.define(version: 20151030191908) do
   add_index "events", ["message_id"], name: "index_events_on_message_id", using: :btree
   add_index "events", ["mimepart"], name: "index_events_on_mimepart", using: :btree
   add_index "events", ["type", "campaign_id"], name: "index_events_on_type_and_campaign_id", using: :btree
+
+  create_table "import_alerts", force: :cascade do |t|
+    t.integer  "property_id",     limit: 4
+    t.string   "unit_code",       limit: 255
+    t.string   "tenant_code",     limit: 255
+    t.string   "email",           limit: 255
+    t.boolean  "acknowledged",    limit: 1,   default: false
+    t.datetime "acknowledged_at"
+    t.integer  "actor_id",        limit: 4
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+  end
 
   create_table "imports", force: :cascade do |t|
     t.string   "type",        limit: 255

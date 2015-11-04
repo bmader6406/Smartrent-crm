@@ -2,11 +2,11 @@
   @path = "#{Rubber.root}/config/resque-pool.yml"
 %>
 <% if Rubber.env == "production" %>
-'crm_immediate,crm_medium': 1
+'crm_import,crm_immediate,crm_medium': 1
 'crm_scheduled,crm_newsletter,crm_immediate,crm_logger_batch,crm_email_logger_batch': 1
 
 <% else %>
-'crm_immediate,crm_medium': 1
+'crm_import,crm_immediate,crm_medium': 1
 'crm_scheduled,crm_newsletter,crm_immediate,crm_logger_batch,crm_email_logger_batch': 1
 
 <% end %>

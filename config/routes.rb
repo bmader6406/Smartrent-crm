@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'import_alerts/index'
+
   def smartrent_subdomain
     case Rails.env
       when "development", "test"
@@ -170,6 +172,9 @@ Rails.application.routes.draw do
     get :yardi
     post :load_yardi
     post :test_yardi_ftp
+    
+    get :import_alerts
+    post :acknowledge
   end
   
   namespace :nimda do

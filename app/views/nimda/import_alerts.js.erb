@@ -1,0 +1,1 @@
+$('#<%= params[:acknowledged] == "1" ? "acknowledged" : "new" %>-alerts').html("<%= j(render 'alerts', :alerts => @alerts )%>");

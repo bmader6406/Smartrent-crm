@@ -118,10 +118,6 @@ class UnitLoader
       error_details = "#{e.class}: #{e}"
       error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
       p "ERROR: #{error_details}"
-
-      Notifier.system_message("[CRM] Units Importing FAILURE",
-        email_body(new_unit, existing_unit, errs.length, file_name) + "   <br><br> ERROR DETAILS: #{error_details}",
-        recipient, {"from" => Notifier::EXIM_ADDRESS}).deliver
         
     end
   end

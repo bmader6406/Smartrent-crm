@@ -24,8 +24,7 @@ class ResidentUnit
   field :lead_source, :type => String
   
   # extra
-  field :unit_id, :type => String
-  field :unit_code, :type => String # Yardi ID
+  field :tenant_code, :type => String # Yardi ID
   
   # demographics
   field :household_size, :type => String

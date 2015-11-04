@@ -1,0 +1,35 @@
+<ul class="list-unstyled alerts">
+  <% alerts.each do |a| %>
+    <li>
+      <div class="resident-box">
+        <i class="fa fa-exclamation-triangle"></i>
+        <div class="author">
+          <a href="#">Yardi Import</a>
+          <span><%= a.created_at.to_s(:friendly_time) %></span>
+        </div>
+
+        <div class="message">
+          <%= raw a.message %>
+        </div>
+        
+        <div class="meta-btns">
+          <a href="<%= acknowledge_nimda_path(:id => a.id) %>" class="acknowledge">
+            <i class="fa fa-check"></i> Acknowledge
+          </a>
+        </div>
+        
+        <% if a.acknowledged? %>
+          <div class="help-block">
+            Acknowledged at <%= a.acknowledged_at.to_s(:friendly_time) %> by <%= a.actor.full_name %>
+          </div>
+        <% end %>
+        
+      </div>
+    </li>
+  <% end %>
+</ul>
+
+<div class="paging-info">
+  <%= page_entries_info alerts, :model => 'alert' %>
+  <%= page_navigation_links(alerts) %>
+</div>

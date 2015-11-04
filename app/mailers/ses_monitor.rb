@@ -125,7 +125,7 @@ class SesMonitor
     
     if !email.blank?
       property_ids.each do |property_id|
-        Resident.where(:property_id => property_id, :email_lc => email).each do |e|
+        Resident.where(:email_lc => email).each do |e|
           pp "FOUND: #{e.email}, property_id: #{property_id}"
           e.marketing_activities.create(:action => "bad_email_found")
           e.update_attribute(:subscribed, false)
