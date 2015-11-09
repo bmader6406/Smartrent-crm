@@ -4,6 +4,7 @@ class Ticket < ActiveRecord::Base
   URGENCIES = ["Low", "High"]
   
   belongs_to :property
+  belongs_to :unit
   belongs_to :category
   belongs_to :assigner, :class_name => "User"
   belongs_to :assignee, :class_name => "User"
@@ -20,6 +21,10 @@ class Ticket < ActiveRecord::Base
   
   def resident
     @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
+  end
+  
+  def resident_unit_id
+    "#{resident_id}_#{unit_id}"
   end
 
   def eager_load(subject, clzz = nil)

@@ -1,5 +1,6 @@
 class Notification < ActiveRecord::Base
   belongs_to :property
+  belongs_to :unit
   belongs_to :owner, :class_name => "User"
   belongs_to :last_actor, :class_name => "User"
 
@@ -16,6 +17,10 @@ class Notification < ActiveRecord::Base
   
   def resident
     @resident ||= resident_id ? Resident.with(:consistency => :eventual).where(:_id => resident_id).first : nil
+  end
+  
+  def resident_unit_id
+    "#{resident_id}_#{unit_id}"
   end
   
   def eager_load(subject, clzz = nil)

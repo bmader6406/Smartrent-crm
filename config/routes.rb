@@ -57,6 +57,14 @@ Rails.application.routes.draw do
       end
     end
   end
+  
+  def notification_resources
+    resources :notifications do
+      collection do
+        get :poll
+      end
+    end
+  end
     
   # base
   resources :properties do
@@ -100,10 +108,13 @@ Rails.application.routes.draw do
         post :import
       end
     end
+    
+    notification_resources
   end
   
   resident_resources
   report_resources
+  notification_resources
   
   resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
   
@@ -113,12 +124,6 @@ Rails.application.routes.draw do
       post :set_status
       post :set_amount
       post :become_champion
-    end
-  end
-  
-  resources :notifications do
-    collection do
-      get :poll
     end
   end
   

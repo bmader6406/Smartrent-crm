@@ -165,7 +165,11 @@ class TicketsController < ApplicationController
       arr = []
       hash = {}
       
-      ["id", "resident_id", "status"].each do |k|
+      if !params[:unit_code].blank? #convert unit code to unit id
+        params[:unit_id] = @property.units.find_by_code(params[:unit_code]) rescue nil
+      end
+      
+      ["id", "unit_id", "status"].each do |k|
         next if params[k].blank?
         arr << "#{k} = :#{k}"
         hash[k.to_sym] = params[k]
@@ -188,22 +192,25 @@ class TicketsController < ApplicationController
         hash[:end_date] = end_date.to_s(:db)
       end
       
-      if !params[:first_name].blank? || !params[:last_name].blank?
+      if !params[:first_name].blank? || !params[:last_name].blank? || !params[:email].blank?
         residents = Resident
         residents = residents.where(:first_name_lc => params[:first_name].downcase) if !params[:first_name].blank?
         residents = residents.where(:last_name_lc => params[:last_name].downcase) if !params[:last_name].blank?
+        residents = residents.where(:email_lc => params[:email].downcase) if !params[:email].blank?
         
         arr << "resident_id IN (:resident_id)"
         hash[:resident_id] = residents.collect{|r| r._id.to_i }
       end
+      
       if @unit.present?
         unit_resident_ids = @unit.residents.collect{|r| r.id}
-        @tickets = @property.tickets.where(:resident_id => unit_resident_ids).where("status = ? or (status <> ? and created_at >= ?)", "open", "open", Time.now - 60*60*60*24)
+        @tickets = @property.tickets.where(:resident_id => unit_resident_ids).where("status = ? or (status != ? and created_at >= ?)", "open", "open", Time.now - 2.months)
+        
       else
         @tickets = @property.tickets
       end
       
-      @tickets = @tickets.includes(:property, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
+      @tickets = @tickets.includes(:property, :unit, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
       
       # eager load residents
       rids = @tickets.collect{|t| t.resident_id.to_s }

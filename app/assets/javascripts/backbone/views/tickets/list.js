@@ -66,15 +66,16 @@ Crm.Views.TicketsList = Backbone.View.extend({
     var self = this,
       grid = new Backgrid.Grid({
         columns: [{
-          name: "resident_url",
-          label: "Resident ID",
-          cell: 'html',
-          editable: false
-        }, {
           name: "id_url",
           label: "Ticket ID",
           cell: 'html',
           editable: false
+        }, {
+          name: "unit_code",
+          label: "Unit #",
+          cell: 'string',
+          editable: false,
+          sortable: false
         }, {
           name: "status",
           label: "Status",
@@ -89,6 +90,12 @@ Crm.Views.TicketsList = Backbone.View.extend({
         }, {
           name: "first_name",
           label: "First Name",
+          cell: 'string',
+          editable: false,
+          sortable: false
+        }, {
+          name: "email",
+          label: "Email",
           cell: 'string',
           editable: false,
           sortable: false

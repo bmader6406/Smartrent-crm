@@ -60,7 +60,7 @@
           </div>
       	</div> <!-- /.list-filter -->
       </li>
-      <% if @property.present? %>
+      <% if @property %>
         <li>
         <form id="top_nav_unit_form" action="<%= main_app.property_path(@property) %>">
           <input type="text" pattern=".{3,}" required title="3 characters minimum" class="form-control" placeholder="Unit #" name="unit_code" id="top_unit_code" />
@@ -73,7 +73,7 @@
 
   <div class="nav navbar-nav navbar-right">
     <div class="user-info">
-      <a href="<%= raw main_app.notifications_path %>" class="page-reload" id="notification-nav">
+      <a href="<%= raw(@property ? main_app.property_notifications_path(@property) : main_app.notifications_path) %>" class="page-reload" id="notification-nav">
         <i class="fa <%= pending_messages.length > 0 ? "fa-bell" : "fa-bell-o" %>"></i> 
         <span id="pending-count" style="<%= "display:none" if pending_messages.length.zero? %>">(<%= pending_messages.length %>)</span>
       </a>

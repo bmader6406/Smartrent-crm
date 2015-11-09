@@ -172,7 +172,13 @@ module ApplicationHelper
   end
   
   def pending_messages
-    @pending_messages ||= current_user.notifications.where(:state => "pending").all
+    @pending_messages ||= begin
+      if @property
+        current_user.notifications.where(:property_id => @property.id, :state => "pending").all
+      else
+        current_user.notifications.where(:state => "pending").all
+      end
+    end
   end
   
 end

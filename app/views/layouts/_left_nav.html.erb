@@ -104,7 +104,7 @@
       <% end %>
       
       <li data-nav="notifications">
-        <a href="<%= raw main_app.notifications_path %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
+        <a href="<%= raw(@property ? main_app.property_notifications_path(@property) : main_app.notifications_path) %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
       </li>
       
       <% if current_user.is_admin? %> <!-- visible to admin only -->

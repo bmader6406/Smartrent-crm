@@ -10,18 +10,23 @@
       </select>
     </div>
     
-    <div class="form-group">
-      <select class="form-control" name="property_id">
-        <option value=""> Select Property </option>
-        <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
-  	      <option value="<%= property.val %>" > <%= property.label %> </option>
-        <% } %>
-      </select>
-    </div>
+    <% if ( !App.vars.isPropertyPage ) { %>
+      <div class="form-group">
+        <select class="form-control" name="property_id">
+          <option value=""> Select Property </option>
+          <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
+    	      <option value="<%= property.val %>" > <%= property.label %> </option>
+          <% } %>
+        </select>
+      </div>
+      
+    <% } else { %>
+      <div class="form-group">
+        <input type="text" class="form-control" name="unit_code" placeholder="Unit #"/>
+      </div>
+      
+    <% } %>
     
-    <div class="form-group">
-      <input type="text" class="form-control" name="resident_id" placeholder="Resident ID"/>
-    </div>
     <div class="form-group">
       <input type="text" class="form-control" name="subject" placeholder="Subject"/>
     </div>

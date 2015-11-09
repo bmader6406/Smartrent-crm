@@ -53,6 +53,11 @@ Crm.Router = Backbone.Router.extend({
     'notifications(/)': 'showNotifications',
     'notifications/new(/)': 'newNotification',
     'notifications/edit(/)': 'editNotification',
-    'notifications/:id(/)': 'showNotification'
+    'notifications/:id(/)': 'showNotification',
+    
+    'properties/:property_id/notifications(/)': 'showNotifications',
+    'properties/:property_id/notifications/new(/)': 'newNotification',
+    'properties/:property_id/notifications/edit(/)': 'editNotification',
+    'properties/:property_id/notifications/:id(/)': 'showNotification'
   }
 });

@@ -25,6 +25,10 @@ class Comment < ActiveRecord::Base
     end
   end
   
+  def resident_unit_id
+    "#{resident_id}_#{unit_id}"
+  end
+  
   # manual polymorphic
   def author
     if defined?(@author) #prevent query executed when record not found

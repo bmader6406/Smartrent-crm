@@ -798,6 +798,11 @@ window.Crm = {
     });
 
     router.on('route:showNotification', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("read", "Notification")){
         Crm.unauthorizedAlert();
         return false;
@@ -853,6 +858,11 @@ window.Crm = {
     });
 
     router.on('route:editNotification', function(propertyId, id) {
+      if(!id) {
+        id = propertyId;
+        propertyId = null;
+      }
+      
       if(!App.vars.ability.can("cud", "Notification")){
         Crm.unauthorizedAlert();
         return false;

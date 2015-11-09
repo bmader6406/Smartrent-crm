@@ -85,6 +85,12 @@ Crm.Views.NotificationsList = Backbone.View.extend({
           cell: 'string',
           editable: false,
           sortable: false
+        }, {
+          name: "state",
+          label: "State",
+          cell: 'string',
+          editable: false,
+          sortable: false
         }],
         collection: self.collection
       }),

@@ -1,7 +1,7 @@
 <script type="text/javascript">
 App.vars.propertiesPath = "<%= properties_path %>";
 App.vars.usersPath = "<%= users_path %>";
-App.vars.notificationsPath = "<%= notifications_path %>";
+App.vars.notificationsPath = "<%= @property ? property_notifications_path(@property) : notifications_path %>";
 
 <% if request.host == "crm-dev.bozzuto.com" %>
   App.vars.stopPoll = true;

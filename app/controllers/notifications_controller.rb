@@ -1,5 +1,6 @@
 class NotificationsController < ApplicationController
   before_action :require_user
+  before_action :set_property
   before_action :set_notification, :except => [:index, :new, :create, :poll]
   before_action :set_page_title
   
@@ -127,21 +128,36 @@ class NotificationsController < ApplicationController
       end
     end
     
+    def set_property
+      if !params[:property_id].blank? #this check is required (the index page may pass the blank property_id)
+        @property = current_user.managed_properties.find(params[:property_id])
+        Time.zone = @property.setting.time_zone
+      end
+    end
+    
     def set_page_title
-      @page_title = "CRM - Notifications" 
+      if @property
+        @page_title = "CRM - #{@property.name} - Notifications" 
+      else
+        @page_title = "CRM - Notifications" 
+      end
     end
     
     def filter_notifications(per_page = 15)
       arr = []
       hash = {}
       
-      ["property_id", "resident_id", "subject", "message", "state"].each do |k|
+      if @property && !params[:unit_code].blank? #convert unit code to unit id
+        params[:unit_id] = @property.units.find_by_code(params[:unit_code]) rescue nil
+      end
+      
+      ["property_id", "unit_id", "subject", "message", "state"].each do |k|
         next if params[k].blank?
         arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
       end
       
-      @notifications = current_user.notifications.includes(:property).where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
+      @notifications = current_user.notifications.includes(:property, :unit).where(arr.join(" AND "), hash).order('created_at desc').paginate(:page => params[:page], :per_page => per_page)
       
       # eager load residents
       rids = @notifications.collect{|n| n.resident_id.to_s }
