@@ -92,8 +92,10 @@ var App = {
       }
     });
 
-    Crm.initialize();
-
+    if (! App.vars.srApp ) {
+      Crm.initialize();
+    }
+    
   },
 
   initAssetManager: function(){
