@@ -9,9 +9,7 @@
     <div class="ui-layout-content">
       <div class="main-container card-container import-container">
         
-        <%= render "nimda/menu_nav" %>
-        
-        <ul class="nav nav-pills" id="alert-tabs" style="margin: 20px 0;">
+        <ul class="nav nav-tabs" id="alert-tabs" style="margin: 20px 0;">
           <li class="active">
             <a href="#new-alerts" data-toggle="tab">New</a>
           </li>
@@ -23,6 +21,12 @@
         <!-- Tab panes -->
         <div class="tab-content" id="alert-panes">
           <div class="tab-pane active" id="new-alerts" data-acknowledged="0">
+            <% if @alert && !@alert.acknowledged? %> <!-- for show action -->
+              <ul class="list-unstyled alerts">
+                <%= render "alert", :a => @alert %>
+              </ul>
+            <% end %>
+            
             <%= render "alerts", :alerts => @new_alerts %>
           </div>
           <div class="tab-pane" id="acknowledged-alerts" data-acknowledged="1">
@@ -75,7 +79,7 @@
       if ( $(e.target).attr('href') == "#acknowledged-alerts" ) {
         alerts.mask('Loading...');
 
-        $.get("<%= import_alerts_nimda_path %>", {acknowledged: 1 }, function(){
+        $.get("<%= property_import_alerts_path(@property) %>", {acknowledged: 1 }, function(){
           alerts.unmask();
         }, 'script');
       }

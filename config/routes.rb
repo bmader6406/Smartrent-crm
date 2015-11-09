@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'import_alerts/index'
 
   def smartrent_subdomain
     case Rails.env
@@ -110,6 +109,12 @@ Rails.application.routes.draw do
     end
     
     notification_resources
+    
+    resources :import_alerts do
+      member do
+        post :acknowledge
+      end
+    end
   end
   
   resident_resources
@@ -177,9 +182,6 @@ Rails.application.routes.draw do
     get :yardi
     post :load_yardi
     post :test_yardi_ftp
-    
-    get :import_alerts
-    post :acknowledge
   end
   
   namespace :nimda do

@@ -10,6 +10,7 @@ class Property < ActiveRecord::Base
   
   has_many :units
   has_many :notifications
+  has_many :import_alerts
   has_many :assets
   
   has_many :campaigns

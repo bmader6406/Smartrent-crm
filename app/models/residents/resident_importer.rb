@@ -240,7 +240,18 @@ class ResidentImporter
           if !prop_tenant_code_dict[property_id].include?( u.tenant_code ) #not exist on yardi side
             total_missing += 1
             unit_code = Unit.find(u.unit_id).code rescue nil
-            ImportAlert.create(:property_id => property_id, :unit_code => unit_code, :tenant_code => u.tenant_code, :email => r.email)
+            alert = ImportAlert.create(:property_id => property_id, :unit_code => unit_code, :tenant_code => u.tenant_code, :email => r.email)
+            
+            Notification.create({
+              :property_id => property_id,
+              :resident_id => r.id,
+              :unit_id => u.unit_id,
+              :import_alert_id => alert.id,
+              :state => "pending",
+              :subject => "Yardi Import",
+              :message => alert.message
+            })
+            
           end
         end
       end

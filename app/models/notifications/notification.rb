@@ -28,6 +28,10 @@ class Notification < ActiveRecord::Base
     self
   end
   
+  def acknowledged?
+    state == "acknowledged"
+  end
+  
   private
   
     def create_history

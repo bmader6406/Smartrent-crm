@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151104032645) do
+ActiveRecord::Schema.define(version: 20151109090709) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -250,18 +250,19 @@ ActiveRecord::Schema.define(version: 20151104032645) do
   add_index "notification_histories", ["notification_id", "state"], name: "index_notification_histories_on_notification_id_and_state", using: :btree
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "property_id",   limit: 4
-    t.integer  "resident_id",   limit: 8
-    t.integer  "owner_id",      limit: 4
-    t.string   "state",         limit: 255,   default: "pending"
-    t.string   "subject",       limit: 255
-    t.text     "message",       limit: 65535
-    t.integer  "last_actor_id", limit: 4
-    t.integer  "comment_id",    limit: 4
+    t.integer  "property_id",     limit: 4
+    t.integer  "resident_id",     limit: 8
+    t.integer  "owner_id",        limit: 4
+    t.string   "state",           limit: 255,   default: "pending"
+    t.string   "subject",         limit: 255
+    t.text     "message",         limit: 65535
+    t.integer  "last_actor_id",   limit: 4
+    t.integer  "comment_id",      limit: 4
     t.datetime "deleted_at"
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.integer  "unit_id",       limit: 4
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.integer  "unit_id",         limit: 4
+    t.integer  "import_alert_id", limit: 4
   end
 
   add_index "notifications", ["comment_id"], name: "index_notifications_on_comment_id", using: :btree

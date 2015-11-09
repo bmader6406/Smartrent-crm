@@ -30,6 +30,7 @@ window.Crm = {
         return false
       }
     });
+    
     $("form#top_nav_unit_form").submit(function(){
       $.ajax({
         url: this.action + "/units/code_" + $.trim( $('#top_unit_code').val().replace("#", "") ),
@@ -1015,7 +1016,7 @@ window.Crm = {
       self.highlightNav("reports");
       App.layout.hide('west');
     });
-
+    
     //access later
     Crm.routerInst = router;
 
@@ -1026,7 +1027,13 @@ window.Crm = {
     Backbone.on("rowclicked", function (model) {
       //reset
       App.vars.residentObj = null;
-      router.navigate(model.get("show_path"), true);
+      
+      if(model.get("show_path").indexOf("import_alerts") >- 1){
+        window.location.href = model.get("show_path");
+        
+      } else {
+        router.navigate(model.get("show_path"), true);
+      }
     });
   },
 

@@ -1,6 +1,15 @@
 <!-- placeholder -->
 <div class="notif <%= state == "pending" ? "active" : "" %>">
-  <div class="subject"><%= resident_name %> | <%= Helpers.sanitize(subject) %></div>
+  <div class="subject">
+    <% if (!import_alert_id) { %>
+      <i class="fa fa-envelope-o"></i>
+      <%= resident_name %> | <%= Helpers.sanitize(subject) %>
+      
+    <% } else { %>
+      <i class="fa fa-exclamation-triangle"></i>
+      <%= Helpers.sanitize(subject) %>
+    <% } %>
+  </div>
   <div class="message">
     <%= Helpers.truncate(Helpers.sanitize(message), 60) %>
   </div>

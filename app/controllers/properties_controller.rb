@@ -102,12 +102,6 @@ class PropertiesController < ApplicationController
     end
     
     def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
-      
-      Time.zone = @property.setting.time_zone
-    end
-
-    def set_property
       @property = Property.find(params[:id])
       
       case action_name

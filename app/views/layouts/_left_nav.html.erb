@@ -107,6 +107,12 @@
         <a href="<%= raw(@property ? main_app.property_notifications_path(@property) : main_app.notifications_path) %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
       </li>
       
+      <% if @property %>
+        <li data-nav="import_alerts" class="<%= "active" if controller_name == "import_alerts"  %>">
+          <a href="<%= raw main_app.property_import_alerts_path(@property) %>" class="page-reload"> <i class="fa fa-exclamation-triangle fa-fw"></i> Import Alerts </a>
+        </li>
+      <% end %>
+      
       <% if current_user.is_admin? %> <!-- visible to admin only -->
         <li class="<%= "active" if request.path.include?("/nimda") %>">
           <a href="<%= raw main_app.nimda_path %>" class="page-reload"> <i class="fa fa-cogs fa-fw"></i> Admin </a>
