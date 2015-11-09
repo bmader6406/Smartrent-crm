@@ -270,7 +270,8 @@ class ActivitiesController < ApplicationController
 
     @comment = Comment.new(comment)
     @comment.build_email(email_params)
-
+    @comment.email.is_reply = true
+    
     respond_to do |format|
       if @comment.save
         # should assign id/type manually

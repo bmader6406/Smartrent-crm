@@ -80,7 +80,7 @@ class NotificationsController < ApplicationController
   end
   
   def poll
-    time = Time.parse(params[:time]) rescue Time.now
+    time = Time.parse(params[:time]).utc rescue Time.now.utc
     @notifications = current_user.notifications.where("state = 'pending' AND created_at > ?", time.to_s(:db) ).includes(:property).order('created_at desc')
     
     # eager load residents

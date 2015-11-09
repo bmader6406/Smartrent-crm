@@ -17,6 +17,8 @@ class Comment < ActiveRecord::Base
   after_create :send_email
   after_create :create_notification
   
+  after_update :archive_notification
+  
   def resident
     if defined?(@resident) #prevent query executed when record not found
       @resident
@@ -109,6 +111,12 @@ class Comment < ActiveRecord::Base
           :created_at => created_at,
           :updated_at => updated_at
         })
+      end
+    end
+    
+    def archive_notification
+      if deleted_at_changed? && deleted_at && email?
+        Notification.where(:property_id => property_id, :comment_id => id).update_all(:deleted_at => Time.now)
       end
     end
   
