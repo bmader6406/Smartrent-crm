@@ -1027,8 +1027,8 @@ window.Crm = {
     Backbone.on("rowclicked", function (model) {
       //reset
       App.vars.residentObj = null;
-      
-      if(model.get("show_path").indexOf("import_alerts") >- 1){
+
+      if(model.get("show_path").indexOf("import_alerts") >- 1 || model.get("page_reload") ){
         window.location.href = model.get("show_path");
         
       } else {

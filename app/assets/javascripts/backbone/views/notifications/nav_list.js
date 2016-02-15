@@ -37,15 +37,6 @@ Crm.Views.NavNotificationsList = Backbone.View.extend({
   },
 
   render: function () {
-    var ClickableRow = Backgrid.Row.extend({
-      events: {
-        "click": "onClick"
-      },
-      onClick: function () {
-        Backbone.trigger("rowclicked", this.model);
-      }
-    });
-
   	var self = this,
        grid = new Backgrid.Grid({
         row: ClickableRow,

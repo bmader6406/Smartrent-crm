@@ -22,6 +22,7 @@ Crm.Views.PropertiesList = Backbone.View.extend({
   render: function(){
     var self = this,
       grid = new Backgrid.Grid({
+        row: ClickableRow,
         columns: [{
           name: "name_url",
           label: "Name",

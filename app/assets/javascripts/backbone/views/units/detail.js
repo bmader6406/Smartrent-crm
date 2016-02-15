@@ -11,15 +11,7 @@ Crm.Views.UnitDetail = Backbone.View.extend({
 	},
 
   render: function () {
-  	var self = this,
-     ClickableRow = Backgrid.Row.extend({
-      events: {
-        "click": "onClick"
-      },
-      onClick: function () {
-        Backbone.trigger("rowclicked", this.model);
-      }
-    });
+  	var self = this;
   	this.$el.html(this.template(this.model.toJSON()));
 
   	//load unit residents

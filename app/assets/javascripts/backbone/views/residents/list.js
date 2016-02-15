@@ -20,15 +20,6 @@ Crm.Views.ResidentsList = Backbone.View.extend({
   },
 
   render: function(){
-    var ClickableRow = Backgrid.Row.extend({
-      events: {
-        "click": "onClick"
-      },
-      onClick: function () {
-        Backbone.trigger("rowclicked", this.model);
-      }
-    });
-    
     var columns = [{
         name: "unit_code",
         label: "Unit #",
