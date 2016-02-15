@@ -124,7 +124,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
             self.$('.smartrent-info').show();
           });
         } else {
-          smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> Smartrent record will be created on '+ this.model.get('move_in') +' </div>');
+          smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> It will be created on when the resident move in on '+ this.model.get('move_in') +' </div>');
         }
 
         $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #resident-details').hide();
@@ -148,9 +148,11 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     
     residentDetails.html( JST["backbone/templates/residents/resident-detail"](this.model.toJSON()) ).show();
     
-    $.getJSON(this.model.get('smartrent_path'), function(data){
-      residentDetails.find('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) ).show();
-    });
+    if( this.model.get('smartrent') ) {
+      $.getJSON(this.model.get('smartrent_path'), function(data){
+        residentDetails.find('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) ).show();
+      });
+    }
     
     if(residentDetails.attr('data-isotope')){
       residentDetails.isotope('destroy');
