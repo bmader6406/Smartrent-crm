@@ -29,4 +29,4 @@ Category.create([
 
 
 # smartrent
-Smartrent::Setting.create([{:key => "sign_up_bonus", :value => "0"}, {:key => "monthly_awards", :value => "0"}])
+Smartrent::Setting.create([{:key => "sign_up_bonus", :value => "100"}, {:key => "monthly_awards", :value => "350"}])

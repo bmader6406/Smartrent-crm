@@ -78,8 +78,13 @@ class PropertyImporter
 
         if !prop
           prop = Property.new
-          prop.is_crm = true
+          
+          # default to false for ALL flags (it is only has effect if this is a new property)
+          # - manual turn is_crm on/off
+          # - smartrent property import will change the is_smartrent/is_visible
+          prop.is_crm = false
           prop.is_smartrent = false
+          prop.is_visible = false
         end
 
         prop.user_id = user.id
