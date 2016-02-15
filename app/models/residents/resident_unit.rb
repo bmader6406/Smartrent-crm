@@ -102,10 +102,10 @@ class ResidentUnit
   validates :property_id, :status , :move_in, :unit_id, :presence => true
 
   before_save :set_rental_type
-  before_save :update_smartrent_resident
+  before_save :create_or_update_smartrent_resident
   
   after_save :set_unified_status
-  before_save :check_and_update_resident_status
+  before_save :set_unit_status
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status
@@ -129,7 +129,7 @@ class ResidentUnit
 
   #====
   
-  def check_and_update_resident_status
+  def set_unit_status
     if move_out.present? && move_in.present?
       if move_in <= Time.now && move_out >= Time.now
         self.status = "Current"
@@ -165,8 +165,8 @@ class ResidentUnit
       self.rental_type = unit.rental_type if unit # for reports
     end
     
-    def update_smartrent_resident
-      Resque.enqueue(Smartrent::ResidentUpdater, resident._id, _id.to_s) if property.is_smartrent? && move_in && move_in.to_time <= Time.now
+    def create_or_update_smartrent_resident
+      Resque.enqueue(Smartrent::ResidentCreator, resident._id, _id.to_s) if property.is_smartrent? && move_in && move_in.to_time <= Time.now
     end
 
 end

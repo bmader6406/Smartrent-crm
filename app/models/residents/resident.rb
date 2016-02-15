@@ -201,7 +201,7 @@ class Resident
     self
   end
   
-  # access current property method at resident level
+  # access current unit method at resident level
   UNIT_FIELDS.each do |f|
     define_method "#{f}" do
       curr_unit.send(f)

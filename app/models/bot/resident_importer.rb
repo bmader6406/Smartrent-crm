@@ -99,13 +99,12 @@ class ResidentImporter
           resident = Resident.new if !resident
           new_record = resident.new_record?
           
-          # full and incremental upload behave the same
           create_or_update = true
           not_update_resident = false
           
-          # build attrs from csv file (we will delete the data that we don't wnat to override below)
+          # build attrs from csv file (we will delete the data that we don't want to override below)
           Resident::CORE_FIELDS.each do |f|
-            f = f.to_s # must f convert to string
+            f = f.to_s # must convert f to string
             if resident_map[f]
               if ["full_name"].include?(f)
                 resident.full_name = row[resident_map[f]]
@@ -123,7 +122,7 @@ class ResidentImporter
             end
           end
         
-          # don't use symboy as hash key
+          # don't use symbol as hash key
           unit_attrs = {
             "property_id" => property_id,
             "roommate" => tenant_code.to_s.match(/^r/) ? true : false
@@ -347,7 +346,7 @@ class ResidentImporter
             end
           end
           
-          # don't use symboy as hash key
+          # don't use symbol as hash key
           unit_attrs = {
             "property_id" => property_id
           }

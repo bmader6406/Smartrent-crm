@@ -17,12 +17,7 @@ class HourlyJob
     Resque.enqueue(MetricGenerator, time.to_i)
 
     if time.hour == 0
-      Resque.enqueue(Smartrent::DailyResidentCreator, time)
-      Resque.enqueue(ResidentUnitStatusChanger, time)
-    end
-
-    if time.wday == 0 && time.hour == 0 #Sunday of the current week
-      Resque.enqueue(Smartrent::WeeklyPropertyXmlImporter, time)
+      Resque.enqueue(ResidentUnitStatusChecker, time)
     end
     
     if time.hour == 3
@@ -38,15 +33,8 @@ class HourlyJob
       end
     end
 
-    if time.day == 1 && time.hour == 1 #execute at the begining of month
-      Resque.enqueue(Smartrent::MonthlyStatusUpdater, time.prev_month)
-
-      # wait for MonthlyStatusUpdater executed
-      Resque.enqueue_at(time + 2.hours, Smartrent::ResidentExporter, time.prev_month)
-
-      #- app.hy.ly import should be run at midnight ET + 4hours
-      #- email should be scheduled around 7AM ET
-    end
+    # hourly job smartrent engine
+    Smartrent::HourlyJob.perform(time)
 
   end
 end
