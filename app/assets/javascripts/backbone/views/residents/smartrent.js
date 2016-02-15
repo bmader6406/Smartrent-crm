@@ -12,6 +12,19 @@ Crm.Views.Smartrent = Backbone.View.extend({
 
   initialize: function() {
 	  //this.listenTo(this.model, 'change', this.render);
+	  
+	  var self = this;
+    // update on enter, esc to exit editor
+    this.$el.on('keyup', '.amount-editor input:text', function(ev){
+      if(ev.which == 13){
+        self.$('.update-amount:visible').click();
+        return false;
+        
+      } else if(ev.which == 27){
+        self.$('.cancel-amount:visible').click();
+        return false;
+      }
+    });
 	},
 
   render: function () {
@@ -51,7 +64,8 @@ Crm.Views.Smartrent = Backbone.View.extend({
                     statusDd.find('> span').text( link.text() );
                     statusDd.attr('class', 'status-dd smartrent-' + status);
                     msgbox("You have successfully become a champion");
-                    $('.view-smartrent').click();
+
+                    $('#resident-info a[href=#smartrent]').click();
                   },
                   error: function(){
                     msgbox("There was an error making you champion", "danger");
@@ -70,7 +84,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
             statusDd.find('> span').text( link.text() );
             statusDd.attr('class', 'status-dd smartrent-' + status);
             msgbox("Smartrent Status was successfully updated");
-            $('.view-smartrent').click();
+            $('#resident-info a[href=#smartrent]').click();
           },
           error: function(){
             msgbox("There was an error updating your status", "danger");
@@ -84,7 +98,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
   editAmount: function(ev){
     var editor = $(ev.target).parent().next();
 
-    editor.show();
+    editor.css('display', 'table');
     editor.prev().hide();
   },
 
@@ -98,7 +112,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
       data: {reward_id : editor.attr('data-id'), amount: editor.find(':input').val()},
       success: function(data) {
         msgbox("Smartrent Status was successfully updated");
-        $('.view-smartrent').click();
+        $('#resident-info a[href=#smartrent]').click();
       },
       error: function(){
         msgbox("There was an error updating your status", "danger");
