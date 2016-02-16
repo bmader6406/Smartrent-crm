@@ -71,8 +71,12 @@ class PropertyImporter
         
         # bozzuto property no may be blank, it contains the leading zeros
         if origin_id > 0
+          pp "#{index} > search for origin_id: #{origin_id}"
           prop = Property.find_by(:origin_id => origin_id)
-        else
+        end
+        
+        if !prop
+          pp "#{index} > search for property_name: #{property_name}"
           prop = Property.find_by(:name => property_name)
         end
 
@@ -85,6 +89,7 @@ class PropertyImporter
           prop.is_crm = false
           prop.is_smartrent = false
           prop.is_visible = false
+          prop.updated_by = "csv_feed"
         end
 
         prop.user_id = user.id

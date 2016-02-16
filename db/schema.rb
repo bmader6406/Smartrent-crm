@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160216081317) do
+ActiveRecord::Schema.define(version: 20160216121707) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -416,9 +416,10 @@ ActiveRecord::Schema.define(version: 20160216081317) do
     t.integer  "baths",       limit: 4
     t.integer  "rent_min",    limit: 4
     t.integer  "rent_max",    limit: 4
-    t.boolean  "penthouse",   limit: 1
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.boolean  "penthouse",   limit: 1,   default: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.boolean  "studio",      limit: 1,   default: false
   end
 
   add_index "smartrent_floor_plans", ["property_id"], name: "index_smartrent_floor_plans_on_property_id", using: :btree

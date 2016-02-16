@@ -31,7 +31,6 @@ class UnitLoader
       :name => ["PropertyID","MarketingName"],
       :origin_id => ["IDValue"]
     }
-    #FeaturedButton contains all the features
     
     begin
       file_name = ftp_setting["file_name"]
