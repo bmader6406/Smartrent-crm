@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151109110340) do
+ActiveRecord::Schema.define(version: 20160216081317) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -330,6 +330,7 @@ ActiveRecord::Schema.define(version: 20151109110340) do
     t.boolean  "is_smartrent",              limit: 1,     default: false
     t.boolean  "is_visible",                limit: 1,     default: true
     t.string   "updated_by",                limit: 255
+    t.datetime "deleted_at"
   end
 
   add_index "properties", ["is_smartrent"], name: "index_properties_on_is_smartrent", using: :btree
@@ -429,8 +430,8 @@ ActiveRecord::Schema.define(version: 20151109110340) do
     t.text     "description",             limit: 65535
     t.float    "latitude",                limit: 24
     t.float    "longitude",               limit: 24
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.string   "url",                     limit: 255
     t.string   "phone_number",            limit: 255
     t.string   "video_url",               limit: 255
@@ -444,6 +445,7 @@ ActiveRecord::Schema.define(version: 20151109110340) do
     t.datetime "image_updated_at"
     t.string   "image_description",       limit: 255
     t.text     "search_page_description", limit: 65535
+    t.integer  "position",                limit: 4,     default: 0
   end
 
   create_table "smartrent_more_homes", force: :cascade do |t|
@@ -453,8 +455,9 @@ ActiveRecord::Schema.define(version: 20151109110340) do
     t.float    "sq_ft",      limit: 24
     t.boolean  "featured",   limit: 1
     t.integer  "home_id",    limit: 4
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.integer  "position",   limit: 4,   default: 0
   end
 
   add_index "smartrent_more_homes", ["home_id"], name: "index_smartrent_more_homes_on_home_id", using: :btree

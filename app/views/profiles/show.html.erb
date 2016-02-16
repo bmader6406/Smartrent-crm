@@ -1,11 +1,3 @@
-<% content_for(:js) do %>
-  <script type="text/javascript">
-    $(function(){
-      App.initPageLayout(null, null, null, true); //should be called on top
-    });
-  </script>
-<% end %>
-
 <% content_for(:ui_center) do %>
   <h2 style="margin:25px 20px 5px 20px;"> Profile </h2>  
 
@@ -18,3 +10,9 @@
 
 
 <%= render "dashboards/js_vars" %>
+
+<script type="text/javascript">
+  $(function(){
+    App.initPageLayout(null, null, null, true); //should be called on top
+  });
+</script>

@@ -8,18 +8,10 @@ class PropertyImporter
   end
   
   def self.perform(file_path)
-    # Property.all.each do |prop|
-    #   prop.state = prop.state.upcase if prop.state
-    #   prop.city = prop.city.titleize if prop.city
-    #   prop.county = prop.county.titleize if prop.county
-    #   prop.save
-    # end
-
-    ###
-
-    user = User.first
+    user = User.unscoped.order('created_at asc').first
 
     prop_map = {
+     "origin_id"=> 1,
      "name"=> 2,
      "address_line1"=> 5,
      "city"=> 6,
@@ -55,15 +47,6 @@ class PropertyImporter
      "sunday_close_time" => 34
     }
 
-    # date close, # date open
-    # AM, PM open closed
-
-    region_map = {}
-
-    Region.all.each do |r|
-      region_map[r.name] = r.id
-    end
-
     index = 0
 
     File.foreach(file_path) do |line|
@@ -71,10 +54,16 @@ class PropertyImporter
 
       CSV.parse(line) do |row|
         next if index == 1
-
+        
+        origin_id = row[ prop_map["origin_id"] ].to_i
         property_name = row[ prop_map["name"] ]
-        region_name = row[ prop_map["region_id"] ]
-        prop = Property.find_by_name(property_name)
+        
+        # bozzuto property no may be blank, it contains the leading zeros
+        if origin_id > 0
+          prop = Property.find_by(:origin_id => origin_id)
+        else
+          prop = Property.find_by(:name => property_name)
+        end
 
         if !prop
           prop = Property.new
@@ -94,7 +83,8 @@ class PropertyImporter
 
           if !val.blank?
             if k == "region_id"
-              val = region_map[val]
+              region = Region.find_or_create_by(:name => val)
+              val = region.id
             end
 
             if k.match(/^date_/)
