@@ -15,6 +15,8 @@ class ResidentUnitStatusChecker
         p.save
       end
     end
+    
+    Notifier.system_message("[CRM] ResidentUnitStatusChecker - SUCCESS", "Executed at #{Time.now}", Notifier::DEV_ADDRESS).deliver_now
   end
 
 end

@@ -1,15 +1,26 @@
 # Import BozzutoLink CSV file
-
 require 'csv'
+require 'net/ftp'
 
 class PropertyImporter
   def self.queue
     :crm_immediate
   end
   
-  def self.perform(file_path)
+  def self.perform(file_path = nil)
     user = User.unscoped.order('created_at asc').first
-
+    
+    if !file_path # download from BozzutoLink ftp
+      file_name = "/reporting/hyly/BozzutoGroup-#{Date.today.strftime("%d%m%Y")}.csv"
+      file_path = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
+      
+      Net::FTP.open("bozzutofeed.qburst.com", "bozzutofc", "6zxXRETm") do |ftp|
+        ftp.passive = true
+        ftp.getbinaryfile(file_name, file_path)
+        puts "Ftp downloaded: #{file_path}"
+      end
+    end
+    
     prop_map = {
      "origin_id"=> 1,
      "name"=> 2,
@@ -110,6 +121,8 @@ class PropertyImporter
 
       end
     end
+  
+    Notifier.system_message("[CRM] PropertyImporter - SUCCESS", "Executed at #{Time.now}", Notifier::DEV_ADDRESS).deliver_now
   end
   
 end

@@ -20,6 +20,11 @@ class HourlyJob
       Resque.enqueue(ResidentUnitStatusChecker, time)
     end
     
+    if time.hour == 2
+      # BozzutoLink upload CSV feed at 1 AM
+      Resque.enqueue(PropertyImporter)
+    end
+    
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
