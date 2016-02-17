@@ -70,14 +70,9 @@ class PropertiesController < ApplicationController
 
   def update
     respond_to do |format|
-      if @property.updated_by != "xml_feed"
+      if !["xml_feed", "csv_feed"].include?(@property.updated_by)
         if @property.update_attributes(property_params)
-          if @property.updated_by != "xml_feed"
-            format.json { head :no_content }
-          else
-            @property.errors.add("updated_by", "value can't be xml_feed")
-            format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
-          end
+          format.json { head :no_content }
         else
           format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
         end
