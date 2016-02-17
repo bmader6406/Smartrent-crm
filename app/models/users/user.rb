@@ -146,7 +146,7 @@ class User < ActiveRecord::Base
   def managed_residents
     @managed_residents ||= begin
       if is_admin?
-        Smartrent::Resident.all
+        Smartrent::Resident
         
       else
         Smartrent::Resident.joins(:resident_properties).where("smartrent_resident_properties.property_id IN (?)", managed_properties.collect{|p| p.id })
@@ -156,17 +156,25 @@ class User < ActiveRecord::Base
   
   def managed_rewards
     if is_admin?
-      Smartrent::Reward.all
+      Smartrent::Reward
     else
       Smartrent::Reward.where(:property_id => managed_properties.collect{|p| p.id })
     end
   end
 
   def is_admin?
-    has_role? :admin, Property
+    if defined? @is_admin
+      @is_admin
+    else
+      @is_admin ||= has_role? :admin, Property
+    end
   end
 
   def is_property_manager?
-    has_role? :property_manager, Property
+    if defined? @is_property_manager
+      @is_property_manager
+    else
+      @is_property_manager ||= has_role? :property_manager, Property
+    end
   end
 end

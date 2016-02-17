@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160216121707) do
+ActiveRecord::Schema.define(version: 20160217093651) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -519,11 +519,19 @@ ActiveRecord::Schema.define(version: 20160216121707) do
     t.datetime "expiry_date"
     t.datetime "champion_date"
     t.float    "champion_amount",        limit: 24,  default: 0.0
+    t.string   "first_name",             limit: 255
+    t.string   "last_name",              limit: 255
+    t.integer  "balance",                limit: 4,   default: 0
+    t.integer  "current_property_id",    limit: 4
   end
 
+  add_index "smartrent_residents", ["balance"], name: "index_smartrent_residents_on_balance", using: :btree
   add_index "smartrent_residents", ["confirmation_token"], name: "index_smartrent_residents_on_confirmation_token", unique: true, using: :btree
   add_index "smartrent_residents", ["crm_resident_id"], name: "index_smartrent_residents_on_crm_resident_id", using: :btree
+  add_index "smartrent_residents", ["current_property_id"], name: "index_smartrent_residents_on_current_property_id", using: :btree
   add_index "smartrent_residents", ["email"], name: "index_smartrent_residents_on_email", unique: true, using: :btree
+  add_index "smartrent_residents", ["first_name"], name: "index_smartrent_residents_on_first_name", using: :btree
+  add_index "smartrent_residents", ["last_name"], name: "index_smartrent_residents_on_last_name", using: :btree
   add_index "smartrent_residents", ["reset_password_token"], name: "index_smartrent_residents_on_reset_password_token", unique: true, using: :btree
 
   create_table "smartrent_rewards", force: :cascade do |t|

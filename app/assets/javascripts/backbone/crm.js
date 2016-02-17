@@ -114,6 +114,9 @@ window.Crm = {
           setTimeout(function(){ //wait for activity to load
             residentDetail.$('.new-ticket').click();
           }, 1200);
+          
+        } else if( window.location.hash == "#smartrent"){
+          $('#resident-info .nav-details a[href=#smartrent]').click();
         }
 
       } else {

@@ -10,7 +10,7 @@ class ResidentImporter
       yardi_import(file_path, resident_map, meta)
       
     elsif type == "smartrent"
-      smartrent_import
+      # smartrent_import (obsolete/placeholder)
     end
   end
   
@@ -57,8 +57,13 @@ class ResidentImporter
     prop_map = {}
 
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
-      prop_map[p.yardi_property_id.to_s.gsub(/^0*/, '')] = p.id.to_s
+      p.yardi_property_id.to_s.split(";").each do |yid| #multiple id separated by ;
+        next if yid.blank?
+        prop_map[yid.strip.gsub(/^0*/, '')] = p.id.to_s
+      end
     end
+    
+    pp ">>>> prop_map: ", prop_map
     
     resident_map.keys.each do |k|
       resident_map[k] = resident_map[k].to_i # for array access
@@ -67,6 +72,7 @@ class ResidentImporter
     prop_tenant_code_dict = {}
 
     index, new_resident, existing_resident, errs = 0, 0, 0, []
+    ok_row = 0
 
     File.foreach(file_path) do |line|
       index += 1
@@ -84,13 +90,13 @@ class ResidentImporter
           email = row[ resident_map["email"] ]
           
           next if email.blank?
-          
+          ok_row += 1
           # UnitLoader use the mits4_1.xml, this file contains unit details
           # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
           unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
           unit.save(:validate => false)
           
-          pp "#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
+          pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           #consolidate resident by email
           resident = Resident.with(:consistency => :strong).where(:email_lc => email.to_s.downcase ).unify_ordered.first
@@ -263,125 +269,6 @@ class ResidentImporter
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
   end
   
-  def self.smartrent_import
-    resident_map = {
-     "property_name" => 0,
-     "unit_code" => 2,
-     "full_name" => 1,
-     "street" => 3,
-     "city" => 4,
-     "state" => 5,
-     "zip" => 6,
-     "email" => 7,
-     "move_in" => 8
-    }
-
-    custom_name = {
-      "The Beacon at Waugh Chapel" => "Beacon at Waugh Chapel",
-      "Concord Park At Russett" => "Concord Park at Russett- Invesco",
-      "The Courts of Devon" => "Courts of Devon JV 333204",
-      "Creekstone Village Apartments" => "Creekstone Apartments",
-      "The Glen Apartments" => "Glen Apartment",
-      "The Gramercy at Town Center" => "Gramercy at Town Center",
-      "The Apartments at Harbor Park" => "Harbor Park",
-      "Hidden Creek Apartment Homes" => "Hidden Creek",
-      "The Jefferson at Fair Oaks " => "Jefferson at Fair Oaks",
-      "The Lexington at Market Square" => "Lexington- Phase 2",
-      "MetroPointe" => "MetroPointe Tax",
-      "The Metropolitan " => "Metropolitan - Tax Credit",
-      "Monroe Street Market" => "Monroe Street Market-Portland Flats",
-      "The Apartments at North Point " => "North Point Apartments",
-      "Pinnacle Town Center " => "Pinnacle at Town Center",
-      "The Promenade at Harbor East" => "Promenade at Harbor East- Residential",
-      "Stone Point Apartments" => "Stone Point",
-      "Strathmore Court at White Flint" => "Strathmore Court- Tax Credit",
-      "The Fitzgerald at UB Midtown " => "The Fitzgerald",
-      "Winthrop " => "The Winthrop",
-      "The Townes at Harvest View " => "Townes at Harvest View",
-      "Union Wharf Apartments" => "Union Wharf",
-      "The Whitney " => "Whitney Apartments"
-     }
-
-    prop_map = {}
-
-    Property.where(:is_smartrent => 1).each do |p|
-      prop_map[ custom_name[p.name] || p.name] = p.id
-    end
-
-    index = 0
-
-    File.foreach(file_path) do |line|
-      index += 1
-
-      begin
-        CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
-          next if index <= 2 || row.join.blank?
-
-          property_id = prop_map[row[ resident_map["property_name"] ].to_s.gsub(/^0*/, '') ]
-
-          next if !property_id
-
-          unit_code = row[ resident_map["unit_code"] ]
-          email = row[ resident_map["email"] ]
-
-          next if email.blank?
-
-          unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
-          unit.save(:validate => false)
-
-          pp "#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
-
-          #consolidate resident by email
-          resident = Resident.with(:consistency => :strong).where(:email_lc => email.to_s.downcase ).unify_ordered.first
-          resident = Resident.new if !resident
-
-          Resident::CORE_FIELDS.each do |f|
-            f = f.to_s # must f convert to string
-            if resident_map[f]
-              if ["full_name"].include?(f)
-                resident.full_name = row[resident_map[f]]
-              else
-                resident[f] = row[resident_map[f]]
-              end
-            end
-          end
-          
-          # don't use symbol as hash key
-          unit_attrs = {
-            "property_id" => property_id
-          }
-
-          Resident::UNIT_FIELDS.each do |f|
-            f = f.to_s
-            unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
-
-            #pp "property field: #{f}, #{unit_attrs[f]}"
-
-            if ["move_in"].include?(f) && unit_attrs[f]
-              unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
-            end
-
-            if ["unit_id"].include?(f) && unit
-              pp "UNIT: #{unit}, #{f}"
-              unit_attrs[f] = unit.id
-            end
-          end
-
-          if resident.save
-            #create submit
-            resident.sources.create(unit_attrs) if unit_attrs["property_id"]
-          end
-
-        end
-
-      rescue Exception => e
-        error_details = "#{e.class}: #{e}"
-        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-        pp ">>> line: #{line}, ERROR:", error_details
-      end
-    end
-  end
-
   def self.email_body(new_resident, existing_resident, total_missing, error_resident, file_name)
     new_and_existing_resident = new_resident + existing_resident
 
