@@ -205,7 +205,7 @@ class ResidentsController < ApplicationController
   def smartrent
     @smartrent_resident = @resident.smartrent_resident
   end
-
+  
   # for add new ticket page
   def search
     col_dict = {

@@ -117,6 +117,10 @@ window.Crm = {
           
         } else if( window.location.hash == "#smartrent"){
           $('#resident-info .nav-details a[href=#smartrent]').click();
+          
+        } else if( window.location.hash == "#unit-history"){
+          $('#resident-info .nav-details a[href=#unit-history]').click();
+          
         }
 
       } else {
@@ -179,9 +183,9 @@ window.Crm = {
               editLink.click();
 
               //hightlight
-        			container.animate({ backgroundColor: "#FFFDDD" }, 500, function(){
-        				$(this).animate({ backgroundColor: 'transparent' }, 1000);
-        			});
+              container.animate({ backgroundColor: "#FFFDDD" }, 500, function(){
+                $(this).animate({ backgroundColor: 'transparent' }, 1000);
+              });
 
               $('#center').scrollTo(editLink, {duration: 400, offset: -20});
             }
@@ -241,9 +245,9 @@ window.Crm = {
             editLink.click();
 
             //hightlight
-          	container.animate({ backgroundColor: "#FFFDDD" }, 500, function(){
-          		$(this).animate({ backgroundColor: 'transparent' }, 1000);
-          	});
+            container.animate({ backgroundColor: "#FFFDDD" }, 500, function(){
+              $(this).animate({ backgroundColor: 'transparent' }, 1000);
+            });
 
             $('#center').scrollTo(editLink, {duration: 400, offset: -20});
 

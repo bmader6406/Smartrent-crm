@@ -14,19 +14,20 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
   },
 
   initialize: function() {
-	  this.listenTo(this.model, 'change', this.render);
+    this.listenTo(this.model, 'change', this.render);
 
-	  //cache, will be reset when new resident view render
-	  Crm.collInst.residentActivities = null;
-	  Crm.collInst.marketingActivities = null;
-	  Crm.collInst.residentUnits = null;
-	  Crm.collInst.marketingUnits = null;
-	  Crm.collInst.residentRoommates = null;
-	},
+    //cache, will be reset when new resident view render
+    Crm.collInst.residentActivities = null;
+    Crm.collInst.marketingActivities = null;
+    Crm.collInst.residentUnits = null;
+    Crm.collInst.marketingUnits = null;
+    Crm.collInst.residentRoommates = null;
+    Crm.collInst.unitHistory = null;
+  },
 
   render: function () {
     this.$el.html(this.template(this.model.toJSON()));
-  	return this;
+    return this;
   },
 
   toggleInfo: function(ev){
@@ -67,7 +68,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 
         Crm.collInst.residentActivities.resident = this.model;
 
-        $('#marketing-history, #resident-roommates, #smartrent, #resident-details').hide();
+        $('#marketing-history, #resident-roommates, #smartrent, #resident-details, #unit-history').hide();
         $('#resident-history, #toolbar').show();
 
         // load smartrent info in background
@@ -99,7 +100,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#resident-roommates > div').html( new Crm.Views.ResidentRoommatesList({ collection: Crm.collInst.residentRoommates }).render().el );
         }
 
-        $('#resident-history, #marketing-history, #smartrent, #toolbar, #resident-details').hide();
+        $('#resident-history, #marketing-history, #smartrent, #toolbar, #resident-details, #unit-history').hide();
         $('#resident-roommates').show();
 
         break;
@@ -110,7 +111,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           Crm.collInst.residentUnits.url = self.model.get('units_path');
           $('#resident-units').html( new Crm.Views.ResidentUnitsList({ collection: Crm.collInst.residentUnits }).render().el );
         }
-
+        
         break;
 
       case '#smartrent':
@@ -127,8 +128,20 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> It will be created on when the resident move in on '+ this.model.get('move_in') +' </div>');
         }
 
-        $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #resident-details').hide();
+        $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #resident-details, #unit-history').hide();
         smartrent.show();
+
+        break;
+        
+      case '#unit-history':
+        if( !Crm.collInst.unitHistory ){
+          Crm.collInst.unitHistory = new Crm.Collections.ResidentUnits;
+          Crm.collInst.unitHistory.url = self.model.get('units_path');
+          $('#unit-history').html( new Crm.Views.UnitHistoryList({ collection: Crm.collInst.unitHistory }).render().el );
+        }
+        
+        $('#resident-history, #marketing-history, #smartrent, #toolbar, #resident-details, #resident-roommates').hide();
+        $('#unit-history').show();
 
         break;
     }
@@ -188,7 +201,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
   archive: function(){
     var self = this;
 
-	  bootbox.confirm("Sure you want to archive this resident?", function(result) {
+    bootbox.confirm("Sure you want to archive this resident?", function(result) {
       if (result) {
         self.model.destroy({
           success: function(model, response) {
@@ -203,6 +216,6 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
       }
     });
 
-	  return false;
+    return false;
   }
 });

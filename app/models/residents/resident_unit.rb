@@ -166,7 +166,7 @@ class ResidentUnit
     end
     
     def create_or_update_smartrent_resident
-      Resque.enqueue(Smartrent::ResidentCreator, resident._id, _id.to_s) if property.is_smartrent? && move_in && move_in.to_time <= Time.now
+      Resque.enqueue(Smartrent::ResidentCreator, resident._id, _id.to_s) if !roommate? && property.is_smartrent? && move_in && move_in.to_time <= Time.now
     end
 
 end

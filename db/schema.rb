@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160217123916) do
+ActiveRecord::Schema.define(version: 20160302183036) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -488,6 +488,7 @@ ActiveRecord::Schema.define(version: 20160217123916) do
     t.date     "move_out_date"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.string   "unit_code",     limit: 255
   end
 
   add_index "smartrent_resident_properties", ["property_id"], name: "index_smartrent_resident_properties_on_property_id", using: :btree
