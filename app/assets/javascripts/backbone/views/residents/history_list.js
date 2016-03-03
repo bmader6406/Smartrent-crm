@@ -35,7 +35,8 @@ Crm.Views.UnitHistoryList = Backbone.View.extend({
         label: "Move In",
         cell: 'string',
         editable: false,
-        sortable: true
+        sortable: true,
+        direction: "descending"
       }, {
         name: "move_out",
         label: "Move Out",

@@ -190,7 +190,7 @@ class ResidentsController < ApplicationController
   end
   
   def units
-    @units = @resident.units
+    @units = @resident.units.sort{|a, b| b.move_in <=> a.move_in }
     
     respond_to do |format|
       format.html {

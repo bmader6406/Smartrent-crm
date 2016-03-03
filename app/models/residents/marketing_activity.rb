@@ -1,6 +1,7 @@
 class MarketingActivity
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
   
   field :note, :type => String
   field :action, :type => String

@@ -2,7 +2,8 @@ class ResidentUnit
 
   include Mongoid::Document
   include Mongoid::Timestamps
-
+  include Mongoid::Attributes::Dynamic
+  
   field :unit_id, :type => String
   field :property_id, :type => String
   
