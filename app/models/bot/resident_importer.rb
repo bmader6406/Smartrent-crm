@@ -73,6 +73,17 @@ class ResidentImporter
 
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
+    
+    ignore_emails = ["declined@yahoo.com", "na@gmail.com", "na@na.com", "na@yahoo.com", 
+      "noemail@email.com", "noemail@gmail.com", "noemail@noemail.com", "noemail.com", 
+      "noemail@ufollowup.com", "noemail@yahoo.com", "none@aol.com", "none@email.com", 
+      "none@gmail.com", "none@none.com", "none@refused.com", "refuse@yahoo.com", "refused@aol.com", 
+      "refused@bozzuto.com", "refused@email.com", "refused@gmail.com", "unknown@yahoo.com", 
+      "refused@hotmail.com", "refused@noemail.com", "refused@refused.com", "refused@yahoo.com",
+      "none@yahoo.com", "unknown@aol.com", "refuse@gmail.com", "none@bozzuto.com", "refused @yahoo.com",
+      "refused@none.com", "na@bozzuto.com", "didnotgive@bozzuto.com", "email@email.com",
+      "non@none.com", "none@none.net", "donothave@gmail.com"
+    ]
 
     File.foreach(file_path) do |line|
       index += 1
@@ -89,7 +100,14 @@ class ResidentImporter
           unit_code = row[ resident_map["unit_code"] ]
           email = row[ resident_map["email"] ]
           
-          next if email.blank?
+          fake_email = nil
+          
+          #convert blank and ignored email into fake email
+          if email.blank? || ignore_emails.include?(email) || !email.include?("@")
+            fake_email = "#{tenant_code}@noemail.yardi"
+            email = fake_email # don't not unify fake email or non-existant email
+          end
+          
           ok_row += 1
           # UnitLoader use the mits4_1.xml, this file contains unit details
           # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
@@ -126,6 +144,12 @@ class ResidentImporter
                 end
               end
             end
+          end
+          
+          if fake_email || email.to_s.include?("@noemail") #mark as bad
+            resident.email_check = "Bad"
+            resident.email_checked_at = Time.now
+            resident.subscribed = false
           end
         
           # don't use symbol as hash key
