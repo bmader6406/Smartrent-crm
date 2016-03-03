@@ -102,10 +102,11 @@ class ResidentUnit
   validates :property_id, :status , :move_in, :unit_id, :presence => true
 
   before_save :set_rental_type
-  before_save :create_or_update_smartrent_resident
+  before_save :set_unit_status
   
   after_save :set_unified_status
-  before_save :set_unit_status
+  after_save :create_or_update_smartrent_resident
+  
   after_create :increase_counter_cache
 
   after_destroy :set_unified_status

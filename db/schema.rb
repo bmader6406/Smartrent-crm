@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160302183036) do
+ActiveRecord::Schema.define(version: 20160303092546) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -331,6 +331,7 @@ ActiveRecord::Schema.define(version: 20160302183036) do
     t.boolean  "is_visible",                limit: 1,     default: true
     t.string   "updated_by",                limit: 255
     t.datetime "deleted_at"
+    t.string   "smartrent_status",          limit: 255
   end
 
   add_index "properties", ["is_smartrent"], name: "index_properties_on_is_smartrent", using: :btree

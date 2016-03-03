@@ -141,7 +141,6 @@ class Resident
   field :email_checked_at, :type => DateTime
   
   field :bounces_count, :type => Integer, :default => 0
-  field :smartrent_resident_id, :type => Integer, :default => nil
 
 
   embeds_many :activities, :class_name => "ResidentActivity"
@@ -157,13 +156,12 @@ class Resident
   index({ email_lc: 1 }, {background: true})
   index({ first_name_lc: 1 }, {background: true})
   index({ last_name_lc: 1 }, {background: true})
-
-  index({ :smartrent_resident_id => 1 }, {background: true})
   
   #embedded
   index({ :deleted_at => 1 }, {background: true})
   index({ "units.property_id" => 1, "units.status" => 1 }, {background: true})
   index({ "units.property_id" => 1, "units.unit_id" => 1 }, {background: true})
+  index({ "units.property_id" => 1, "units.move_in" => 1 }, {background: true})
   index({ "units.property_id" => 1, :updated_at => 1 }, {background: true})
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
