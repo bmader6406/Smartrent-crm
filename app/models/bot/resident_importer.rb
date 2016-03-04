@@ -94,6 +94,7 @@ class ResidentImporter
           if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
               fake_email = "#{tenant_code}@noemail.yardi"
               email = fake_email # don't not unify fake email or non-existant email
+              email_lc = email
           end
           
           ok_row += 1
@@ -106,7 +107,7 @@ class ResidentImporter
 
           #consolidate resident by email
           resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
-          pp ">>> email_lc: #{email.to_s.downcase}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
+          pp ">>> email_lc: #{email_lc}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
           
           resident = Resident.new if !resident
           new_record = resident.new_record?
@@ -291,7 +292,7 @@ class ResidentImporter
   
   def self.convert_fake_email?(email_lc)
     return true if [" @", "noemail", "nomail", "notgiven", "didnotgive", "donothave", 
-      "donotreply", "notgiven", "nonegiven", "noexist",
+      "donotreply", "notgiven", "nonegiven", "noexist", "noreply",
       "@email.com", "@none.net", "@na.com", "@non.com", "efused@yahoo.com", "@test.com"
     ].any?{|e| email_lc.include?(e) }
     
