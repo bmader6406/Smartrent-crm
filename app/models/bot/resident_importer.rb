@@ -74,20 +74,8 @@ class ResidentImporter
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
     
-    ignore_emails = ["declined@yahoo.com", "na@gmail.com", "na@na.com", "na@yahoo.com", 
-      "noemail@email.com", "noemail@gmail.com", "noemail@noemail.com", "noemail.com", 
-      "noemail@ufollowup.com", "noemail@yahoo.com", "none@aol.com", "none@email.com", 
-      "none@gmail.com", "none@none.com", "none@refused.com", "refuse@yahoo.com", "refused@aol.com", 
-      "refused@bozzuto.com", "refused@email.com", "refused@gmail.com", "unknown@yahoo.com", 
-      "refused@hotmail.com", "refused@noemail.com", "refused@refused.com", "refused@yahoo.com",
-      "none@yahoo.com", "unknown@aol.com", "refuse@gmail.com", "none@bozzuto.com", "refused @yahoo.com",
-      "refused@none.com", "na@bozzuto.com", "didnotgive@bozzuto.com", "email@email.com",
-      "non@none.com", "none@none.net", "donothave@gmail.com"
-    ]
-
     File.foreach(file_path) do |line|
       index += 1
-
       begin
         CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
           next if index == 1 || row.join.blank?
@@ -99,13 +87,13 @@ class ResidentImporter
           tenant_code = row[ resident_map["tenant_code"] ]
           unit_code = row[ resident_map["unit_code"] ]
           email = row[ resident_map["email"] ]
-          
+          email_lc = email.to_s.downcase
           fake_email = nil
           
           #convert blank and ignored email into fake email
-          if email.blank? || ignore_emails.include?(email) || !email.include?("@")
-            fake_email = "#{tenant_code}@noemail.yardi"
-            email = fake_email # don't not unify fake email or non-existant email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+              fake_email = "#{tenant_code}@noemail.yardi"
+              email = fake_email # don't not unify fake email or non-existant email
           end
           
           ok_row += 1
@@ -117,7 +105,7 @@ class ResidentImporter
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           #consolidate resident by email
-          resident = Resident.with(:consistency => :strong).where(:email_lc => email.to_s.downcase ).unify_ordered.first
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
           pp ">>> email_lc: #{email.to_s.downcase}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
           
           resident = Resident.new if !resident
@@ -130,8 +118,12 @@ class ResidentImporter
           Resident::CORE_FIELDS.each do |f|
             f = f.to_s # must convert f to string
             if resident_map[f]
-              if ["full_name"].include?(f)
+              if ["email"].include?(f)
+                resident.email = email # email can be real or fake email
+                
+              elsif ["full_name"].include?(f)
                 resident.full_name = row[resident_map[f]]
+                
               else
                 resident[f] = row[resident_map[f]]
               end
@@ -231,7 +223,7 @@ class ResidentImporter
               end
               
             else
-              errs << [resident.errors.full_messages.join(", ")]
+              errs << ["#{index}, #{tenant_code}, #{email}, " + resident.errors.full_messages.join(", ")]
             end
           end
         end #/csv parse
@@ -295,6 +287,17 @@ class ResidentImporter
 
     
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
+  end
+  
+  def self.convert_fake_email?(email_lc)
+    return true if [" @", "noemail", "nomail", "notgiven", "didnotgive", "donothave", 
+      "donotreply", "notgiven", "nonegiven", "noexist",
+      "@email.com", "@none.net", "@na.com", "@non.com", "efused@yahoo.com", "@test.com"
+    ].any?{|e| email_lc.include?(e) }
+    
+    return true if ["na@", "no@", "non@", "none@", "unknown@", "no@", "test@"].any?{|e| email_lc.match(/^#{e}/) }
+    return true if ["refuse", "refused", "decline", "declined"].any?{|e| email_lc.match(/^#{e}\d*@/) }
+    return false
   end
   
   def self.email_body(new_resident, existing_resident, total_missing, error_resident, file_name)

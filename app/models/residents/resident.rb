@@ -496,6 +496,7 @@ class Resident
       self.first_name_lc = first_name.downcase if first_name
       self.last_name_lc = last_name.downcase if last_name
       self.email_lc = email.downcase if email
+      true
     end
     
     def change_smartrent_email
