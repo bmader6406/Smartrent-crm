@@ -125,7 +125,12 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
             self.$('.smartrent-info').show();
           });
         } else {
-          smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> It will be created on when the resident move in on '+ this.model.get('move_in') +' </div>');
+          if( this.model.get('unit') && this.model.get('unit').roommate) {
+            smartrent.html('<div class="well"> Roommate does not have smartrent acccount </div>');
+          } else {
+            smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> It will be created on when the resident move in on '+ this.model.get('move_in') +' </div>');
+          }
+          
         }
 
         $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #resident-details, #unit-history').hide();
