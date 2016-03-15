@@ -16,7 +16,7 @@ class Property < ActiveRecord::Base
   has_many :campaigns
   has_many :audiences, :class_name => "Audience"
   
-  validates :name, :presence => true, :uniqueness => true
+  validates :name, :presence => true, :uniqueness => {:scope => :deleted_at}
 
   has_attached_file :image, 
     :styles => {:search_page => "150x150>"},
@@ -30,6 +30,8 @@ class Property < ActiveRecord::Base
        :content_type => ['image/pjpeg', 'image/jpeg', 'image/png', 'image/x-png', 'image/gif'],
        :message => "must be either a JPEG, PNG or GIF image"
       }
+  
+  default_scope { where(:deleted_at => nil) }
        
   scope :crm, -> { where(is_crm:  true) }
   scope :smartrent, -> { where(is_smartrent:  true) }

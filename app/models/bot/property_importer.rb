@@ -11,7 +11,7 @@ class PropertyImporter
     user = User.unscoped.order('created_at asc').first
     
     if !file_path # download from BozzutoLink ftp
-      file_name = "/reporting/hyly/BozzutoGroup-#{Date.today.strftime("%d%m%Y")}.csv"
+      file_name = "/reporting/hyly/BozzutoGroup-#{Time.now.in_time_zone("Eastern Time (US & Canada)").strftime("%d%m%Y")}.csv"
       file_path = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
       
       Net::FTP.open("bozzutofeed.qburst.com", "bozzutofc", "6zxXRETm") do |ftp|
@@ -57,7 +57,7 @@ class PropertyImporter
      "sunday_open_time" => 33,
      "sunday_close_time" => 34
     }
-
+    
     index = 0
 
     File.foreach(file_path) do |line|
@@ -121,7 +121,7 @@ class PropertyImporter
             prop[k] = val
           end
         end
-
+        
         prop.save
 
       end
