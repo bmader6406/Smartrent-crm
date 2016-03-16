@@ -314,7 +314,7 @@ class ResidentImporter
     end
     
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
-    Resque.enqueue_at(Time.now + 10.minutes, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
+    Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
     
     Notifier.system_message("[CRM] Yardi Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
