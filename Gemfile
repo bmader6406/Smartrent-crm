@@ -84,12 +84,15 @@ gem 'ancestry', '2.1.0'
 gem 'email_reply_parser', '~> 0.5.8'
 gem 'ransack', github: 'activerecord-hackery/ransack', :branch => "rails-4.2"
 
+
+gem "diffy", "~> 3.0.7"
+
 #engines
 gem "smartrent", :path => "/mnt/gems/smartrent"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug' #require ruby > 2.0
+  #gem 'byebug' #require ruby > 2.0
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
