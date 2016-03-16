@@ -69,8 +69,6 @@ class ResidentImporter
       resident_map[k] = resident_map[k].to_i # for array access
     end
     
-    prop_tenant_code_dict = {}
-
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
     
@@ -200,13 +198,6 @@ class ResidentImporter
                 # the system will create a new resident unit
               end
               
-              # for missing tenancy alert (only incremental_upload has this check)
-              if prop_tenant_code_dict[property_id]
-                prop_tenant_code_dict[property_id] << tenant_code
-              else
-                prop_tenant_code_dict[property_id] = [tenant_code]
-              end
-              
             end
             
           end
@@ -251,32 +242,75 @@ class ResidentImporter
       #pp "errs", errs
     end
     
-    pp "prop_tenant_code_dict", prop_tenant_code_dict
+    
+    # for missing tenancy alert (only incremental_upload has this check)
+    prop_tenant_code_dict = {}
     total_missing = 0
-    prop_tenant_code_dict.keys.each do |property_id|
-      Resident.where("units.property_id" => property_id).each do |r|
-        r.units.each do |u|
-          next if u.property_id != property_id
-          next if u.tenant_code.blank?
-          
-          if !prop_tenant_code_dict[property_id].include?( u.tenant_code ) #not exist on yardi side
-            total_missing += 1
-            unit_code = Unit.find(u.unit_id).code rescue nil
-            alert = ImportAlert.create(:property_id => property_id, :unit_code => unit_code, :tenant_code => u.tenant_code, :email => r.email)
-            
-            Notification.create({
-              :property_id => property_id,
-              :resident_id => r.id,
-              :unit_id => u.unit_id,
-              :import_alert_id => alert.id,
-              :state => "pending",
-              :subject => "Yardi Import",
-              :message => alert.message
-            })
-            
+    
+    # temporary turn off Import Alert because of thre Future Resident may not exist in the new feed
+    # https://www.dropbox.com/s/05dlal31phg1uz9/Screenshot%202016-03-16%2023.35.07.png?dl=0
+    # possible solutions:
+    # - get a list of the residents that was created via CRM
+    # - compare with yardi feed
+    # -- if CRM's resident does not exist in yardi file => create an alert
+    
+    if meta["incremental_upload"] && false
+      File.foreach(file_path.gsub("_diff.csv", ".csv")) do |line|
+        index += 1
+        begin
+          CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
+            next if index == 1 || row.join.blank?
+
+            property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.gsub(/^0*/, '') ]
+
+            next if !property_id
+
+            tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+
+            if prop_tenant_code_dict[property_id]
+              prop_tenant_code_dict[property_id] << tenant_code
+            else
+              prop_tenant_code_dict[property_id] = [tenant_code]
+            end
+
+          end #/csv parse
+        rescue Exception => e
+          error_details = "#{e.class}: #{e}"
+          error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+          pp ">>> line: #{line}, ERROR:", error_details
+        end
+      end
+      
+      pp "prop_tenant_code_dict.keys", prop_tenant_code_dict.keys
+      
+      prop_tenant_code_dict.keys.each do |property_id|
+        pp ">>> property_id: #{property_id}"
+        Resident.where("units.property_id" => property_id).each do |r|
+          r.units.each do |u|
+            next if u.property_id != property_id
+            next if u.tenant_code.blank?
+
+            if !prop_tenant_code_dict[property_id].include?( u.tenant_code ) #not exist on yardi side
+              pp ">>> missing: #{total_missing}, property_id: #{property_id}, u.tenant_code: #{u.tenant_code}"
+              total_missing += 1
+              unit_code = Unit.find(u.unit_id).code rescue nil
+              alert = ImportAlert.create(:property_id => property_id, :unit_code => unit_code, :tenant_code => u.tenant_code, :email => r.email)
+
+              Notification.create({
+                :property_id => property_id,
+                :resident_id => r.id,
+                :unit_id => u.unit_id,
+                :import_alert_id => alert.id,
+                :state => "pending",
+                :subject => "Yardi Import",
+                :message => alert.message
+              })
+
+            end
           end
         end
       end
+      
     end
     
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards

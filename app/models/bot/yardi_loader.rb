@@ -20,7 +20,7 @@ class YardiLoader
     begin
       file_name = ftp_setting["file_name"].gsub("%Y%m%d", time.strftime("%Y%m%d"))
       tmp_file = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
-      
+
       Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
         ftp.passive = true
         ftp.getbinaryfile(file_name, tmp_file)
@@ -43,24 +43,24 @@ class YardiLoader
         
         # create diff file
         #sort csv file
-        #pp ">> log file: #{tmp_file} #{Time.now.to_f}"
+        #pp ">> tmp_file: #{tmp_file} #{Time.now.to_f}"
         system("sort #{tmp_file} -o #{tmp_file}")
 
-        #pp ">> last_import_log file: #{yesterday_tmp_file} #{Time.now.to_f}"
+        #pp ">> yesterday_tmp_file: #{yesterday_tmp_file} #{Time.now.to_f}"
         system("sort #{yesterday_tmp_file} -o #{yesterday_tmp_file}")
         
         csv_string = []
         sleep(2)
         Diffy::Diff.new(yesterday_tmp_file, tmp_file, :source => 'files', :context => 0).each do |line|
-          if line =~ /^\+/ 
+          if line =~ /^\+/
             csv_string << line.sub("+", "")
           end
         end
 
         csv_string.insert(0, "\n") # csv headers
-
-        File.open(tmp_file, "wb") { |f| f.write(csv_string.join()) }
         
+        tmp_file = tmp_file.gsub(/\.csv/i, "_diff.csv")
+        File.open(tmp_file, "wb") { |f| f.write(csv_string.join()) }
         
       elsif import.type == "load_yardi_one_time"
         meta["full_upload"] = 1
