@@ -128,7 +128,7 @@ Rails.application.routes.draw do
       post :reset
       post :set_status
       post :set_amount
-      post :become_champion
+      post :become_buyer
     end
   end
   

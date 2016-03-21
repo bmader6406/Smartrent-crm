@@ -1,7 +1,7 @@
 class ResidentPasswordsController < ApplicationController
   before_filter :require_user
   before_filter :set_resident
-  before_filter :require_admin, :only => [:update, :set_status, :become_champion, :set_amount]
+  before_filter :require_admin, :only => [:update, :set_status, :become_buyer, :set_amount]
 
   def reset
     @smartrent_resident.send_reset_password_instructions
@@ -28,8 +28,8 @@ class ResidentPasswordsController < ApplicationController
     end
   end
 
-  def become_champion
-    if @smartrent_resident.become_champion(params[:amount])
+  def become_buyer
+    if @smartrent_resident.become_buyer(params[:amount])
       render :json => {:success => true}
     else
       render :json => {:success => false}

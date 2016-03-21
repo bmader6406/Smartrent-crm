@@ -10,9 +10,9 @@ node do |n|
     :monthly_awards_amount => number_to_currency(n.monthly_awards_amount, :precision => 0),
     :sign_up_bonus => number_to_currency(n.sign_up_bonus, :precision => 0),
     :initial_reward => number_to_currency(n.initial_reward, :precision => 0),
-    :first_move_in_date => (n.first_move_in_date.to_s(:short_date) rescue nil),
+    :first_move_in => (n.first_move_in.to_s(:short_date) rescue nil),
     :total_months => n.total_months.to_i,
-    :can_become_champion => n.can_become_champion_in_property?(@property),
+    :can_become_buyer => n.can_become_buyer_in_property?(@property),
     :is_admin => current_user.is_admin?,
     :rewards => [],
     
@@ -20,7 +20,7 @@ node do |n|
     :update_password_path => resident_password_path(n),
     :set_status_path => set_status_resident_password_path(n),
     :set_amount_path => set_amount_resident_password_path(n),
-    :become_champion_path => become_champion_resident_password_path(n)
+    :become_buyer_path => become_buyer_resident_password_path(n)
   }
 
   n.rewards.order("created_at desc, id desc").each do |reward|

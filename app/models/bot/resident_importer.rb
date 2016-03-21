@@ -82,9 +82,31 @@ class ResidentImporter
 
           next if !property_id
 
-          tenant_code = row[ resident_map["tenant_code"] ]
-          unit_code = row[ resident_map["unit_code"] ]
-          email = row[ resident_map["email"] ]
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          unit_code = row[ resident_map["unit_code"] ].to_s.strip
+          email = row[ resident_map["email"] ].to_s.strip
+          
+          # Some residents have this email format:
+          #- Allie.donovan@hotmail.co.uk; alex.donovan@hilton.com
+          #- KatCzeck21@hotmail.com, kspedden2005@yahoo.com
+          #- Burt0096@UMN,edu
+          #- Christian.Motsebo@yahoo,com
+          
+          # TODO: check if we should cleanup the email or keep yardi data as is
+          # if email.include?(";")
+          #   email = email.split(";").first.strip
+          #   
+          # elsif email.include?(",") && email.scan("@").length > 1
+          #   email = email.split(",").first.strip
+          #   
+          # elsif email.include?(",") && email.scan("@").length == 1
+          #   email = email.gsub(",", ".").strip
+          #   
+          # elsif email.include?(" ")
+          #   email = email.gsub(" ", "").strip
+          #   
+          # end
+          
           email_lc = email.to_s.downcase
           fake_email = nil
           

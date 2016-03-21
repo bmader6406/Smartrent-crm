@@ -42,10 +42,10 @@ Crm.Views.Smartrent = Backbone.View.extend({
 
     //use link.attr('data-index') to get the status number
     capitializedStatus = status.charAt(0).toUpperCase() + status.slice(1)
-    if (capitializedStatus == "Champion" && !self.model.can_become_champion) {
-      msgbox("You can only set the Champion status if the resident live in this property for 12 consecutive months", "danger");
+    if (capitializedStatus == "Buyer" && !self.model.can_become_buyer) {
+      msgbox("You can only set the Buyer status if the resident live in this property for 12 consecutive months", "danger");
     } else {
-      if (capitializedStatus == "Champion") {
+      if (capitializedStatus == "Buyer") {
         bootbox.prompt({
           title: "Set Cash Out Amount",
           value: self.model.total_amount,
@@ -58,17 +58,17 @@ Crm.Views.Smartrent = Backbone.View.extend({
               } else {
                 $.ajax({
                   type: "POST",
-                  url: self.model.become_champion_path,
+                  url: self.model.become_buyer_path,
                   data: {amount : amount},
                   success: function(data) {
                     statusDd.find('> span').text( link.text() );
                     statusDd.attr('class', 'status-dd smartrent-' + status);
-                    msgbox("You have successfully become a champion");
+                    msgbox("Buyer status was set successfully");
 
                     $('#resident-info a[href=#smartrent]').click();
                   },
                   error: function(){
-                    msgbox("There was an error making you champion", "danger");
+                    msgbox("There was an error while setting status buyer, please try again", "danger");
                   }
                 })
               }

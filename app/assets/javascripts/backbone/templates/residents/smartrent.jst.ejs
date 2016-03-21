@@ -22,7 +22,7 @@
             <% var statusIndexes = _.keys(App.vars.smartrentStatuses); %>
               <% for (var i=0, s; s=statusIndexes[i]; i++) { %>
                 <li>
-                  <a href="#" <% if (s == "Champion" && !can_become_champion) { %> class="disabled"<% } %> data-index="<%= statusIndexes[i] %>"><%= App.vars.smartrentStatuses[statusIndexes[i]] %></a>
+                  <a href="#" <% if (s == "Buyer" && !can_become_buyer) { %> class="disabled"<% } %> data-index="<%= statusIndexes[i] %>"><%= App.vars.smartrentStatuses[statusIndexes[i]] %></a>
                 </li>
               <% } %>
           </ul>
@@ -30,7 +30,7 @@
           <% } %>
       </div>
       <ul class="list-unstyled">
-        <li> <b>First Move-in Date:</b> <%= first_move_in_date %> </li>
+        <li> <b>First Move-in Date:</b> <%= first_move_in %> </li>
         <li> <b>SmartRent Months:</b> <%= total_months %> </li>
       </ul>
     </div>
