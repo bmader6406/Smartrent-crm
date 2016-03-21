@@ -131,21 +131,21 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
   render: function () {
     var roommate = this.roommate();
     
-    if(roommate.property){
-      $.extend(roommate, roommate.property);
+    if(roommate.unit){
+      // flatten unit fields to make the edit form display the existing data
+      $.extend(roommate, roommate.unit);
     }
     
     if(this.isCreateNew){
-      if(this.resident.get('property')){
-        roommate.unit_id = this.resident.get('property').unit_id; //assign on new form view
+      if(this.resident.get('unit')){
+        roommate.unit_id = this.resident.get('unit').unit_id; //assign on new form view
       }
     }
     
     var form = new Backbone.Form({
       schema: {
-        unit_id: {
-          type: 'Hidden',
-          validators: [{type: 'required', message: 'Please set the Unit code for the resident before adding roommates'}]
+        unit_id: { // prefill unit_id, don't add validation 
+          type: 'Hidden'
         },
         last_name: {
           title: 'Last Name',
@@ -176,6 +176,11 @@ Crm.Views.RoommateNewOrUpdate = Backbone.View.extend({
         },
         ssn: {
           title: 'SSN#'
+        },
+        status: {
+          type: 'Select',
+          validators: [{type: 'required', message: 'Status is required'}],
+          options: App.vars.metricOptions["resident_status"]
         },
         move_in: {
           title: 'Move-in Date',

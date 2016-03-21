@@ -15,22 +15,49 @@ class Comment < ActiveRecord::Base
   default_scope { where(:deleted_at => nil).order("created_at desc") }
   
   after_create :send_email
+  after_create :create_notification
+  
+  after_update :archive_notification
   
   def resident
-    @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
+    if defined?(@resident) #prevent query executed when record not found
+      @resident
+    else
+      @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first
+    end
+  end
+  
+  def resident_unit_id
+    "#{resident_id}_#{unit_id}"
   end
   
   # manual polymorphic
   def author
-    @author ||= author_id ? (class_from_string(author_type).find_by_id(author_id) rescue nil) : nil
+    if defined?(@author) #prevent query executed when record not found
+      @author
+    else
+      @author ||= author_id ? (class_from_string(author_type).find_by_id(author_id) rescue nil) : nil
+    end
+  end
+
+  def notification
+    if defined?(@notification) #prevent query executed when record not found
+      @notification
+    else
+      @notification ||= Notification.find_by(:comment_id => id)
+    end
   end
   
-  def eager_load(subject)
-    if subject.kind_of?(Resident)
+  def eager_load(subject, clzz = nil)
+    if subject.kind_of?(Resident) || clzz == "Resident"
       @author = subject
       
-    elsif subject.kind_of?(User)
+    elsif subject.kind_of?(User) || clzz == "User"
       @author = subject
+      
+    elsif subject.kind_of?(Notification) || clzz == "Notification"
+      @notification = subject
+    
     end
     
     self
@@ -67,6 +94,29 @@ class Comment < ActiveRecord::Base
     def send_email
       if email?
         Resque.enqueue(EmailConversationMailer, email.id)
+      end
+    end
+    
+    def create_notification
+      # create notification if RESIDENT send email to property email
+      if email? && author.kind_of?(Resident)
+        Notification.create({
+          :property_id => property_id,
+          :resident_id => resident_id,
+          :unit_id => unit_id,
+          :state => "pending",
+          :subject => email.subject,
+          :message => email.message,
+          :comment_id => id,
+          :created_at => created_at,
+          :updated_at => updated_at
+        })
+      end
+    end
+    
+    def archive_notification
+      if deleted_at_changed? && deleted_at && email?
+        Notification.where(:property_id => property_id, :comment_id => id).update_all(:deleted_at => Time.now)
       end
     end
   

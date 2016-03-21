@@ -8,7 +8,8 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
     "click .new-note": "newNote",
     "click .new-upload": "newUpload",
     "click .new-ticket": "newTicket",
-    "click .new-roommate": "newRoommate"
+    "click .new-roommate": "newRoommate",
+    "click .view-smartrent": "viewSmartrent",
 	},
   
   initialize: function() {
@@ -94,15 +95,15 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
       });
     }
     
-    if( this.$('#email-wrap:visible')[0] ){
-      this.$('#email-wrap').slideUp();
+    if( this.$('#form-wrap #email-wrap:visible')[0] ){
+      this.$('#form-wrap #email-wrap').slideUp();
       this.$('#toolbar .btn').removeClass('selected');
       this.$('.activities .resident-box').fadeIn();
       
     } else {
       this.formWrap.find('> div').hide();
       this.$('#toolbar .btn').removeClass('selected').end().find('.new-email').addClass('selected');
-      this.$('#email-wrap').slideDown();
+      this.$('#form-wrap #email-wrap').slideDown();
       this.$('.activities .resident-box').hide();
       this.$('.activities .email-act').fadeIn();
     }
@@ -195,7 +196,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
   newRoommate: function(ev){
     if( !this.roommateForm ) {
       //switch to roommates resource
-      Crm.collInst.residentRoommates.url = App.vars.routeRoot + "/roommates?unit_id=" + this.model.get('property').unit_id;
+      Crm.collInst.residentRoommates.url = App.vars.routeRoot + "/roommates?unit_id=" + this.model.get('unit').unit_id;
 
       this.roommateForm = new Crm.Views.RoommateNew({
         collection: Crm.collInst.residentRoommates
@@ -205,5 +206,10 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
 
     this.$('.roommates').before( this.roommateForm.render().el );
     $('#roommate-wrap').show();
+  },
+  
+  viewSmartrent: function(){
+    $('#resident-info .nav-details a[href="#smartrent"]').click();
+    return false;
   }
 });

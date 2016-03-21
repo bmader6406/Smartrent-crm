@@ -1,7 +1,8 @@
 class ArchivedResidentActivity
   include Mongoid::Document
   include Mongoid::Timestamps
-
+  include Mongoid::Attributes::Dynamic
+  
   include MultiTenant::RandomPrimaryKeyHelper
 
   field :_id, :type => String

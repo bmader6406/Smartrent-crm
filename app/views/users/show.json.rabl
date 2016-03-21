@@ -28,7 +28,7 @@ node do |n|
     hash[:authorized_properties] = region_roles.collect{|r| r.resource.name }.compact.join(", ")
     
   else
-    hash[:authorized_properties] = property_roles.length == Property.count ? "All Properties" : property_roles.collect{|r| r.resource.name }.compact.join(", ")
+    hash[:authorized_properties] = property_roles.length == Property.count ? "All Properties" : property_roles.collect{|r| r.resource.name if r.resource }.compact.join(", ")
   end
   
   hash

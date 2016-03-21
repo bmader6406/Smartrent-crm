@@ -14,15 +14,6 @@
   <%= flash_messages %>
   <%= render "layouts/error_messages", :target => @user_session, :header_message => "Login Failed!" %>
   
-  <div class="divider"><h4>Log in with</h4></div>
-  <div class="providers">
-		<%= link_to image_tag("auth/facebook_64.png"), "#", :id => "fb-login" %>
-		<%= link_to image_tag("auth/twitter_64.png"), "/auth/twitter" %>
-		<%= link_to image_tag("auth/google_64.png"), "/auth/google_oauth2" %>
-		<%= link_to image_tag("auth/linkedin_64.png"), "/auth/linkedin" %>
-	</div>
-	
-	<div class="divider or"><h4>Or</h4></div>
   <%= f.text_field :email, "placeholder" => "Email", :class => "form-control", "autocorrect" => "off", "autocapitalize" => "off" %>
   <%= f.password_field :password, "placeholder" => "Password", :class => "form-control" %>
 

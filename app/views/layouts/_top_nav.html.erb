@@ -1,48 +1,90 @@
-<div id="top-nav" class="navbar navbar-default">
-  <a href="#" id="hamburger">
-    <i class="fa fa-bars"></i>
-  </a>
-
-  <a href="<%= main_app.root_path %>" class="logo">
-    <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png">
-    CRM
+<div id="top-nav" class="navbar navbar-default navbar-fixed-top">
+  <a href="<%= raw main_app.root_path %>" class="navbar-brand logo">
+    <i class="fa fa-angle-down"></i>
+    <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png" alt="Bozzuto" />
+    <span> 
+      <% if sr_page? %>
+        Smartrent
+      <% else %>
+        CRM
+      <% end %>
+    </span>
   </a>
   
-  <ul class="nav navbar-nav" style="margin-left: 60px;">
-    <li class="dropdown" id="property-dd">
-      <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-        <%= @property ? @property.name : "Select a property" %>
-        <i class="fa fa-angle-down fa-lg"></i>
-      </a>
+  <% if !sr_page? %>
+    <ul class="nav navbar-nav">
+      <li class="dropdown" id="property-dd">
+        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+          <% if @property %>
+            <%= @property.name %>
+            <span class="label">
+    	        <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">Smartrent</span>
+  	        </span>
+          <% else %>
+            Select a property
+          <% end %>
+          <i class="fa fa-angle-down fa-lg" style="<%= "visibility:hidden" if current_user.managed_properties.count <= 1 %>"></i>
+        </a>
       
-      <div class="list-filter dropdown-menu">
-    	  <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Start typing property name...">
-        </form>
+        <div class="list-filter dropdown-menu" style="<%= "display:none" if current_user.managed_properties.count <= 1 %>">
+      	  <form class="form-inline">
+            <input type="text" class="form-control" placeholder="Start typing property name..." value="">
+          </form>
 
-    	  <div class="scroller">
-      	  <div class="list-group">
-            <%
-      	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
-      	      properties_region.keys.each do |region|
-      	    %>
-      	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>"> <%= region ? region.name : "Other Metro" %></b>
-        	    <div class="items">
-          	    <% properties_region[region].each do |prop| %>
-          	      <a href="<%= property_residents_path(prop) %>" class="list-group-item" data-val="<%= prop.id %>" data-label="<%= prop.name %>"> <%= prop.name %> </a>
-          	    <% end %>
-        	    </div>
-      	    <% end %>
+      	  <div class="scroller">
+        	  <div class="list-group">
+        	    <a href="<%= main_app.residents_path %>" class="list-group-item <%= "active" if !@property %>">
+        	      All Properties
+        	    </a>
+        	    <div class="divider"></div>
+              <%
+        	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
+        	      properties_region.keys.sort{ |a, b| (a.name.to_s rescue "WWW") <=> (b.name.to_s rescue "WWW") }.each do |region|
+        	        hidden_region = properties_region[region].collect{|prop| prop if prop.is_crm? || prop.is_smartrent? }.compact.blank?
+        	    %>
+        	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>" style="<%= "display:none" if hidden_region %>"> <%= region ? region.name : "Other Metro" %></b>
+          	    <div class="items">
+            	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
+            	      <% next if !prop.is_crm? && !prop.is_smartrent?  %>
+            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>" data-crm="<%= prop.is_crm? ? 1 : 0 %>"> 
+            	        <%= prop.name %>
+            	        
+            	        <span class="label">
+              	        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">Smartrent</span>
+            	        </span>
+            	      </a>
+            	    <% end %>
+          	    </div>
+        	    <% end %>
+            </div>
           </div>
-        </div>
-    	</div> <!-- /.list-filter -->
-    </li>
-  </ul>
+      	</div> <!-- /.list-filter -->
+      </li>
+      <% if @property %>
+        <li>
+        <form id="top_nav_unit_form" action="<%= main_app.property_path(@property) %>">
+          <input type="text" pattern=".{3,}" required title="3 characters minimum" class="form-control" placeholder="Unit #" name="unit_code" id="top_unit_code" />
+          </form>
+        </li>
+      <% end %>
+
+    </ul>
+  <% end %>
 
   <div class="nav navbar-nav navbar-right">
     <div class="user-info">
-      <%= current_user.first_name %> 
-      <span>(<%= current_user.role %>)</span> | 
+      <% if !sr_page? %>
+        <a href="<%= raw(@property ? main_app.property_notifications_path(@property) : main_app.notifications_path) %>" class="page-reload" id="notification-nav">
+          <i class="fa <%= pending_messages.length > 0 ? "fa-bell" : "fa-bell-o" %>"></i> 
+          <span id="pending-count" style="<%= "display:none" if pending_messages.length.zero? %>">(<%= pending_messages.length %>)</span>
+        </a>
+        &nbsp;&middot;&nbsp;
+      <% end %>
+      
+      <a href="<%= main_app.profile_path %>" class="page-reload">
+        <%= current_user.first_name %>
+      </a>
+      &nbsp;&middot;&nbsp;
       <a href="<%= main_app.logout_path %>"> Logout </a>
     </div>
   </div>

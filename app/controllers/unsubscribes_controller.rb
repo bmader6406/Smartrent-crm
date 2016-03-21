@@ -113,7 +113,7 @@ class UnsubscribesController < ApplicationController
     def switch_page #if the lead not belongs to this page, switch to the shared audience page
       @property = @campaign.property
       
-      if !@resident.properties.detect{|p| p.property_id == @property.id.to_s }
+      if !@resident.units.detect{|u| u.property_id == @property.id.to_s }
         audience = @resident.to_cross_audience(@campaign)
         
         if audience && audience.property

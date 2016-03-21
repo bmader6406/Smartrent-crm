@@ -24,8 +24,10 @@ class ConversationMonitor
       total += 1
     
       begin
-        from = m.from.first.to_s.gsub(/(.*<|>.*)/, '')
-        to = m.to.first.to_s.gsub(/(.*<|>.*)/, '')
+        from = m.from.first.to_s
+        to = m.to.first.to_s
+        cc = m.cc.kind_of?(Array) ? m.cc.join(", ") : nil
+        
         token = to.gsub('conversation+rep', '').gsub('@hy.ly', '')
         subject = m.subject.to_s
         message = m.html_part.body.to_s
@@ -36,11 +38,12 @@ class ConversationMonitor
         end
         
         email = Email.find_by_token(token)
-        
+
         if email && email.comment && email.comment.resident 
           comment = Comment.new({
             :type => "email",
             :property_id => email.comment.property_id,
+            :unit_id => email.comment.unit_id,
             :resident_id => email.comment.resident_id,
             :parent => email.comment,
             :author_id => email.comment.resident.id,
@@ -52,13 +55,15 @@ class ConversationMonitor
             :message => message,
             :from => from,
             :to => email.from,
+            :cc => cc,
             :message_id => m.message_id
           })
-          
+
           comment.save
           
           email.comment.resident.activities.create({
             :property_id => comment.property_id,
+            :unit_id => comment.unit_id,
             :action => comment.type,
             :subject_id => comment.id,
             :subject_type => comment.class.to_s

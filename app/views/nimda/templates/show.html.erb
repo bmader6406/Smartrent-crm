@@ -1,72 +1,88 @@
-<style type="text/css">
-  #template-form {
-    float: left;
-    width: 440px;
-  }
-  
-  #template-form .hint {
-    font-size:11px; 
-    color:#999; 
-    margin:0
-  }
-  
-	#template-form .actions {
-		padding: 15px 0;
-	}
-  
-  #template-preview {
-    border: 1px solid #eee;
-    margin-left: 500px;
-    text-align: center;
-    position: relative;
-  }
-  
-  #template-preview  iframe {
-    height:1024px;
-    width: 100%;
-  }
-</style>
+<% content_for(:css) do %>
+  <style type="text/css">
+    #template-form {
+      float: left;
+      width: 440px;
+    }
 
-<div class="page-header">
-  <h1> Template: <%= @template.name %></h1>
-</div>
-<br>
+    #template-form .hint {
+      font-size:11px; 
+      color:#999; 
+      margin:0
+    }
 
-<%= link_to 'Back', nimda_templates_path %>
+    #template-form .actions {
+    	padding: 15px 0;
+    }
 
-<br><br>
+    #template-preview {
+      border: 1px solid #eee;
+      margin-left: 500px;
+      text-align: center;
+      position: relative;
+    }
 
-<%= form_for(@template, :url => nimda_template_path(@template), :html => {:id => "template-form", :class => "well"}) do |f| %>
-  <%= render "layouts/error_messages", :target => @template, :header_message => "Template could not be saved!"  %>
-  
-  <div class="form-group">
-    <%= f.label :name %>
-    <%= f.text_field :name, :class => "form-control" %>
-  </div>
-  
-  <div class="form-group">
-    <%= f.label :property_id, "Property" %>
-    <%= f.select :property_id, Property.all.collect { |p| [ p.name, p.id ] }, {include_blank: true}, {:class => "form-control"} %>
-  </div>
-  
-  <div class="form-group">
-    <label> Body HTML </label>
-    <%= text_area_tag "body_html", @template.campaign.body_html, :class => "form-control", :style => "height: 500px;" %>
-  </div>
-  
-  <div class="actions">
-    <%= f.button "Update", :class => "btn btn-primary" %>
+    #template-preview  iframe {
+      height:1024px;
+      width: 100%;
+    }
+  </style>
+<% end %>
+
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <div class="page-header">
+          <h1> Template: <%= @template.name %></h1>
+        </div>
+
+        <%= link_to 'Back', nimda_templates_path %>
+
+        <br><br>
+
+        <%= form_for(@template, :url => nimda_template_path(@template), :html => {:id => "template-form", :class => "well"}) do |f| %>
+          <%= render "layouts/error_messages", :target => @template, :header_message => "Template could not be saved!"  %>
+
+          <div class="form-group">
+            <%= f.label :name %>
+            <%= f.text_field :name, :class => "form-control" %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :property_id, "Property" %>
+            <%= f.select :property_id, Property.order("name asc").all.collect { |p| [ p.name, p.id ] }, {include_blank: true}, {:class => "form-control"} %>
+          </div>
+
+          <div class="form-group">
+            <label> Body HTML </label>
+            <%= text_area_tag "body_html", @template.campaign.body_html, :class => "form-control", :style => "height: 500px;" %>
+          </div>
+
+          <div class="actions">
+            <%= f.button "Update", :class => "btn btn-primary" %>
+          </div>
+        <% end %>
+
+        <div id="template-preview">
+          <iframe src="<%= preview_nimda_template_path(@template) %>" frameBorder="0"></iframe>
+        </div>
+        
+      </div>
+    </div>
   </div>
 <% end %>
-    
-<div id="template-preview">
-  <iframe src="<%= preview_nimda_template_path(@template) %>" frameBorder="0"></iframe>
-</div>
+
+<%= render "dashboards/js_vars" %>
 
 <script type="text/javascript" charset="utf-8">
   $(function(){
     
     $('#template-form').resetForm();
     
+    App.initPageLayout(null, null, null, true);; //should be called on top
   });
 </script>

@@ -1,0 +1,325 @@
+<% 
+  csv_columns = [["No update", ""]]
+  0.upto(49) do |i|
+    csv_columns << ["Column #{i+1}", i]
+  end
+%>
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container import-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="well">
+              <h3>
+                Delete & Reload Residents from Yardi <br>
+                <a href="#" data-toggle="modal" data-target="#full-import-hint">What does this import do?</a>
+              </h3>
+              <%= form_tag load_yardi_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_yardi_one_time" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @import.ftp_setting["host"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @import.ftp_setting["username"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @import.ftp_setting["file_name"], :class => "form-control" %>
+                  <p class="help-block">
+                    %Y%m%d will be replaced by the actual date when the import runs ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "ftp_setting[recipient]", @import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finished</span>
+                </div>
+                
+                <div class="form-group">
+                  <a href="#" class="show-mapping">Import Mapping</a>
+                  <div class="field-mapping" style="display:none">
+                    <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <th>
+                          CRM field
+                        </th>
+                        <th width="200px">
+                          CSV column
+                        </th>
+                      </thead>
+                      <tbody>
+                        <% @import.field_map.keys.each do |key| %>
+                          <tr>
+                            <td>
+                              <%= key.gsub("_", " ").titleize %>
+                            </td>
+                            <td>
+                              <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @import.field_map[key].to_s), :class => "form-control"  %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <%= button_tag "Import & Overwrite ALL Resident Data", :name => nil, :class => "btn btn-danger" %>
+                <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="well">
+              <h3> 
+                Nightly Update from Yardi <br>
+                <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this import do?</a>
+              </h3>
+              <%= form_tag load_yardi_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_yardi_daily" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @daily_import.ftp_setting["username"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @daily_import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
+                  <p class="help-block">
+                    %Y%m%d will be replaced by the actual date when the import runs ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
+                </div>
+
+                <div class="form-group">
+                  <a href="#" class="show-mapping">Import Mapping</a>
+                  <div class="field-mapping" style="display:none">
+                    <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <th>
+                          CRM field
+                        </th>
+                        <th width="200px">
+                          CSV column
+                        </th>
+                      </thead>
+                      <tbody>
+                        <% @daily_import.field_map.keys.each do |key| %>
+                          <tr>
+                            <td>
+                              <%= key.gsub("_", " ").titleize %>
+                            </td>
+                            <td>
+                              <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label>
+                    <%= hidden_field_tag "active", 0 %>
+                    <%= check_box_tag "active", 1, @daily_import.active?, :style => "margin: 0 4px 0 0;" %>
+                    Import file nightly at 3:00 AM
+                  </label>
+                </div>
+                
+                <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
+                <a href="<%= test_yardi_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Modal -->
+<div class="modal fade" id="full-import-hint" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title">What does this import do?</h4>
+      </div>
+      <div class="modal-body">
+        <b>Delete & Reload Residents</b> will: <br>
+        <p>
+          - Initialize the property from scratch and remove all past history associated with the units, tenants, conversations, etc for that property.
+        </p>
+        <p>
+          - Load the tenancy data for that property. This includes matching and merging the tenancy's email address to a past resident. 
+          (This step will not remove history from any other property. )
+        </p>
+        <p>
+        - Handle past resident matches as follows:  If the full upload includes a person's whose email is already in the system, 
+        the new information about the person will not change information (demographics, etc.) that already exists in the Bozzuto CRM. 
+        This is to prevent a new Yardi load from overwriting information that may have been painstakingly cleaned up by another property manager
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="nightly-import-hint" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title">What does this import do?</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          <b>Nightly Update from Yardi</b> has 3 different modes of import: <br>
+          - Tenancy of the unit remains the same <br>
+          - A new tenancy is found <br>
+          - A tenancy is missing.
+        </p>
+        
+        <span style="font-size:15px; text-decoration: underline">These are handled as follows. <br></span>
+        <p>
+          1. If a ​<b>tenancy remains the same</b>​ (that is, unit-code + tenant-code do not change), then the import will update the tenancy fields: <br>
+          - Tenant Status <br>
+          - Move In <br>
+          - Move Out
+        </p>
+        <p>
+          2. If the ​<b>import file has a new tenancy</b>​, that is, we find a new unit-code + tenant-code combination, we will do the following: <br>
+          - Search for the Resident associated with the new Tenant Code using their email<br>
+          - If the email is found, associate this new tenancy with the existing resident.<br>
+          - If the email is not found, create a new resident and associate this new tenancy with the new resident.<br>
+          <br>
+          The existing tenancy is put into the status of "Archive." Note this is different from Current, Future, Notice and Past. 
+          This is because this was a move forced by the appearance of a new tenant code. It was an automated Bozzuto CRM change 
+          and not a Yardi change and hence needs to be marked differently than just "Past". The move in and move out are not changed.
+        </p>
+        <p>
+          3. If the ​<b>import is missing a tenancy</b>​, we alert the property manager of the missing person. Specifically, we find that a "unit-code + tenant-code" 
+          combination is missing from the Yardi feed
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%= render "dashboards/js_vars" %>
+
+<script type="text/javascript">
+  $(function(){
+    $('.import-form').each(function(){
+      var form = $(this);
+      
+      form.on('submit', function(){
+        var blanks = [];
+
+        form.find('input:visible').each(function(){
+          var input = $(this);
+
+          if( $.trim(input.val()) == "") {
+            blanks.push( input );
+          }
+        });
+
+        if(blanks.length > 0) {
+          msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+          return false;
+        }
+
+        bootbox.confirm("Sure you want to load Yardi residents? There is no undo.", function(result) {
+          if (result) {
+            form.ajaxSubmit({
+              dataType: 'json',
+              beforeSerialize: function(){
+                form.mask('Please wait...');
+              },
+              success: function(){
+                form.unmask();
+                
+                if(form.find("input[name=type]").val().indexOf("one_time") > -1) {
+                  msgbox('Yardi Residents are being loaded... We will send the Import Status to ' + form.find('input[name*=recipient]').val() + ' shortly.');
+                  
+                } else {
+                  msgbox('Nightly Import setting was updated successfully');
+                }
+                
+              }
+            });
+          }
+        });
+
+        return false;
+      });
+
+      form.on('click', '.test', function(){
+        form.mask('Please wait...');
+
+        $.post(this.href, form.serializeArray(), function(data){
+          if(data.success){
+            msgbox('FTP Credentials are correct');
+          } else {
+            msgbox('FTP Credentials are not correct!', 'danger');
+          }
+
+          form.unmask();
+        }, 'json');
+
+        return false;
+      });
+    });
+    
+    $('.show-mapping').click(function(){
+      var t = $(this);
+      t.hide();
+      t.next().slideDown();
+      
+      return false;
+    });
+    
+    
+    App.initPageLayout(null, null, null, true);
+    
+  });
+</script>

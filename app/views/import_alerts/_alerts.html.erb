@@ -1,0 +1,11 @@
+<ul class="list-unstyled alerts">
+  <% alerts.each do |a| %>
+    <% next if @alert == a %> <!-- don't show the alert of show action -->
+    <%= render "alert", :a => a %>
+  <% end %>
+</ul>
+
+<div class="paging-info">
+  <%= page_entries_info alerts, :model => 'alert' %>
+  <%= page_navigation_links(alerts) %>
+</div>

@@ -1,5 +1,5 @@
 class PropertiesController < ApplicationController
-  before_action :require_user
+  before_filter :require_user
   before_action :set_property, :except => [:index, :new, :create, :info]
   before_action :set_page_title
   
@@ -70,9 +70,14 @@ class PropertiesController < ApplicationController
 
   def update
     respond_to do |format|
-      if @property.update_attributes(property_params)
-        format.json { head :no_content }
+      if !["xml_feed", "csv_feed"].include?(@property.updated_by)
+        if @property.update_attributes(property_params)
+          format.json { head :no_content }
+        else
+          format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
+        end
       else
+        @property.errors.add(:this, "property can't be updated")
         format.json { render json: @property.errors.full_messages, status: :unprocessable_entity }
       end
     end
@@ -91,12 +96,6 @@ class PropertiesController < ApplicationController
       params.require(:property).permit!
     end
     
-    def set_property
-      @property = current_user.managed_properties.find(params[:property_id])
-      
-      Time.zone = @property.setting.time_zone
-    end
-
     def set_property
       @property = Property.find(params[:id])
       
@@ -123,8 +122,14 @@ class PropertiesController < ApplicationController
       ["name", "city", "state", "zip", "property_number", "l2l_property_id", "yardi_property_id"].each do |k|
         next if params[k].blank?
         
-        arr << "name LIKE :#{k}"
+        arr << "#{k} LIKE :#{k}"
         hash[k.to_sym] = "%#{params[k]}%"
+      end
+      
+      if params[:property_type] == "crm" || !params[:property_type]
+        arr << "is_crm = 1"
+      elsif params[:property_type] == "smartrent"
+        arr << "is_smartrent = 1"
       end
       
       @properties = Property.where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page).order("name asc")

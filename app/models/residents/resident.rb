@@ -7,24 +7,102 @@
 class Resident
   include Mongoid::Document
   include Mongoid::Timestamps
-
+  include Mongoid::Attributes::Dynamic
+  
   include MultiTenant::RandomPrimaryKeyHelper
   
-  CORE_FIELDS = [:email, :last_name, :first_name, :full_name, :gender, :birthday, :ssn, :last4_ssn, :alt_email,
-    :primary_phone, :cell_phone, :home_phone, :work_phone, :street, :city, :state, :zip, :country]
+  CORE_FIELDS = [
+    :email,
+    :last_name,
+    :first_name,
+    :full_name,
+    :gender,
+    :birthday,
+    :ssn,
+    :last4_ssn,
+    :alt_email,
+    :primary_phone,
+    :cell_phone,
+    :home_phone,
+    :work_phone,
+    :street,
+    :city,
+    :state,
+    :zip,
+    :country
+  ]
     
-  PROPERTY_FIELDS = [:property_id, :unit_id, :status, :status_date, :type, :signing_date, :move_in, :move_out, :rent,
-    :household_size, :household_status, :moving_from, :pets_count, :pet_type, :pet_breed, :pet_name, :occupation_type, :employer, 
-    :employer_city, :employer_state, :annual_income,  :minutes_to_work, :transportation_to_work, 
-    :vehicle1, :license1, :vehicle2, :license2, :vehicles_count, :badge_number, :rental_type,
-    :lessee, :roommate, :arc_check, :occupant_type, :relationship, :office_phone, :fax, :work_hour, :other1, :other2, :other3, :other4, :other5 ]
+  UNIT_FIELDS = [
+    :property_id,
+    :unit_id,
+    :tenant_code,
+    :status,
+    :status_date,
+    :type,
+    :signing_date,
+    :move_in,
+    :move_out,
+    :rent,
+    :lead_source,
+    :household_size,
+    :household_status,
+    :moving_from,
+    :pets_count,
+    :pet_1_type,
+    :pet_1_name,
+    :pet_1_breed,
+    :pet_2_type,
+    :pet_2_name,
+    :pet_2_breed,
+    :pet_3_type,
+    :pet_3_name,
+    :pet_3_breed,
+    :occupation_type,
+    :employer,
+    :employer_city,
+    :employer_state,
+    :annual_income,
+    :previous_residence,
+    :minutes_to_work,
+    :transportation_to_work,
+    :vehicle1,
+    :license1,
+    :badge_number_1,
+    :vehicle2,
+    :license2,
+    :badge_number_2,
+    :vehicle3,
+    :license3,
+    :badge_number_3,
+    :vehicle4,
+    :license4,
+    :badge_number_4,
+    :vehicle5,
+    :license5,
+    :badge_number_5,
+    :vehicles_count,
+    :rental_type,
+    :lessee,
+    :roommate,
+    :arc_check,
+    :occupant_type,
+    :relationship,
+    :office_phone,
+    :fax,
+    :work_hour,
+    :other1,
+    :other2,
+    :other3,
+    :other4,
+    :other5
+  ]
     
   field :_id, :type => String
   
   field :unified_status, :type => String
   
   field :sources_count, :type => Integer, :default => 0
-  field :properties_count, :type => Integer, :default => 0
+  field :units_count, :type => Integer, :default => 0
   field :activities_count, :type => Integer, :default => 0
   field :marketing_activities_count, :type => Integer, :default => 0
   
@@ -64,65 +142,68 @@ class Resident
   field :email_checked_at, :type => DateTime
   
   field :bounces_count, :type => Integer, :default => 0
-  
-  # resident score
-  SEND_SCORE = 1
-  OPEN_SCORE = 2
-  CLICK_SCORE = 5
-  
-  field :score, :type => Integer, :default => 0
-  field :sends_count, :type => Integer, :default => 0
-  field :opens_count, :type => Integer, :default => 0
-  field :clicks_count, :type => Integer, :default => 0
-  
-  
+
+
   embeds_many :activities, :class_name => "ResidentActivity"
   embeds_many :sources, :class_name => "ResidentSource"
-  embeds_many :properties, :class_name => "ResidentProperty"
+  embeds_many :units, :class_name => "ResidentUnit"
   embeds_many :marketing_activities, :class_name => "MarketingActivity"
 
-  accepts_nested_attributes_for :activities, :sources, :properties, :marketing_activities
+  accepts_nested_attributes_for :activities, :sources, :units, :marketing_activities
 
   before_save :downcase_name_email
+  after_save :change_smartrent_email
   
   index({ email_lc: 1 }, {background: true})
   index({ first_name_lc: 1 }, {background: true})
   index({ last_name_lc: 1 }, {background: true})
-
+  
   #embedded
-  index({ :deleted_at => 1 })
-  index({ "properties.property_id" => 1, "properties.status" => 1 })
-  index({ "properties.property_id" => 1, :updated_at => 1 })
-  index({ "properties.property_id" => 1, "properties.unit_id" => 1 })
+  index({ :deleted_at => 1 }, {background: true})
+  index({ "units.property_id" => 1, "units.status" => 1 }, {background: true})
+  index({ "units.property_id" => 1, "units.unit_id" => 1 }, {background: true})
+  index({ "units.property_id" => 1, "units.move_in" => 1 }, {background: true})
+  index({ "units.property_id" => 1, :updated_at => 1 }, {background: true})
 
   scope :ordered, ->(*order) { order_by(order.flatten.first ? order.flatten.first.split(" ") : {:created_at => :desc})}
   scope :unify_ordered, -> { order_by({:created_at => :asc}) }
   
-  attr_accessor :curr_property_id, :property_id, :from_import
+  attr_accessor :curr_unit_id, :property_id, :from_import
   
+  validates :email, {:uniqueness => true}
+
   # don't set default sort order
   # don't specify sort if not needed on a large set
   # http://stackoverflow.com/questions/11599069/what-does-mongo-sort-on-when-no-sort-order-is-specified
-
+  
   def self.find_by_id(id)
     Resident.where(:_id => id.to_i).first
   end
   
-  def curr_property(pid = curr_property_id)
-    @curr_property ||= properties.detect{|p| p.property_id.to_s == pid.to_s } || properties.first
+  def to_param
+    "#{id}_#{unit_id}"
   end
-  
+
+  # fixed N+1 query
+  def unit_code
+    @unit_code ||= ( @unit || Unit.find(unit_id) ).code rescue nil
+  end
+
+  def curr_unit(uid = curr_unit_id)
+    @curr_unit ||= units.detect{|u| u.unit_id.to_s == uid.to_s } || units.first
+  end
+
   def context(campaign)
     #clear previous cache
-    @curr_property = nil
+    @curr_unit = nil
     self.property_id = campaign ? campaign.property_id : nil
     self
   end
   
-  # access current property method at resident level
-  PROPERTY_FIELDS.each do |f|
+  # access current unit method at resident level
+  UNIT_FIELDS.each do |f|
     define_method "#{f}" do
-      curr_property.send(f)
+      curr_unit.send(f)
     end
   end
   
@@ -137,10 +218,14 @@ class Resident
   #==== relationship between mysql, mongodb document
 
 
-  def eager_load(subject)
-    # if subject.kind_of?(X)
+  def eager_load(subject, clzz = nil)
+    if subject.kind_of?(Smartrent::Resident)
+      @smartrent_resident = subject
 
-    # end
+    elsif subject.kind_of?(Unit)
+      @unit = subject
+      
+    end
   
     self
   end
@@ -185,6 +270,10 @@ class Resident
   def full_name=(name)
     self.first_name, self.last_name = name.split(' ', 2)
   end
+  
+  def name_or_email
+    !full_name.blank? ? full_name : email
+  end
 
   def status_dict
     @status_dict ||= {
@@ -202,7 +291,7 @@ class Resident
     status = nil
     statues = []
 
-    properties.each{|prop| statues << prop.status }
+    units.each{|u| statues << u.status }
 
     if statues.any? {|s| s == "Current"}
       status = "resident_current"
@@ -224,10 +313,10 @@ class Resident
   ### email system
   def subscribed?(property = nil)
     if property
-      properties.detect{|p| p.property_id == property.id.to_s }.subscribed? rescue false
+      units.detect{|u| u.property_id == property.id.to_s }.subscribed? rescue false
 
-    elsif curr_property_id
-      properties.detect{|p| p.property_id == curr_property_id.to_s }.subscribed? rescue false
+    elsif curr_unit_id
+      units.detect{|u| u.property_id == curr_unit_id.to_s }.subscribed? rescue false
 
     else
       self[:subscribed]
@@ -239,7 +328,7 @@ class Resident
   end
 
   def any_subscribed?(property_ids)
-    (property_ids.include?(property_id) ? self[:subscribed] : false) || properties.any?{|p| p.subscribed? && property_ids.include?(p.property_id) }
+    (property_ids.include?(property_id) ? self[:subscribed] : false) || units.any?{|u| u.subscribed? && property_ids.include?(u.property_id) }
   end
 
   def unsubscribe(campaign, action = nil)
@@ -252,17 +341,17 @@ class Resident
         updated = true
       end
 
-      if properties.any?{|p| p.subscribed }
-        self.properties.update_all(:subscribed => false)
+      if units.any?{|u| u.subscribed }
+        self.units.update_all(:subscribed => false)
         updated = true
       end
 
     else
       if campaign.property
-        prop = properties.detect{|p| p.property_id ==  campaign.property.id.to_s || campaign.tmp_property_id.to_s == p.property_id }
+        unit = units.detect{|u| u.property_id ==  campaign.property.id.to_s || campaign.tmp_property_id.to_s == u.property_id }
 
-        if prop && prop.subscribed?
-          prop.update_attribute(:subscribed, false)
+        if unit && unit.subscribed?
+          unit.update_attribute(:subscribed, false)
           updated = true
 
         elsif campaign.tmp_property_id.to_s == property_id && self.subscribed?
@@ -294,22 +383,22 @@ class Resident
 
     if bozzuto_properties
       bozzuto_properties.each do |property|
-        prop = properties.detect{|p| p.property_id ==  property.id.to_s }
+        unit = units.detect{|u| u.property_id ==  property.id.to_s }
 
-        if prop && !prop.subscribed?
-          prop.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+        if unit && !unit.subscribed?
+          unit.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
 
           marketing_activities.create(:action => "subscribe_property", :subject_id => campaign.id, :subject_type => campaign.class.to_s,
-            :target_id => prop.id, :target_type => "Property")
+            :target_id => unit.id, :target_type => "Property")
         end
       end
 
     else
       if campaign.property
-        prop = properties.detect{|p| p.property_id ==  campaign.property.id.to_s  || campaign.tmp_property_id.to_s == p.property_id  }
+        unit = units.detect{|u| u.property_id ==  campaign.property.id.to_s  || campaign.tmp_property_id.to_s == u.property_id  }
 
-        if prop && !prop.subscribed?
-          prop.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
+        if unit && !unit.subscribed?
+          unit.update_attributes(:subscribed => true, :subscribed_at => Time.now.utc)
           updated = true
 
         elsif campaign.tmp_property_id.to_s == property_id && !self.subscribed?
@@ -335,11 +424,6 @@ class Resident
       end
     end
 
-  end
-  
-  def finalize_score
-    self.score = sends_count*SEND_SCORE + opens_count*OPEN_SCORE + clicks_count*CLICK_SCORE
-    self.save
   end
   
   def bad_email?
@@ -389,7 +473,7 @@ class Resident
 
   # for unsubscribe
   def to_cross_audience(va_campaign)
-    property_ids = properties.collect{|p| p.property_id }
+    property_ids = units.collect{|p| p.property_id }
     audiences = cross_audiences
 
     #find sub-org audience which the lead belongs to
@@ -400,12 +484,24 @@ class Resident
 
     return audience
   end
-
+  
+  # @smartrent_resident is used to eager load the smartrent resident
+  def smartrent_resident
+    @smartrent_resident ||= Smartrent::Resident.find_by_email(email)
+  end
+  
   private
   
     def downcase_name_email
       self.first_name_lc = first_name.downcase if first_name
       self.last_name_lc = last_name.downcase if last_name
       self.email_lc = email.downcase if email
+      true
+    end
+    
+    def change_smartrent_email
+      if email_changed? && smartrent_resident
+        smartrent_resident.update_attributes(:email => email)
+      end
     end
 end

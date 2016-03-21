@@ -1,33 +1,31 @@
 Crm.Views.UnitsList = Backbone.View.extend({
   id: 'units',
   template: JST['backbone/templates/units/list'],
-  
+
   events: {
-    
+
   },
-  
+
   initialize: function () {
     this.listenTo(this.collection, 'reset', this.showTotal);
+    this.listenTo(this.collection, 'request', App.showMask);
+    this.listenTo(this.collection, 'sync', App.hideMask);
   },
-  
+
   showTotal: function(){
     var total = this.collection.state.totalRecords,
       found = total == 1 ? " Unit Found" : " Units Found";
-      
+
     this.$('.total').text(this.collection.state.totalRecords + found);
   },
-  
+
   render: function () {
   	var self = this,
        grid = new Backgrid.Grid({
+        row: ClickableRow,
         columns: [{
-          name: "id_url",
-          label: "Unit ID",
-          cell: 'html',
-          editable: false
-        }, {
           name: "code",
-          label: "Code",
+          label: "Unit #",
           cell: 'string',
           editable: false,
           sortable: false
@@ -74,11 +72,10 @@ Crm.Views.UnitsList = Backbone.View.extend({
       paginator = new Backgrid.Extension.Paginator({
         collection: self.collection,
         controls: {
-          rewind: null,
-          back: null,
-          forward: null,
-          fastForward: null
-        }
+          fastForward: null,
+          rewind: null
+        },
+        windowSize: 5
       });
 
     this.$el.html(this.template());

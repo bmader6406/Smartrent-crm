@@ -11,13 +11,14 @@ class ApplicationController < ActionController::Base
   helper_method :current_user_session, :current_user, :accept_invite_and_redirect, :conversion, :avg, :age
   
   before_action :set_user_time_zone
-  
+
   rescue_from CanCan::AccessDenied do |exception|
     msg = "Access denied on #{exception.action} #{exception.subject.inspect} - #{current_user.id}"
     ppp msg
     
     respond_to do |format|
       format.html {
+        flash[:error] = "You are not authorized to access that page"
         redirect_to main_app.root_url, :alert => "You are not authorized to access that page"
       }
       format.json {
@@ -27,7 +28,7 @@ class ApplicationController < ActionController::Base
   end
   
   def require_ssl
-    if !request.ssl? and Rails.env == "production"
+    if !request.ssl? and !Rails.env.development?
       redirect_to({:protocol => 'https', :host => request.env['HTTP_HOST'] }.merge(params)) #, :flash => flash
     end
   end
@@ -72,6 +73,11 @@ class ApplicationController < ActionController::Base
       return false
     end
   end
+
+  def require_admin
+    return true if current_user and current_user.is_admin?
+    raise CanCan::AccessDenied
+  end
       
   def store_location
     unless request.xhr?
@@ -81,6 +87,10 @@ class ApplicationController < ActionController::Base
   
   def back_or_default_url(default)
     url = session[:return_to] || default
+    if url == login_url || url.include?("login") || url.include?("user_sessions")
+      url = default
+      session[:return_to] = nil
+    end
     session[:return_to] = nil
     url
   end    

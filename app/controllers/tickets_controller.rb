@@ -3,6 +3,8 @@ class TicketsController < ApplicationController
   before_action :set_property
   before_action :set_ticket, :except => [:index, :new, :create]
   before_action :set_page_title
+  before_action :set_unit, :only => [:index]
+  before_action :set_resident, :only => [:show]
   
   def index
 
@@ -52,7 +54,7 @@ class TicketsController < ApplicationController
     ticket_params.delete(:assets)
     ticket_params.delete(:asset_ids)
     ticket_params.delete(:remove_asset_ids)
-    
+
     @ticket = Ticket.new(ticket_params)
     @ticket.assigner_id = current_user.id
     @ticket.property_id = @property.id
@@ -124,6 +126,22 @@ class TicketsController < ApplicationController
       Time.zone = @property.setting.time_zone
     end
 
+    def set_unit
+      @unit = @property.units.find(params[:unit_id]) if params[:unit_id].present?
+    end
+
+    def set_resident
+      # params[:resident_id] is a pair of resident id and unit id
+      if params[:resident_id].present?
+        resident_id, unit_id = params[:resident_id].split("_", 2)
+      
+        @resident = Resident.find(resident_id)
+        @unit = @property.units.find(unit_id)
+      
+        @resident.curr_unit_id = @unit.id # important
+      end
+    end
+
     def set_ticket
       @ticket = @property.tickets.find(params[:id])
       
@@ -147,7 +165,11 @@ class TicketsController < ApplicationController
       arr = []
       hash = {}
       
-      ["id", "resident_id", "status"].each do |k|
+      if !params[:unit_code].blank? #convert unit code to unit id
+        params[:unit_id] = @property.units.find_by_code(params[:unit_code]) rescue nil
+      end
+      
+      ["id", "unit_id", "status"].each do |k|
         next if params[k].blank?
         arr << "#{k} = :#{k}"
         hash[k.to_sym] = params[k]
@@ -170,24 +192,36 @@ class TicketsController < ApplicationController
         hash[:end_date] = end_date.to_s(:db)
       end
       
-      if !params[:first_name].blank? || !params[:last_name].blank?
+      if !params[:first_name].blank? || !params[:last_name].blank? || !params[:email].blank?
         residents = Resident
         residents = residents.where(:first_name_lc => params[:first_name].downcase) if !params[:first_name].blank?
         residents = residents.where(:last_name_lc => params[:last_name].downcase) if !params[:last_name].blank?
+        residents = residents.where(:email_lc => params[:email].downcase) if !params[:email].blank?
         
         arr << "resident_id IN (:resident_id)"
         hash[:resident_id] = residents.collect{|r| r._id.to_i }
       end
       
-      @tickets = @property.tickets.includes(:property, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
+      if @unit.present?
+        unit_resident_ids = @unit.residents.collect{|r| r.id}
+        @tickets = @property.tickets.where(:resident_id => unit_resident_ids).where("status = ? or (status != ? and created_at >= ?)", "open", "open", Time.now - 2.months)
+        
+      else
+        @tickets = @property.tickets
+      end
+      
+      @tickets = @tickets.includes(:property, :unit, :assigner, :assignee, :category, :assets).where(arr.join(" AND "), hash).paginate(:page => params[:page], :per_page => per_page)
       
       # eager load residents
       rids = @tickets.collect{|t| t.resident_id.to_s }
       if !rids.empty?
         residents = Resident.where(:id.in => rids).collect{|r| r } # don't use .all
         @tickets.each do |t|
-          r = residents.detect{|r| t.resident_id = r._id.to_i }
-          t.eager_load(r) if r
+          r = residents.detect{|r| t.resident_id == r._id.to_i }
+          if r
+            r.property_id = t.property_id
+            t.eager_load(r)
+          end
         end
       end
       

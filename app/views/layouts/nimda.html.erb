@@ -5,54 +5,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   
-  <title> <%= @page_title || controller_name %> </title>
+  <title> <%= @page_title || "CRM Nimda" %> </title>
   
   <link rel="icon" href="/favicon.png" type="image/png" />
   
   <link href='//fonts.googleapis.com/css?family=Raleway:400,600' rel='stylesheet' type='text/css'>
   
   <%= stylesheet_link_tag "application", :media => "all" %>
+  <%= stylesheet_link_tag "nimda", :media => "all" %>
+  
   <%= javascript_include_tag "application" %>
+  <%= javascript_include_tag "nimda" %>
+  
   <%= csrf_meta_tags %>
-  
-  <style type="text/css">
-    .navbar {
-      margin-bottom: 20px;
-    }
-    .navbar .logo {
-      color: #fff;
-      display: inline-block;
-      line-height: 30px;
-      margin-top: 10px;
-    }
-    
-    #import-tpl-form {
-      display: inline-block;
-      float: left;
-      margin-right: 10px;
-    }
-    .upload-button {
-      display: block;
-      overflow: hidden;
-      position: relative;
-      text-align: center;
-    }
 
-    .upload-button input[type="file"] {
-      cursor: pointer;
-      font-size: 460px;
-      margin: 0;
-      opacity: 0;
-      filter: alpha(opacity=0);
-      padding: 0;
-      position: absolute;
-      height: 40px;
-      right: 0;
-      top: 0;
-      z-index: 1;
-    }
-  </style>
-  
   <%= yield :css %>
   <%= yield :js %>
 </head>
@@ -63,6 +29,7 @@
   <%= render "nimda/top_nav" %>
   
   <div class="container-fluid">
+    <%= render "nimda/menu_nav" %>
     <%= flash_messages %>
     <%= yield %>
   </div><!-- /.container -->

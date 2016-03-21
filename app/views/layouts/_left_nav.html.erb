@@ -1,77 +1,135 @@
 <div id="left-nav">
-	<ul id="left-menu">
-	  <% if can? :read, Property %>
-	    <% if @property %>
-    		<li data-nav="property-info">
-          <a href="<%= raw main_app.info_property_path(@property) %>"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
-        </li>
-	    <% else %>
-    		<li data-nav="property-info" class="admin-prop-info" style="display:none">
-          <a href="#"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
-        </li>
-	    <% end %>
-    <% end %>
+  <div class="apps">
+    <a href="<%= raw main_app.root_path %>" class="app-name">
+      <i class="fa fa-angle-down"></i>
+      <img alt="Hy.ly" src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png"> 
+      <span>
+        <% if !sr_page? %>
+          CRM
+        <% else %>
+          Smartrent
+        <% end %>
+      </span>
+    </a>
     
-	  <% if can?(:read, Resident) %>
-	    <% if @property %>
-    		<li data-nav="residents">
-          <a href="<%= raw main_app.property_residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
-        </li>
+    <% if current_user.is_admin? %> <!-- visible to admin only -->
+      <div class="app-dd">
+        <div class="dropdown">
+          <a href="#" data-toggle="dropdown">
+            <%= sr_page? ? "Smartrent" : "CRM" %>
+            <i class="fa fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li class="<%= "active" if !sr_page? %>">
+              <a href="<%= raw main_app.root_url(:host => HOST) %>" class="page-reload"> CRM </a>
+            </li>
+            <li class="<%= "active" if sr_page? %>">
+              <a href="<%= raw sr.admin_properties_url(:host => SR_HOST) %>" class="page-reload"> Smartrent </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+	<ul id="left-menu">
+	  <% if !sr_page? %>
+  	  <% if can? :read, Property %>
+  	    <% if @property %>
+      		<li data-nav="property-info">
+            <a href="<%= raw main_app.info_property_path(@property) %>"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
+          </li>
+  	    <% else %>
+      		<li data-nav="property-info" class="admin-prop-info" style="display:none">
+            <a href="#"> <i class="fa fa-info-circle fa-fw"></i> Property Info</a>
+          </li>
+  	    <% end %>
+      <% end %>
+    
+  	  <% if can?(:read, Resident) %>
+  	    <% if @property %>
+      		<li data-nav="residents">
+            <a href="<%= raw main_app.property_residents_path(@property) %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+          </li>
+        <% else %>
+          <li data-nav="residents">
+            <a href="<%= raw main_app.residents_path %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+          </li>
+        <% end %>
+      <% end %>
+    
+      <% if @property && @property.is_crm? %>
+        <% if can?(:read, Ticket) %>
+          <li data-nav="tickets">
+            <a href="<%= raw main_app.property_tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
+          </li>
+        <% end %>
+    
+        <% if can?(:read, Campaign) %>
+          <li data-nav="notices">
+            <a href="<%= raw main_app.property_campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
+          </li>
+        <% end %>
+    
+        <% if can?(:read, Unit) %>
+          <li data-nav="units">
+            <a href="<%= raw main_app.property_units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
+          </li>
+        <% end %>
+      <% end %>
+    
+      <% if @property %>
+        <% if @property.is_crm? %>
+          <li data-nav="reports">
+            <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
+          </li>
+        <% end %>
+        
       <% else %>
-        <li data-nav="residents">
-          <a href="<%= raw main_app.residents_path %>"> <i class="fa fa-key fa-fw"></i> Residents</a>
+        <li data-nav="reports">
+          <a href="<%= raw main_app.reports_path %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
         </li>
       <% end %>
-    <% end %>
     
-    <% if can?(:read, Ticket) && @property %>
-      <li data-nav="tickets">
-        <a href="<%= raw main_app.property_tickets_path(@property) %>"> <i class="fa fa-wrench fa-fw"></i> Tickets</a>
-      </li>
-    <% end %>
+      <% if !@property && (can?(:cud, User) || can?(:read, User)) %>
+        <li data-nav="users">
+          <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
+        </li>
+      <% end %>
     
-    <% if can?(:read, Campaign) && @property %>
-      <li data-nav="notices">
-        <a href="<%= raw main_app.property_campaigns_path(@property) %>"> <i class="fa fa-envelope fa-fw"></i> Notices</a>
-      </li>
-    <% end %>
-    
-    <% if can?(:read, Unit) && @property %>
-      <li data-nav="units">
-        <a href="<%= raw main_app.property_units_path(@property) %>"> <i class="fa fa-home fa-fw"></i> Units</a>
-      </li>
-    <% end %>
-    
-    <% if @property %>
-      <li data-nav="reports">
-        <a href="<%= raw main_app.property_reports_path(@property) %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
-      </li>
-    <% else %>
-      <li data-nav="reports">
-        <a href="<%= raw main_app.reports_path %>"> <i class="fa fa-pie-chart fa-fw"></i> Reports</a>
-      </li>
-    <% end %>
-    
-    <% if can?(:cud, User) %>
-      <li data-nav="users">
-        <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
+      <% if can? :list, Property %>
+    		<li data-nav="properties">
+          <a href="<%= raw main_app.properties_path %>"> <i class="fa fa-home fa-fw"></i> Home </a>
+        </li>
+      <% end %>
+      
+      <li data-nav="notifications">
+        <a href="<%= raw(@property ? main_app.property_notifications_path(@property) : main_app.notifications_path) %>"> <i class="fa fa-bell-o fa-fw"></i> Notifications </a>
       </li>
       
-    <% elsif can?(:read, User) %>
-      <li data-nav="users">
-        <a href="<%= raw main_app.users_path %>"> <i class="fa fa-user fa-fw"></i> Users</a>
-      </li>
-    <% end %>
-    
-    <% if can? :list, Property %>
-  		<li data-nav="properties">
-        <a href="<%= raw main_app.properties_path %>"> <i class="fa fa-home fa-fw"></i> Home </a>
-      </li>
+      <% if @property %>
+        <li data-nav="import_alerts" class="<%= "active" if controller_name == "import_alerts"  %>">
+          <a href="<%= raw main_app.property_import_alerts_path(@property) %>" class="page-reload"> <i class="fa fa-exclamation-triangle fa-fw"></i> Import Alerts </a>
+        </li>
+      <% end %>
+      
+      <% if current_user.is_admin? %> <!-- visible to admin only -->
+        <li class="<%= "active" if request.path.include?("/nimda") %>">
+          <a href="<%= raw main_app.nimda_path %>" class="page-reload"> <i class="fa fa-cogs fa-fw"></i> Admin </a>
+        </li>
+      <% end %>
+      
+    <% else %>
+      <%= render "layouts/smartrent/left_nav_links" %>
+      
     <% end %>
 	</ul>
 	
 	<div class="footer">
-    <%= current_user.full_name %> &nbsp; | <a href="<%= main_app.logout_path %>"> Logout </a>
+    <a href="<%= main_app.profile_path %>" class="page-reload">
+      <%= current_user.first_name %> 
+    </a>
+    &nbsp; | <a href="<%= main_app.logout_path %>"> Logout </a>
     <span>Role: <%= current_user.role %></span>
 	</div>
 </div>

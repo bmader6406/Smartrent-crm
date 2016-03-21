@@ -15,6 +15,18 @@
   </div>
   
   <div class="message">
-    <%= Helpers.sanitize( note.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %>
+    <span><%= Helpers.sanitize( note.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) %></span>
+    <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
+      <a href="#" class="edit-note"><i class="fa fa-pencil"></i> </a>
+    <% } %>
   </div>
+  
+  <form action="<%= note.update_path %>" onsubmit="return false;" class="note-form">
+    <div class="form-group">
+      <label>Note:</label>
+      <textarea class="form-control" name="note"><%= note.message ? Helpers.sanitize( note.message.replace(/(?:\n\r?|\r\n?)/g, '<br>') ) : "" %></textarea>
+    </div>
+    <button type="submit" class="btn btn-success update-note">Update</button>
+    <a href="#" class="btn btn-default cancel-note">Cancel</a>
+  </form>
 </div>

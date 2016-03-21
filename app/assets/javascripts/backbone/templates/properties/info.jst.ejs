@@ -1,10 +1,16 @@
 <% if (App.vars.ability.can("cud", "Property")) { %>
+  <% if ( _.contains(["xml_feed", "csv_feed"], updated_by) ) { %>
+    <div class="well well-sm"> This property is updated by BozzutoLink CSV / XML feed</div>
+  <% } %>
+  
   <div class="crud-buttons">
     <table>
       <tr>
-        <td>
-          <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
-        </td>
+        <% if (!_.contains(["xml_feed", "csv_feed"], updated_by) ) { %>
+          <td>
+            <a href="<%= edit_path %>" class="btn btn-lg btn-primary edit"> <i class="fa fa-pencil"></i> Edit</a>
+          </td>
+        <% } %>
         <td>
           <a href="#" class="btn btn-lg btn-default archive"> <i class="fa fa-trash"></i> Archive</a>
         </td>

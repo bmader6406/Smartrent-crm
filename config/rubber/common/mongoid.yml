@@ -9,6 +9,5 @@
       hosts: 
         - <%= rubber_instances.for_role('db', 'primary' => true).first.full_name %>:27017
       options:
-        consistency: :strong
         max_retries: 30
         retry_interval: 1

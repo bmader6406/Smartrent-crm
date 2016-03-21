@@ -1,0 +1,26 @@
+<li>
+  <div class="resident-box <%= "active" if @alert == a %>">
+    <i class="fa <%= a.acknowledged? ? "fa-check" : "fa-exclamation-triangle" %>"></i>
+    <div class="author">
+      <a href="#">Yardi Import</a>
+      <span><%= a.created_at.to_s(:friendly_time) %></span>
+    </div>
+
+    <div class="message">
+      <%= raw a.message %>
+    </div>
+    
+    <div class="meta-btns">
+      <a href="<%= acknowledge_property_import_alert_path(a.property_id, a) %>" class="acknowledge">
+        <i class="fa fa-check"></i> Acknowledge
+      </a>
+    </div>
+    
+    <% if a.acknowledged? %>
+      <div class="help-block" style="font-size: 12px;">
+        Acknowledged at <%= a.acknowledged_at.to_s(:friendly_time) %> by <b><%= a.actor.full_name %></b>
+      </div>
+    <% end %>
+    
+  </div>
+</li>

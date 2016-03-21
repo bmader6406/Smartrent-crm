@@ -58,47 +58,127 @@ module ApplicationHelper
   
   def metric_options
     #TODO: make it editable
-    {"resident_status"=>["Current", "Future", "Past", "Notice"],
-     "resident_type"=>["Walk-in", "Phone", "Email"],
-     "occupation_type"=>
-      ["None",
-       "Admin/Support Staff",
-       "Blue Collar",
-       "Education",
-       "Finance/Accounting",
-       "Full-Time Homemaker",
-       "Government Employee",
-       "Government Funding",
-       "Medical",
-       "Military",
-       "Professional",
-       "Public Service",
-       "Real Estate",
-       "Retail Trade",
-       "Retired",
-       "Sales",
-       "Self-Employed",
-       "Student",
-       "Technology",
-       "Minor Child"],
-     "minutes_to_work"=>["1-15", "16-30", "31-45", "61+"],
-     "household_status"=>
-      ["Married",
-       "Married W/ Child(ren)",
-       "Married W/ Roommate",
-       "Roommates",
-       "Roommates W/ Child(ren)",
-       "Separated/Divorced",
-       "Separated/Divorced W/ Child(ren)",
-       "Corporate",
-       "Single",
-       "Single W/ Child(ren)"],
-     "pet"=>["Dogs", "Cats", "Dogs & Cats"],
-     "gender"=>["Male", "Female", "Other"],
-     "transportation_to_work"=>["Public", "Own Vehicle", "Walk", "Carpool"],
-     "moving_from"=>["Apartment", "College", "House", "Parents"],
-     "occupant_type"=>["", "Type 1", "Type 2", "Type 3", "Type 4", "Type 5"],
-     "relationship"=>["", "Relationship 1", "Relationship 2", "Relationship 3"]}
+    {
+      "resident_status" => {
+        "" => "--Select Status--",
+        "Current" => "Current",
+        "Future" => "Future",
+        "Past" => "Past",
+        "Notice" => "Notice"
+      },
+      "resident_type" => {
+        "" => "--Select Type--",
+        "Email" => "Email",
+        "Phone" => "Phone",
+        "Walk-in" => "Walk-in"
+      },
+      "occupation_type" => [
+        "None",
+        "Admin/Support Staff",
+        "Blue Collar",
+        "Corporate",
+        "Education",
+        "Finance/Accounting",
+        "Full-Time Homemaker",
+        "Government Employee",
+        "Government Funding",
+        "Medical",
+        "Military",
+        "Minor Child",
+        "Professional",
+        "Public Service",
+        "Real Estate",
+        "Retail Trade",
+        "Retired",
+        "Sales",
+        "Self-Employed",
+        "Student",
+        "Technology",
+        "Unemployed"
+      ],
+      "minutes_to_work"=> [
+        "",
+        "1-15 minutes",
+        "16-30 minutes",
+        "31-45 minutes", 
+        "46-60 minutes",
+        "61+ minutes",
+        "Child",
+        "Corporate Apartment",
+        "Does not work",
+        "Work from home"
+      ],
+      "household_status" => {
+        "" => "--Select House Hold Status--",
+        "Corporate" => "Corporate",
+        "Married" => "Married",
+        "Married w/ Child(ren)" => "Married w/ Child(ren)",
+        "Married w/ Roommate" => "Married w/ Roommate" ,
+        "Roommates" => "Roommates",
+        "Roommates w/ Child(ren)" => "Roommates w/ Child(ren)",
+        "Separated/Divorced" => "Separated/Divorced",
+        "Separated/Divorced w/ Child(ren)" => "Separated/Divorced w/ Child(ren)",
+        "Single" => "Single",
+        "Single w/ Child(ren)" => "Single w/ Child(ren)"
+      },
+      "pet"=>{
+        "" => "--Select Pets--",
+        "Dog" => "Dog",
+        "Cat" => "Cat",
+        "Dog & Cat" => "Dog & Cat",
+        "None" => "None"
+      },
+      "gender"=>{
+        "" => "--Select Gender--",
+        "Male" => "Male",
+        "Female" => "Female",
+        "Other" => "Other"
+      },
+      "transportation_to_work" => {
+        "" => "--Select Transportation to Work--",
+        "Carpool" => "Carpool",
+        "Does Not Work" => "Does Not Work",
+        "Own Vehicle" => "Own Vehicle",
+        "Walk" => "Walk",
+        "Public" => "Public"
+      },
+      "moving_from" => {
+        "" => "--Select Moving From--",
+        "Apartment" => "Apartment",
+        "Centreville" => "Centreville",
+        "College" => "College",
+        "House" => "House",
+        "Parents" => "Parents"
+      },
+      "occupant_type" => {
+        "" => "--Select Occupant Type--",
+        "Type 1" => "Type 1",
+        "Type 2" => "Type 2",
+        "Type 3" => "Type 3",
+        "Type 4" => "Type 4",
+        "Type 5" => "Type 5"
+      },
+      "relationship" => {
+        "" => "--Select Relationship--",
+        "Relationship 1" => "Relationship 1", 
+        "Relationship 2" => "Relationship 2", 
+        "Relationship 3" => "Relationship 3"
+      }
+    }
+  end
+  
+  def sr_page?
+    request.path.include?("/sr/") || request.host.include?("smartrent")
+  end
+  
+  def pending_messages
+    @pending_messages ||= begin
+      if @property
+        current_user.notifications.where(:property_id => @property.id, :state => "pending").all
+      else
+        current_user.notifications.where(:state => "pending").all
+      end
+    end
   end
   
 end

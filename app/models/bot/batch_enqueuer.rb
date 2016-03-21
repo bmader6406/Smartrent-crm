@@ -14,7 +14,7 @@ class BatchEnqueuer
   @retry_delay = RETRY_DELAY
   
   def self.queue
-    :crm_batch_builder
+    :crm_immediate
   end
   
   def self.perform(name = "crm_job_buffer", count = 2000)

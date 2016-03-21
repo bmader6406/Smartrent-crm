@@ -1,0 +1,127 @@
+<div class="row point-row">
+  <div class="col-md-6">
+    <div class="card">
+      <h4>SmartRent Balance</h4>
+      <div class="total-rewards">
+        <%= total_rewards %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <h4>SmartRent Status</h4>
+      <div class="status-dd smartrent-<%= smartrent_status_text.toLowerCase().replace(" ", "-") %><% if(!is_admin){%> status-not-admin<%}%>">
+        <span class="capitalize"><%= smartrent_status_text %></span>
+            <% if(is_admin) { %>
+        <div class="dropdown">
+          <a href="#" data-toggle="dropdown">
+            <i class="fa fa-caret-down"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <% var statusIndexes = _.keys(App.vars.smartrentStatuses); %>
+              <% for (var i=0, s; s=statusIndexes[i]; i++) { %>
+                <li>
+                  <a href="#" <% if (s == "Buyer" && !can_become_buyer) { %> class="disabled"<% } %> data-index="<%= statusIndexes[i] %>"><%= App.vars.smartrentStatuses[statusIndexes[i]] %></a>
+                </li>
+              <% } %>
+          </ul>
+        </div>
+          <% } %>
+      </div>
+      <ul class="list-unstyled">
+        <li> <b>First Move-in Date:</b> <%= first_move_in %> </li>
+        <li> <b>SmartRent Months:</b> <%= total_months %> </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row password-row">
+  <div class="col-md-6">
+    <div class="card">
+      <h4>Reset Password Request</h4>
+      <form id="reset-password"  action="<%= reset_password_path %>" method="POST" onsubmit="return false;">
+        <p>
+          If resident has lost his password, 
+          confirm email below and click on Reset Password Request button.
+        </p>
+        <span class="email"><%= email %></span>
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Request Password Reset</button>
+      </form>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <h4>Change Password</h4>
+      <form id="change-password" action="<%= update_password_path %>" method="POST" onsubmit="return false;">
+        <input type="hidden" name="_method" value="put" />
+        <div class="form-group">
+          <input type="password" name="resident[password]" class="form-control input-lg" placholder="Password" />
+        </div>
+        <div class="form-group">
+          <input type="password" name="resident[password_confirmation]" class="form-control input-lg" placholder="Confirm Password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Change Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <h4>SmartRent History</h4>
+      <% if (rewards.length == 0) { %>
+        <div class="alert alert-warning">No rewards found</div>
+      <% } else { %>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Period Start</th>
+              <th>Period End</th>
+              <th>Property</th>
+              <th>Months Earned</th>
+              <th width="170px">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (var i=0, rw; rw=rewards[i]; i++) { %>
+              <tr>
+                <td><%= rw.type_ %></td>
+                <td><%= rw.period_start %></td>
+                <td><%= rw.period_end %></td>
+                <td><%= rw.property_name %></td>
+                <td><%= rw.months_earned %></td>
+                <td>
+                  <div class="amount">
+                    <span><%= rw.amount %></span>
+                    <% if (is_admin) { %>
+                    <i class="fa fa-pencil edit-amount"></i>
+                  <% } %>
+                  </div>
+                  <% if (is_admin) { %>
+                  <div class="input-group amount-editor" data-id="<%= rw.id %>">
+                      <input type="text" value="<%= rw.amount.replace("$", "").replace(",", "") %>" class="form-control" />
+                      <span class="input-group-btn">
+                        <button class="btn btn-default update-amount" type="button">
+                          <i class="fa fa-check"></i>
+                        </button>
+
+                        <button class="btn btn-default cancel-amount" type="button">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </span>
+                  </div>
+                <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

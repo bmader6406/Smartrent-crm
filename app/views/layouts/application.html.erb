@@ -24,11 +24,12 @@
 </head>
 
 <body>
+  <%= render "layouts/top_nav" %>
   <%= render "layouts/left_nav" %>
   
+  <div id="temp-div"></div> <!-- for html sanitize -->
+  
   <div id="viewport">
-    <%= render "layouts/top_nav" %>
-    
     <div class="hidden-pane ui-layout-west">
       <div class="ui-layout-content" id="west"><%= yield :ui_west %></div>
     </div>

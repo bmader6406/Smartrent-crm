@@ -1,16 +1,32 @@
-<%= link_to "Create A New Template", nimda_templates_path, :class => "btn btn-primary", :method => :post %>
 
-<br><br>
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <div class="page-header">
+          <h3> Templates Management </h3>
+        </div>
 
-<div style="padding:10px 0;">
-  <%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>
-    <%= text_field_tag :search, params[:search], :style => "width:350px;", :class => "form-control", :placeholder => "Enter Template Name or Property Name" %>
-    <%= button_tag "search", :name => nil, :class => "btn btn-default" %>
-  <% end %>
-</div>
+        <%= link_to "Create A New Template", nimda_templates_path, :class => "btn btn-primary", :method => :post %>
 
-<%= render "templates", :templates => @templates, :param_page => "page" %>
+        <div style="padding:10px 0;">
+          <%= form_tag nimda_templates_path, :method => :get, :class => "form-inline" do %>
+            <%= text_field_tag :search, params[:search], :style => "width:350px;", :class => "form-control", :placeholder => "Enter Template Name or Property Name" %>
+            <%= button_tag "search", :name => nil, :class => "btn btn-default" %>
+          <% end %>
+        </div>
+        
+        <%= render "templates", :templates => @templates, :param_page => "page" %>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
 
+<%= render "dashboards/js_vars" %>
 
 <script type="text/javascript">
   $(function(){
@@ -22,5 +38,6 @@
       $(this).parents('form').submit();
     });
     
+    App.initPageLayout(null, null, null, true);
   });
 </script>

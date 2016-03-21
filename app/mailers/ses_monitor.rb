@@ -119,16 +119,17 @@ class SesMonitor
   
   # SesReceiver will not unsubscribe lead
   def self.unsubscribe_resident(email, property_ids, type)
+    return true if Rails.env.stage? # TODO: add ops-stg@hy.ly for stage env
     pp "unsubscribing lead..."
     unsubscribed = false
     
     if !email.blank?
       property_ids.each do |property_id|
-        Resident.where(:property_id => property_id, :email_lc => email).each do |e|
+        Resident.where(:email_lc => email).each do |e|
           pp "FOUND: #{e.email}, property_id: #{property_id}"
           e.marketing_activities.create(:action => "bad_email_found")
           e.update_attribute(:subscribed, false)
-          e.properties.update_all(:subscribed => false)
+          e.units.update_all(:subscribed => false)
           
           unsubscribed = true if !unsubscribed
         end
@@ -140,6 +141,7 @@ class SesMonitor
   
   # SesReceiver will not unsubscribe user
   def self.unsubscribe_user(email, type)
+    return true if Rails.env.stage? # TODO: add ops-stg@hy.ly for stage env
     pp "unsubscribing user..."
     unsubscribed = false
     

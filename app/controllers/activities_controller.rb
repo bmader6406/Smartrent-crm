@@ -48,6 +48,7 @@ class ActivitiesController < ApplicationController
           subject.keys.each do |k|
             if k == "Comment"
               comments = Comment.where(:id => subject[k].uniq).includes(:email, :call, :assets)
+              
               comments.each do |c|
                 if c.author_id
                   if author["#{c.author_type}"]
@@ -72,9 +73,17 @@ class ActivitiesController < ApplicationController
                 end
               end
             
+              #eager load notifications
+              notifications = Notification.where(:comment_id => comments.collect{|c| c.id if c.email? }.compact).includes(:histories => :actor).all
+              
               comments.each do |c|
                 c.eager_load(author["#{c.author_type}_#{c.author_id}"])
                 subject["#{k}_#{c.id}"] = c
+                
+                if c.email?
+                  n = notifications.detect{|n| c.id == n.comment_id }
+                  c.eager_load(n, "Notification") #only pass clas for comment eager load for now
+                end
               end
             
             elsif k == "Ticket"
@@ -133,6 +142,7 @@ class ActivitiesController < ApplicationController
     
     comment[:property_id] = @property.id
     comment[:resident_id] = @resident.id
+    comment[:unit_id] = @unit.id
     comment[:author_id] = current_user.id
     comment[:author_type] = current_user.class.to_s
     
@@ -183,7 +193,8 @@ class ActivitiesController < ApplicationController
       @activity.action = @comment.type
       @activity.subject_id = @comment.id
       @activity.subject_type = @comment.class.to_s
-      @activity.property_id = @property.id if @property
+      @activity.property_id = @property.id
+      @activity.unit_id = @unit.id
       
       if comment[:asset_ids] 
         @property.assets.where(:id => comment[:asset_ids].split(",")).update_all(:comment_id => @comment.id)
@@ -220,6 +231,75 @@ class ActivitiesController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  def update_note
+    if params[:call_note]
+      @activity.subject.update_attributes(:message => params[:call_note])
+    else
+      @activity.subject.update_attributes(:message => params[:note])
+    end
+    
+    render :json => {:success => true}
+  end
+  
+  def acknowledge
+    @notification = @activity.subject.notification
+    
+    @notification.last_actor = current_user
+    @notification.state = "acknowledged"
+    
+    respond_to do |format|
+      if @notification.save
+        format.json { render template: "activities/show.json.rabl" }
+      else
+        format.json { render json: @notification.errors.full_messages, status: :unprocessable_entity }
+      end
+    end
+  end
+  
+  def reply
+    @reply_activity = @resident.activities.new
+
+    comment = comment_params.clone
+
+    comment[:property_id] = @property.id
+    comment[:resident_id] = @resident.id
+    comment[:unit_id] = @unit.id
+    comment[:author_id] = current_user.id
+    comment[:author_type] = current_user.class.to_s
+
+    @comment = Comment.new(comment)
+    @comment.build_email(email_params)
+    @comment.email.is_reply = true
+    
+    respond_to do |format|
+      if @comment.save
+        # should assign id/type manually
+        @reply_activity.action = @comment.type
+        @reply_activity.subject_id = @comment.id
+        @reply_activity.subject_type = @comment.class.to_s
+        @reply_activity.property_id = @property.id
+        @reply_activity.unit_id = @unit.id
+      end
+
+      if !@comment.errors.empty?
+        format.json { render json: @comment.errors.full_messages, status: :unprocessable_entity }
+
+      elsif @reply_activity.save
+        @notification = @activity.subject.notification
+        @notification.last_actor = current_user
+        @notification.state = "replied"
+        @notification.save
+        
+        @updated_and_replied = [@activity, @reply_activity]
+        format.json { render template: "activities/updated_and_replied.json.rabl", status: :created }
+
+      else
+        format.json { render json: @reply_activity.errors.full_messages, status: :unprocessable_entity }
+      end
+
+    end
+  end
 
   private
   
@@ -241,8 +321,13 @@ class ActivitiesController < ApplicationController
     end
     
     def set_resident
-      @resident = Resident.find(params[:resident_id])
-      @resident.curr_property_id = @property.id
+      # params[:resident_id] is a pair of resident id and unit id
+      resident_id, unit_id = params[:resident_id].split("_", 2)
+      
+      @resident = Resident.find(resident_id)
+      @unit = @property.units.find(unit_id)
+      
+      @resident.curr_unit_id = @unit.id # important
     end
 
     def set_activity
@@ -273,7 +358,7 @@ class ActivitiesController < ApplicationController
       activities = []
       
       if history == "resident"
-        @resident.activities.where(:property_id => @property.id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
+        @resident.activities.where(:property_id => @property.id, :unit_id => @resident.unit_id).order_by(:created_at => :desc).skip(skip).limit(per_page).each do |a|
           next if !a.subject_type
           activities << a
         end

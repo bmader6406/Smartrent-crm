@@ -31,6 +31,7 @@ Crm.Views.UsersList = Backbone.View.extend({
   render: function () {
   	var self = this,
        grid = new Backgrid.Grid({
+        row: ClickableRow,
         columns: [{
           name: "name_url",
           label: "Name",
@@ -61,9 +62,10 @@ Crm.Views.UsersList = Backbone.View.extend({
       paginator = new Backgrid.Extension.Paginator({
         collection: self.collection,
         controls: {
-          rewind: null,
-          fastForward: null
-        }
+          fastForward: null,
+          rewind: null
+        },
+        windowSize: 5
       });
 
     this.$el.html(this.template());

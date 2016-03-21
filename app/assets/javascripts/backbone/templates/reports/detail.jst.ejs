@@ -33,7 +33,7 @@
           <label class="col-sm-2 control-label">Property</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
-              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+              <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
         	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
               <% } %>
             </select>
@@ -77,7 +77,7 @@
           <label class="col-sm-2 control-label">Property</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
-              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+              <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
         	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
               <% } %>
             </select>
@@ -109,7 +109,7 @@
           <label class="col-sm-2 control-label">Property</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
-              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+              <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
         	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
               <% } %>
             </select>
@@ -151,7 +151,7 @@
           <label class="col-sm-2 control-label">Property</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
-              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+              <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
         	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
               <% } %>
             </select>
@@ -193,7 +193,7 @@
           <label class="col-sm-2 control-label">Property</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="property_id" data-live-search="true" multiple title='Select Property'>
-              <% for (var i=0, property; property=App.vars.properties[i]; i++) { %>
+              <% for (var i=0, property; property=App.vars.crmProperties[i]; i++) { %>
         	      <option value="<%= property.val %>" <%= property.val == App.vars.propertyId ? "selected" : "" %> > <%= property.label %> </option>
               <% } %>
             </select>

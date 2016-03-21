@@ -1,0 +1,167 @@
+<% content_for(:ui_center) do %>
+  <div id="nimda-pane">
+    <div class="ui-layout-content">
+      <div class="main-container card-container import-container">
+        
+        <%= render "nimda/menu_nav" %>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="well">
+              <h3> Delete & Reload Units </h3>
+              <%= form_tag load_units_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_units_one_time" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @import.ftp_setting["host"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @import.ftp_setting["username"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @import.ftp_setting["file_name"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "recipient", @import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
+                </div>
+
+                <%= button_tag "Import & Overwrite ALL Unit Data", :name => nil, :class => "btn btn-danger" %>
+                <a href="<%= test_units_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="well">
+              <h3> Refresh Units </h3>
+              <%= form_tag load_units_nimda_path, :method => :post, :class => "import-form" do %>
+                <%= hidden_field_tag "type", "load_units_weekly" %>
+                <div class="form-group">
+                  <label> FTP Host </label>
+                  <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Username </label>
+                  <%= text_field_tag "ftp_setting[username]", @daily_import.ftp_setting["username"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP Password </label>
+                  <%= password_field_tag "ftp_setting[password]", @daily_import.ftp_setting["password"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> FTP File Name </label>
+                  <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
+                </div>
+
+                <div class="form-group">
+                  <label> Import Status Recipient </label>
+                  <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
+                </div>
+
+                <div class="form-group">
+                  <label>
+                    <%= hidden_field_tag "active", 0 %>
+                    <%= check_box_tag "active", 1, @daily_import.active?, :style => "margin: 0 4px 0 0;" %>
+                    Import file weekly at 3:00 AM Sunday
+                  </label>
+                </div>
+
+                <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
+                <a href="<%= test_units_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= render "dashboards/js_vars" %>
+
+<script type="text/javascript">
+  $(function(){
+    $('.import-form').each(function(){
+      var form = $(this);
+      
+      form.on('submit', function(){
+        var blanks = [];
+
+        form.find('input:visible').each(function(){
+          var input = $(this);
+
+          if( $.trim(input.val()) == "") {
+            blanks.push( input );
+          }
+        });
+
+        if(blanks.length > 0) {
+          msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+          return false;
+        }
+
+        bootbox.confirm("Sure you want to load units? There is no undo.", function(result) {
+          if (result) {
+            form.ajaxSubmit({
+              dataType: 'json',
+              beforeSerialize: function(){
+                form.mask('Please wait...');
+              },
+              success: function(){
+                form.unmask();
+                
+                if(form.find("input[name=type]").val().indexOf("one_time") > -1) {
+                  msgbox('Units are being loaded... We will send the Import Status to ' + form.find('input[name*=recipient]').val() + ' shortly.');
+                  
+                } else {
+                  msgbox('Weekly Import setting was updated successfully');
+                }
+                
+              }
+            });
+          }
+        });
+
+        return false;
+      });
+
+      form.on('click', '.test', function(){
+        form.mask('Please wait...');
+
+        $.post(this.href, form.serializeArray(), function(data){
+          if(data.success){
+            msgbox('FTP Credentials are correct');
+          } else {
+            msgbox('FTP Credentials are not correct!', 'danger');
+          }
+
+          form.unmask();
+        }, 'json');
+
+        return false;
+      });
+      
+    });
+    
+    
+    App.initPageLayout(null, null, null, true);
+    
+  });
+</script>

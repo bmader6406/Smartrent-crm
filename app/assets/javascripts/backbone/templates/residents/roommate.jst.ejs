@@ -1,34 +1,37 @@
 <div class="resident-box">
-  <i class="fa fa-building-o"></i>
+  <i class="fa fa-smile-o" style="top: 16px; font-size: 22px;"></i>
   
   <ul class="list-unstyled">
     <li>
-      Full Name: <span><%= first_name %> <%= last_name %></span>
+      Full Name: <a href="<%= show_path2 %>" target="_blank"><%= first_name %> <%= last_name %></a>
+      <% if ( unit.roommate ) { %>
+        <span class="badge" style="margin-left: 10px;">roommate</span>
+      <% } %>
     </li>
     <li>
       Email: <span><%= email %></span>
     </li>
     <li>
-      Lessee: <span><%= property.lessee ? "Yes" : "No" %></span>
+      Lessee: <span><%= unit.lessee ? "Yes" : "No" %></span>
     </li>
     <li>
-      Occupant Type: <span><%= property.occupant_type %></span>
+      Occupant Type: <span><%= unit.occupant_type %></span>
     </li>
     <li>
-      Relationship: <span><%= property.relationship %></span>
+      Relationship: <span><%= unit.relationship %></span>
     </li>
     <li>
-      SSN#: <span><%= property.ssn %></span>
+      SSN#: <span><%= unit.ssn %></span>
     </li>
     <li>
-      Move In: <span><%= property.move_in %></span>
+      Move In: <span><%= unit.move_in %></span>
     </li>
     <li>
-      Move Out: <span><%= property.move_out %></span>
+      Move Out: <span><%= unit.move_out %></span>
     </li>
   </ul>
   
-  <% if (App.vars.ability.can("cud", "Resident")) { %>
+  <% if (App.vars.ability.can("cud", "Resident") && unit.roommate) { %>
     <a href="#" data-id="<%= id %>" class="edit-roommate"> More </a>
   <% } %>
 </div>

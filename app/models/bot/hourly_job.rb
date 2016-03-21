@@ -2,13 +2,44 @@ class HourlyJob
   extend Resque::Plugins::Retry
   @retry_limit = RETRY_LIMIT
   @retry_delay = RETRY_DELAY
-  
+
   def self.queue
-    :crm_routine
+    :crm_scheduled
   end
-  
+
   def self.perform(time = Time.now.utc)
+    time = Time.parse(time) if time.kind_of?(String)
+    time = time.in_time_zone('Eastern Time (US & Canada)')
+
+    #TODO: store the below job in database when it is executed
+    # time, class, arguments
+    
     Resque.enqueue(MetricGenerator, time.to_i)
+
+    if time.hour == 0
+      Resque.enqueue(ResidentUnitStatusChecker, time)
+    end
+    
+    if time.hour == 2
+      # BozzutoLink upload CSV feed at 1 AM
+      Resque.enqueue(PropertyImporter)
+    end
+    
+    if time.hour == 3
+      # run yardi import daily at 3AM
+      Import.where(:type => "load_yardi_daily", :active => true).each do |import|
+        Resque.enqueue(YardiLoader, time, import.id)
+      end
+      
+      if time.wday == 0 # run weekly at 3AM on Sunday
+        Import.where(:type => "load_units_weekly", :active => true).each do |import|
+          Resque.enqueue(UnitLoader, time, import.id)
+        end
+      end
+    end
+
+    # hourly job smartrent engine
+    Smartrent::HourlyJob.perform(time)
+
   end
-  
 end

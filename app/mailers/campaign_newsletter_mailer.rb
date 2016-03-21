@@ -81,23 +81,23 @@ class CampaignNewsletterMailer < QueuedMailer
     #pp ">>>", resident_ids, attrs
     
     Resident.with(:consistency => :eventual).where(:_id.in => resident_ids).each do |resident|
-      prop = nil
+      unit = nil
       
-      if !resident.properties.empty?
-        prop = resident.properties.detect{|p| p.property_id.to_i == property.id }
+      if !resident.units.empty?
+        unit = resident.units.detect{|u| u.property_id.to_i == property.id }
       
-        #find prop from cross property send
-        if !prop
+        #find unit from cross property send
+        if !unit
           audience = resident.to_cross_audience(campaign)
         
           if audience && audience.property_id
-            prop = resident.properties.detect{|p| p.property_id.to_i == audience.property_id }
+            unit = resident.units.detect{|u| u.property_id.to_i == audience.property_id }
           end
         end
       end
       
-      if prop
-        property_id = prop.property_id
+      if unit
+        property_id = unit.property_id
       else
         property_id = property.id.to_s
       end
@@ -107,25 +107,14 @@ class CampaignNewsletterMailer < QueuedMailer
       else
         prop_resident_ids[property_id] = [resident.id]
       end
-      
-      #set lead score only if it is a newsletter send
-      if action == "send_mail" && campaign.kind_of?(NewsletterCampaign)
-        if prop
-          prop.sends_count += 1
-          prop.finalize_score
-        else
-          resident.sends_count += 1
-          resident.finalize_score
-        end
-      end
     end
     
     prop_resident_ids.keys.each do |prop_id|
       attrs[:property_id] = prop_id
 
       Resident.collection.where({"_id" => {"$in" => prop_resident_ids[prop_id] }}).update({
-          '$inc' => {"activities_count" => 1}, 
-          "$push" => {"activities" => attrs}
+          '$inc' => {"marketing_activities_count" => 1}, 
+          "$push" => {"marketing_activities" => attrs}
         }, {:multi => true, :upsert => true})
     end
   end

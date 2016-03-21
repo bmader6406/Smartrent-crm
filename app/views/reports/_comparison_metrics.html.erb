@@ -43,16 +43,16 @@
             <%= number_with_delimiter total_occupied_units %>
           </td>
           <td> 
-            <%= number_with_delimiter avg(metric["properties.annual_income"].sum{|m| m.total*m.dimension.to_i }, metric["properties.annual_income"].sum{|m| m.total }) %>
+            <%= number_with_delimiter avg(metric["units.annual_income"].sum{|m| m.total*m.dimension.to_i }, metric["units.annual_income"].sum{|m| m.total }) %>
           </td>
           <td> 
             N/A
           </td>
           <td>
-            <%= avg(metric["properties.household_size"].sum{|m| m.total*m.dimension.to_i }, metric["properties.household_size"].sum{|m| m.total }) %>
+            <%= avg(metric["units.household_size"].sum{|m| m.total*m.dimension.to_i }, metric["units.household_size"].sum{|m| m.total }) %>
           </td>
           <td> 
-            <%= number_with_delimiter avg(metric["properties.minutes_to_work"].sum{|m| m.total*m.dimension.scan(/\d+/).sum{|n| n.to_i } }, metric["properties.minutes_to_work"].sum{|m| m.total }) %>
+            <%= number_with_delimiter avg(metric["units.minutes_to_work"].sum{|m| m.total*m.dimension.scan(/\d+/).sum{|n| n.to_i } }, metric["units.minutes_to_work"].sum{|m| m.total }) %>
           </td>
           <td> 
             <%= avg(metric["age"].sum{|m| m.total*m.dimension.to_i }, metric["age"].sum{|m| m.total }) %> 
@@ -61,9 +61,9 @@
             <%= number_with_delimiter avg(metric["total_cars"].sum{|m| m.total }, total_occupied_units) %>
           </td>
           <td style="text-align: left !important;"> 
-            <% metric["properties.household_status"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
+            <% metric["units.household_status"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
               <span style="<%= i == 1  ? "float:right; margin-right: 15px;" : "margin-left: 15px;" %>"> 
-                <%= m.dimension %> <%= conversion(m.total, metric["properties.household_status"].sum{|m| m.total }).to_i %>%
+                <%= m.dimension %> <%= conversion(m.total, metric["units.household_status"].sum{|m| m.total }).to_i %>%
               </span>
             <% end %>
           </td>
@@ -80,16 +80,16 @@
             <%= number_with_delimiter metric["total_residents_with_pets"].sum{|m| m.total } %>
           </td>
           <td style="text-align: left !important;"> 
-            <% metric["properties.transportation_to_work"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
+            <% metric["units.transportation_to_work"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
               <span style="<%= i == 1  ? "float:right; margin-right: 15px;" : "margin-left: 15px;" %>"> 
-                <%= m.dimension %>-<%= conversion(m.total, metric["properties.transportation_to_work"].sum{|m| m.total }).to_i %>%
+                <%= m.dimension %>-<%= conversion(m.total, metric["units.transportation_to_work"].sum{|m| m.total }).to_i %>%
               </span>
             <% end %>
           </td>
           <td style="text-align: left !important;"> 
-            <% metric["properties.moving_from"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
+            <% metric["units.moving_from"].sort{|a, b| b.total <=> a.total }[0..1].each_with_index do |m, i| %>
               <span style="<%= i == 1  ? "float:right; margin-right: 15px;" : "margin-left: 15px;" %>"> 
-                <%= m.dimension %> <%= conversion(m.total, metric["properties.moving_from"].sum{|m| m.total }).to_i %>%
+                <%= m.dimension %> <%= conversion(m.total, metric["units.moving_from"].sum{|m| m.total }).to_i %>%
               </span>
             <% end %>
           </td>

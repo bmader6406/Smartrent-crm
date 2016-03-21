@@ -1,13 +1,23 @@
 <% if notice %>
-  <div id="notice" class="alert alert-success alert-dismissable">
-    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+  <div id="notice" class="alert alert-success alert-dismissable" style="display:none">
     <%= raw notice  %>
   </div>
+  
+  <script type="text/javascript">  
+    $(function(){
+      msgbox($("#notice").text());
+    });
+  </script>
 <% end %>
 
 <% if alert %>
-  <div id="notice" class="alert alert-danger alert-dismissable">
-    <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+  <div id="notice" class="alert alert-danger alert-dismissable" style="display:none">
     <%= raw alert  %>
   </div>
+  
+  <script type="text/javascript">  
+    $(function(){
+      msgbox($("#notice").text(), 'danger');
+    });
+  </script>
 <% end %>

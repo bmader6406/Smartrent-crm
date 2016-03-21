@@ -1,18 +1,35 @@
-<div class="email-act resident-box">
-  <i class="fa fa-envelope-o"></i>
+<div class="email-act resident-box <%= notification.state == "pending" ? "active" : "" %>">
+  <i class="fa fa-custom-email-<%= email.is_received ? "received" : "sent" %>"></i>
   <div class="author">
     <% if (typeof(author) != "undefined") { %>
-      <a href="#"><%= author.full_name %></a>
+      
+      <% if (author.type == "Resident" && email.from.indexOf(author.email) == -1) { %>
+        <a href="#"><%= Helpers.escapeEmail(email.from) %></a>
+        <span> (on behalf of <%= author.full_name %>) </span>
+        
+      <% } else { %>
+        <a href="#"><%= author.full_name %></a>
+      <% } %>
+      
     <% } else { %>
       <a href="#"><%= email.from %></a>
     <% } %>
-    
+
     <%= Helpers.timeOrTimeAgo(created_at) %>
     <% if (App.vars.ability.can("cud", "ResidentActivity")) { %>
-      <a href="#" class="delete"> <i class="fa fa-times"></i> </a>
+      <a href="#" class="delete" title="Delete this history"> <i class="fa fa-times"></i> </a>
     <% } %>
+    <a href="#" class="show-headers" title="Show email headers"> <i class="fa fa-ellipsis-h"></i> </a>
   </div>
   
+  <div class="headers">
+    <span> <b>From:</b> <%= Helpers.escapeEmail(email.from) %> </span>
+    <span> <b>To:</b> <%= Helpers.escapeEmail(email.to) %> </span>
+    <% if(email.cc){ %>
+      <span> <b>CC:</b> <%= Helpers.escapeEmail(email.cc) %> </span>
+    <% } %>
+  </div>
+
   <div class="subject">
     <%= email.subject %>
   </div>
@@ -20,8 +37,41 @@
     <%= Helpers.sanitize(email.message) %>
   </div>
   <% if (typeof(author) != "undefined" && author.type == "Resident" && App.vars.ability.can("cud", "ResidentActivity")) { %>
-    <a href="#" class="reply-email">
-      <i class="fa fa-reply"></i> Reply
-    </a>
+    <div class="meta-btns">
+      <% if (notification.state == "pending") { %>
+        <a href="#" class="acknowledge">
+          <i class="fa fa-check"></i> Acknowledge
+        </a>
+      <% } %>
+      <a href="#" class="show-reply-form">
+        <i class="fa fa-reply"></i> Reply
+      </a>
+    </div>
   <% } %>
+
+  <% if (notification.histories && notification.histories.length > 0) { %>
+    <div class="histories">
+      <a href="#" class="show-logs"> Show Logs</a>
+      <div>
+        <a href="#" class="hide-logs">Hide Logs</a>
+        <span>Log:</span>
+        <table class="table table-bordered table-condensed">
+          <tr>
+            <th width="180px"> Date & Time </th>
+            <th width="180px"> State </th>
+            <th> Manager </th>
+          </tr>
+          <% for (var i=0, h; h=notification.histories[i]; i++) { %>
+            <tr>
+              <td> <%= h.created_time %> </td>
+              <td> <%= h.pretty_state %> </td>
+              <td> <%= h.full_name %> - <%= h.email %> </td>
+            </tr>
+          <% } %>
+        </table>
+      </div>
+    </div>
+  <% } %>
+  
+  <!-- reply form will be insert here -->
 </div>

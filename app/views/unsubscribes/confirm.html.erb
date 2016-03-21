@@ -16,7 +16,7 @@
             If you would like to remain in touch with deals, offers and newsletters from any of these Bozzuto lists, 
             please check the lists you want and subscribe below:
             
-            <% Property.where(:id => @resident.properties.collect{|p| p.property_id }).order("name asc").each do |property| %>
+            <% Property.where(:id => @resident.units.collect{|p| p.property_id }).order("name asc").each do |property| %>
               <label> <%= check_box_tag "property_id[]", property.id  %> <%= property.name %> </label>
             <% end %>
           </p>

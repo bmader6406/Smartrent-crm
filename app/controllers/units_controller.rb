@@ -1,7 +1,7 @@
 class UnitsController < ApplicationController
   before_action :require_user
   before_action :set_property
-  before_action :set_unit, :except => [:index, :new, :create]
+  before_action :set_unit, :except => [:index, :new, :create, :show_by_code]
   before_action :set_page_title
   
   def index
@@ -22,7 +22,11 @@ class UnitsController < ApplicationController
       format.html {
         render :file => "dashboards/index"
       }
-      format.json {}
+      format.json {
+        if !@unit # for search by unit code
+          render :json => {}
+        end
+      }
     end
   end
   
@@ -76,35 +80,14 @@ class UnitsController < ApplicationController
   end
   
   def residents
-    @residents = [] # must assign array manually, otherwise curr_property will not work on rabl view
-    primary_residents = []
-    roommates = []
-    
-    Resident.ordered("first_name asc").where("properties" => {
-      "$elemMatch" => { 
-        "property_id" => @property.id.to_s, 
-        "unit_id" => @unit.id.to_s
-      }
-    }).each do |r|
-      r.curr_property_id = @property.id
-      
-      next if !r.curr_property
-      
-      if r.curr_property.roommate?
-        roommates << r
-      else
-        primary_residents << r
-      end
-    end
-    
-    @residents = primary_residents + roommates
+    @residents = @unit.residents
 
     respond_to do |format|
       format.html {
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/index2.json.rabl")
+        render(template: "residents/unit_residents.json.rabl")
       }
     end
   end
@@ -122,7 +105,11 @@ class UnitsController < ApplicationController
     end
 
     def set_unit
-      @unit = @property.units.find(params[:id])
+      if params[:id].include?("code_")
+        @unit = @property.units.find_by_code(params[:id].gsub("code_", ""))
+      else
+        @unit = @property.units.find(params[:id])
+      end
       
       case action_name
         when "create"

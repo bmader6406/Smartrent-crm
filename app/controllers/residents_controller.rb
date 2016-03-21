@@ -62,22 +62,24 @@ class ResidentsController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id]
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
-      property_attrs[f] = resident_params[f] if !resident_params[f].blank?
+    Resident::UNIT_FIELDS.each do |f|
+      unit_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
     respond_to do |format|
       if @resident.save
-        #create submit
-        @resident.sources.create(property_attrs) if property_attrs[:property_id]
+        #create a source to keep this history
+        # property record will create right after source created vi callback
+        @resident.sources.create(unit_attrs) if unit_attrs[:property_id]
+        
         format.json { render template: "residents/show.json.rabl", status: :created }
       else
         format.json { render json: @resident.errors.full_messages, status: :unprocessable_entity }
@@ -102,21 +104,21 @@ class ResidentsController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id]
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
-      property_attrs[f] = resident_params[f] if !resident_params[f].blank?
+    Resident::UNIT_FIELDS.each do |f|
+      unit_attrs[f] = resident_params[f] if !resident_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
     respond_to do |format|
       if @resident.save
-        @resident.sources.create(property_attrs)  if property_attrs[:property_id]
+        @resident.sources.create(unit_attrs)  if unit_attrs[:property_id]
         format.json { render template: "residents/show.json.rabl" }
       else
         format.json { render json: @resident.errors.full_messages, status: :unprocessable_entity }
@@ -126,7 +128,7 @@ class ResidentsController < ApplicationController
 
   def destroy
     if @property
-      @resident.properties.detect{|p| p.property_id.to_i == @property.id }.destroy
+      @resident.units.detect{|u| u.property_id.to_i == @property.id }.destroy
     else
       @resident.update_attribute(:deleted_at, Time.now)
     end
@@ -138,7 +140,7 @@ class ResidentsController < ApplicationController
   
   def tickets
     @tickets = @resident.tickets.includes(:property, :assigner, :assignee, :category, :assets)
-    @tickets = @tickets.where(:property_id => @property.id) if @property
+    @tickets = @tickets.where(:property_id => @property.id, :unit_id => @resident.unit_id) if @property
 
     respond_to do |format|
       format.html {
@@ -151,18 +153,31 @@ class ResidentsController < ApplicationController
   end
   
   def roommates
-    @roommates = [] # must assign array manually, otherwise curr_property will not work on rabl view
-    
-    Resident.ordered("first_name asc").where("properties" => {
-      "$elemMatch" => { 
-        "property_id" => @property.id.to_s, 
-        "unit_id" => @resident.curr_property.unit_id.to_s, 
-        "roommate" => true
+    @roommates = [] # must assign array manually, otherwise curr_unit will not work on rabl view
+
+    Resident.ordered("first_name asc").where("units" => {
+      "$elemMatch" => {
+        "property_id" => @property.id.to_s,
+        "unit_id" => @resident.unit_id.to_s,
+        "status" => "Current"
       }
     }).each do |r|
-      r.curr_property_id = @property.id
+      r.curr_unit_id = @resident.unit_id.to_s
       @roommates << r
     end
+    
+    primary_residents = []
+    roommates = []
+    
+    @roommates.each do |r|
+      if r.curr_unit.roommate?
+        roommates << r
+      else
+        primary_residents << r
+      end
+    end
+    
+    @roommates = primary_residents + roommates
     
     respond_to do |format|
       format.html {
@@ -174,28 +189,63 @@ class ResidentsController < ApplicationController
     end
   end
   
-  def properties
-    @properties = @resident.properties
+  def units
+    @units = @resident.units.sort{|a, b| b.move_in <=> a.move_in }
     
     respond_to do |format|
       format.html {
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/resident_properties.json.rabl")
+        render(template: "residents/resident_units.json.rabl")
       }
     end
+  end
+
+  def smartrent
+    @smartrent_resident = @resident.smartrent_resident
   end
   
   # for add new ticket page
   def search
-    if params[:search].include?("@")
-      @resident = Resident.where(:email_lc => params[:search]).first
-    else
-      @resident = Resident.where(:_id => params[:search]).first
+    col_dict = {
+      :unit_code => "0",
+      :name => "1",
+      :email => "2"
+    }
+    
+    if params[:filter]
+      col_dict.keys.each do |k|
+        search = params[:filter][ col_dict[k] ]
+        next if search.blank?
+        
+        if k == :name
+          fn, ln = search.split(" ", 2)
+          
+          if !ln.blank?
+            params[:first_name] = fn
+            params[:last_name] = ln
+            
+          else
+            params[:first_name] = fn
+          end
+          
+        else
+          params[k] = search
+        end
+        
+      end
     end
     
-    render  :json => {:resident_path => @resident ? property_resident_path(@property, @resident, :anchor => "addTicket") : nil }
+    # tablesorter page index start with 0
+    params[:page] = params[:page].to_i + 1
+    
+    filter_residents(10)
+    
+    #render  :json => {:resident_path => @resident ? property_resident_path(@property, @resident, :anchor => "addTicket") : nil }
+    
+    render template: "residents/table.json.rabl" 
+    
   end
   
   # marketing stream (aka x-ray)
@@ -243,15 +293,15 @@ class ResidentsController < ApplicationController
     }
   end
   
-  def marketing_properties
-    @properties = @resident.properties
+  def marketing_units
+    @units = @resident.units
 
-    #eager load properties
-    properties = Property.where(:id => @properties.collect{|p| p.property_id }.compact).collect{|prop| prop }
+    #eager load units
+    properties = Property.where(:id => @units.collect{|u| u.property_id }.compact).collect{|prop| prop }
 
-    @properties = @properties.collect{|p|
-      p.property = properties.detect{|prop| prop.id == p.property_id.to_i}
-      p.property ? p : nil
+    @units = @units.collect{|u|
+      u.property = properties.detect{|prop| prop.id == u.property_id.to_i}
+      u.property ? t : nil
     }.compact.sort{|a, b| a.property.name <=> b.property.name }
     
     respond_to do |format|
@@ -259,7 +309,7 @@ class ResidentsController < ApplicationController
         render :file => "dashboards/index"
       }
       format.json {
-        render(template: "residents/marketing_properties.json.rabl")
+        render(template: "residents/marketing_units.json.rabl")
       }
     end
   end
@@ -277,8 +327,16 @@ class ResidentsController < ApplicationController
     end
 
     def set_resident
-      @resident = Resident.find(params[:id])
-      @resident.curr_property_id = @property.id if @property
+      # params[:id] is a pair of resident id and unit id OR don't have _unit_id
+      resident_id, unit_id = params[:id].split("_", 2)
+      
+      @resident = Resident.find(resident_id)
+      
+      # resident listing and details support both org group and property level
+      if @property && unit_id
+        @unit = @property.units.find(unit_id)
+        @resident.curr_unit_id = @unit.id # important
+      end
       
       case action_name
         when "create"
@@ -294,9 +352,15 @@ class ResidentsController < ApplicationController
     
     def set_page_title
       if @property
-        @page_title = "CRM - #{@property.name} - Residents" 
+        if @resident
+          @page_title = "CRM - Resident - #{@resident.name_or_email}"
+          
+        else
+          @page_title = "CRM - #{@property.name} - Residents"
+        end
+        
       else
-        @page_title = "CRM - Residents" 
+        @page_title = "CRM - Residents"
       end
     end
     
@@ -316,72 +380,149 @@ class ResidentsController < ApplicationController
     end
 
     def filter_residents(per_page = 15)
-      conditions = {}
-      hint = {"properties.property_id" => 1, "properties.status" => 1 }
+      match = {}
       
-      conditions["properties.property_id"] = @property.id.to_s if @property
-      conditions["properties.status"] = {'$in' => ["Current", "Future", "Notice", "Past"]}
+      match["units.property_id"] = @property.id.to_s if @property
       
       if !params[:email].blank?
-        conditions[:email_lc] = params[:email].downcase
+        match[:email_lc] = params[:email].downcase
       end
       
       if !params[:first_name].blank?
-        conditions[:first_name_lc] = params[:first_name].downcase
+        match[:first_name_lc] = params[:first_name].downcase
       end
       
       if !params[:last_name].blank?
-        conditions[:last_name_lc] = params[:last_name].downcase
+        match[:last_name_lc] = params[:last_name].downcase
       end
       
       if !params[:primary_phone].blank?
-        conditions[:primary_phone] = params[:primary_phone]
+        match[:primary_phone] = params[:primary_phone]
       end
       
       if !params[:resident_id].blank?
-        conditions[:_id] = params[:resident_id]
+        match[:_id] = params[:resident_id]
       end
       
-      if !params[:unit_id].blank?
-        unit_id = params[:unit_id]
-        
-        # find unit_id  by unit code
-        if unit_id.to_i < 1000*1000*1000 && @property
-          unit_id = Unit.where(:property_id => @property.id, :code => unit_id).first.id.to_s rescue unit_id
-        end
-        
-        conditions["properties.unit_id"] = unit_id
+      if !params[:unit_code].blank?
+        unit_id = Unit.where(:property_id => @property.id, :code => params[:unit_code]).first.id.to_s rescue -1
+        match["units.unit_id"] = unit_id
       end
       
-      if conditions[:first_name_lc] # search first name
-        hint = {:first_name_lc => 1}
+      if !params[:status].blank?
+        match["units.status"] = params[:status]
       end
       
-      if conditions[:last_name_lc] # search last name
-        hint = {:last_name_lc => 1}
-      end
+      # manual paging
+      limit = params[:page].to_i*per_page.to_i
+      skip = limit - per_page.to_i
       
-      if conditions[:email_lc] #search by email
-        hint = {:email_lc => 1}
-      end
+      resident_dict = {} # is used to load resident and their units
       
-      if conditions[:_id] #search by email
-        hint = {}
-      end
-
-      @residents = Resident.where(conditions).ordered("updated_at desc")
-
-      # specify the index explicitly
-      @residents = @residents.extras(:hint => hint) if !hint.empty?
-      
-      #pp ">>>>", @residents.limit(25).explain
-      @residents = @residents.paginate(:page => params[:page], :per_page => per_page)
+      project = {
+        "email_lc" => 1,
+        "first_name_lc" => 1,
+        "last_name_lc" => 1,
+        "primary_phone" => 1,
+        "units._id" => 1,
+        "units.unit_id" => 1,
+        "units.property_id" => 1,
+        "units.status" => 1
+      }
       
       if @property
-        @residents.each do |r|
-          r.curr_property_id = @property.id
+        pipeline = [
+          { "$project" => project },
+          { "$match" => {"units.property_id" => @property.id.to_s} },
+          { "$unwind" => "$units" }
+        ]
+        
+        if !match.empty?
+          pipeline << { "$match" => match }
+        end
+        
+      else
+        pipeline = [
+          { "$project" => project },
+          { "$unwind" => "$units" }
+        ]
+        
+        if !match.empty?
+          pipeline << { "$match" => match }
         end
       end
+      
+      @total_residents = Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
+        { "$group" => { :_id => "$units._id" } },
+        { "$group" => { :_id => 1, :count => { "$sum" => 1 } } }
+      ])[0]["count"] rescue 0
+      
+      #pp "@total_residents #{@total_residents}"
+      #pp "match, skip, limit", match, limit, skip
+
+      Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
+        { "$sort" => { "first_name" => 1, "last_name" => 1 } },
+        { "$limit" => limit },
+        { "$skip" => skip }
+      ]).each do |hash|
+        if resident_dict[ hash["_id"] ]
+          resident_dict[ hash["_id"] ] << hash["units"]["unit_id"]
+          
+        else
+          resident_dict[ hash["_id"] ] = [ hash["units"]["unit_id"] ]
+        end
+      end
+      
+      @residents = []
+      unit_ids = []
+      
+      #pp ">>> resident_dict", resident_dict
+
+      Resident.with(:consistency => :eventual).without(:sources, :activities).where(:_id.in => resident_dict.keys).each do |r|
+        next if !resident_dict[ r._id ]
+        
+        r.units.each_with_index do |u, j|
+          next if !resident_dict[ r._id ].include?( u.unit_id )
+          
+          # must reload if a resident has multiple units
+          if j > 0
+            r2 = r
+            r = r2.clone # to create new object (memoization workaround), never save the temp record
+            r.id = r2.id
+          end
+          
+          r.curr_unit_id = u.unit_id
+          @residents << r
+          
+          unit_ids << u.unit_id
+        end
+      end
+      
+      #pp ">>> @residents", @residents
+      
+      # build smartrent dict
+      smartrent_dict = {}
+      Smartrent::Resident.where(:email => @residents.collect{|r| r.email }).each do |sr|
+        smartrent_dict[sr.email.to_s.downcase] = sr
+      end
+
+      units = Unit.includes(:property).where(:id => unit_ids).all
+      @property_dict = {}
+      
+      units.each do |u|
+        @property_dict[u.property.id.to_s] = u.property
+      end
+      
+      #pp "@property_dict", @property_dict
+      
+      @residents.each do |r|
+        # eager load smartrent
+        r.eager_load( smartrent_dict[r.email_lc] )
+
+        # eager load unit
+        r.eager_load(units.detect{|u| u.id == r.curr_unit_id.to_i })
+      end
+      
     end
     
 end

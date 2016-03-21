@@ -120,17 +120,61 @@ class User < ActiveRecord::Base
         
       elsif has_role? :regional_manager, Property
         Property.where(:region_id => managed_region_ids)
-            
+        
       else
         Property.where(:id => managed_property_ids)
-        
       end
     end
   end
   
-  # memo:
-  # def find_property_by_id(id)
-  #   managed_properties.find(id)
-  # end
+  def notifications
+    @notifications ||= begin
+      if has_role? :admin, Property
+        Notification.all
+
+      elsif has_role? :regional_manager, Property
+        Notification.joins("INNER JOINS properties where properties.id = notifications.property_id").where(:region_id => managed_region_ids)
+
+      else
+        Notification.where(:property_id => managed_property_ids)
+      end
+    end
+  end
   
+  #### smartrent
+  
+  def managed_residents
+    @managed_residents ||= begin
+      if is_admin?
+        Smartrent::Resident
+        
+      else
+        Smartrent::Resident.joins(:resident_properties).where("smartrent_resident_properties.property_id IN (?)", managed_properties.collect{|p| p.id })
+      end
+    end
+  end
+  
+  def managed_rewards
+    if is_admin?
+      Smartrent::Reward
+    else
+      Smartrent::Reward.where(:property_id => managed_properties.collect{|p| p.id })
+    end
+  end
+
+  def is_admin?
+    if defined? @is_admin
+      @is_admin
+    else
+      @is_admin ||= has_role? :admin, Property
+    end
+  end
+
+  def is_property_manager?
+    if defined? @is_property_manager
+      @is_property_manager
+    else
+      @is_property_manager ||= has_role? :property_manager, Property
+    end
+  end
 end

@@ -36,6 +36,7 @@ gem 'jquery-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
 
+
 # bundle exec rake doc:rails generates the API under doc/api.
 #gem 'sdoc', '~> 0.4.0', group: :doc
 
@@ -81,8 +82,9 @@ gem 'phony_rails', '0.9.0'
 gem 'twilio-ruby', '~> 4.2.1'
 gem 'ancestry', '2.1.0'
 gem 'email_reply_parser', '~> 0.5.8'
-#gem 'ransack', github: 'activerecord-hackery/ransack', branch: 'rails-4.2'
 
+gem 'ransack', github: 'activerecord-hackery/ransack', :branch => "rails-4.2"
+gem "diffy", "~> 3.0.7"
 
 #engines
 gem "smartrent", :path => "/mnt/gems/smartrent"
@@ -98,5 +100,7 @@ group :development, :test do
   gem 'spring'
   
   gem 'quiet_assets', '~> 1.1.0'
+
+  gem 'hirb'
 end
 

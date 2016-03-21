@@ -1,8 +1,21 @@
 Rails.application.routes.draw do
 
-  constraints :subdomain => (Rails.env.production? ? 'smartrent' : 'smartrent-beta')  do
-      mount Smartrent::Engine, :at => "/", :as => "smartrent"
+  def smartrent_subdomain
+    case Rails.env
+      when "development", "test"
+        "smartrent-dev"
+      when "stage"
+        "smartrent-beta"
+      else
+        "smartrent"
+    end
   end
+
+  constraints :subdomain => smartrent_subdomain  do
+    mount Smartrent::Engine, :at => "/", :as => "smartrent"
+  end
+  
+  mount Smartrent::Engine, :at => "/sr", :as => "sr"
   
   # shared
   def resident_resources
@@ -10,17 +23,25 @@ Rails.application.routes.draw do
       member do 
         get :tickets
         get :roommates
-        get :properties
+        get :units
         
-        get :marketing_properties
+        get :marketing_units
         get :marketing_statuses
+        get :smartrent
       end
+      resources :tickets
       
       collection do
         get :search
       end
       
-      resources :activities
+      resources :activities do
+        member do
+          post :update_note
+          post :acknowledge
+          post :reply
+        end
+      end
     end
   end
   
@@ -32,6 +53,14 @@ Rails.application.routes.draw do
         
         get :metrics
         get :export_metrics
+      end
+    end
+  end
+  
+  def notification_resources
+    resources :notifications do
+      collection do
+        get :poll
       end
     end
   end
@@ -52,9 +81,9 @@ Rails.application.routes.draw do
       member do
         get :residents
       end
+      
+      resources :tickets
     end
-    
-    resources :notifications
     
     resources :notices, :as => "campaigns", :controller => "campaigns" do
       member do
@@ -78,12 +107,30 @@ Rails.application.routes.draw do
         post :import
       end
     end
+    
+    notification_resources
+    
+    resources :import_alerts do
+      member do
+        post :acknowledge
+      end
+    end
   end
   
   resident_resources
   report_resources
+  notification_resources
   
   resources :downloads, only: [:show], :constraints => { :id => /[^\/]+/ }
+  
+  resources :resident_passwords do
+    member do
+      post :reset
+      post :set_status
+      post :set_amount
+      post :become_buyer
+    end
+  end
   
   # email system
   resources :unsubscribes do
@@ -127,12 +174,21 @@ Rails.application.routes.draw do
   end
   
   # admin
+  resource :nimda, :controller => :nimda do
+    get :units
+    post :load_units
+    post :test_units_ftp
+    
+    get :yardi
+    post :load_yardi
+    post :test_yardi_ftp
+  end
+  
   namespace :nimda do
     resources :templates do
       member do
         get :preview
       end
-      
     end
   end
   

@@ -1,7 +1,56 @@
 <!-- bootstrap notify -->
 <div id="notify" class='bottom-right'></div>
 
-<div class="modal modal-sm" id="new-ticket-modal">
+<div class="modal" id="new-ticket-modal" data-search="<%= main_app.search_property_residents_path(@property, :format => :json) if @property %>">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title">Add New Ticket</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered tbale-striped tablesorter">
+          <thead>
+            <tr>
+              <th data-placeholder="Search" width="100px">Unit</th>
+              <th data-placeholder="Search">Name</th>
+              <th data-placeholder="Search">Email</th>
+              <th class="filter-false" width="140px">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4">
+                Loading...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="pager">
+          <span class="btn btn-default btn-sm  first">
+            <i class="fa fa-angle-double-left"></i>
+          </span>
+          <span class="btn btn-default btn-sm  prev">
+            <i class="fa fa-angle-left"></i>
+          </span>
+          <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+
+          <span class="btn btn-default btn-sm  next">
+            <i class="fa fa-angle-right"></i>
+          </span>
+          <span class="btn btn-default btn-sm last">
+            <i class="fa fa-angle-double-right"></i>
+          </span>
+        </div>
+        
+      </div>
+    </div><!-- /.modal-content -->
+  </div>
+</div>
+
+
+<div class="modal" id="new-unit-ticket-modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -9,21 +58,12 @@
         <h4 class="modal-title">Add New Ticket</h4>
       </div>
       <div class="modal-body">
-        <form action="<%= search_property_residents_path(@property) if @property %>" method="GET">
-        Enter resident ID or resident email:
-          <div class="input-group">
-            <input type="text" class="form-control">
-            <span class="input-group-btn">
-              <button class="btn btn-default search" style="width: 100px;" type="button">Search</button>
-            </span>
-          </div>
-        </form>
       </div>
     </div><!-- /.modal-content -->
   </div>
 </div>
 
-<div class="modal modal-sm" id="export-dialog">
+<div class="modal" id="export-dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

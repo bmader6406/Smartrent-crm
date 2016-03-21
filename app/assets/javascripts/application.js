@@ -24,6 +24,7 @@
 //= require jquery.mCustomScrollbar2
 //= require jquery.tablesorter.min
 //= require jquery.tablesorter.widgets.min
+//= require jquery.tablesorter.pager.js
 //= require jquery.floatThead.min
 //= require redactor
 //
@@ -67,4 +68,6 @@
 //= require intl-phone/libphonenumber/build/utils.js
 //= require daterangepicker
 //= require bootstrap-select
+//= require isotope.pkgd.min.js
+//= require fit-columns.js
 //= require app

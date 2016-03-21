@@ -10,37 +10,45 @@ class Property < ActiveRecord::Base
   
   has_many :units
   has_many :notifications
+  has_many :import_alerts
   has_many :assets
   
   has_many :campaigns
   has_many :audiences, :class_name => "Audience"
   
-  validates :name, :presence => true
 
-  ########################## SmartRent Property Associations #######################
-    validates_uniqueness_of :name, :case_sensitive => true, :allow_blank => true
-    has_attached_file :image, :styles => {:search_page => "150x150>"}
-    validates_attachment_content_type :image, :content_type => /\Aimage\/.*\Z/
-    #scope :matches_all_features, -> *feature_ids { where(matches_all_features_arel(feature_ids)) }
-    #scope :where_one_bed, -> *search { where(where_bed_arel(1, search)) }
-    #scope :where_two_bed, -> *search { where(where_bed_arel(2, search)) }
-    #scope :where_three_more_bed, -> *search { where(where_bed_arel_more_than_eq(3)) }
-    #scope :where_penthouse, -> *search { where(where_penthouse_arel) }
-    #scope :price, -> *price { where(price_arel(price)) }
-  ##################################################################################
+  validates :name, :presence => true, :uniqueness => {:scope => :deleted_at}
+
+  has_attached_file :image, 
+    :styles => {:search_page => "150x150>"},
+    :storage => :s3,
+    :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
+    :path => ":class/:attachment/:id/:style/:filename"
+  
+  validates_attachment :image,
+     :size => {:less_than => 10.megabytes, :message => "file size must be less than 10 megabytes" },
+     :content_type => {
+       :content_type => ['image/pjpeg', 'image/jpeg', 'image/png', 'image/x-png', 'image/gif'],
+       :message => "must be either a JPEG, PNG or GIF image"
+      }
+  
+  default_scope { where(:deleted_at => nil) }
+       
+  scope :crm, -> { where(is_crm:  true) }
+  scope :smartrent, -> { where(is_smartrent:  true) }
   
   resourcify
-  
+
   def setting
     @setting ||= begin
-      property_setting ? property_setting : create_property_setting(:notification_emails => [user.email])
+      property_setting ? property_setting : create_property_setting(:notification_emails => user ? [user.email] : [])
     end
   end
-  
+
   def index_url
     "http://#{HOST}/properties/#{id}"
   end
-  
+
   def to_macro(macro)
     attributes.keys.each do |k|
       macro["property.#{k}"] = self[k]
@@ -57,9 +65,17 @@ class Property < ActiveRecord::Base
     Resident.with(:consistency => :eventual).where(:deleted_at => nil)
   end
 
-
-  #*****************************************SmartRent methods**************************
+  # don't remove
   def self.custom_ransack(q)
     Smartrent::Property.ransack(q)
   end
+
+  def formatted_website_url
+    if website_url =~ /\A#{URI::regexp(['http', 'https'])}\z/
+      website_url
+    else
+      "http://" + website_url
+    end
+  end
+  
 end

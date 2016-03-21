@@ -1,5 +1,5 @@
 <% if(App.vars.isPropertyPage) { %>
-  <% if (App.vars.ability.can("cud", "Resident")) { %>
+  <% if (App.vars.ability.can("cud", "Resident") && App.vars.isCrm) { %>
     <div id="toolbar">
       <table>
         <tr>
@@ -35,12 +35,15 @@
       <div> Loading...</div>
     </div>
     <div class="tab-pane" id="resident-tickets">Loading...</div>
+    <div class="tab-pane" id="smartrent">Loading...</div>
+    <div class="tab-pane" id="unit-history">Loading...</div>
+    <div class="tab-pane" id="resident-details">Loading...</div>
   </div>
 
 <% } else { %>
 
   <div class="tab-content">
-    <div class="tab-pane active" id="resident-properties">Loading...</div>
+    <div class="tab-pane active" id="resident-units">Loading...</div>
     <div class="tab-pane" id="resident-tickets">Loading...</div>
   </div>
 <% } %>

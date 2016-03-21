@@ -11,12 +11,25 @@ class RoommatesController < ApplicationController
       format.json {
         @roommates = []
         
-        Resident.ordered("first_name asc").where("properties" => {
-          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id], "roommate" => true}
+        Resident.ordered("first_name asc").where("units" => {
+          "$elemMatch" => { "property_id" => @property.id.to_s, "unit_id" => params[:unit_id], "status" => "Current" }
         }).each do |r|
-          r.curr_property_id = @property.id
+          r.curr_unit_id = params[:unit_id]
           @roommates << r
         end
+        
+        primary_residents = []
+        roommates = []
+        
+        @roommates.each do |r|
+          if r.curr_unit.roommate?
+            roommates << r
+          else
+            primary_residents << r
+          end
+        end
+        
+        @roommates = primary_residents + roommates
       }
     end
   end
@@ -53,7 +66,7 @@ class RoommatesController < ApplicationController
     @roommate = Resident.with(:consistency => :strong).where(:email_lc => roommate_params[:email].downcase ).unify_ordered.first
     @roommate = Resident.new if !@roommate
     
-    @roommate.curr_property_id = @property.id
+    @roommate.curr_unit_id = params[:unit_id]
     
     Resident::CORE_FIELDS.each do |f|
       if !roommate_params[f].blank?
@@ -70,24 +83,24 @@ class RoommatesController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
-      property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
+    Resident::UNIT_FIELDS.each do |f|
+      unit_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
     end
 
     respond_to do |format|
       if @roommate.save
         #create submit
-        @roommate.sources.create(property_attrs) if property_attrs[:property_id]
+        @roommate.sources.create(unit_attrs) if unit_attrs[:property_id]
         format.json { render template: "roommates/show.json.rabl", status: :created }
       else
         format.json { render json: @roommate.errors.full_messages, status: :unprocessable_entity }
@@ -112,27 +125,27 @@ class RoommatesController < ApplicationController
     end
     
     #params[:property_id] come from property dropdown of org-group level form
-    property_attrs = {
+    unit_attrs = {
       :property_id => params[:property_id],
       :unit_id => params[:unit_id],
       :roommate => true
     }
     
-    Resident::PROPERTY_FIELDS.each do |f|
-      property_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
+    Resident::UNIT_FIELDS.each do |f|
+      unit_attrs[f] = roommate_params[f] if !roommate_params[f].blank?
       
-      if [:signing_date, :move_in, :move_out].include?(f) && property_attrs[f]
-        property_attrs[f] = Date.strptime(property_attrs[f], '%m/%d/%Y') rescue nil
+      if [:signing_date, :move_in, :move_out].include?(f) && unit_attrs[f]
+        unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
       end
       
-      if [:lessee, :arc_check].include?(f) && property_attrs[f]
-        property_attrs[f] = property_attrs[f].to_s == "0" ? false : true
+      if [:lessee, :arc_check].include?(f) && unit_attrs[f]
+        unit_attrs[f] = unit_attrs[f].to_s == "0" ? false : true
       end
     end
     
     respond_to do |format|
-      if @roommate.update_attributes(roommate_params)
-        @roommate.sources.create(property_attrs) if property_attrs[:property_id]
+      if @roommate.save
+        @roommate.sources.create(unit_attrs) if unit_attrs[:property_id]
         format.json { render template: "roommates/show.json.rabl" }
       else
         format.json { render json: @roommate.errors.full_messages, status: :unprocessable_entity }
@@ -141,8 +154,9 @@ class RoommatesController < ApplicationController
   end
 
   def destroy
+    # TODO fix
     if @property
-      @roommate.properties.detect{|p| p.property_id.to_i == @property.id }.destroy
+      @roommate.units.detect{|u| u.property_id.to_i == @property.id }.destroy
     else
       @roommate.update_attribute(:deleted_at, Time.now)
     end
@@ -165,7 +179,8 @@ class RoommatesController < ApplicationController
     
     def set_roommate
       @roommate = Resident.find(params[:id])
-      @roommate.curr_property_id = @property.id
+      #optional (check later)
+      #@roommate.curr_unit_id = params[:unit_id]
       
       case action_name
         when "create"
