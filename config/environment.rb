@@ -5,7 +5,7 @@ NIMDA_U, NIMDA_P = "crmnimda", "CRMn1md4"
 
 RETRY_LIMIT = 3
 RETRY_DELAY = 30
-TMP_DIR = "/tmp/"
+TMP_DIR = "/mnt/exim-data/"
 
 ### Login with ... (optional)
 TWITTER_KEY = ""
