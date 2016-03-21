@@ -51,6 +51,7 @@ class ResidentPasswordsController < ApplicationController
     
     def set_resident
       @smartrent_resident = current_user.managed_residents.find(params[:id])
+      @smartrent_resident.disable_email_validation = true
     end
     
 end
