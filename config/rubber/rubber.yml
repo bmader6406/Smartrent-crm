@@ -374,3 +374,7 @@ hosts:
   stage:
     env_name: hylyus
     domain: hyly.us
+    
+  crm-smartrent:
+    env_name: crm
+    domain: bozzuto.com
