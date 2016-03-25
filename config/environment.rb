@@ -26,11 +26,20 @@ GOOGLE_SECRET = "4c-Nk5nT_FxcPER-z-ii9ooD"
 DROPBOX_KEY = "mz42zotb5v03alt"
 
 ### Resident stream - phone
-TWILIO_SID = "AC98548e50553210aa39deb89e6a8ffb1b"
-TWILIO_TOKEN = "643e67e6da78361b3436d7781d78f5cb"
-TWILIO_NUMBER = "+1 260-535-0148"
+# Hy.ly
+# TWILIO_SID = "AC98548e50553210aa39deb89e6a8ffb1b"
+# TWILIO_TOKEN = "643e67e6da78361b3436d7781d78f5cb"
+# TWILIO_NUMBER = "+1 260-535-0148"
 
-TWILIO_P2P_SID = Rails.env.production? ? "APf050c35b938ebb859aa802e25f7f7d71" : "AP9bebd11d0f668dd667158695dea83119"
+# TWILIO_P2P_SID = Rails.env.production? ? "APf050c35b938ebb859aa802e25f7f7d71" : "AP9bebd11d0f668dd667158695dea83119"
+
+
+# Todd's account
+TWILIO_SID = "AC5a31d3785fa57e63e37e04c20b5fd680"
+TWILIO_TOKEN = "f99c23265c3a1c99249d83e23394e17e"
+TWILIO_NUMBER = "+1 240-245-2373"
+
+TWILIO_P2P_SID = Rails.env.production? ? "APcdc45777f146399459e86d1c8d4ac982" : "AP72efd2192c606511cdbca4870bb47a6c"
 
 # Resident stream - email conversation
 CONVO_EMAIL = "conversation@hy.ly"
