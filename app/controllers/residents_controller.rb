@@ -323,6 +323,18 @@ class ResidentsController < ApplicationController
       if params[:property_id]
         @property = current_user.managed_properties.find(params[:property_id])
         Time.zone = @property.setting.time_zone
+      
+      else
+        if !current_user.has_role? :admin, Property
+          
+          if current_user.managed_properties.first
+            redirect_to property_residents_url(current_user.managed_properties.first) and return
+
+          else
+            redirect_to profile_url and return
+          end
+          
+        end
       end
     end
 

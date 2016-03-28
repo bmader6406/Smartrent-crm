@@ -62,6 +62,13 @@ window.Crm = {
         Crm.unauthorizedAlert();
         return false;
       }
+      
+      if(!propertyId && !App.vars.ability.can("admin", "Property")) {
+        // PM is not allowed to view all residents
+        // reload the page, backend will redirect them to the property the user has access to
+        window.location.reload();
+        return;
+      }
 
       var residentSearch = new Crm.Views.ResidentSearch(),
         residentsList = new Crm.Views.ResidentsList({
