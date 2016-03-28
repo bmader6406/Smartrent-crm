@@ -125,7 +125,7 @@ module ApplicationHelper
         "" => "--Select Pets--",
         "Dog" => "Dog",
         "Cat" => "Cat",
-        "Dog & Cat" => "Dog & Cat",
+        "Others" => "Others",
         "None" => "None"
       },
       "gender"=>{
