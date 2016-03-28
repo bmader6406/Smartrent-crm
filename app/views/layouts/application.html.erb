@@ -47,7 +47,10 @@
   <%= render "layouts/flash" %>
   <%= render "layouts/modal" %>
   
-  <div id="spinner"> <%= image_tag("circle_loading.gif") %> Loading... </div>
+  <div id="spinner">
+    <div></div>
+    <%= image_tag("anim-loading.gif", :alt => "Loading...") %> 
+  </div>
   
   <script type="text/javascript">
     var authenticity_token = "<%= form_authenticity_token %>";

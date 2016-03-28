@@ -38,10 +38,10 @@ Crm.Views.DocumentUploadForm = Backbone.View.extend({
       wait: true,
       error: function (model, xhr) {
         var errors = $.parseJSON(xhr.responseText);
-        msgbox('Activity was not saved! ' + errors.join(", "), 'danger');
+        msgbox('File was not uploaded! ' + errors.join(", "), 'danger');
       },
       success: function (model, response) {
-        msgbox('Activity was created successfully!');
+        msgbox('File was uploaded successfully!');
         self.$('#message').val("");
         $('.no-histories').hide();
       }

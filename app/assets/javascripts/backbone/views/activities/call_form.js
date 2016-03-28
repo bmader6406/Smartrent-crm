@@ -32,16 +32,22 @@ Crm.Views.CallForm = Backbone.View.extend({
         wait: true,
         error: function (model, xhr) {
           var errors = $.parseJSON(xhr.responseText);
-          msgbox('Activity was not saved! ' + errors.join(", "), 'danger');
+          msgbox('Call was not saved! ' + errors.join(", "), 'danger');
         },
         success: function (model, response) {
-          msgbox('Activity was created successfully!');
-          $('.no-histories').hide();
-          //$(self.form.el).resetForm();
-          $(self.form.el).find("#message").val("");
+          App.showMask();
           
-          self.$el.slideUp();
-          $('#toolbar .btn').removeClass('selected');
+          setTimeout(function(){
+            msgbox(App.vars.twilioNumber + ' is calling. Please check your phone');
+            $('.no-histories').hide();
+            //$(self.form.el).resetForm();
+            $(self.form.el).find("#message").val("");
+
+            self.$el.slideUp();
+            $('#toolbar .btn').removeClass('selected');
+            
+            App.hideMask();
+          }, 5000);
         }
       });
     } else {
@@ -56,7 +62,8 @@ Crm.Views.CallForm = Backbone.View.extend({
   },
 
   render: function () {
-    var resident = this.resident,
+    var self = this,
+      resident = this.resident,
       form = new Backbone.Form({
         schema: {
           from: { 
@@ -74,8 +81,8 @@ Crm.Views.CallForm = Backbone.View.extend({
         },
         template: JST['backbone/templates/activities/call_form'],
         data: {
-          from: App.vars.propertyPhone,
-          to: resident.get("primary_phone")
+          from: self.addPhoneCode(App.vars.propertyPhone),
+          to: self.addPhoneCode(resident.get("primary_phone"))
         }
       }).render();
 
@@ -97,6 +104,12 @@ Crm.Views.CallForm = Backbone.View.extend({
     });
 
     return this;
-  }
+  },
   
+  addPhoneCode: function(number) {
+    if(number && !number.indexOf("+1") > -1) {
+      return "+1 " + number;
+    }
+    return number;
+  }
 });

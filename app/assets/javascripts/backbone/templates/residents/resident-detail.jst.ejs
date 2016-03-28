@@ -103,74 +103,84 @@
         </li>
         <% if (unit.vehicles_count > 0 && unit.vehicle1) { %>
           <li>
-            <label>V1. Make/Model/Year:</label>
-            <%= unit.vehicle1 %>
-          </li>
-          <li>
-            <label>License Plate:</label>
-            <%= unit.license1 %>
-          </li>
-          <li>
-            <label>Badge:</label>
-            <%= unit.badge_number_1 %>
+            <label>Vehicle 1</label> <br/>
+            <% if(unit.vehicle1) { %>
+              - Make/Model/Year: <%= unit.vehicle1 %> <br/>
+            <% } %>
+            
+            <% if(unit.license1) { %>
+              - License Plate #: <%= unit.license1 %> <br/>
+            <% } %>
+            
+            <% if(unit.badge_number_1) { %>
+              - Badge #: <%= unit.badge_number_1 %>
+            <% } %>
           </li>
         <% } %>
 
         <% if(unit.vehicles_count > 1 && unit.vehicle2) { %>
           <li>
-            <label>V2. Make/Model:</label>
-            <%= unit.vehicle2 %>
-          </li>
-          <li>
-            <label>License Plate:</label>
-            <%= unit.license2 %>
-          </li>
-          <li>
-            <label>Badge:</label>
-            <%= unit.badge_number_2 %>
+            <label>Vehicle 2</label> <br/>
+            <% if(unit.vehicle2) { %>
+              - Make/Model/Year: <%= unit.vehicle2 %> <br/>
+            <% } %>
+            
+            <% if(unit.license2) { %>
+              - License Plate #: <%= unit.license2 %> <br/>
+            <% } %>
+            
+            <% if(unit.badge_number_2) { %>
+              - Badge #: <%= unit.badge_number_2 %>
+            <% } %>
           </li>
         <% } %>
 
         <% if(unit.vehicles_count > 2 && unit.vehicle3) { %>
           <li>
-            <label>V3. Make/Model:</label>
-            <%= unit.vehicle3 %>
-          </li>
-          <li>
-            <label>License Plate:</label>
-            <%= unit.license3 %>
-          </li>
-          <li>
-            <label>Badge:</label>
-            <%= unit.badge_number_3 %>
+            <label>Vehicle 3</label> <br/>
+            <% if(unit.vehicle3) { %>
+              - Make/Model/Year: <%= unit.vehicle3 %> <br/>
+            <% } %>
+            
+            <% if(unit.license3) { %>
+              - License Plate #: <%= unit.license3 %> <br/>
+            <% } %>
+            
+            <% if(unit.badge_number_3) { %>
+              - Badge #: <%= unit.badge_number_3 %>
+            <% } %>
           </li>
         <% } %>
         <% if(unit.vehicles_count > 3 && unit.vehicle4) { %>
           <li>
-            <label>V4. Make/Model:</label>
-            <%= unit.vehicle4 %>
-          </li>
-          <li>
-            <label>License Plate:</label>
-            <%= unit.license4 %>
-          </li>
-          <li>
-            <label>Badge:</label>
-            <%= unit.badge_number_4 %>
+            <label>Vehicle 4</label> <br/>
+            <% if(unit.vehicle4) { %>
+              - Make/Model/Year: <%= unit.vehicle4 %> <br/>
+            <% } %>
+            
+            <% if(unit.license4) { %>
+              - License Plate #: <%= unit.license4 %> <br/>
+            <% } %>
+            
+            <% if(unit.badge_number_4) { %>
+              - Badge #: <%= unit.badge_number_4 %>
+            <% } %>
           </li>
         <% } %>
         <% if(unit.vehicles_count > 4 && unit.vehicle5) { %>
           <li>
-            <label>V5. Make/Model:</label>
-            <%= unit.vehicle5 %>
-          </li>
-          <li>
-            <label>License Plate:</label>
-            <%= unit.license5 %>
-          </li>
-          <li>
-            <label>Badge:</label>
-            <%= unit.badge_number_5 %>
+            <label>Vehicle 5</label> <br/>
+            <% if(unit.vehicle5) { %>
+              - Make/Model/Year: <%= unit.vehicle5 %> <br/>
+            <% } %>
+            
+            <% if(unit.license5) { %>
+              - License Plate #: <%= unit.license5 %> <br/>
+            <% } %>
+            
+            <% if(unit.badge_number_5) { %>
+              - Badge #: <%= unit.badge_number_5 %>
+            <% } %>
           </li>
         <% } %>
           <li class="heading"> Pet Information</li>
@@ -179,46 +189,54 @@
             <%= unit.pets_count %>
           </li>
           <% if (unit.pets_count >= 1 && unit.pet_1_type) { %>
-          <li>
-            <label>Pet Type:</label>
-            <%= unit.pet_1_type %>
-          </li>
-          <li>
-            <label>Pet Breed:</label>
-            <%= unit.pet_1_breed %>
-          </li>
-          <li>
-            <label>Pet Name:</label>
-            <%= unit.pet_1_name %>
-          </li>
+            <li>
+              <label>Pet 1</label> <br/>
+              <% if(unit.pet_1_type) { %>
+                - Type: <%= unit.pet_1_type %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_1_breed){ %>
+                - Breed: <%= unit.pet_1_breed %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_1_name){ %>
+                - Name: <%= unit.pet_1_name %> <br/>
+              <% } %>
+            </li>
           <% } %>
-          <% if (unit.pets_count >= 2) { %>
-          <li>
-            <label>Pet Type:</label>
-            <%= unit.pet_2_type %>
-          </li>
-          <li>
-            <label>Pet Breed:</label>
-            <%= unit.pet_2_breed %>
-          </li>
-          <li>
-            <label>Pet Name:</label>
-            <%= unit.pet_2_name %>
-          </li>
+          
+          <% if (unit.pets_count >= 2 && unit.pet_2_type) { %>
+            <li>
+              <label>Pet 2</label> <br/>
+              <% if(unit.pet_2_type) { %>
+                - Type: <%= unit.pet_2_type %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_2_breed){ %>
+                - Breed: <%= unit.pet_2_breed %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_2_name){ %>
+                - Name: <%= unit.pet_2_name %> <br/>
+              <% } %>
+            </li>
           <% } %>
-          <% if (unit.pets_count >= 3) { %>
-          <li>
-            <label>Pet Type:</label>
-            <%= unit.pet_3_type %>
-          </li>
-          <li>
-            <label>Pet Breed:</label>
-            <%= unit.pet_3_breed %>
-          </li>
-          <li>
-            <label>Pet Name:</label>
-            <%= unit.pet_3_name %>
-          </li>
+          
+          <% if (unit.pets_count >= 3 && unit.pet_3_type) { %>
+            <li>
+              <label>Pet 3</label> <br/>
+              <% if(unit.pet_3_type) { %>
+                - Type: <%= unit.pet_3_type %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_3_breed){ %>
+                - Breed: <%= unit.pet_3_breed %> <br/>
+              <% } %>
+            
+              <% if(unit.pet_3_name){ %>
+                - Name: <%= unit.pet_3_name %> <br/>
+              <% } %>
+            </li>
           <% } %>
       </ul>
     </div>

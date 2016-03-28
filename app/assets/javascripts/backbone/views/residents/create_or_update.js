@@ -290,50 +290,95 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
           options: [0, 1, 2, 3, 4, 5]
         },
         vehicle1: {
-          title: 'Vehicle 1 Make/Model'
+          title: 'Vehicle 1 Make/Model/Year',
+          editorAttrs: {
+            placeholder: "Make/Model/Year"
+          }
         },
         license1: {
-          title: 'Vehicle 1 License Plate'
+          title: 'Vehicle 1 License Plate #',
+          editorAttrs: {
+            placeholder: "License Plate #"
+          }
         },
         badge_number_1: {
-          title: 'Badge #1'
+          title: 'Badge #1',
+          editorAttrs: {
+            placeholder: "Badge #"
+          }
         },
         vehicle2: {
-          title: 'Vehicle 2 Make/Model'
+          title: 'Vehicle 2 Make/Model/Year',
+          editorAttrs: {
+            placeholder: "Make/Model/Year"
+          }
         },
         license2: {
-          title: 'Vehicle 2 License Plate'
+          title: 'Vehicle 2 License Plate #',
+          editorAttrs: {
+            placeholder: "License Plate #"
+          }
         },
         badge_number_2: {
-          title: 'Badge #2'
+          title: 'Badge #2',
+          editorAttrs: {
+            placeholder: "Badge #"
+          }
         },
         vehicle3: {
-          title: 'Vehicle 2 Make/Model'
+          title: 'Vehicle 3 Make/Model/Year',
+          editorAttrs: {
+            placeholder: "Make/Model/Year"
+          }
         },
         license3: {
-          title: 'Vehicle 2 License Plate'
+          title: 'Vehicle 3 License Plate #',
+          editorAttrs: {
+            placeholder: "License Plate #"
+          }
         },
         badge_number_3: {
-          title: 'Badge #3'
+          title: 'Badge #3',
+          editorAttrs: {
+            placeholder: "Badge #"
+          }
         },
         vehicle4: {
-          title: 'Vehicle 2 Make/Model'
+          title: 'Vehicle 4 Make/Model/Year',
+          editorAttrs: {
+            placeholder: "Make/Model/Year"
+          }
         },
         license4: {
-          title: 'Vehicle 2 License Plate'
+          title: 'Vehicle 4 License Plate #',
+          editorAttrs: {
+            placeholder: "License Plate #"
+          }
         },
         badge_number_4: {
-          title: 'Badge #4'
+          title: 'Badge #4',
+          editorAttrs: {
+            placeholder: "Badge #"
+          }
         },
         vehicle5: {
-          title: 'Vehicle 2 Make/Model'
+          title: 'Vehicle 5 Make/Model/Year',
+          editorAttrs: {
+            placeholder: "Make/Model/Year"
+          }
         },
         license5: {
-          title: 'Vehicle 2 License Plate'
+          title: 'Vehicle 5 License Plate #',
+          editorAttrs: {
+            placeholder: "License Plate #"
+          }
         },
         badge_number_5: {
-          title: 'Badge #5'
-        },
+          title: 'Badge #5',
+          editorAttrs: {
+            placeholder: "Badge #"
+          }
+        }
       };
 
 

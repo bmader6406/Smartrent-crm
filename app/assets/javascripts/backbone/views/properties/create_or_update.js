@@ -211,8 +211,18 @@ Crm.Views.PropertyNewOrUpdate = Backbone.View.extend({
         status: {
           title: 'Status',
           editorAttrs: {
-            placeholder: 'BMC Current'
+            placeholder: 'Status'
           }
+        },
+        property_status: {
+          title: 'Property Status',
+          editorAttrs: {
+            placeholder: 'Property Status'
+          }
+        },
+        elan_number: {
+          title: 'Elan Property Number',
+          validators: [{type: 'required', message: "Elan Property Number is required"}]
         },
         property_number: {
           title: 'Bozzuto Property Number',

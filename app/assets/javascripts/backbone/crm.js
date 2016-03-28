@@ -17,7 +17,7 @@ window.Crm = {
         target = link.attr('target'),
         sameProp = !App.vars.isPropertyPage || href.indexOf(App.vars.propertyId) > -1,
         pageReload = link.hasClass('page-reload'),
-        passThrough = href.indexOf('logout') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/sr') > -1 || href.indexOf('/nimda') > -1 || location.hostname.indexOf('smartrent') > -1 || target // chain 'or's for other black list routes
+        passThrough = href.indexOf('logout') > -1 || href.indexOf('/reports') > -1 || href.indexOf('/nimda') > -1 || location.hostname.indexOf('smartrent') > -1 || target // chain 'or's for other black list routes
 
       // Allow shift+click for new tabs, etc.
       if (sameProp && !passThrough && !pageReload && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
@@ -61,6 +61,13 @@ window.Crm = {
       if(!App.vars.ability.can("read", "Resident")){
         Crm.unauthorizedAlert();
         return false;
+      }
+      
+      if(!propertyId && !App.vars.ability.can("admin", "Property")) {
+        // PM is not allowed to view all residents
+        // reload the page, backend will redirect them to the property the user has access to
+        window.location.reload();
+        return;
       }
 
       var residentSearch = new Crm.Views.ResidentSearch(),

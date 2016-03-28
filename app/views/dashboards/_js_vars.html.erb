@@ -23,6 +23,7 @@ $(function(){
     App.vars.propertyId = "<%= @property.id %>";
     App.vars.propertyEmail = "<%= @property.email %>";
     App.vars.propertyPhone = "<%= @property.phone %>";
+    App.vars.twilioNumber = "<%= TWILIO_NUMBER %>";
     
     App.vars.propertyUnits = <%= raw property_units.to_json %>;
     App.vars.propertyAudiences = <%= raw property_audiences.to_json  %>;

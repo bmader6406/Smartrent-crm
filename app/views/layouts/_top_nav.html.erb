@@ -18,47 +18,50 @@
           <% if @property %>
             <%= @property.name %>
             <span class="label">
-    	        <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">Smartrent</span>
-  	        </span>
+              <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">Smartrent</span>
+            </span>
           <% else %>
             Select a property
           <% end %>
-          <i class="fa fa-angle-down fa-lg" style="<%= "visibility:hidden" if current_user.managed_properties.count <= 1 %>"></i>
+          <i class="fa fa-angle-down fa-lg"></i>
         </a>
       
-        <div class="list-filter dropdown-menu" style="<%= "display:none" if current_user.managed_properties.count <= 1 %>">
-      	  <form class="form-inline">
+        <div class="list-filter dropdown-menu">
+          <form class="form-inline">
             <input type="text" class="form-control" placeholder="Start typing property name..." value="">
           </form>
 
-      	  <div class="scroller">
-        	  <div class="list-group">
-        	    <a href="<%= main_app.residents_path %>" class="list-group-item <%= "active" if !@property %>">
-        	      All Properties
-        	    </a>
-        	    <div class="divider"></div>
+          <div class="scroller">
+            <div class="list-group">
+              <% if current_user.has_role? :admin, Property %>
+                <a href="<%= main_app.residents_path %>" class="list-group-item <%= "active" if !@property %>">
+                  All Properties
+                </a>
+                <div class="divider"></div>
+              <% end %>
+              
               <%
-        	      properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
-        	      properties_region.keys.sort{ |a, b| (a.name.to_s rescue "WWW") <=> (b.name.to_s rescue "WWW") }.each do |region|
-        	        hidden_region = properties_region[region].collect{|prop| prop if prop.is_crm? || prop.is_smartrent? }.compact.blank?
-        	    %>
-        	      <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>" style="<%= "display:none" if hidden_region %>"> <%= region ? region.name : "Other Metro" %></b>
-          	    <div class="items">
-            	    <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
-            	      <% next if !prop.is_crm? && !prop.is_smartrent?  %>
-            	      <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>" data-crm="<%= prop.is_crm? ? 1 : 0 %>"> 
-            	        <%= prop.name %>
-            	        
-            	        <span class="label">
-              	        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">Smartrent</span>
-            	        </span>
-            	      </a>
-            	    <% end %>
-          	    </div>
-        	    <% end %>
+                properties_region = current_user.managed_properties.includes(:region).group_by{|p| p.region }
+                properties_region.keys.sort{ |a, b| (a.name.to_s rescue "WWW") <=> (b.name.to_s rescue "WWW") }.each do |region|
+                  hidden_region = properties_region[region].collect{|prop| prop if prop.is_crm? || prop.is_smartrent? }.compact.blank?
+              %>
+                <b data-val="<%= region.id if region %>" data-label="<%= region.name if region %>" style="<%= "display:none" if hidden_region %>"> <%= region ? region.name : "Other Metro" %></b>
+                <div class="items">
+                  <% properties_region[region].sort{|a, b| a.name.to_s <=> b.name.to_s }.each do |prop| %>
+                    <% next if !prop.is_crm? && !prop.is_smartrent?  %>
+                    <a href="<%= main_app.property_residents_path(prop) %>" class="list-group-item <%= "active" if @property == prop %>" data-val="<%= prop.id %>" data-label="<%= prop.name %>" data-crm="<%= prop.is_crm? ? 1 : 0 %>"> 
+                      <%= prop.name %>
+                      
+                      <span class="label">
+                        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">Smartrent</span>
+                      </span>
+                    </a>
+                  <% end %>
+                </div>
+              <% end %>
             </div>
           </div>
-      	</div> <!-- /.list-filter -->
+        </div> <!-- /.list-filter -->
       </li>
       <% if @property %>
         <li>

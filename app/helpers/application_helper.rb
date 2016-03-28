@@ -125,7 +125,7 @@ module ApplicationHelper
         "" => "--Select Pets--",
         "Dog" => "Dog",
         "Cat" => "Cat",
-        "Dog & Cat" => "Dog & Cat",
+        "Others" => "Others",
         "None" => "None"
       },
       "gender"=>{
@@ -168,7 +168,7 @@ module ApplicationHelper
   end
   
   def sr_page?
-    request.path.include?("/sr/") || request.host.include?("smartrent")
+    request.host.include?("smartrent")
   end
   
   def pending_messages
