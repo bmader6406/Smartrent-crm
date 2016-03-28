@@ -38,10 +38,10 @@ Crm.Views.EmailForm = Backbone.View.extend({
         wait: true,
         error: function (model, xhr) {
           var errors = $.parseJSON(xhr.responseText)
-          msgbox('Activity was not saved! ' + errors.join(", "), 'danger');
+          msgbox('Email was not sent! ' + errors.join(", "), 'danger');
         },
         success: function (model, response) {
-          msgbox('Activity was created successfully!');
+          msgbox('Email was sent successfully!');
           $('.no-histories').hide();
           //$(self.form.el).resetForm();
           $(self.form.el).find("#subject, #message").val("");

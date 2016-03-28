@@ -119,7 +119,7 @@ class PropertiesController < ApplicationController
       arr = []
       hash = {}
       
-      ["name", "city", "state", "zip", "property_number", "l2l_property_id", "yardi_property_id"].each do |k|
+      ["name", "city", "state", "zip", "property_number", "elan_number", "l2l_property_id", "yardi_property_id"].each do |k|
         next if params[k].blank?
         
         arr << "#{k} LIKE :#{k}"

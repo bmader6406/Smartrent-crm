@@ -29,10 +29,10 @@ Crm.Views.NoteForm = Backbone.View.extend({
         wait: true,
         error: function (model, xhr) {
           var errors = $.parseJSON(xhr.responseText);
-          msgbox('Activity was not saved! ' + errors.join(", "), 'danger');
+          msgbox('Note was not saved! ' + errors.join(", "), 'danger');
         },
         success: function (model, response) {
-          msgbox('Activity was created successfully!');
+          msgbox('Note was created successfully!');
           $('.no-histories').hide();
           $(self.form.el).resetForm();
           
