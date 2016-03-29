@@ -107,6 +107,9 @@ class UnitLoader
         end
       end
       
+      # for logging only
+      log = import.logs.create(:file_path => file_name)
+      
       Notifier.system_message("[CRM] Units Importing Success",
         email_body(new_unit, existing_unit, errs.length, file_name),
         recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver

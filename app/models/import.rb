@@ -1,16 +1,24 @@
 class Import < ActiveRecord::Base
   self.inheritance_column = :_type_disabled
   
+  has_many :logs, :class_name => "ImportLog"
+  
+  default_scope { where(:deleted_at => nil) }
+  
   def ftp_setting
     @ftp_setting ||= begin
       hash = JSON.parse(self[:ftp_setting]) rescue {}
       
       if hash.empty?
-        if type.include?("units")
+        if type.include?("load_units")
           hash = default_units_ftp_setting
           
-        elsif type.include?("yardi")
+        elsif type.include?("load_yardi")
           hash = default_yardi_ftp_setting
+          
+        elsif type.include?("load_non_yardi")
+          hash = default_non_yardi_ftp_setting
+          
         end
       end
       
@@ -28,8 +36,12 @@ class Import < ActiveRecord::Base
       hash = JSON.parse(self[:field_map]) rescue {}
       
       if hash.empty?
-        if type.include?("yardi")
+        if type.include?("load_yardi")
           hash = default_yardi_field_map
+        
+        elsif type.include?("load_non_yardi")
+          hash = default_non_yardi_field_map
+          
         end
       end
       
@@ -40,6 +52,15 @@ class Import < ActiveRecord::Base
   def field_map=(data)
     #pp ">>>>", data
     self[:field_map] = (@field_map || field_map).merge(data).to_json
+  end
+  
+  def property_map
+    @property_map ||= JSON.parse(self[:property_map]) rescue {}
+  end
+  
+  def property_map=(data)
+    #pp ">>>>", data
+    self[:property_map] = (@property_map || property_map).merge(data).to_json
   end
   
   ###
@@ -60,6 +81,16 @@ class Import < ActiveRecord::Base
       "username" => "yardi",
       "password" => "yardi1206",
       "file_name" => "/daily/YardiResidents-Full-%Y%m%d.csv",
+      "recipient" => "tn@hy.ly"
+    }
+  end
+  
+  def default_non_yardi_ftp_setting
+    {
+      "host" => "bozzutofeed.qburst.com",
+      "username" => "bozzutofc",
+      "password" => "6zxXRETm",
+      "path" => "/reporting/nonbozzutopmsdrop/yardi_ta",
       "recipient" => "tn@hy.ly"
     }
   end
@@ -100,4 +131,19 @@ class Import < ActiveRecord::Base
       "vehicles_count" => "35"
     }
   end
+  
+  def default_non_yardi_field_map
+    {
+      "non_yardi_property_id" => "0",
+      "first_name" => "2",
+      "last_name" => "3",
+      "email" => "4",
+      "move_in" => "5",
+      "move_out" => "6",
+      "status" => "7",
+      "tenant_code" => "8",
+      "unit_code" => "9"
+    }
+  end
+  
 end

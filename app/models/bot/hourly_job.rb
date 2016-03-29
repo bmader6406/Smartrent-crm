@@ -31,6 +31,10 @@ class HourlyJob
         Resque.enqueue(YardiLoader, time, import.id)
       end
       
+      Import.where(:type => "load_non_yardi_daily", :active => true).each do |import|
+        Resque.enqueue(NonYardiLoader, time, import.id)
+      end
+      
       if time.wday == 0 # run weekly at 3AM on Sunday
         Import.where(:type => "load_units_weekly", :active => true).each do |import|
           Resque.enqueue(UnitLoader, time, import.id)

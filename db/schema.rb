@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160329075006) do
+ActiveRecord::Schema.define(version: 20160329103656) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -205,13 +205,23 @@ ActiveRecord::Schema.define(version: 20160329075006) do
     t.datetime "updated_at",                                  null: false
   end
 
+  create_table "import_logs", force: :cascade do |t|
+    t.integer  "import_id",  limit: 4
+    t.string   "file_path",  limit: 255
+    t.text     "stats",      limit: 65535
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
   create_table "imports", force: :cascade do |t|
-    t.string   "type",        limit: 255
-    t.text     "ftp_setting", limit: 65535
-    t.text     "field_map",   limit: 65535
-    t.boolean  "active",      limit: 1,     default: false
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.string   "type",         limit: 255
+    t.text     "ftp_setting",  limit: 65535
+    t.text     "field_map",    limit: 65535
+    t.boolean  "active",       limit: 1,     default: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+    t.datetime "deleted_at"
+    t.text     "property_map", limit: 65535
   end
 
   create_table "invites", force: :cascade do |t|

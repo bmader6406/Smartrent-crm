@@ -67,6 +67,9 @@ class YardiLoader
         
       end
       
+      # for logging only
+      log = import.logs.create(:file_path => file_name)
+      
       Resque.enqueue(ResidentImporter, tmp_file, "yardi", import.field_map, meta)
       
     rescue Exception => e
@@ -74,7 +77,7 @@ class YardiLoader
       error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
       p "ERROR: #{error_details}"
 
-      Notifier.system_message("[CRM] Yardi Importing FAILURE", "ERROR DETAILS: #{error_details}",
+      Notifier.system_message("[CRM] YardiLoader FAILURE", "ERROR DETAILS: #{error_details}",
         recipient, {"from" => Notifier::EXIM_ADDRESS}).deliver
         
     end

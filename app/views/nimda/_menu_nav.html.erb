@@ -5,7 +5,11 @@
   <li class="page-reload <%= "active" if action_name.include?("units") %>">
     <a href="<%= units_nimda_path %>">Unit Import</a>
   </li>
-  <li class="page-reload <%= "active" if action_name.include?("yardi") %>">
-    <a href="<%= yardi_nimda_path %>">Resident Import</a>
+  <li class="page-reload <%= "active" if action_name == "yardi" %>">
+    <a href="<%= yardi_nimda_path %>">Yardi Resident Import</a>
+  </li>
+  
+  <li class="page-reload <%= "active" if action_name == "non_yardi" %>">
+    <a href="<%= non_yardi_nimda_path %>">Non-Yardi Resident Import</a>
   </li>
 </ul>

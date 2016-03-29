@@ -164,11 +164,17 @@ Rails.application.routes.draw do
   resource :nimda, :controller => :nimda do
     get :units
     post :load_units
-    post :test_units_ftp
     
     get :yardi
     post :load_yardi
-    post :test_yardi_ftp
+    
+    get :non_yardi
+    post :load_non_yardi
+    
+    post :create_non_yardi
+    post :delete_non_yardi
+    
+    post :test_ftp
   end
   
   namespace :nimda do

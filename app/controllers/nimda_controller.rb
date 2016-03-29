@@ -19,23 +19,6 @@ class NimdaController < ApplicationController
     @daily_import.save if @daily_import.new_record?
   end
   
-  def test_units_ftp
-    begin
-      ftp = Net::FTP.new()
-      ftp.passive = true
-      ftp.connect(params[:ftp_setting][:host])
-      ftp.login(params[:ftp_setting][:username], params[:ftp_setting][:password])
-      ftp.close
-    
-      render :json => {:success => true}
-      
-    rescue Exception => e
-      pp "ftp test ERROR: ", e
-      
-      render :json => {:success => false}
-    end
-  end
-  
   def load_units
     import = Import.find_by_type(params[:type])
     import.update_attributes(:ftp_setting => params[:ftp_setting])
@@ -57,7 +40,55 @@ class NimdaController < ApplicationController
     @daily_import.save if @daily_import.new_record?
   end
   
-  def test_yardi_ftp
+  def load_yardi
+    import = Import.find_by_type(params[:type])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
+    
+    if params[:active]
+      import.update_attributes(:active => params[:active])
+    else
+      Resque.enqueue(YardiLoader, Time.now, import.id)
+    end
+    
+    render :json => {:success => true}
+  end
+  
+  def non_yardi
+    @imports = Import.where(type: "load_non_yardi_daily").all # it is supposed to run weekly but we check for the feed daily, run the import if any
+    
+    if @imports.empty?
+      import = Import.find_or_initialize_by(type: "load_non_yardi_daily")
+      import.save if import.new_record?
+      
+      @imports = [import]
+    end
+  end
+  
+  def create_non_yardi
+    Import.create(type: "load_non_yardi_daily")
+    
+    render :json => {:success => true}
+  end
+  
+  def delete_non_yardi
+    Import.find(params[:id]).update_attribute(:deleted_at, Time.now)
+    
+    render :json => {:success => true}
+  end
+  
+  def load_non_yardi
+    import = Import.find(params[:id])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :property_map => params[:property_map])
+    
+    if params[:active]
+      import.update_attributes(:active => params[:active])
+    end
+    
+    render :json => {:success => true}
+  end
+  
+  
+  def test_ftp
     begin
       ftp = Net::FTP.new()
       ftp.passive = true
@@ -74,18 +105,6 @@ class NimdaController < ApplicationController
     end
   end
   
-  def load_yardi
-    import = Import.find_by_type(params[:type])
-    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
-    
-    if params[:active]
-      import.update_attributes(:active => params[:active])
-    else
-      Resque.enqueue(YardiLoader, Time.now, import.id)
-    end
-    
-    render :json => {:success => true}
-  end
   
   protected
   
