@@ -4,7 +4,7 @@ class ResidentUnitStatusChecker
     :crm_immediate
   end
 
-  def self.perform(time = nil)
+  def self.perform(time)
     time = Time.parse(time) if time.kind_of?(String)
     for_date = (time || Time.now).to_date
     

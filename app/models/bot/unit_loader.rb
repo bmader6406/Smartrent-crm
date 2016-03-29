@@ -12,7 +12,7 @@ class UnitLoader
     :crm_immediate
   end
 
-  def self.perform(time = nil, import_id);
+  def self.perform(time, import_id);
     time = Time.parse(time) if time.kind_of?(String)
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting

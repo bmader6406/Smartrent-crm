@@ -10,7 +10,7 @@ class YardiLoader
     :crm_immediate
   end
 
-  def self.perform(time = nil, import_id);
+  def self.perform(time, import_id);
     time = Time.parse(time) if time.kind_of?(String)
     time = time - 1.day # yardi file is 1 day behind
     import = Import.find(import_id)
