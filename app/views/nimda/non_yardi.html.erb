@@ -85,6 +85,8 @@
                       
                       <div class="property-mapping" style="display:none">
                         <b style="display:block; margin-bottom: 5px;">Map Property Ids</b>
+                        <a href="#" class="btn btn-link show-props"> Show All </a>
+                        <a href="#" class="btn btn-link hide-props"> Hide Blanks </a>
                         <table class="table table-bordered table-striped">
                           <thead>
                             <th>
@@ -96,7 +98,7 @@
                           </thead>
                           <tbody>
                             <% Property.order('name asc').all.each do |prop| %>
-                              <tr>
+                              <tr class="<%= "tr-hidden" if import.property_map.empty? || import.property_map["#{prop.id}"].blank?  %>">
                                 <td>
                                   <%= prop.name %>
                                 </td>
@@ -268,6 +270,19 @@
           }, 'json');
         }
       });
+      return false;
+    });
+    
+    $('.show-props').click(function(){
+      var t = $(this);
+      t.parent().find('.tr-hidden').show();
+     
+      return false;
+    });
+    
+    $('.hide-props').click(function(){
+      var t = $(this);
+      t.parent().find('.tr-hidden').hide();
       return false;
     });
     
