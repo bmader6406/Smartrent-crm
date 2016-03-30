@@ -7,6 +7,14 @@ Crm.Views.UnitSearch = Backbone.View.extend({
   
   render: function () {
   	this.$el.html(this.template());
+  	
+  	if(Crm.collInst.units) {
+      var self = this;
+      _.each(_.keys(Crm.collInst.units.queryParams), function(k){
+        self.$('*[name="'+k+'"]').val( Crm.collInst.units.queryParams[k] );
+      });
+    }
+    
   	return this;
   },
 

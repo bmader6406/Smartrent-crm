@@ -13,7 +13,8 @@ node do |n|
     :move_out => (n.move_out.strftime("%m/%d/%Y") rescue nil),
     :unit_code => n.unit_code,
     :unit_id => n.unit_id,
-    :roommate => n.roommate? ? "Yes" : "No"
+    :roommate => n.roommate?,
+    :roommate_text => n.roommate? ? "Yes" : "No"
   }
 end
 

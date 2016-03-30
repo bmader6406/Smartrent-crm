@@ -115,7 +115,8 @@ window.Crm = {
         $('#center').html(residentDetail.render().$el);
 
         //hack: highlight when needed only
-        $('#resident-info .nav-details a:first').click();
+        //$('#resident-info .nav-details a:first').click();
+        $('#resident-info .resident-details').click();
 
         if( window.location.hash == "#addTicket"){
           setTimeout(function(){ //wait for activity to load

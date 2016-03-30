@@ -43,13 +43,21 @@ Crm.Views.ResidentsList = Backbone.View.extend({
        label: "Primary Phone",
        cell: 'string',
        editable: false,
-       sortable: false
+       sortable: false,
+       renderable: false
      }, {
         name: "status",
         label: "Status",
         cell: 'string',
         editable: false,
         sortable: false
+      }, {
+        name: "roommate_text",
+        label: "Roommate?",
+        cell: 'string',
+        editable: false,
+        sortable: false,
+        renderable: App.vars.isPropertyPage
       }, {
         name: "move_in",
         label: "Move In",

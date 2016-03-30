@@ -10,6 +10,13 @@ Crm.Views.TicketSearch = Backbone.View.extend({
   	
   	this.$('.date-field :text').datepicker({format: 'yyyy-mm-dd'});
   	
+  	if(Crm.collInst.tickets) {
+      var self = this;
+      _.each(_.keys(Crm.collInst.tickets.queryParams), function(k){
+        self.$('*[name="'+k+'"]').val( Crm.collInst.tickets.queryParams[k] );
+      });
+    }
+  	
   	return this;
   },
 

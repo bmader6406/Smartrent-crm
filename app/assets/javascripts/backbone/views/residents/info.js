@@ -74,8 +74,10 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
         // load smartrent info in background
         if (this.model.get('smartrent') && App.vars.isCrm && App.vars.isSmartrent) {
           $.getJSON(this.model.get('smartrent_path'), function(data){
-            self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
-            self.$('.smartrent-info').hide();
+            if(data.total_rewards) {
+              self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
+              self.$('.smartrent-info').hide();
+            }
           });
         }
 
@@ -112,6 +114,9 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           $('#resident-units').html( new Crm.Views.ResidentUnitsList({ collection: Crm.collInst.residentUnits }).render().el );
         }
         
+        $('#resident-history, #marketing-history, #smartrent, #toolbar, #resident-details, #unit-history, #resident-roommates').hide();
+        $('#resident-units').show();
+        
         break;
 
       case '#smartrent':
@@ -119,16 +124,18 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 
         if (this.model.get('smartrent')) {
           $.getJSON(this.model.get('smartrent_path'), function(data){
-            smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
+            if(data.total_rewards) {
+              smartrent.html( new Crm.Views.Smartrent({ model: data }).render().el );
 
-            self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
-            self.$('.smartrent-info').show();
+              self.$('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) );
+              self.$('.smartrent-info').show();
+            }
           });
         } else {
           if( this.model.get('unit') && this.model.get('unit').roommate) {
-            smartrent.html('<div class="well"> Roommate does not have smartrent acccount </div>');
+            smartrent.html('<div class="well"> '+ this.model.get('full_name') +' is not a primary tenant, but a roommate.  Roommates are not eligible for SmartRent </div>');
           } else {
-            smartrent.html('<div class="well"> No Smartrent Record Found! <br><br> It will be created on when the resident move in on '+ this.model.get('move_in') +' </div>');
+            smartrent.html('<div class="well"> No Smartrent Account Found! <br><br> Smartrent account will be created after the resident move in on '+ this.model.get('move_in') +' </div>');
           }
           
         }
@@ -160,15 +167,16 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
       residentDetails = $('#resident-details');
       
     Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
-    $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent').hide();
+    $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent, #resident-units').hide();
     $('#resident-info .nav-details .btn').removeClass('btn-primary').addClass('btn-default');
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
     
     residentDetails.html( JST["backbone/templates/residents/resident-detail"](this.model.toJSON()) ).show();
-    
     if( this.model.get('smartrent') ) {
       $.getJSON(this.model.get('smartrent_path'), function(data){
-        residentDetails.find('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) ).show();
+        if(data.total_rewards) {
+          residentDetails.find('.smartrent-info').replaceWith( JST["backbone/templates/residents/smartrent_info"](data) ).show();
+        }
       });
     }
     

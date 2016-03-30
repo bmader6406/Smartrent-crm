@@ -2,7 +2,7 @@ object @resident
 
 # backgrid requires the unique :id
 node do |n|
-  if @property # proeprty view, resident use the residentID_unitID format
+  if @property # property view, resident use the residentID_unitID format
     attrs = {
       :id => n.to_param,
       :show_path => property_resident_path(@property, n),
@@ -34,6 +34,7 @@ node do |n|
   attrs[:name] = n.full_name.blank? ? "N/A" : n.full_name
   
   attrs[:birthday] = n.birthday.strftime("%m/%d/%Y") rescue nil
+  attrs[:roommate_text] = ""
   
   if n.status == "Past"
     if n.unit_code.present?
@@ -58,6 +59,10 @@ node do |n|
   if n.curr_unit
     attrs[:move_in] = n.curr_unit.move_in.strftime("%m/%d/%Y") rescue nil
     attrs[:status] = n.curr_unit.status
+    
+    if @property
+      attrs[:roommate_text] = n.curr_unit.roommate? ? "Yes" : "No"
+    end
   end
   
   # Mark as smartrent resident, load the rewards detail when the user view the resident detail

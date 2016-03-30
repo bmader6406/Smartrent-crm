@@ -22,7 +22,7 @@
 
 <div class="card">
   <% if(App.vars.isPropertyPage) { %>
-    <% if (App.vars.residentObj && App.vars.residentObj.unit.roommate) { %>
+    <% if (roommate_text == "Yes") { %>
       <span class="badge" style="float:right">roommate</span>
     <% } %>
     <b href="#" class="blue-text"><%= unit_text %></b>

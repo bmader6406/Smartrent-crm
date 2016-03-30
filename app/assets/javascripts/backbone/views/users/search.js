@@ -7,6 +7,14 @@ Crm.Views.UserSearch = Backbone.View.extend({
   
   render: function () {
   	this.$el.html(this.template());
+  	
+  	if(Crm.collInst.users) {
+      var self = this;
+      _.each(_.keys(Crm.collInst.users.queryParams), function(k){
+        self.$('*[name="'+k+'"]').val( Crm.collInst.users.queryParams[k] );
+      });
+    }
+    
   	return this;
   },
 

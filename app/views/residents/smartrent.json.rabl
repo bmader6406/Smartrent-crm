@@ -10,7 +10,7 @@ node do |n|
     :monthly_awards_amount => number_to_currency(n.monthly_awards_amount, :precision => 0),
     :sign_up_bonus => number_to_currency(n.sign_up_bonus, :precision => 0),
     :initial_reward => number_to_currency(n.initial_reward, :precision => 0),
-    :first_move_in => (n.first_move_in.to_s(:short_date) rescue nil),
+    :first_move_in => (n.first_move_in.to_s(:utc_short_date) rescue nil),
     :total_months => n.total_months.to_i,
     :can_become_buyer => n.can_become_buyer_in_property?(@property),
     :is_admin => current_user.is_admin?,
@@ -27,8 +27,8 @@ node do |n|
     hash[:rewards] << {
       :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],
-      :period_start => (reward.period_start.to_s(:short_date) rescue nil),
-      :period_end => (reward.period_end.to_s(:short_date) rescue nil),
+      :period_start => (reward.period_start.to_s(:utc_short_date) rescue nil),
+      :period_end => (reward.period_end.to_s(:utc_short_date) rescue nil),
       :property_name => (reward.property.name rescue nil),
       :amount => number_to_currency(reward.amount, :precision => 0),
       :months_earned => reward.months_earned

@@ -425,6 +425,14 @@ class ResidentsController < ApplicationController
         match["units.status"] = params[:status]
       end
       
+      if params[:roommate] == "0"
+        match["units.roommate"] = {"$in" => [nil, false] }
+      end
+      
+      if params[:roommate] == "1"
+        match["units.roommate"] = true
+      end
+      
       # manual paging
       limit = params[:page].to_i*per_page.to_i
       skip = limit - per_page.to_i
@@ -439,7 +447,8 @@ class ResidentsController < ApplicationController
         "units._id" => 1,
         "units.unit_id" => 1,
         "units.property_id" => 1,
-        "units.status" => 1
+        "units.status" => 1,
+        "units.roommate" => 1
       }
       
       if @property

@@ -13,7 +13,8 @@ date_formats = {
   :sw_date =>  lambda { |date| date.strftime("%B %e, %Y")},
   :visit_time => lambda { |date| date.strftime("%H:%M:%S %b %d")}, #12:50:08 Sep 6
   :csv_time => lambda { |date| date.strftime("%Y-%m-%d %H:%M:%S")},
-  :utc_date => lambda { |date| date.to_time.in_time_zone('UTC').strftime("%Y-%b-%d") } #2010-Otc-01
+  :utc_date => lambda { |date| date.to_time.in_time_zone('UTC').strftime("%Y-%b-%d") }, #2010-Otc-01
+  :utc_short_date => lambda { |date| date.in_time_zone('UTC').strftime("#{date.mon}/%d/%Y") },  # 1/23/2010
 }
 
 Time::DATE_FORMATS.merge!(date_formats)

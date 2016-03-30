@@ -19,14 +19,14 @@ Crm.Views.UnitHistoryList = Backbone.View.extend({
         editable: false,
         sortable: true
       }, {
-        name: "roommate",
-        label: "Is Roommate?",
+        name: "status",
+        label: "Status",
         cell: 'string',
         editable: false,
         sortable: true
       }, {
-        name: "status",
-        label: "Status",
+        name: "roommate_text",
+        label: "Roommate?",
         cell: 'string',
         editable: false,
         sortable: true

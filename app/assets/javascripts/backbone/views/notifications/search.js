@@ -7,6 +7,14 @@ Crm.Views.NotificationSearch = Backbone.View.extend({
   
   render: function () {
   	this.$el.html(this.template());
+  	
+  	if(Crm.collInst.notifications) {
+      var self = this;
+      _.each(_.keys(Crm.collInst.notifications.queryParams), function(k){
+        self.$('*[name="'+k+'"]').val( Crm.collInst.notifications.queryParams[k] );
+      });
+    }
+      
   	return this;
   },
 

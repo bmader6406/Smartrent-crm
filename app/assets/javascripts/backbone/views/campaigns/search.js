@@ -7,6 +7,14 @@ Crm.Views.CampaignSearch = Backbone.View.extend({
   
   render: function () {
   	this.$el.html(this.template());
+  	
+  	if(Crm.collInst.campaigns) {
+      var self = this;
+      _.each(_.keys(Crm.collInst.campaigns.queryParams), function(k){
+        self.$('*[name="'+k+'"]').val( Crm.collInst.campaigns.queryParams[k] );
+      });
+    }
+    
   	return this;
   },
 
