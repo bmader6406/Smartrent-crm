@@ -77,9 +77,9 @@ class ResidentImporter
       index += 1
       begin
         CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
-          next if index == 1 || row.join.blank?
+          next if row.join.blank?
 
-          property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.gsub(/^0*/, '') ]
+          property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
 
           next if !property_id
 
@@ -282,9 +282,9 @@ class ResidentImporter
         index += 1
         begin
           CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
-            next if index == 1 || row.join.blank?
+            next if row.join.blank?
 
-            property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.gsub(/^0*/, '') ]
+            property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
 
             next if !property_id
 
@@ -362,26 +362,40 @@ class ResidentImporter
     resident_map.keys.each do |k|
       resident_map[k] = resident_map[k].to_i # for array access
     end
-
+    
+    pp ">>>>> resident_map", resident_map
+    
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
 
+    pp ">>>>> file_path: #{file_path}"
+    
     File.foreach(file_path) do |line|
       index += 1
       begin
         CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
-          next if index == 1 || row.join.blank?
+          next if row.join.blank?
 
-          property_id = prop_map[row[ resident_map["non_yardi_property_id"] ].to_s.gsub(/^0*/, '') ]
-
+          property_id = prop_map[row[ resident_map["non_yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
+          
+          pp "index: #{index}, property_id: #{property_id}"
+          
           next if !property_id
-
+          
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
 
-          next if tenant_code.blank?
-          next if unit_code.blank?
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank }.join("-")
+          end
+          
+          if unit_code.blank?
+            unit_code = "temp-code"
+          end
 
           email_lc = email.to_s.downcase
           fake_email = nil
