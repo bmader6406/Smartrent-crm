@@ -374,8 +374,9 @@ class ResidentImporter
       index += 1
       begin
         CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
+          next if index == 1 && row.detect{|c| ["Property Name", "PropertyName", "Property ID", "Property ID", "Move In Date", "MoveInDate"].include?(c) }
           next if row.join.blank?
-
+          
           property_id = prop_map[row[ resident_map["non_yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
           
           pp "index: #{index}, property_id: #{property_id}"
@@ -390,7 +391,7 @@ class ResidentImporter
             tenant_code = [
               row[ resident_map["first_name"] ].to_s.downcase.strip,
               row[ resident_map["last_name"] ].to_s.downcase.strip
-            ].reject{|a| a.blank }.join("-")
+            ].reject{|a| a.blank? }.join("-")
           end
           
           if unit_code.blank?
