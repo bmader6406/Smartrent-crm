@@ -500,8 +500,11 @@ class Resident
     end
     
     def change_smartrent_email
-      if email_changed? && smartrent_resident
-        smartrent_resident.update_attributes(:email => email)
+      if email_changed?
+        sr = Smartrent::Resident.find_by_email(email_was)
+        if sr
+          sr.update_attributes(:email => email)
+        end
       end
     end
 end
