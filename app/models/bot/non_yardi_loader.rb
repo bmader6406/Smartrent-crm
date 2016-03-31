@@ -45,8 +45,8 @@ class NonYardiLoader
         path = ordered_paths[k]
         
         if import.logs.where(:import_id => import.id, :file_path => path).first
-          # pp "File #{path} already imported"
-          # next
+          pp "File #{path} already imported"
+          next
         end
         
         log = import.logs.create(:file_path => path)

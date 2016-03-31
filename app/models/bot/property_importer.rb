@@ -130,10 +130,6 @@ class PropertyImporter
       end
     end
     
-    # hack: smartrent combine 909, 100, 70 Capitol Yards to just Captol Yards (DISABLED)
-    # cap = Property.find_by_name("Capitol Yards")
-    # cap.update_attributes(:yardi_property_id => "00000541; 00000542; 00000543") if cap
-  
     Notifier.system_message("[CRM] PropertyImporter - SUCCESS", "Executed at #{Time.now}", Notifier::DEV_ADDRESS).deliver_now
   end
   
