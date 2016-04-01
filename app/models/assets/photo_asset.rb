@@ -5,6 +5,7 @@ class PhotoAsset < Asset
        :medium => "512"
      },
      :storage => :s3,
+     :s3_protocol => :https,
      :processors => [:cropper],
      :s3_credentials => "#{Rails.root.to_s}/config/s3.yml",
      :path => ":class/:attachment/:id/:style/:filename",
