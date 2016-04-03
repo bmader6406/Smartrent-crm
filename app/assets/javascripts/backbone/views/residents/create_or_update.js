@@ -110,16 +110,18 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
           options: unitOptions
         },
         full_name: {
-          title: 'Name',
+          title: 'Full Name',
           validators: [{type: 'required', message: 'Name is required'}]
+        },
+        nick_name: {
+          title: 'Nick Name'
         },
         email: {
           title: 'Email Address',
           validators: [{type: 'required', message: 'Email is required'}, {type: 'email', message: 'Email is not valid'}]
         },
         primary_phone: {
-          title: 'Primary Phone',
-          validators: [{type: 'required', message: 'Primary Phone is required'}]
+          title: 'Primary Phone'
         },
 
         status: {

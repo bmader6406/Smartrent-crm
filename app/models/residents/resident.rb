@@ -16,6 +16,7 @@ class Resident
     :last_name,
     :first_name,
     :full_name,
+    :nick_name,
     :gender,
     :birthday,
     :ssn,
@@ -112,10 +113,12 @@ class Resident
   field :email, :type => String
   field :last_name, :type => String
   field :first_name, :type => String
+  field :nick_name, :type => String
 
   field :email_lc, :type => String
   field :last_name_lc, :type => String
   field :first_name_lc, :type => String
+  field :nick_name_lc, :type => String
   
   field :gender, :type => String
   field :birthday, :type => Date
@@ -157,6 +160,7 @@ class Resident
   index({ email_lc: 1 }, {background: true})
   index({ first_name_lc: 1 }, {background: true})
   index({ last_name_lc: 1 }, {background: true})
+  index({ nick_name_lc: 1 }, {background: true})
   
   #embedded
   index({ :deleted_at => 1 }, {background: true})
@@ -495,6 +499,7 @@ class Resident
     def downcase_name_email
       self.first_name_lc = first_name.downcase if first_name
       self.last_name_lc = last_name.downcase if last_name
+      self.nick_name_lc = nick_name.downcase if nick_name
       self.email_lc = email.downcase if email
       true
     end

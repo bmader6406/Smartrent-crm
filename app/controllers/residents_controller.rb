@@ -448,6 +448,7 @@ class ResidentsController < ApplicationController
           
           name_match << name_cond
           name_match << {"last_name_lc" => /.*#{first_name}.*/}
+          name_match << {"nick_name_lc" => /.*#{first_name}.*/}
         end
       end
       
@@ -461,6 +462,7 @@ class ResidentsController < ApplicationController
         "email_lc" => 1,
         "first_name_lc" => 1,
         "last_name_lc" => 1,
+        "nick_name_lc" => 1,
         "primary_phone" => 1,
         "units._id" => 1,
         "units.unit_id" => 1,

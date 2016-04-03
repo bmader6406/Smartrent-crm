@@ -33,6 +33,10 @@ node do |n|
   attrs[:unit_code] = n.unit_code rescue ""
   attrs[:name] = n.full_name.blank? ? "N/A" : n.full_name
   
+  if !n.nick_name.blank?
+    attrs[:name] = "#{attrs[:name]} (#{n.nick_name})"
+  end
+  
   attrs[:birthday] = n.birthday.strftime("%m/%d/%Y") rescue nil
   attrs[:roommate_text] = ""
   
