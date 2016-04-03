@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160329103656) do
+ActiveRecord::Schema.define(version: 20160401074012) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "type",         limit: 255
@@ -580,6 +580,15 @@ ActiveRecord::Schema.define(version: 20160329103656) do
     t.string   "value",      limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "smartrent_test_accounts", force: :cascade do |t|
+    t.string   "resident_id",  limit: 255
+    t.string   "origin_email", limit: 255
+    t.string   "new_email",    limit: 255
+    t.datetime "deleted_at"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "templates", force: :cascade do |t|

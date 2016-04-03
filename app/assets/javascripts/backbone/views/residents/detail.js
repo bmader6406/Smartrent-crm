@@ -9,6 +9,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
     "click .new-upload": "newUpload",
     "click .new-ticket": "newTicket",
     "click .new-roommate": "newRoommate",
+    "click .view-all": "viewAll",
     "click .view-smartrent": "viewSmartrent",
 	},
   
@@ -206,6 +207,14 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
 
     this.$('.roommates').before( this.roommateForm.render().el );
     $('#roommate-wrap').show();
+  },
+  
+  viewAll: function(){
+    this.formWrap.find('> div').hide();
+    this.$('.activities .resident-box').show();
+    this.$('#toolbar .btn').removeClass('selected').end().find('.view-all').addClass('selected');
+    
+    return false;
   },
   
   viewSmartrent: function(){

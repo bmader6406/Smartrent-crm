@@ -26,7 +26,10 @@ window.Crm = {
 
         // Instruct Backbone to trigger routing events
         router.navigate(url, true);
-
+        
+        //auto close left nav on click
+        $('body').removeClass('left-expanded');
+        
         return false
       }
     });

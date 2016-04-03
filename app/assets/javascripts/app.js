@@ -21,28 +21,28 @@ var App = {
     var viewport = $('#viewport'),
       body = viewport.parent(),
       opts = {
-    	  resizable: false,
-    	  closable: false,
-    	  east__size: eastSize || 356,
-    	  west__size: westSize || 305,
-    	  west__initClosed: hideWest,
-    	  east__initClosed: !showEast,
-    	  spacing_open: 0,
+        resizable: false,
+        closable: false,
+        east__size: eastSize || 356,
+        west__size: westSize || 305,
+        west__initClosed: hideWest,
+        east__initClosed: !showEast,
+        spacing_open: 0,
         spacing_closed: 0,
         center__onresize: function(){
           if(resizeFunc) resizeFunc();
         },
         fxName: 'none',
-  			togglerContent_open:	'<div class="ui-icon"></div>',
-        togglerContent_closed:	'<div class="ui-icon"></div>'
-    	},
+        togglerContent_open:  '<div class="ui-icon"></div>',
+        togglerContent_closed:  '<div class="ui-icon"></div>'
+      },
       leftExpanded = true;
 
     this.viewport = viewport;
     this.layout = viewport.layout(opts);
 
-  	//left-nav expand/collapse
-  	var body = $('body');
+    //left-nav expand/collapse
+    var body = $('body');
     $('#top-nav .navbar-brand, #left-nav .app-name, #mask').on('click', function(){
       if( body.hasClass('left-expanded') ) {
         body.removeClass('left-expanded');
@@ -54,8 +54,8 @@ var App = {
       return false;
     });
 
-  	//prop filter
-  	var propertyDd = $('#property-dd'),
+    //prop filter
+    var propertyDd = $('#property-dd'),
       listGroup = propertyDd.find('.list-group');
 
     propertyDd.find('.form-inline :text').fastLiveFilter(propertyDd.find('.items'), {
@@ -128,22 +128,22 @@ var App = {
 
       this.exportDialog.on('click', '#download-btn', function(){
         var btn = $(this),
-    	    email = btn.prev().val(),
-    	    dialog = $("#alert");
+          email = btn.prev().val(),
+          dialog = $("#alert");
 
         App.exportDialog.mask("Please wait...");
 
         if(App.validateEmail(email) ){
           $.get(App.exportDialog.attr("data-url"), {recipient: email}, function(){
-      	    App.exportDialog.unmask();
-      	  }, 'script');
+            App.exportDialog.unmask();
+          }, 'script');
 
         }else {
           msgbox("Please enter a valid email");
           App.exportDialog.unmask();
         }
 
-    	  return false;
+        return false;
       }).on('keyup', 'input:text', function(ev){
 
         if(ev.which == 13){
@@ -160,7 +160,7 @@ var App = {
 
   validateUrl: function(url){
     var reg = /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;
-		return reg.test(url);
+    return reg.test(url);
   },
   
   getEmailFromStr: function (email){
@@ -213,13 +213,13 @@ var Helpers = {
   },
   prettyDuration: function(secs) {
     var hr = Math.floor(secs / 3600);
-  	var min = Math.floor((secs - (hr * 3600))/60);
-  	var sec = secs - (hr * 3600) - (min * 60);
+    var min = Math.floor((secs - (hr * 3600))/60);
+    var sec = secs - (hr * 3600) - (min * 60);
 
-  	while (min.length < 2) {min = '0' + min;}
-  	while (sec.length < 2) {sec = '0' + min;}
-  	if (hr) hr += ':';
-  	return hr + min + ':' + sec;
+    while (min.length < 2) {min = '0' + min;}
+    while (sec.length < 2) {sec = '0' + min;}
+    if (hr) hr += ':';
+    return hr + min + ':' + sec;
   },
 
   truncate: function(str, length) {

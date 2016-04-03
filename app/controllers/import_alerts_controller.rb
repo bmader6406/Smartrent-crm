@@ -50,7 +50,7 @@ class ImportAlertsController < ApplicationController
     end
     
     def set_page_title
-      @page_title = "CRM - #{@property.name} - Import Alerts" 
+      @page_title = "CRM - #{@property.name} - Data Import Alerts" 
     end
   
 end

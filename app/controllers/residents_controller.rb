@@ -393,19 +393,12 @@ class ResidentsController < ApplicationController
 
     def filter_residents(per_page = 15)
       match = {}
+      name_match = []
       
       match["units.property_id"] = @property.id.to_s if @property
       
       if !params[:email].blank?
         match[:email_lc] = params[:email].downcase
-      end
-      
-      if !params[:first_name].blank?
-        match[:first_name_lc] = params[:first_name].downcase
-      end
-      
-      if !params[:last_name].blank?
-        match[:last_name_lc] = params[:last_name].downcase
       end
       
       if !params[:primary_phone].blank?
@@ -431,6 +424,31 @@ class ResidentsController < ApplicationController
       
       if params[:roommate] == "1"
         match["units.roommate"] = true
+      end
+      
+      # old search
+      # if !params[:first_name].blank?
+      #   match[:first_name_lc] = params[:first_name].downcase
+      # end
+      # 
+      # if !params[:last_name].blank?
+      #   match[:last_name_lc] = params[:last_name].downcase
+      # end
+      
+      if !params[:full_name].blank?
+        first_name, last_name = params[:full_name].downcase.strip.gsub("  "," ").split(" ", 2)
+      
+        name_cond = {"first_name_lc" => first_name}
+        
+        
+        if last_name
+          name_cond["last_name_lc"] = /.*#{last_name}.*/
+          name_match << name_cond
+        else
+          
+          name_match << name_cond
+          name_match << {"last_name_lc" => /.*#{first_name}.*/}
+        end
       end
       
       # manual paging
@@ -462,6 +480,10 @@ class ResidentsController < ApplicationController
           pipeline << { "$match" => match }
         end
         
+        if !name_match.empty?
+          pipeline << { "$match" => {"$or" => name_match} }
+        end
+        
       else
         pipeline = [
           { "$project" => project },
@@ -470,6 +492,10 @@ class ResidentsController < ApplicationController
         
         if !match.empty?
           pipeline << { "$match" => match }
+        end
+        
+        if !name_match.empty?
+          pipeline << { "$match" => {"$or" => name_match} }
         end
       end
       
@@ -482,7 +508,7 @@ class ResidentsController < ApplicationController
       #pp "match, skip, limit", match, limit, skip
 
       Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
-        { "$sort" => { "first_name" => 1, "last_name" => 1 } },
+        { "$sort" => { "first_name_lc" => 1, "last_name_lc" => 1 } },
         { "$limit" => limit },
         { "$skip" => skip }
       ]).each do |hash|
