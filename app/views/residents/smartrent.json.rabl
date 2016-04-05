@@ -24,7 +24,7 @@ node do |n|
   }
 
   n.rewards.order("created_at desc, id desc").each do |reward|
-    hash[:rewards] << {
+    r = {
       :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],
       :period_start => (reward.period_start.to_s(:utc_short_date) rescue nil),
@@ -33,6 +33,13 @@ node do |n|
       :amount => number_to_currency(reward.amount, :precision => 0),
       :months_earned => reward.months_earned
     }
+    
+    if r[:type_] == "Monthly Awards"
+      r[:period_start] = reward.period_start.strftime("%m/%d/%Y")
+      r[:period_end] = reward.period_end.strftime("%m/%d/%Y")
+    end
+    
+    hash[:rewards] << r
   end
   
   hash

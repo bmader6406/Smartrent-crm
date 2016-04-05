@@ -167,7 +167,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
       residentDetails = $('#resident-details');
       
     Crm.routerInst.navigate(App.vars.routeRoot + '/residents/' + this.model.get('id'), true);
-    $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent, #resident-units').hide();
+    $('#resident-history, #marketing-history, #resident-roommates, #toolbar, #smartrent, #resident-units, #unit-history').hide();
     $('#resident-info .nav-details .btn').removeClass('btn-primary').addClass('btn-default');
     $('#resident-history, #marketing-history, #resident-roommates, #toolbar').hide();
     
