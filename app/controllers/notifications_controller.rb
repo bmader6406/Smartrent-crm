@@ -92,7 +92,7 @@ class NotificationsController < ApplicationController
       @notifications.each do |n|
         r = residents.detect{|r| n.resident_id == r._id.to_i }
         if r
-          r.property_id = n.property_id
+          r.curr_property_id = n.property_id
           n.eager_load(r)
           
           uids << r.unit_id #must be after property_id is set
@@ -168,7 +168,7 @@ class NotificationsController < ApplicationController
         @notifications.each do |n|
           r = residents.detect{|r| n.resident_id == r._id.to_i }
           if r
-            r.property_id = n.property_id
+            r.curr_property_id = n.property_id
             n.eager_load(r)
             
             uids << r.unit_id #must be after property_id is set

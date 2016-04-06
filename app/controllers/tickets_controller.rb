@@ -219,7 +219,7 @@ class TicketsController < ApplicationController
         @tickets.each do |t|
           r = residents.detect{|r| t.resident_id == r._id.to_i }
           if r
-            r.property_id = t.property_id
+            r.curr_property_id = t.property_id
             t.eager_load(r)
           end
         end

@@ -65,6 +65,7 @@ Crm.Views.TicketsList = Backbone.View.extend({
   render: function () {
     var self = this,
       grid = new Backgrid.Grid({
+        row: ClickableRow,
         columns: [{
           name: "id_url",
           label: "Ticket ID",

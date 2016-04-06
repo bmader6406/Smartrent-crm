@@ -344,10 +344,14 @@ class ResidentsController < ApplicationController
       
       @resident = Resident.find(resident_id)
       
-      # resident listing and details support both org group and property level
-      if @property && unit_id
-        @unit = @property.units.find(unit_id)
-        @resident.curr_unit_id = @unit.id # important
+      if @property
+        @resident.curr_property_id = @property.id # important: this will make sure the curr_unit is set correctly
+        
+        # resident listing and details support both org group and property level
+        if unit_id
+          @unit = @property.units.find(unit_id)
+          @resident.curr_unit_id = @unit.id # important
+        end
       end
       
       case action_name
