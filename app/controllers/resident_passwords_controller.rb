@@ -11,12 +11,16 @@ class ResidentPasswordsController < ApplicationController
   end
 
   def update
-    if @smartrent_resident.update_attributes(:password => resident_params[:password], :password_confirmation => resident_password[:password_confirmation])
+    if @smartrent_resident.update_attributes(:password => resident_params[:password], :password_confirmation => resident_params[:password_confirmation])
       @smartrent_resident.update_attribute(:confirmed_at, Time.now) if !@smartrent_resident.confirmed_at
+      
+      if params[:send_email]
+        Smartrent::ResidentMailer.password_change(@smartrent_resident).deliver_now
+      end
       
       render :json => {:success => true}
     else
-      render :json => {:success => false}
+      render :json => {:success => false, :error => @smartrent_resident.errors.full_messages.join("; ") }
     end
   end
   

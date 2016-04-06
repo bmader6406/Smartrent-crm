@@ -168,7 +168,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
             if(data.success){
               msgbox('The password was successfully updated!');
             }else {
-              msgbox('There was an error, please try again', 'danger');
+              msgbox(data.error, 'danger');
             }
           }
         });

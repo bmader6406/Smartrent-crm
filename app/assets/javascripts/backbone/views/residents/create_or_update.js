@@ -396,6 +396,10 @@ Crm.Views.ResidentNewOrUpdate = Backbone.View.extend({
       var field = $(div).attr('data-editors');
       schema[field] = baseSchema[field];
     });
+    
+    if (!this.isCreateNew && schema.email) {
+      _.extend(schema.email, { editorAttrs: { disabled: true } });
+    }
 
     var form = new Backbone.Form({
       schema: schema,
