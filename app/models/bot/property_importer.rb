@@ -69,18 +69,20 @@ class PropertyImporter
       CSV.parse(line) do |row|
         next if index == 1
         
-        origin_id = row[ prop_map["origin_id"] ].to_i
+        elan_number = row[ prop_map["elan_number"] ].to_i
         property_name = row[ prop_map["name"] ]
         
         # bozzuto property no may be blank, it contains the leading zeros
-        if origin_id > 0
-          pp "#{index} > search for origin_id: #{origin_id}"
-          prop = Property.find_by(:origin_id => origin_id)
+        if elan_number > 0
+          pp "#{index} > search for elan_number: #{elan_number}"
+          prop = Property.find_by(:elan_number => elan_number)
+          pp ">>>>>>>> FOUND: #{prop.id} - #{prop.name}" if prop
         end
         
         if !prop
           pp "#{index} > search for property_name: #{property_name}"
           prop = Property.find_by(:name => property_name)
+          pp ">>>>>>>> FOUND: #{prop.id} - #{prop.name}" if prop
         end
 
         if !prop
@@ -120,12 +122,15 @@ class PropertyImporter
             elsif k.match(/close_time$/) #close time always in PM
               val = "#{val} PM"
             end
+            
+            # don't update smartrent property name (the weekly property import is updating the smartrent property name)
+            next if k == "name" && prop.is_smartrent? && prop.is_visible?
 
             prop[k] = val
           end
         end
-        
-        prop.save
+        pp "#{index} - saving: #{prop.name}"
+        prop.save!
 
       end
     end
