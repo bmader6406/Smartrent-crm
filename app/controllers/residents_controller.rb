@@ -301,7 +301,7 @@ class ResidentsController < ApplicationController
 
     @units = @units.collect{|u|
       u.property = properties.detect{|prop| prop.id == u.property_id.to_i}
-      u.property ? t : nil
+      u.property ? u : nil
     }.compact.sort{|a, b| a.property.name <=> b.property.name }
     
     respond_to do |format|

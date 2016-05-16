@@ -83,7 +83,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
           success: function(data) {
             statusDd.find('> span').text( link.text() );
             statusDd.attr('class', 'status-dd smartrent-' + status);
-            msgbox("Smartrent Status was successfully updated");
+            msgbox("SmartRent Status was successfully updated");
             $('#resident-info a[href=#smartrent]').click();
           },
           error: function(){
@@ -111,7 +111,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
       url: self.model.set_amount_path,
       data: {reward_id : editor.attr('data-id'), amount: editor.find(':input').val()},
       success: function(data) {
-        msgbox("Smartrent Status was successfully updated");
+        msgbox("SmartRent Status was successfully updated");
         $('#resident-info a[href=#smartrent]').click();
       },
       error: function(){

@@ -4,7 +4,7 @@
     <img src="https://s3.amazonaws.com/m.hy.ly/Bozzuto/crm-boz.png" alt="Bozzuto" />
     <span> 
       <% if sr_page? %>
-        Smartrent
+        SmartRent
       <% else %>
         CRM
       <% end %>
@@ -18,7 +18,7 @@
           <% if @property %>
             <%= @property.name %>
             <span class="label">
-              <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">Smartrent</span>
+              <span class="<%= "active" if @property.is_crm? %>">CRM</span><span class="<%= "active" if @property.is_smartrent? %>">SmartRent</span>
             </span>
           <% else %>
             Select a property
@@ -53,7 +53,7 @@
                       <%= prop.name %>
                       
                       <span class="label">
-                        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">Smartrent</span>
+                        <span class="<%= "active" if prop.is_crm? %>">CRM</span><span class="<%= "active" if prop.is_smartrent? %>">SmartRent</span>
                       </span>
                     </a>
                   <% end %>

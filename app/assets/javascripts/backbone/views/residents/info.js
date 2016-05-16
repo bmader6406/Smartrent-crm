@@ -135,7 +135,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
           if( this.model.get('unit') && this.model.get('unit').roommate) {
             smartrent.html('<div class="well"> '+ this.model.get('full_name') +' is not a primary tenant, but a roommate.  Roommates are not eligible for SmartRent </div>');
           } else {
-            smartrent.html('<div class="well"> No Smartrent Account Found! <br><br> Smartrent account will be created after the resident move in on '+ this.model.get('move_in') +' </div>');
+            smartrent.html('<div class="well"> No SmartRent Account Found! <br><br> SmartRent account will be created after the resident move in on '+ this.model.get('move_in') +' </div>');
           }
           
         }

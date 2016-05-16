@@ -7,7 +7,7 @@
         <% if !sr_page? %>
           CRM
         <% else %>
-          Smartrent
+          SmartRent
         <% end %>
       </span>
     </a>
@@ -16,7 +16,7 @@
       <div class="app-dd">
         <div class="dropdown">
           <a href="#" data-toggle="dropdown">
-            <%= sr_page? ? "Smartrent" : "CRM" %>
+            <%= sr_page? ? "SmartRent" : "CRM" %>
             <i class="fa fa-caret-down"></i>
           </a>
           <ul class="dropdown-menu">
@@ -24,7 +24,7 @@
               <a href="<%= raw main_app.root_url(:host => HOST) %>" class="page-reload"> CRM </a>
             </li>
             <li class="<%= "active" if sr_page? %>">
-              <a href="<%= raw smartrent.admin_properties_url(:host => SR_HOST) %>" class="page-reload"> Smartrent </a>
+              <a href="<%= raw smartrent.admin_properties_url(:host => SR_HOST) %>" class="page-reload"> SmartRent </a>
             </li>
           </ul>
         </div>
