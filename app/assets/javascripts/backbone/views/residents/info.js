@@ -180,21 +180,22 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
       });
     }
     
-    if(residentDetails.attr('data-isotope')){
-      residentDetails.isotope('destroy');
-    }
-    
-    residentDetails.isotope({
-      itemSelector: '.col-md-4',
-      //layoutMode: 'fitColumns',
-      layoutMode: 'masonry',
-      masonry: {
-          columnWidth: '.col-md-4'
-      }
-    });
-    
-    //mark as init
-    residentDetails.attr('data-isotope', 1);
+    // not needed
+    // if(residentDetails.attr('data-isotope')){
+    //   residentDetails.isotope('destroy');
+    // }
+    // 
+    // residentDetails.isotope({
+    //   itemSelector: '.col-md-4',
+    //   //layoutMode: 'fitColumns',
+    //   layoutMode: 'masonry',
+    //   masonry: {
+    //       columnWidth: '.col-md-4'
+    //   }
+    // });
+    // 
+    // //mark as init
+    // residentDetails.attr('data-isotope', 1);
   },
 
   showDefaultView: function(){

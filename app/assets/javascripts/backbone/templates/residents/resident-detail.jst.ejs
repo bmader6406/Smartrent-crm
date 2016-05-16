@@ -60,6 +60,20 @@
         </li>
       </ul>
     </div>
+    
+    <% if ( App.vars.isSmartrent && smartrent ) { %>
+      <div class="card">
+        <h3>
+          SmartRent
+        </h3>
+        <ul class="list-unstyled smartrent-info"> <!-- will be loaded when the user view the resident detail -->
+          Loading...
+          <li>
+            <a href="#" class="btn btn-primary btn-lg view-smartrent"> View Details</a>
+          </li>
+        </ul>
+      </div>
+    <% } %>
   </div>
 
   <div class="col-md-4">
@@ -306,21 +320,6 @@
           <li>
             <label>Transportation to Work:</label>
             <%= unit.transportation_to_work %>
-          </li>
-        </ul>
-      </div>
-    </div>
-  <% } %>
-  <% if ( App.vars.isSmartrent && smartrent ) { %>
-    <div class="col-md-4">
-      <div class="card">
-        <h3>
-          SmartRent
-        </h3>
-        <ul class="list-unstyled smartrent-info"> <!-- will be loaded when the user view the resident detail -->
-          Loading...
-          <li>
-            <a href="#" class="btn btn-primary btn-lg view-smartrent"> View Details</a>
           </li>
         </ul>
       </div>
