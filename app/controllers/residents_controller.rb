@@ -402,7 +402,8 @@ class ResidentsController < ApplicationController
       match["units.property_id"] = @property.id.to_s if @property
       
       if !params[:email].blank?
-        match[:email_lc] = params[:email].downcase
+        #match[:email_lc] = params[:email].downcase
+        match[:email_lc] = /.*#{params[:email].downcase.strip}.*/
       end
       
       if !params[:primary_phone].blank?
@@ -458,6 +459,7 @@ class ResidentsController < ApplicationController
       
       # manual paging
       limit = params[:page].to_i*per_page.to_i
+      limit = 20 if limit == 0
       skip = limit - per_page.to_i
       
       resident_dict = {} # is used to load resident and their units
@@ -472,7 +474,8 @@ class ResidentsController < ApplicationController
         "units.unit_id" => 1,
         "units.property_id" => 1,
         "units.status" => 1,
-        "units.roommate" => 1
+        "units.roommate" => 1,
+        "units.move_in" => 1
       }
       
       if @property
@@ -505,6 +508,46 @@ class ResidentsController < ApplicationController
         end
       end
       
+      # sort dir
+      sort = { "first_name_lc" => 1, "last_name_lc" => 1 }
+      
+      case params[:sort_by]
+        when "name"
+          if params[:order] == "asc"
+            sort = { "first_name_lc" => 1, "last_name_lc" => 1 }
+          else
+            sort = { "first_name_lc" => -1, "last_name_lc" => 1 }
+          end
+        
+        when "email"
+          if params[:order] == "asc"
+            sort = { "email_lc" => 1 }
+          else
+            sort = { "email_lc" => -1 }
+          end
+          
+        when "status"
+          if params[:order] == "asc"
+            sort = { "units.status" => 1 }
+          else
+            sort = { "units.status" => -1 }
+          end
+          
+        when "roommate_text"
+          if params[:order] == "asc"
+            sort = { "units.roommate" => 1 }
+          else
+            sort = { "units.roommate" => -1 }
+          end
+          
+        when "move_in"
+          if params[:order] == "asc"
+            sort = { "units.move_in" => 1 }
+          else
+            sort = { "units.move_in" => -1 }
+          end
+      end
+      
       @total_residents = Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
         { "$group" => { :_id => "$units._id" } },
         { "$group" => { :_id => 1, :count => { "$sum" => 1 } } }
@@ -512,12 +555,15 @@ class ResidentsController < ApplicationController
       
       #pp "@total_residents #{@total_residents}"
       #pp "match, skip, limit", match, limit, skip
-
+      sorted_ids = []
+      
       Resident.with(:consistency => :eventual).collection.aggregate(pipeline + [
-        { "$sort" => { "first_name_lc" => 1, "last_name_lc" => 1 } },
+        { "$sort" => sort },
         { "$limit" => limit },
         { "$skip" => skip }
       ]).each do |hash|
+        sorted_ids << "#{hash["_id"]}_#{hash["units"]["unit_id"]}"
+        
         if resident_dict[ hash["_id"] ]
           resident_dict[ hash["_id"] ] << hash["units"]["unit_id"]
           
@@ -575,6 +621,9 @@ class ResidentsController < ApplicationController
         # eager load unit
         r.eager_load(units.detect{|u| u.id == r.curr_unit_id.to_i })
       end
+
+      # must sort resident again
+      @residents.sort!{|a, b| sorted_ids.index(a.sort_id) <=> sorted_ids.index(b.sort_id) }
       
     end
     

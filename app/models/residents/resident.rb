@@ -218,6 +218,10 @@ class Resident
   def tickets
     @tickets ||= Ticket.where(:resident_id => id)
   end
+  
+  def sort_id
+    "#{_id}_#{curr_unit ? curr_unit.unit_id : -1}"
+  end
 
   #==== relationship between mysql, mongodb document
 
