@@ -9,8 +9,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
     "click .collapsible h4": "toggleInfo",
     "click .archive": "archive",
     "click .view-smartrent": "viewSmartrent",
-    "click .resident-details": "viewResidentDetails",
-    "scroll": "fetchMoreActivities"
+    "click .resident-details": "viewResidentDetails"
   },
 
   initialize: function() {
@@ -160,7 +159,7 @@ Crm.Views.ResidentInfo = Backbone.View.extend({
 
     App.layout.show('west');
 
-    return false;
+    //return false;
   },
   viewResidentDetails: function(){
     var self = this,

@@ -84,6 +84,16 @@
           </div>
         </div>
         <div class="form-group">
+          <label class="col-sm-2 control-label">Resident Status</label>
+          <div class="col-sm-8">
+            <select class="form-control selectpicker" name="status" multiple title='Select Status'>
+              <% for (var i=0, s; s=statuses[i]; i++) { %>
+        	      <option value="<%= s %>" <%= s == "Current" ? "selected" : "" %>> <%= s %> </option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
           <label class="col-sm-2 control-label">Month</label>
           <div class="col-sm-8">
             <select class="form-control selectpicker" name="month" multiple title='Select Month'>

@@ -13,6 +13,12 @@ Crm.Collections.Activities = Backbone.PageableCollection.extend({
     
   },
   
+  parseState: function (resp, queryParams, state, options) {
+    return {
+      nextLink: resp.paging.next
+    };
+  },
+  
   parseRecords: function (resp, options) {
     return resp.items;
   },

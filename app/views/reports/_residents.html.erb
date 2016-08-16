@@ -58,6 +58,7 @@
       <tr>
         <th>Property Name </th>
         <th>Unit # </th>
+        <th>Resident Status </th>
         <th>Full Name </th>
         <th>Email </th>
         <th>Address</th>
@@ -76,6 +77,9 @@
           </td>
           <td>
             <%= @unit_dict[r["units"]["unit_id"]] %>
+          </td>
+          <td>
+            <%= r["units"]["status"] %>
           </td>
           <td>
             <%= link_to [r["first_name"], r["last_name"]].join(" "), property_resident_path(r["units"]["property_id"], "#{ r["_id"] }_#{ r["units"]["unit_id"] }"), :target => "_blank" %>

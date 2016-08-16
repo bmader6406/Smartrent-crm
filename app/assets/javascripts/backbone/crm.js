@@ -119,8 +119,13 @@ window.Crm = {
 
         //hack: highlight when needed only
         //$('#resident-info .nav-details a:first').click();
-        $('#resident-info .resident-details').click();
-
+        if( window.location.href.indexOf("notif=1") > -1){
+          $('#resident-info .nav-details a[href=#resident-history]').click();
+          
+        } else {
+          $('#resident-info .resident-details').click();
+        }
+        
         if( window.location.hash == "#addTicket"){
           setTimeout(function(){ //wait for activity to load
             residentDetail.$('.new-ticket').click();
@@ -131,6 +136,12 @@ window.Crm = {
           
         } else if( window.location.hash == "#unit-history"){
           $('#resident-info .nav-details a[href=#unit-history]').click();
+          
+        } else if( window.location.hash == "#resident-history"){
+          $('#resident-info .nav-details a[href=#resident-history]').click();
+          
+        } else if( window.location.hash == "#resident-roommates"){
+          $('#resident-info .nav-details a[href=#resident-roommates]').click();
           
         }
 

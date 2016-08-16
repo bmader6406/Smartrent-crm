@@ -15,10 +15,10 @@ node do |n|
   }
   
   if n.import_alert_id
-    attrs[:show_path] = property_import_alert_path(n.property_id, n.import_alert_id)
+    attrs[:show_path] = property_import_alert_path(n.property_id, n.import_alert_id, :notif => 1)
     
   else
-    attrs[:show_path] = property_resident_path(n.property_id, n.resident_unit_id)
+    attrs[:show_path] = property_resident_path(n.property_id, n.resident_unit_id, :notif => 1)
   end
   
   attrs

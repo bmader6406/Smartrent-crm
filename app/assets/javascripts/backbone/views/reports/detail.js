@@ -36,6 +36,7 @@ Crm.Views.ReportDetail = Backbone.View.extend({
 
       case "birthday":
         params.property_ids = form.find('select[name=property_id]').val() || [];
+        params.statuses = form.find('select[name=status]').val() || [];
         params.month = form.find('select[name=month]').val();
         break;
 
@@ -147,6 +148,11 @@ Crm.Views.ReportDetail = Backbone.View.extend({
       tickIcon: 'fa-check'
     });
     
+    this.$('.selectpicker').selectpicker({
+      iconBase: 'fa',
+      tickIcon: 'fa-check'
+    });
+    
     var reportRange = this.$('.report-range');;
 
     reportRange.daterangepicker({
@@ -192,5 +198,39 @@ Crm.Views.ReportDetail = Backbone.View.extend({
     });
     
     App.initExportDialog();
+    
+    var self = this;
+    
+    setTimeout(function(){
+      self.handleTabsClick();
+    }, 100)
+  },
+  
+  handleTabsClick: function () {
+    var tabs = this.$('.nav-tabs');
+    
+    tabs.on('show.bs.tab', function (e) {
+      var hash = $(e.target).attr('href');
+      
+      if(hash) window.location.hash = hash;
+    });
+
+    
+    if( window.location.hash == "#report-emails"){
+      tabs.find('a[href=#report-emails]').click();
+      
+    } else if( window.location.hash == "#report-birthday"){
+      tabs.find('a[href=#report-birthday]').click();
+    
+    } else if( window.location.hash == "#report-details"){
+      tabs.find('a[href=#report-details]').click();
+    
+    } else if( window.location.hash == "#report-summary"){
+      tabs.find('a[href=#report-summary]').click();
+      
+    } else if( window.location.hash == "#report-comparison"){
+      tabs.find('a[href=#report-comparison]').click();
+      
+    }
   }
 });

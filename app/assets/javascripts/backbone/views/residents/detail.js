@@ -40,7 +40,7 @@ Crm.Views.ResidentDetail = Backbone.View.extend({
             scrollEnd = false;
           }
 
-          if(scrollEnd) {
+          if(scrollEnd && Crm.collInst.residentActivities.state.nextLink) {
             try{ Crm.collInst.residentActivities.getNextPage() } catch(ex) {}
             scrollEnd = false;
           }

@@ -10,7 +10,7 @@ class ResidentExporter
   end
   
   def self.pipeline
-    project = { "_id" => 1, "units._id" => 1 }
+    project = { "_id" => 1, "units._id" => 1}
     
     Resident::CORE_FIELDS.each do |f|
       project[f] = 1
@@ -53,6 +53,7 @@ class ResidentExporter
       # prepare month field for match2
       project["month"] = {"$month" => "$birthday"}
       project["day_of_month"] = {"$dayOfMonth" => "$birthday"}
+      project["status"] = 1
       
       # make sure birthday is a Date
       match1["birthday"] = {"$type" => 9}
@@ -146,7 +147,7 @@ class ResidentExporter
         csv << ["Property Name", "Unit #", "Full Name" , "Address", "City", "State", "Zip", "Status", "Email", "Move In"]
         
       elsif @params["type"] == "birthday"
-        csv << ["Property Name", "Unit #", "Full Name", "Email", "Address", "City", "State", "Zip", "Birthday", "Age"]
+        csv << ["Property Name", "Unit #", "Resident Status", "Full Name", "Email", "Address", "City", "State", "Zip", "Birthday", "Age"]
         
       elsif @params["type"] == "details"
         csv << ["Property Name", "Unit #", "Full Name", "Gender", "Birthday", "Household Status", "Occupation Type", "Minutes To Work", 
@@ -178,6 +179,7 @@ class ResidentExporter
             csv << [
               property_dict[r["units"]["property_id"]],
               unit_dict[r["units"]["unit_id"]],
+              r["units"]["status"],
               [r["first_name"], r["last_name"]].join(" "),
               r["email"],
               r["street"],
