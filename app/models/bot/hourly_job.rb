@@ -21,7 +21,7 @@ class HourlyJob
     end
     
     if time.hour == 3
-      # BozzutoLink upload CSV feed at 1 AM
+      # BozzutoLink upload CSV feed at 3 AM
       Resque.enqueue(PropertyImporter)
     end
     

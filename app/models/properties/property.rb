@@ -17,7 +17,7 @@ class Property < ActiveRecord::Base
   has_many :audiences, :class_name => "Audience"
   
 
-  validates :name, :presence => true, :uniqueness => {:scope => :deleted_at}
+  validates :name, :presence => true, :uniqueness => {:scope => [:elan_number, :deleted_at]}
 
   has_attached_file :image, 
     :styles => {:search_page => "150x150>"},
