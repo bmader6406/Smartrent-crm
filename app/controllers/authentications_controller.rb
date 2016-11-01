@@ -1,5 +1,5 @@
 class AuthenticationsController < ApplicationController
-  
+  before_action :require_ssl
   before_action :require_user, :only => [:destroy, :index]
   
   def create
@@ -7,7 +7,6 @@ class AuthenticationsController < ApplicationController
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     
     logged_in_url = params[:redirect_to] || root_url
-    logged_in_url.gsub!("https://", "http://")
 
     if authentication #existing auth
       authentication.oauth_token = omniauth['credentials']["token"]

@@ -1,4 +1,4 @@
-OmniAuth.config.full_host = "http://#{HOST}"
+OmniAuth.config.full_host = "https://#{HOST}"
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :twitter, TWITTER_KEY, TWITTER_SECRET

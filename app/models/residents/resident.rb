@@ -442,7 +442,7 @@ class Resident
   end
   
   def unsubscribe_url
-    "http://#{HOST}/unsubscribes/#{unsubscribe_id}"
+    "https://#{HOST}/unsubscribes/#{unsubscribe_id}"
   end
   
   def unsubscribe_id
@@ -458,7 +458,7 @@ class Resident
   end
   
   def nlt_url(cid) #web version
-    "http://#{HOST}/nlt/#{cid}_#{unsubscribe_id}"
+    "https://#{HOST}/nlt/#{cid}_#{unsubscribe_id}"
   end
 
   def to_macro(campaign)

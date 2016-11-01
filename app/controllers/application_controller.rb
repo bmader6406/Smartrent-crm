@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   end
   
   def require_ssl
-    if !request.ssl? and !Rails.env.development?
+    if !request.ssl?
       redirect_to({:protocol => 'https', :host => request.env['HTTP_HOST'] }.merge(params)) #, :flash => flash
     end
   end

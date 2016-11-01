@@ -47,7 +47,7 @@ class Property < ActiveRecord::Base
   end
 
   def index_url
-    "http://#{HOST}/properties/#{id}"
+    "https://#{HOST}/properties/#{id}"
   end
 
   def to_macro(macro)

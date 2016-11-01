@@ -5,7 +5,7 @@ Crm.Collections.Residents = Backbone.PageableCollection.extend({
   state: {
     pageSize: 15,
     sortKey: "name",
-    order: 1
+    order: -1
   },
   
   initialize: function(){

@@ -63,7 +63,7 @@ class Notifier < ActionMailer::Base
       attachments[url.split('/').last] = open(url).read
     end
     
-    tracking_img = "<img src='#{"http://#{HOST}/pixel?cid=#{campaign.id}&rid=#{resident.id}"}'/>"
+    tracking_img = "<img src='#{"https://#{HOST}/pixel?cid=#{campaign.id}&rid=#{resident.id}"}'/>"
     body_end = @body_html.scan(/<\/\s*body\s*>/i).first
     
     if body_end

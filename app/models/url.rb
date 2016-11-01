@@ -5,7 +5,7 @@ class Url < ActiveRecord::Base
   before_create :generate_token
 
   def to_tracking_url
-    "http://#{HOST}/t/#{token}"
+    "https://#{HOST}/t/#{token}"
   end
   
   private

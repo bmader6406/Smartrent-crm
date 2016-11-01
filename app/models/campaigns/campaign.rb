@@ -34,11 +34,11 @@ class Campaign < ActiveRecord::Base
   # =================
   
   def dashboard_url
-    "http://#{HOST}/properties/#{property_id}/notices/#{id}"
+    "https://#{HOST}/properties/#{property_id}/notices/#{id}"
   end
   
   def preview_url
-    "http://#{HOST}/properties/#{property_id}/notices/#{id}/preview"
+    "https://#{HOST}/properties/#{property_id}/notices/#{id}/preview"
   end
   
   ###

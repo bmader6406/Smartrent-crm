@@ -232,7 +232,7 @@ class ResidentExporter
       ::Notifier.system_message("Resident Data",
         "Your file was exported successfully.
         <br><br> 
-        <a href='http://#{HOST}/downloads/#{file_name}'>Download File</a> 
+        <a href='https://#{HOST}/downloads/#{file_name}'>Download File</a> 
         <br><br> To protect your data the download link will work for the next two hours, or until you download the file
         <br>
         <br>
