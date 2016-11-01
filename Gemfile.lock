@@ -348,6 +348,8 @@ GEM
     rabl (0.11.6)
       activesupport (>= 2.3.14)
     rack (1.6.4)
+    rack-attack (4.3.0)
+      rack
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -502,6 +504,7 @@ DEPENDENCIES
   phony_rails (= 0.9.0)
   quiet_assets (~> 1.1.0)
   rabl (~> 0.11.6)
+  rack-attack (= 4.3.0)
   rails (= 4.2.2)
   ransack!
   redis (~> 3.2.1)

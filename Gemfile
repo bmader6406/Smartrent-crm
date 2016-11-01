@@ -86,6 +86,8 @@ gem 'email_reply_parser', '~> 0.5.8'
 gem 'ransack', github: 'activerecord-hackery/ransack', :branch => "rails-4.2"
 gem "diffy", "~> 3.0.7"
 
+gem 'rack-attack', '4.3.0' # support ruby 1.9.3
+
 #engines
 gem "smartrent", :path => "/mnt/gems/smartrent"
 

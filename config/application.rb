@@ -30,6 +30,9 @@ module Crm
     config.assets.paths << Rails.root.join("app", "assets", "flash")
     config.assets.paths << Rails.root.join("app", "assets", "fonts")
     config.autoload_paths += Dir["#{config.root}/app/models/**/**", "#{config.root}/lib"]
+    
+    # rack-attack gem
+    config.middleware.use Rack::Attack
 
   end
 end
