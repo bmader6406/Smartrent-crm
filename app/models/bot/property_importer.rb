@@ -35,7 +35,7 @@ class PropertyImporter
       "phone"=> 12,
       "webpage_url"=>49,
       "website_url"=> 16,
-      "status"=> 60,
+      "status"=> 61,
       "svp"=> 53,
       "region_id" => 10,
       "property_number"=> 1,
