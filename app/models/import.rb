@@ -39,6 +39,9 @@ class Import < ActiveRecord::Base
         if type.include?("load_yardi")
           hash = default_yardi_field_map
         
+        elsif type.include?("load_non_yardi_master")
+          hash = default_non_yardi_master_field_map
+          
         elsif type.include?("load_non_yardi")
           hash = default_non_yardi_field_map
           
@@ -143,6 +146,20 @@ class Import < ActiveRecord::Base
       "status" => "7",
       "tenant_code" => "8",
       "unit_code" => "9"
+    }
+  end
+  
+  def default_non_yardi_master_field_map
+    {
+      "elan_number" => "0",
+      "first_name" => "3",
+      "last_name" => "4",
+      "email" => "5",
+      "move_in" => "6",
+      "move_out" => "7",
+      "status" => "8",
+      "tenant_code" => "9",
+      "unit_code" => "10"
     }
   end
   

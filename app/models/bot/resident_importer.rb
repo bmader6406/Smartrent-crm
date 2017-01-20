@@ -11,6 +11,9 @@ class ResidentImporter
       
     elsif type == "non_yardi"
       non_yardi_import(file_path, resident_map, meta)
+      
+    elsif type == "non_yardi_master"
+      non_yardi_master_import(file_path, resident_map, meta)
 
     end
   end
@@ -347,6 +350,7 @@ class ResidentImporter
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
   end
   
+  # obsolete
   def self.non_yardi_import(file_path, resident_map, meta)
     prop_map = {}
 
@@ -541,6 +545,207 @@ class ResidentImporter
     Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
 
     Notifier.system_message("[CRM] Non-Yardi Importing Success",
+      email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
+      recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
+
+
+    pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
+  end
+  
+  def self.non_yardi_master_import(file_path, resident_map, meta)
+    
+    prop_map = {}
+
+    Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
+      next if p.elan_number.blank?
+      prop_map[p.elan_number.to_s] = p.id.to_s
+    end
+
+    pp ">>>> prop_map: ", prop_map
+
+    resident_map.keys.each do |k|
+      resident_map[k] = resident_map[k].to_i # for array access
+    end
+    
+    pp ">>>>> resident_map", resident_map
+    
+    index, new_resident, existing_resident, errs = 0, 0, 0, []
+    ok_row = 0
+
+    pp ">>>>> file_path: #{file_path}"
+    
+    File.foreach(file_path) do |line|
+      index += 1
+      begin
+        CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
+          next if index == 1 && row.detect{|c| ["Property Name", "PropertyName", "Property ID", "Property ID", "Move In Date", "MoveInDate", "Move-in Date"].include?(c) }
+          next if row.join.blank?
+          
+          elan_number = row[ resident_map["elan_number"] ].to_s.strip
+          property_id = prop_map[elan_number]
+          
+          pp "index: #{index}, property_id: #{property_id}, elan_number: #{elan_number}"
+          
+          next if !property_id
+
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          unit_code = row[ resident_map["unit_code"] ].to_s.strip
+          email = row[ resident_map["email"] ].to_s.strip
+
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank? }.join("-")
+          end
+          
+          if unit_code.blank?
+            unit_code = "temp-code"
+          end
+
+          email_lc = email.to_s.downcase
+          fake_email = nil
+
+          #convert blank and ignored email into fake email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+            fake_email = "#{tenant_code}@noemail.non-yardi"
+            email = fake_email # don't not unify fake email or non-existant email
+            email_lc = email
+          end
+
+          ok_row += 1
+          # UnitLoader use the mits4_1.xml, this file contains unit details
+          # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
+          unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
+          unit.save(:validate => false)
+
+          pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
+
+          #consolidate resident by email
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
+          pp ">>> email_lc: #{email_lc}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
+
+          resident = Resident.new if !resident
+          new_record = resident.new_record?
+
+          create_or_update = true
+          not_update_resident = false
+
+          # build attrs from csv file (we will delete the data that we don't want to override below)
+          Resident::CORE_FIELDS.each do |f|
+            f = f.to_s # must convert f to string
+            if resident_map[f]
+              if ["email"].include?(f)
+                resident.email = email # email can be real or fake email
+
+              else
+                resident[f] = row[resident_map[f]]
+              end
+            end
+          end
+
+          if fake_email || email.to_s.include?("@noemail") #mark as bad
+            resident.email_check = "Bad"
+            resident.email_checked_at = Time.now
+            resident.subscribed = false
+          end
+
+          # don't use symbol as hash key
+          unit_attrs = {
+            "property_id" => property_id,
+            "roommate" => tenant_code.to_s.match(/^r/) ? true : false
+          }
+
+          Resident::UNIT_FIELDS.each do |f|
+            f = f.to_s # must f convert to string
+            unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
+
+            #pp "property field: #{f}, #{unit_attrs[f]}"
+
+            if ["signing_date", "move_in", "move_out"].include?(f) && unit_attrs[f]
+              date = Date.strptime(unit_attrs[f], '%Y%m%d') rescue nil
+              
+              if !date
+                date = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
+              end
+              
+              unit_attrs[f] = date
+            end
+
+            if ["unit_id"].include?(f)
+              unit_attrs[f] = unit.id.to_s
+            end
+          end
+
+          if !new_record # record exists
+            existing_unit = resident.units.detect{|u| u.unit_id.to_s == unit.id.to_s }
+
+            if existing_unit # update status, move in, move out only
+              not_update_resident = true
+
+              unit_attrs.keys.each do |k|
+                if !["property_id", "unit_id", "roommate", "status", "move_in", "move_out"].include?(k)
+                  unit_attrs.delete(k)
+                end
+              end
+
+            else
+              # the system will create a new resident unit
+            end
+
+          end
+
+          #pp ">>> before saving:", resident.attributes
+
+          if create_or_update
+            if not_update_resident || resident.save # if not_update_resident is true, resident.save will NOT be called
+              resident.sources.create(unit_attrs) if unit_attrs["property_id"]
+
+              if new_record
+                new_resident += 1
+              else
+                existing_resident += 1
+              end
+
+            else
+              errs << ["#{index}, #{tenant_code}, #{email}, " + resident.errors.full_messages.join(", ")]
+            end
+          end
+        end #/csv parse
+
+      rescue Exception => e
+        error_details = "#{e.class}: #{e}"
+        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+        pp ">>> line: #{line}, ERROR:", error_details
+      end
+    end
+
+    errFile = nil
+    errCSV = nil
+    file_name = meta["file_name"]
+    recipient = meta["recipient"]
+
+    if errs.length > 0
+      errFile ="errors_#{file_name}"
+
+      errCSV = CSV.generate do |csv|
+        errs.each {|row| csv << row }
+      end  
+      #pp "errs", errs
+    end
+    
+    total_missing = 0
+    ImportLog.find(meta["import_log_id"]).update_attributes(:stats => {
+      :new_resident => new_resident,
+      :existing_resident => existing_resident,
+      :total_missing => total_missing,
+      :errors_count => errs.length
+    })
+
+    # run the monthly status to correct the status of the immediate status, this task will not create any rewards
+    Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
+
+    Notifier.system_message("[CRM] Non-Yardi-Master Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
       recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
 

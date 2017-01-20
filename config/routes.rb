@@ -168,6 +168,9 @@ Rails.application.routes.draw do
     get :yardi
     post :load_yardi
     
+    get :non_yardi_master
+    post :load_non_yardi_master
+    
     get :non_yardi
     post :load_non_yardi
     

@@ -53,6 +53,26 @@ class NimdaController < ApplicationController
     render :json => {:success => true}
   end
   
+  def non_yardi_master
+    @daily_import = Import.find_or_initialize_by(type: "load_non_yardi_master_daily")
+    @daily_import.save if @daily_import.new_record?
+  end
+  
+  def load_non_yardi_master
+    import = Import.find_by_type(params[:type])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
+    
+    if params[:active]
+      import.update_attributes(:active => params[:active])
+    else
+      Resque.enqueue(YardiLoader, Time.now, import.id)
+    end
+    
+    render :json => {:success => true}
+  end
+  
+  
+  # # disabled on 2017-Jan-20
   def non_yardi
     @imports = Import.where(type: "load_non_yardi_daily").all # it is supposed to run weekly but we check for the feed daily, run the import if any
     

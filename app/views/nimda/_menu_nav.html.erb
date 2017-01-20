@@ -9,7 +9,11 @@
     <a href="<%= yardi_nimda_path %>">Yardi Resident Import</a>
   </li>
   
-  <li class="page-reload <%= "active" if action_name == "non_yardi" %>">
+  <li class="page-reload <%= "active" if action_name == "non_yardi_master" %>">
+    <a href="<%= non_yardi_master_nimda_path %>">Non-Yardi-Master Resident Import</a>
+  </li>
+  
+  <li class="page-reload <%= "active" if action_name == "non_yardi" %>" style="display:none"> <!-- import is disabled -->
     <a href="<%= non_yardi_nimda_path %>">Non-Yardi Resident Import</a>
   </li>
 </ul>

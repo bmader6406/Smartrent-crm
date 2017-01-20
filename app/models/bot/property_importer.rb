@@ -58,7 +58,7 @@ class PropertyImporter
       "saturday_close_time" => 32,
       "sunday_open_time" => 33,
       "sunday_close_time" => 34,
-      "regional_manager" => 58
+      "regional_manager" => 59
     }
     
     index = 0
