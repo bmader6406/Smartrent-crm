@@ -21,13 +21,9 @@ class NimdaController < ApplicationController
   
   def load_units
     import = Import.find_by_type(params[:type])
-    import.update_attributes(:ftp_setting => params[:ftp_setting])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :active => params[:active])
     
-    if params[:active]
-      import.update_attributes(:active => params[:active])
-    else
-      Resque.enqueue(UnitLoader, Time.now, import.id)
-    end
+    Resque.enqueue(UnitLoader, Time.now, import.id) if params[:active] == "1"
     
     render :json => {:success => true}
   end
@@ -42,13 +38,9 @@ class NimdaController < ApplicationController
   
   def load_yardi
     import = Import.find_by_type(params[:type])
-    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :active => params[:active])
     
-    if params[:active]
-      import.update_attributes(:active => params[:active])
-    else
-      Resque.enqueue(YardiLoader, Time.now, import.id)
-    end
+    Resque.enqueue(YardiLoader, Time.now, import.id) if params[:active] == "1"
     
     render :json => {:success => true}
   end
@@ -60,13 +52,9 @@ class NimdaController < ApplicationController
   
   def load_non_yardi_master
     import = Import.find_by_type(params[:type])
-    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :active => params[:active])
     
-    if params[:active]
-      import.update_attributes(:active => params[:active])
-    else
-      Resque.enqueue(YardiLoader, Time.now, import.id)
-    end
+    Resque.enqueue(NonYardiMasterLoader, Time.now, import.id) if params[:active] == "1"
     
     render :json => {:success => true}
   end
@@ -98,11 +86,9 @@ class NimdaController < ApplicationController
   
   def load_non_yardi
     import = Import.find(params[:id])
-    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :property_map => params[:property_map])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :property_map => params[:property_map], :active => params[:active])
     
-    if params[:active]
-      import.update_attributes(:active => params[:active])
-    end
+    Resque.enqueue(NonYardiLoader, Time.now, import.id) if params[:active] == "1"
     
     render :json => {:success => true}
   end
