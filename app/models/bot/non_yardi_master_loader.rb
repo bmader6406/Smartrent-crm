@@ -12,7 +12,7 @@ class NonYardiMasterLoader
 
   def self.perform(time, import_id);
     time = Time.parse(time) if time.kind_of?(String)
-    #time = time - 1.day # yardi file is 1 day behind
+    time = time - 1.day # yardi file is 1 day behind
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
     recipient = ftp_setting["recipient"]
