@@ -238,7 +238,7 @@ class ResidentExporter
         <br>
         CRM Team
         <br>
-        help@hy.ly", @params["recipient"], {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
+        #{HELP_EMAIL}", @params["recipient"], {"from" => OPS_EMAIL}).deliver_now
 
       Resque.enqueue_at(Time.now + 2.hours, DownloadCleaner, file_name)
     
@@ -248,11 +248,11 @@ class ResidentExporter
       p "ERROR: #{error_details}"
 
       ::Notifier.system_message("[ResidentExporter] FAILURE", "ERROR DETAILS: #{error_details}",
-        ::Notifier::DEV_ADDRESS, {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
+        ADMIN_EMAIL, {"from" => OPS_EMAIL}).deliver_now
       
       ::Notifier.system_message("Resident Data",
-        "There was an error while exporting your data, please contact help@hy.ly for help",
-        @params["recipient"], {"from" => ::Notifier::EXIM_ADDRESS}).deliver_now
+        "There was an error while exporting your data, please contact #{HELP_EMAIL} for help",
+        @params["recipient"], {"from" => OPS_EMAIL}).deliver_now
     end
   end
   

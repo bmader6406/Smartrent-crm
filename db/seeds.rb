@@ -7,7 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 user = User.create({
-  :email => "demo+admin@hy.ly",
+  :email => "demo+admin@#{EMAIL_DOMAIN}",
   :full_name => "Hy.ly Admin",
   :password => "gggggggg",
   :password_confirmation => "gggggggg"

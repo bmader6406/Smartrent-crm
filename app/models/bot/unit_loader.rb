@@ -112,7 +112,7 @@ class UnitLoader
       
       Notifier.system_message("[CRM] Units Importing Success",
         email_body(new_unit, existing_unit, errs.length, file_name),
-        recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver
+        recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
     
       pp ">>>", email_body(new_unit, existing_unit, errs.length, file_name)
       
@@ -145,7 +145,7 @@ Your file has been loaded:
 <br>
 CRM Help Team
 <br>
-help@hy.ly
+#{HELP_EMAIL}
 
     MESSAGE
   end

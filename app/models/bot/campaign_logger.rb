@@ -48,7 +48,7 @@ class CampaignLogger
         next if !Resident.with(:consistency => :eventual).find_by_id(param["rid"])
         next if param["visitor_ip"].blank?
         
-        location = JSON.parse(open("http://atics.hy.ly:8000/location.json?visitor_ip=#{param["visitor_ip"]}").read)
+        location = JSON.parse(open("http://atics.hy.ly/location.json?visitor_ip=#{param["visitor_ip"]}").read)
 
         if location && !location["error"]
           attrs = {

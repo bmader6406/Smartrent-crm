@@ -342,9 +342,9 @@ class ResidentImporter
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
     Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
     
-    Notifier.system_message("[CRM] Yardi Importing Success",
+    Notifier.system_message("#{}[CRM] Yardi Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
-      recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
+      recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver_now
 
     
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
@@ -546,7 +546,7 @@ class ResidentImporter
 
     Notifier.system_message("[CRM] Non-Yardi Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
-      recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
+      recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver_now
 
 
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
@@ -747,7 +747,7 @@ class ResidentImporter
 
     Notifier.system_message("[CRM] Non-Yardi-Master Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),
-      recipient, {"from" => Notifier::EXIM_ADDRESS, "filename" => errFile, "csv_string" => errCSV}).deliver_now
+      recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver_now
 
 
     pp ">>>", email_body(new_resident, existing_resident, total_missing, errs.length, file_name)
@@ -787,7 +787,7 @@ Your file has been loaded:
 <br>
 CRM Help Team
 <br>
-help@hy.ly
+#{HELP_EMAIL}
 
     MESSAGE
   end

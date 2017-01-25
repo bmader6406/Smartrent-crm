@@ -32,7 +32,7 @@ class CampaignNewsletterMailer < QueuedMailer
         
         #bcc every batch
         if resident_ids.length > 100
-          bcc_emails = [Notifier::DEV_ADDRESS]
+          bcc_emails = [ADMIN_EMAIL]
         end
       end
       

@@ -119,7 +119,7 @@ class SesMonitor
   
   # SesReceiver will not unsubscribe lead
   def self.unsubscribe_resident(email, property_ids, type)
-    return true if Rails.env.stage? # TODO: add ops-stg@hy.ly for stage env
+    return true if Rails.env.stage?
     pp "unsubscribing lead..."
     unsubscribed = false
     
@@ -141,7 +141,7 @@ class SesMonitor
   
   # SesReceiver will not unsubscribe user
   def self.unsubscribe_user(email, type)
-    return true if Rails.env.stage? # TODO: add ops-stg@hy.ly for stage env
+    return true if Rails.env.stage?
     pp "unsubscribing user..."
     unsubscribed = false
     

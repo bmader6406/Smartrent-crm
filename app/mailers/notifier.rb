@@ -1,18 +1,9 @@
 require 'open-uri'
 
 class Notifier < ActionMailer::Base
-
-  BCC_ADDRESS = "help@hy.ly"
-  FROM_ADDRESS = "noreply@hy.ly"
-  ADMIN_ADDRESS = "admin@hy.ly"
-  DEV_ADDRESS = "tn@hy.ly"
-  EXIM_ADDRESS = "CRM Exports-Imports <exim@hy.ly>"
-  SYS_ADDRESSES = ["exim@hy.ly", "alerts@hy.ly", "renewals@hy.ly", "help@hy.ly", "reports@hy.ly", "reports2@hy.ly", "notifications@hy.ly"]
-  
-  default :return_path => "ses@hy.ly"
+  default :return_path => OPS_EMAIL
   
   def system_message(subj, message, email, meta = {})
-  
     @message = message
     
     attachments[meta["filename"]] = {:content => meta["csv_string"]} if meta["filename"]
@@ -21,39 +12,28 @@ class Notifier < ActionMailer::Base
   end
 
   def password_reset(user)
-    Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])  
-
     @user = user
 
     mail(:to => @user.email, :from => from_address, :subject => "#{ABBR_ENV}Reset your CRM password ")
   end
 
   def password_change(user)
-    Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])  
-
     @user = user
 
     mail(:to => @user.email, :from => from_address, :subject => "#{ABBR_ENV}Your CRM password has been reset")
   end
 
   def manager_invitation(manager)
-
-    Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])  
-
-
     mail(:to => @user.email, :from => from_address, :subject => "#{ABBR_ENV}You have been invited to manage #{@property.name}'s CRM " )
   end
   
   def email_conversation(subject, message, email, meta = {})
-    Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])  
     @message = message
     
     mail(:to => email, :from => meta["from"], :subject => subject, :cc => meta["cc"], :bcc => meta["bcc"], :reply_to => meta["reply_to"])
   end
   
   def campaign_newsletter(campaign, resident, meta)
-    Notifier.with_custom_smtp_settings(SMTP_ACCOUNTS[:notifications])
-    
     macro = resident.to_macro(campaign)
     
     translate_macro(campaign, macro, resident)
@@ -72,7 +52,6 @@ class Notifier < ActionMailer::Base
       @body_html += tracking_img
     end
     
-    #bcc to hy.ly team or universal recipients
     @bcc = [meta[:bcc_emails], @bcc].flatten.compact.uniq.join(', ')
 
     mail(:to => resident.email, :from => @sender, :subject => @subject, :cc => @cc, :bcc => @bcc, :reply_to => @reply_to )
@@ -81,27 +60,15 @@ class Notifier < ActionMailer::Base
   
 
   private
-
-    def self.with_custom_smtp_settings(settings)
-      ActionMailer::Base.smtp_settings = ActionMailer::Base.smtp_settings.merge(settings)
-    end
-  
     def from_address
-  
       email = ActionMailer::Base.smtp_settings[:user_name]
     
       @from_name ||= case email
-        when "alerts@hy.ly"
+        when OPS_EMAIL
           "CRM Alert"
           
-        when "help@hy.ly"
+        when HELP_EMAIL
           "CRM Help"
-          
-        when "reports@hy.ly"
-          "CRM Report"
-          
-        when "notifications@hy.ly"
-          "CRM Notification"
       end
     
       "#{@from_name} <#{email}>"      

@@ -28,7 +28,7 @@ class ConversationMonitor
         to = m.to.first.to_s
         cc = m.cc.kind_of?(Array) ? m.cc.join(", ") : nil
         
-        token = to.gsub('conversation+rep', '').gsub('@hy.ly', '')
+        token = to.gsub("bozzuto_conversation+rep", "").gsub("@#{EMAIL_DOMAIN}", "")
         subject = m.subject.to_s
         message = m.html_part.body.to_s
         text_message = m.text_part.body.to_s rescue ""

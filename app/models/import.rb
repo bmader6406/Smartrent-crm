@@ -74,17 +74,17 @@ class Import < ActiveRecord::Base
       "username" => "CRMbozchh",
       "password" => "NAQpPt41",
       "file_name" => "mits4_1.xml",
-      "recipient" => "tn@hy.ly"
+      "recipient" => ADMIN_EMAIL
     }
   end
   
   def default_yardi_ftp_setting
     {
-      "host" => "ftp.hy.ly",
-      "username" => "yardi",
-      "password" => "yardi1206",
-      "file_name" => "/daily/YardiResidents-Full-%Y%m%d.csv",
-      "recipient" => "tn@hy.ly"
+      "host" => "bozzutofeed.qburst.com",
+      "username" => "bozzutofc",
+      "password" => "6zxXRETm",
+      "file_name" => "/reporting/yardi/bozzuto_yardi_residents/YardiResidents-Full-%Y%m%d.csv",
+      "recipient" => ADMIN_EMAIL
     }
   end
   
@@ -94,7 +94,7 @@ class Import < ActiveRecord::Base
       "username" => "bozzutofc",
       "password" => "6zxXRETm",
       "path" => "/reporting/nonbozzutopmsdrop/yardi_ta",
-      "recipient" => "tn@hy.ly"
+      "recipient" => ADMIN_EMAIL
     }
   end
   

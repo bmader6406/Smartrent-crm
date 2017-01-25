@@ -140,7 +140,7 @@ class SendNewsletterAction
       error = "Invalid send!! Long query may be killed at #{Time.now.utc} (executed at #{now}), audience_counts: #{audience_counts}"
       
       Notifier.system_message("[#{campaign.property.name}] SendNewsletterAction - FAILURE",
-        "campaign id: #{campaign.id}, campaign name: #{campaign.subject} <br><br> ERROR DETAILS: #{error}", Notifier::DEV_ADDRESS).deliver_now
+        "campaign id: #{campaign.id}, campaign name: #{campaign.subject} <br><br> ERROR DETAILS: #{error}", ADMIN_EMAIL).deliver_now
       
       raise error
     end
@@ -150,7 +150,7 @@ class SendNewsletterAction
     
     if ["NewsletterCampaign"].include?(campaign.class.to_s)
       Notifier.system_message("[#{property.name}] Newsletter Status: Sent", email_body(campaign, total, audience_counts, now),
-        campaign.property.setting.notification_emails.uniq.reject{|e| e.blank? }, {"bcc" => Notifier::DEV_ADDRESS}).deliver_now      
+        campaign.property.setting.notification_emails.uniq.reject{|e| e.blank? }, {"bcc" => ADMIN_EMAIL}).deliver_now      
     end
   end
   
@@ -171,7 +171,7 @@ class SendNewsletterAction
 <br>
 CRM Help Team
 <br>
-help@hy.ly
+#{HELP_EMAIL}
     MESSAGE
   end
   

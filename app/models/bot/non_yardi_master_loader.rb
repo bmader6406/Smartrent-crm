@@ -44,7 +44,7 @@ class NonYardiMasterLoader
       p "ERROR: #{error_details}"
 
       Notifier.system_message("[CRM] NonYardiMasterLoader FAILURE", "ERROR DETAILS: #{error_details}",
-        recipient, {"from" => Notifier::EXIM_ADDRESS}).deliver
+        recipient, {"from" => OPS_EMAIL}).deliver
         
     end
   end

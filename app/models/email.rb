@@ -22,7 +22,7 @@ class Email < ActiveRecord::Base
   before_create :generate_token
   
   def reply_to
-    "conversation+rep#{token}@hy.ly" #C0nversation
+    "bozzuto_conversation+rep#{token}@#{EMAIL_DOMAIN}"
   end
   
   def generate_token(length=10)

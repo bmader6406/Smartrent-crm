@@ -25,15 +25,6 @@ GOOGLE_SECRET = "4c-Nk5nT_FxcPER-z-ii9ooD"
 # Dropbox file picker
 DROPBOX_KEY = "mz42zotb5v03alt"
 
-### Resident stream - phone
-# Hy.ly
-# TWILIO_SID = "AC98548e50553210aa39deb89e6a8ffb1b"
-# TWILIO_TOKEN = "643e67e6da78361b3436d7781d78f5cb"
-# TWILIO_NUMBER = "+1 260-535-0148"
-
-# TWILIO_P2P_SID = Rails.env.production? ? "APf050c35b938ebb859aa802e25f7f7d71" : "AP9bebd11d0f668dd667158695dea83119"
-
-
 # Todd's account
 TWILIO_SID = "AC5a31d3785fa57e63e37e04c20b5fd680"
 TWILIO_TOKEN = "f99c23265c3a1c99249d83e23394e17e"
@@ -41,17 +32,24 @@ TWILIO_NUMBER = "+1 240-245-2373"
 
 TWILIO_P2P_SID = Rails.env.production? ? "APcdc45777f146399459e86d1c8d4ac982" : "AP72efd2192c606511cdbca4870bb47a6c"
 
-# Resident stream - email conversation
-CONVO_EMAIL = "conversation@hy.ly"
-CONVO_PWD = "C0nversAtion"
+# email config
+EMAIL_DOMAIN = "hy.ly"
+ADMIN_EMAIL = "admin@#{EMAIL_DOMAIN}"
+HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
 
-# SES monitor
-OPS_U = 'ops@hy.ly'
-OPS_P = 'HcmcNyc!@34'
+SMARTRENT_EMAIL = "smartrent@bozzuto.com"
+
+# Resident stream - email conversation
+CONVO_EMAIL = "bozzuto_conversation@#{EMAIL_DOMAIN}"
+CONVO_PWD = "B0zzut0!@#conv"
+
+# SES monitor, notification email sender address
+OPS_EMAIL = "bozzuto_ops@#{EMAIL_DOMAIN}"
+OPS_PWD = "B0zzut0!@#ops"
 
 # AWS SES & S3
-AWS_KEY = 'AKIAIRKGJLR7V7ZO25GQ'
-AWS_SECRET = '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'
+AWS_KEY = "AKIAIRKGJLR7V7ZO25GQ"
+AWS_SECRET = "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"
 
 
 US_STATES = {
