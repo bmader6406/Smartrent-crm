@@ -368,14 +368,6 @@ stop_on_error_cmd: "function error_exit { exit 99; }; trap error_exit ERR"
 #     packages: []
 
 hosts:
-  app-stg:
-    env_name: crm
-    domain: hyly.us
-    
-  crm-stage:
+  crm-smartrent-stg:
     env_name: crm-stg
-    domain: bozzuto.com
-    
-  crm-smartrent:
-    env_name: crm
     domain: bozzuto.com
