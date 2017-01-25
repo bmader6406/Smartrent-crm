@@ -5,7 +5,7 @@ class DomainSubdomain
     # Or domain name is bozzuto.com
     
     if request.subdomain.present?
-      app_domains = ["crm", "crm2", "crm-beta", "crm-live", "crm-dev"]
+      app_domains = ["crm", "crm2", "crm-beta", "crm-live", "crm-dev", "crm-test"]
       return !app_domains.include?(request.subdomain)
       
     else
