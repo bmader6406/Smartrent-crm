@@ -64,8 +64,8 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
   
-  HOST = "crm-beta.bozzuto.com"
-  SR_HOST = "smartrent-beta.bozzuto.com"
+  HOST = "crm-test.bozzuto.com"
+  SR_HOST = "test.bozzutosmartrent.com"
   
   config.action_mailer.delivery_method = :ses
   config.action_mailer.default_url_options = { 

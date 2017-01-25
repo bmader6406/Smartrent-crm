@@ -801,9 +801,9 @@ CRM Help Team
     return email if Rails.env.production? || Rails.env.development?
     
     # stage, test will be converted
-    # for e.g: johndoe@gmail.com will be changed to bozzuto_ops+johndoe_at_gmail_com@hy.ly
+    # for e.g: johndoe@gmail.com will be changed to bozzuto_ops+johndoe_at_gmail.com@hy.ly
     
-    return "bozzuto_ops+#{ email.gsub("@", "_at_").gsub(/[^a-z0-9.]/i, "_") }@#{EMAIL_DOMAIN}"
+    return "bozzuto_ops+#{ email.gsub("@", "_at_") }@#{EMAIL_DOMAIN}"
   end
   
 end
