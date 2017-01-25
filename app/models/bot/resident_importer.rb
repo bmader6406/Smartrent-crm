@@ -88,7 +88,7 @@ class ResidentImporter
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
           
           # Some residents have this email format:
           #- Allie.donovan@hotmail.co.uk; alex.donovan@hilton.com
@@ -389,7 +389,7 @@ class ResidentImporter
           
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
 
           if tenant_code.blank?
             tenant_code = [
@@ -590,8 +590,8 @@ class ResidentImporter
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
-
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          
           if tenant_code.blank?
             tenant_code = [
               row[ resident_map["first_name"] ].to_s.downcase.strip,
@@ -795,4 +795,15 @@ CRM Help Team
   def self.resident_text(count)
     count != 1 ? "residents" : "residents"
   end
+  
+  def self.safe_email(email)
+    return email if email.blank?
+    return email if Rails.env.production? || Rails.env.development?
+    
+    # stage, test will be converted
+    # for e.g: johndoe@gmail.com will be changed to bozzuto_ops+johndoe_at_gmail_com@hy.ly
+    
+    return "bozzuto_ops+#{ email.gsub("@", "_at_").gsub(/[^a-z0-9]/i, "_") }@#{EMAIL_DOMAIN}"
+  end
+  
 end
