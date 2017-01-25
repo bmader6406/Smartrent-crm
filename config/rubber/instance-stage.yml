@@ -1,7 +1,7 @@
 ---
 - !ruby/object:Rubber::Configuration::InstanceItem
-  name: app-stg
-  domain: hyly.us
+  name: crm-smartrent-stg
+  domain: bozzuto.com
   roles:
   - !ruby/object:Rubber::Configuration::RoleItem
     name: app
@@ -10,26 +10,13 @@
     name: passenger_nginx
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: collectd
+    name: web
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: common
+    name: haproxy
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: monit
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: db
-    options:
-      primary: true
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: mysql
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: mysql_master
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: examples
+    name: web_tools
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
     name: graphite_server
@@ -38,68 +25,59 @@
     name: graphite_web
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: haproxy
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: mongodb
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: mongodb_master
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: redis
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
-    name: redis_master
+    name: resque_web
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
     name: resque_scheduler
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: resque_web
-    options: {}
-  - !ruby/object:Rubber::Configuration::RoleItem
     name: resque_worker
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: web
+    name: mysql_master
     options: {}
   - !ruby/object:Rubber::Configuration::RoleItem
-    name: web_tools
+    name: mysql
     options: {}
-  instance_id: i-060e9925
-  image_type: m1.large
-  image_id: ami-19fae570
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: db
+    options:
+      primary: true
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: redis_master
+    options: {}
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: redis
+    options: {}
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: mongodb_master
+    options: {}
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: mongodb
+    options: {}
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: collectd
+    options: {}
+  - !ruby/object:Rubber::Configuration::RoleItem
+    name: monit
+    options: {}
+  instance_id: i-3260f68e
+  image_type: m4.large
+  image_id: ami-7e9b7c11
   security_groups:
-  - sys_stage_default
-  - sys_stage_web
-  - sys_stage_web_tools
-  - sys_stage_app-stg
-  - sys_stage_app
-  - sys_stage_passenger_nginx
-  - sys_stage_collectd
-  - sys_stage_common
-  - sys_stage_monit
-  - sys_stage_db
-  - sys_stage_mysql
-  - sys_stage_mysql_master
-  - sys_stage_examples
-  - sys_stage_graphite_server
-  - sys_stage_graphite_web
-  - sys_stage_haproxy
-  - sys_stage_mongodb
-  - sys_stage_mongodb_master
-  - sys_stage_redis
-  - sys_stage_redis_master
-  - sys_stage_resque_scheduler
-  - sys_stage_resque_web
-  - sys_stage_resque_worker
-  external_host: ec2-54-211-136-120.compute-1.amazonaws.com
-  external_ip: 54.211.136.120
-  internal_host: ip-10-169-24-101.ec2.internal
-  internal_ip: 10.169.24.101
-  zone: us-east-1e
+  - common
+  - web
+  - web_tools
+  zone: eu-central-1b
+  network: 
+  gateway: 
+  external_host: ec2-52-201-27-62.compute-1.amazonaws.com
+  external_ip: 52.201.27.62
+  internal_host: ip-172-16-1-152.ec2.internal
+  internal_ip: 172.16.1.152
+  provider: aws
   platform: linux
   root_device_type: ebs
 - volumes: {}
   static_ips: {}
+  vpc: {}
