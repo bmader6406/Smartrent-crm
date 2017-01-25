@@ -34,7 +34,7 @@ TWILIO_P2P_SID = Rails.env.production? ? "APcdc45777f146399459e86d1c8d4ac982" : 
 
 # email config
 EMAIL_DOMAIN = "hy.ly"
-ADMIN_EMAIL = "admin@#{EMAIL_DOMAIN}"
+ADMIN_EMAIL = "tn+admin@#{EMAIL_DOMAIN}"
 HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
 
 SMARTRENT_EMAIL = "smartrent@bozzuto.com"
@@ -48,8 +48,8 @@ OPS_EMAIL = "bozzuto_ops@#{EMAIL_DOMAIN}"
 OPS_PWD = "B0zzut0!@#ops"
 
 # AWS SES & S3
-AWS_KEY = "AKIAIRKGJLR7V7ZO25GQ"
-AWS_SECRET = "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"
+AWS_KEY = "AKIAICJX5ULNO7BJ3IYA"
+AWS_SECRET = "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"
 
 
 US_STATES = {

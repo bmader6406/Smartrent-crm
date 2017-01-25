@@ -1,16 +1,16 @@
 development:
-  access_key_id: AKIAIRKGJLR7V7ZO25GQ
-  secret_access_key: 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
-  bucket: img.bozzuto.com.dev
+  access_key_id: AKIAICJX5ULNO7BJ3IYA
+  secret_access_key: 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
+  bucket: crm.bozzuto.com
 test:
-  access_key_id: AKIAIRKGJLR7V7ZO25GQ
-  secret_access_key: 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
-  bucket: img.bozzuto.com.test
+  access_key_id: AKIAICJX5ULNO7BJ3IYA
+  secret_access_key: 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
+  bucket: crm.bozzuto.com.test
 stage:
-  access_key_id: AKIAIRKGJLR7V7ZO25GQ
-  secret_access_key: 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
-  bucket: img.bozzuto.com.stg
+  access_key_id: AKIAICJX5ULNO7BJ3IYA
+  secret_access_key: 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
+  bucket: crm.bozzuto.com.stg
 production:
-  access_key_id: AKIAIRKGJLR7V7ZO25GQ
-  secret_access_key: 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
-  bucket: img.bozzuto.com
+  access_key_id: AKIAICJX5ULNO7BJ3IYA
+  secret_access_key: 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
+  bucket: crm.bozzuto.com
