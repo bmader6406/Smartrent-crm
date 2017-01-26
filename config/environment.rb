@@ -17,12 +17,13 @@ FACEBOOK_SECRET = ""
 LINKEDIN_KEY = ""
 LINKEDIN_SECRET = ""
 
-# Google file picker ( https://console.developers.google.com/project/289130776929 )
-GOOGLE_KEY = "AIzaSyDgtk2nMDv_NKRkbTKsZ2HxN1bW0JRXMcE"
-GOOGLE_APP_ID = "289130776929.apps.googleusercontent.com"
-GOOGLE_SECRET = "4c-Nk5nT_FxcPER-z-ii9ooD"
+# Google file picker ( https://console.developers.google.com/apis/credentials?project=bozzuto-crm&organizationId=982513063397 - TN)
+GOOGLE_KEY = "AIzaSyCN5T1sKV8-8MsqNtYpXA6AVxK702zhMqs"
+GOOGLE_APP_ID = "589235047157-k1crrk9vu21sl6eotb2n867rjsd6ecaa.apps.googleusercontent.com"
+GOOGLE_SECRET = "2i4QhSDmFdoiqhQGfzRLa9RV"
 
-# Dropbox file picker
+
+# Dropbox file picker (TN)
 DROPBOX_KEY = "mz42zotb5v03alt"
 
 # Todd's account
