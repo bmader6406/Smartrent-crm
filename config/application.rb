@@ -34,7 +34,7 @@ module Crm
     # rack-attack gem
     config.middleware.use Rack::Attack
     
-    #config.force_ssl = true
+    config.force_ssl = true
 
   end
 end
