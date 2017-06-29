@@ -12,6 +12,11 @@ class ApplicationController < ActionController::Base
   
   before_action :set_user_time_zone
 
+  before_filter :check_session_expiry
+
+  SESSION_ABSOLUTE_TIMEOUT_DURATION = 60*60*24 # in seconds
+  SESSION_INACTIVITY_TIMEOUT_DURATION = 60*30  # in seconds
+
   rescue_from CanCan::AccessDenied do |exception|
     msg = "Access denied on #{exception.action} #{exception.subject.inspect} - #{current_user.id}"
     ppp msg
@@ -25,6 +30,31 @@ class ApplicationController < ActionController::Base
         render :json => {:error => "401 Unauthorized"}, :status => 401
       }
     end
+  end
+
+  def check_session_expiry
+     if session[:absolute_timeout].nil?
+        # Set absolute session timeout value
+        session[:absolute_timeout] = SESSION_ABSOLUTE_TIMEOUT_DURATION.seconds.from_now.to_i
+      end
+      if !session[:absolute_timeout].nil? and session[:absolute_timeout] < Time.zone.now.to_i
+        # Clear session and force the user to login screen
+        reset_session
+        current_user_session.destroy
+        flash[:error] = "Session timeout! Please login again.";
+        redirect_to main_app.login_url and return false
+      end
+      if !session[:inactivity_timeout].nil? and session[:inactivity_timeout] < Time.zone.now.to_i
+        # Clear session and force the user to login screen
+        reset_session
+        current_user_session.destroy
+        flash[:error] = "Session timeout! Please login again.";
+        redirect_to main_app.login_url and return false
+        #redirect_to main_app.login_url, :notice => "Session timeout due to inactivity!" and return false
+      end
+      # Set/Update inactivity session timeout value
+      session[:inactivity_timeout] = SESSION_INACTIVITY_TIMEOUT_DURATION.seconds.from_now.to_i
+      return true
   end
   
   def require_ssl
