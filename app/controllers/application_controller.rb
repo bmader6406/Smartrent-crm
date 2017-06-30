@@ -47,6 +47,7 @@ class ApplicationController < ActionController::Base
         reset_session
         if @current_user_session.present?
           @current_user_session.destroy
+        end
         flash[:error] = "Session timeout! Please login again.";
         redirect_to main_app.login_url and return false
       end
@@ -55,6 +56,7 @@ class ApplicationController < ActionController::Base
         reset_session
         if @current_user_session.present?
           @current_user_session.destroy
+        end
         flash[:error] = "Session timeout! Please login again.";
         redirect_to main_app.login_url and return false
         #redirect_to main_app.login_url, :notice => "Session timeout due to inactivity!" and return false
