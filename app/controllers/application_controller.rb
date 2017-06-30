@@ -45,14 +45,16 @@ class ApplicationController < ActionController::Base
       if !session[:absolute_timeout].nil? and session[:absolute_timeout] < Time.zone.now.to_i
         # Clear session and force the user to login screen
         reset_session
-        current_user_session.destroy
+        if @current_user_session.present?
+          @current_user_session.destroy
         flash[:error] = "Session timeout! Please login again.";
         redirect_to main_app.login_url and return false
       end
       if !session[:inactivity_timeout].nil? and session[:inactivity_timeout] < Time.zone.now.to_i
         # Clear session and force the user to login screen
         reset_session
-        current_user_session.destroy
+        if @current_user_session.present?
+          @current_user_session.destroy
         flash[:error] = "Session timeout! Please login again.";
         redirect_to main_app.login_url and return false
         #redirect_to main_app.login_url, :notice => "Session timeout due to inactivity!" and return false
