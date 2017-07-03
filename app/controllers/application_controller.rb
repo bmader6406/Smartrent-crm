@@ -33,9 +33,8 @@ class ApplicationController < ActionController::Base
   end
 
   def check_session_expiry
-      if params[:controller] == 'notifications' and params[:action] == 'index'
-        # Exclude notification AJAX calls from session timeout checks
-        Rails.logger.debug("Excluded notification AJAX calls from session timeout checks")
+      if request.xhr?
+        # Exclude AJAX calls from session timeout checks
         return true
       end
       if session[:absolute_timeout].nil?
