@@ -50,10 +50,10 @@ class ApplicationController < ActionController::Base
   end
 
   def check_session_expiry
-      # if request.xhr?
-      #   Rails.logger.debug("Excluded AJAX calls from session timeout checks")
-      #   return true
-      # end
+      if request.fullpath == '/login' or request.fullpath == '/logout' or request.fullpath == '/user_sessions'
+        # Exclude black-listed URLs
+        return true
+      end
       if params[:controller] == 'notifications' and (params[:action] == 'index' or params[:action] == 'poll')
         # Exclude notification AJAX calls from session timeout checks
         return true
@@ -81,6 +81,8 @@ class ApplicationController < ActionController::Base
     if @current_user_session.present?
       @current_user_session.destroy
     end
+    session[:absolute_timeout] = nil
+    session[:inactivity_timeout] = nil
     session[:return_to] = return_url
     flash[:error] = "Session timeout! Please login again.";
     respond_to do |format|
