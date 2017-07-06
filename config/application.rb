@@ -22,6 +22,9 @@ module Crm
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    # Enables or disables the escaping of HTML entities in JSON serialization. Defaults to true.
+    config.active_support.escape_html_entities_in_json = true
     
     # allow array in params
     #config.action_dispatch.perform_deep_munge = false
