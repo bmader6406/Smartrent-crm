@@ -396,7 +396,7 @@ App.Config = {
     APP_VERSION: "1.0",
     APP_CODE: "APP",
     APP_LOCALE: 'en/US',
-    DEBUG_MODE: 1, // 1:ON, 0:OFF
+    DEBUG_MODE: 0, // 1:ON, 0:OFF
     BASE_URL: "/",
     LOGIN_URL: "/login",
     ATTACHMENT_SIZE_LIMIT: 10, // in MB
@@ -866,14 +866,9 @@ App.UI = {
       App.Debug.log("UI - Setup Ajax intercept");
       jQuery.ajaxSetup({
         dataFilter: function (data, type) {
-          App.Debug.log("Ajax intercept - type");
-          App.Debug.log(type);
-          App.Debug.log("Ajax intercept - data");
           if (type == 'json') {
             var jSONData = JSON.parse(data);
             if (jSONData && jSONData.status && jSONData.status.code == 401) {
-              App.Debug.log(jSONData.status.message);
-              App.Debug.log("Redirect to "+App.Config.LOGIN_URL);
               window.location.href = App.Config.LOGIN_URL;
             }
           }
