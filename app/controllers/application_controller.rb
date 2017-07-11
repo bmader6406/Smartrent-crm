@@ -14,8 +14,8 @@ class ApplicationController < ActionController::Base
 
   before_filter :store_return_to, :check_session_expiry
 
-  SESSION_ABSOLUTE_TIMEOUT_DURATION = 60*30 # in seconds
-  SESSION_INACTIVITY_TIMEOUT_DURATION = 60*60*24  # in seconds
+  SESSION_ABSOLUTE_TIMEOUT_DURATION = 60*60*24 # in seconds
+  SESSION_INACTIVITY_TIMEOUT_DURATION = 60*30  # in seconds
 
   rescue_from CanCan::AccessDenied do |exception|
     msg = "Access denied on #{exception.action} #{exception.subject.inspect} - #{current_user.id}"
