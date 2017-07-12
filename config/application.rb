@@ -39,5 +39,9 @@ module Crm
     
     config.force_ssl = true
 
+    # session timeout
+    config.session_absolute_timeout_duration = 60*60*24 # in seconds
+    config.session_inactivity_timeout_duration = 60*30  # in seconds
+
   end
 end
