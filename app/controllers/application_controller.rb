@@ -14,8 +14,6 @@ class ApplicationController < ActionController::Base
 
   before_filter :store_return_to, :check_session_expiry
 
-  SESSION_ABSOLUTE_TIMEOUT_DURATION = 60*60*24 # in seconds
-  SESSION_INACTIVITY_TIMEOUT_DURATION = 60*30  # in seconds
 
   rescue_from CanCan::AccessDenied do |exception|
     msg = "Access denied on #{exception.action} #{exception.subject.inspect} - #{current_user.id}"
@@ -61,7 +59,7 @@ class ApplicationController < ActionController::Base
       #Non-AJAX call, imposing session expiry check
       if session[:absolute_timeout].nil?
         # Set absolute session timeout value
-        session[:absolute_timeout] = SESSION_ABSOLUTE_TIMEOUT_DURATION.seconds.from_now.to_i
+        session[:absolute_timeout] = Rails.configuration.session_absolute_timeout_duration.seconds.from_now.to_i
       end
       if !session[:absolute_timeout].nil? and session[:absolute_timeout] < Time.zone.now.to_i
         force_logout and return false
@@ -70,7 +68,7 @@ class ApplicationController < ActionController::Base
         force_logout and return false
       end
       # Set/Update inactivity session timeout value
-      session[:inactivity_timeout] = SESSION_INACTIVITY_TIMEOUT_DURATION.seconds.from_now.to_i
+      session[:inactivity_timeout] = Rails.configuration.session_inactivity_timeout_duration.seconds.from_now.to_i
       return true
   end
 
