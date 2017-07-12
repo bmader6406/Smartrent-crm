@@ -14,6 +14,8 @@ class Comment < ActiveRecord::Base
   
   default_scope { where(:deleted_at => nil).order("created_at desc") }
   
+  before_save :reconcile_email_from
+  
   after_create :send_email
   after_create :create_notification
   
@@ -91,6 +93,12 @@ class Comment < ActiveRecord::Base
   
   private
   
+    def reconcile_email_from
+      if email?
+        self.email.from = property.name.to_s+" <"+ property.email.to_s + ">"
+      end
+    end
+
     def send_email
       if email?
         Resque.enqueue(EmailConversationMailer, email.id)

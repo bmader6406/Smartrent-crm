@@ -109,6 +109,7 @@ Crm.Views.ReplyEmailForm = Backbone.View.extend({
       form = new Backbone.Form({
         schema: {
           from: {
+            editorAttrs: {readonly: true},
             validators: [
               function checkEmail(value, formValues) {
                 var arr = App.getInvalidEmails(value);
