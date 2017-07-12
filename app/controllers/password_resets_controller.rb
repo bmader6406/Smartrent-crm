@@ -1,5 +1,5 @@
 class PasswordResetsController < ApplicationController
-  before_action :require_ssl
+  # before_action :require_ssl
   before_action :require_no_user
   before_action :set_page_title
   before_action :set_user_by_perishable_token, :only => [:edit, :update]
