@@ -18,11 +18,11 @@ if ENV['GIT_BRANCH'] == 'local'
   set :deploy_via, :copy
   
 else # Deploy from github
-  set :repository,  "git@github.com:munishgandhi/crm-smartrent.git"
+  set :repository,  "git@code.qburst.com:SmartRent/crm-smartrent.git"
   set :scm, "git"
   set :scm_passphrase, "" #We do not have a password phrase right now
   set :user, "root"
-  set :branch, ENV['GIT_BRANCH'] ||= Rubber.env == 'production' ? 'master' : 'stg'
+  set :branch, ENV['GIT_BRANCH'] ||= Rubber.env == 'production' ? 'master' : 'master'
   set :deploy_via, :remote_cache
 end
 
