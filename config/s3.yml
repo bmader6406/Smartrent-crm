@@ -1,16 +1,16 @@
 development:
-  access_key_id: AKIAICJX5ULNO7BJ3IYA
-  secret_access_key: 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
-  bucket: crm.bozzuto.com
+  access_key_id: AKIAI6R3R43KYSW44LCQ
+  secret_access_key: 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
+  bucket: bozzuto.smartrent.app.s3.stg
 test:
-  access_key_id: AKIAICJX5ULNO7BJ3IYA
-  secret_access_key: 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
-  bucket: crm.bozzuto.com.test
+  access_key_id: AKIAI6R3R43KYSW44LCQ
+  secret_access_key: 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
+  bucket: bozzuto.smartrent.app.s3.stg
 stage:
-  access_key_id: AKIAICJX5ULNO7BJ3IYA
-  secret_access_key: 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
-  bucket: crm.bozzuto.com.stg
+  access_key_id: AKIAI6R3R43KYSW44LCQ
+  secret_access_key: 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
+  bucket: bozzuto.smartrent.app.s3.stg
 production:
-  access_key_id: AKIAICJX5ULNO7BJ3IYA
-  secret_access_key: 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
-  bucket: crm.bozzuto.com
+  access_key_id: AKIAI6R3R43KYSW44LCQ
+  secret_access_key: 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
+  bucket: bozzuto.smartrent.app.s3
