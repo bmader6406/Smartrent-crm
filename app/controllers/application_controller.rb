@@ -45,6 +45,13 @@ class ApplicationController < ActionController::Base
         end
       end
     end
+    if request.fullpath == '/logout'
+      if current_user.is_admin? or current_user.is_property_manager?
+          session[:return_to] = '/admin'
+      else
+          session[:return_to] = nil
+      end
+    end
   end
 
   def check_session_expiry
