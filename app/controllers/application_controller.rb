@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     end
     if request.fullpath == '/logout'
       if current_user.is_admin? or current_user.is_property_manager?
-          session[:return_to] = '/admin'
+          session[:return_to] = '/properties'
       else
           session[:return_to] = nil
       end
