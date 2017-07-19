@@ -1,6 +1,6 @@
 ---
 - !ruby/object:Rubber::Configuration::InstanceItem
-  name: crm-smartrent
+  name: crm
   domain: bozzuto.com
   roles:
   - !ruby/object:Rubber::Configuration::RoleItem
