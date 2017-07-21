@@ -47,7 +47,12 @@ class ApplicationController < ActionController::Base
     end
     if request.fullpath == '/logout'
       if current_user.is_admin? or current_user.is_property_manager?
-          session[:return_to] = '/admin'
+          app_domains = ["crm", "crm2", "crm-beta", "crm-live", "crm-dev", "crm-test"]
+          if request.subdomain.present? and app_domains.include?(request.subdomain)
+            session[:return_to] = '/properties'
+          else
+            session[:return_to] = '/admin'
+          end
       else
           session[:return_to] = nil
       end
