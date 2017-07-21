@@ -18,13 +18,13 @@ LINKEDIN_KEY = ""
 LINKEDIN_SECRET = ""
 
 # Google file picker ( https://console.developers.google.com/apis/credentials?project=bozzuto-crm&organizationId=982513063397 - TN)
-GOOGLE_KEY = "AIzaSyCN5T1sKV8-8MsqNtYpXA6AVxK702zhMqs"
-GOOGLE_APP_ID = "589235047157-k1crrk9vu21sl6eotb2n867rjsd6ecaa.apps.googleusercontent.com"
-GOOGLE_SECRET = "2i4QhSDmFdoiqhQGfzRLa9RV"
+GOOGLE_KEY = "AIzaSyA6h7Iea4nicGQvDoMAafpTeaSOzr9zejw"
+GOOGLE_APP_ID = "355781106680-0lkp43l3bo0lvlbpccuvrstnangt0etk.apps.googleusercontent.com"
+GOOGLE_SECRET = "h46EcGXm8FX_ZpxN8ZpcE7Sk"
 
 
 # Dropbox file picker (TN)
-DROPBOX_KEY = "mz42zotb5v03alt"
+DROPBOX_KEY = "0ru5q84m8ejsfts"
 
 # Todd's account
 TWILIO_SID = "AC5a31d3785fa57e63e37e04c20b5fd680"
