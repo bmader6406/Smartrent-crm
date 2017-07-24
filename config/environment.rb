@@ -34,9 +34,9 @@ TWILIO_NUMBER = "+1 240-245-2373"
 TWILIO_P2P_SID = Rails.env.production? ? "APcdc45777f146399459e86d1c8d4ac982" : "AP72efd2192c606511cdbca4870bb47a6c"
 
 # email config
-EMAIL_DOMAIN = "hy.ly"
+EMAIL_DOMAIN = "bozzuto.com"
 ADMIN_EMAIL = "tn+admin@#{EMAIL_DOMAIN}"
-HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
+HELP_EMAIL = "crm-help@#{EMAIL_DOMAIN}"
 
 SMARTRENT_EMAIL = "smartrent@bozzuto.com"
 
