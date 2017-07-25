@@ -1,3 +1,4 @@
--- To update all emails from demo+[value]@hy.ly to mithuns+[value]@qburst.com
+-- To update all resident emails to mithuns+[resident_email]@qburst.com
 
-UPDATE users SET email = CONCAT(  'mithuns', SUBSTRING( CONCAT( LEFT( email, INSTR( email,  '@' ) ) ,  'qburst.com' ) , INSTR( email,  '+' ) ) ) WHERE email LIKE  'demo%';
+UPDATE smartrent_residents SET email = CONCAT('temp+',email) WHERE email NOT LIKE '%+%';
+UPDATE smartrent_residents SET email = CONCAT('mithuns',SUBSTRING(CONCAT(LEFT(email, INSTR(email, '@')), 'qburst.com'),INSTR( email,  '+' )));
