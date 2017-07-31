@@ -79,7 +79,7 @@ cloud_providers:
     # image_bucket: "#{app_name}-images"
 
     # OPTIONAL: Needed for backing up database to s3
-    backup_bucket: "crm-backups.bozzuto.com"
+    backup_bucket: "bozzuto.smartrent.backup.s3"
 
     # REQUIRED: the ami and instance type for creating instances
     # The Ubuntu images at http://alestic.com/ work well
