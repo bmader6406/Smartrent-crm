@@ -18,6 +18,12 @@ class Ticket < ActiveRecord::Base
   default_scope { where(:deleted_at => nil).order("created_at desc") }
   
   after_save :create_activity, :if => lambda { |t| t.resident }
+
+  before_validation :sanitize_xss
+
+  def sanitize_xss
+    SanitizeXss.sanitize(self)
+  end
   
   def resident
     @resident ||= Resident.with(:consistency => :eventual).where(:_id => resident_id).first

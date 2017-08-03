@@ -514,6 +514,10 @@ App.Utils = {
         s = el.innerHTML;
         return s;
     },
+    htmlDecode: function(s) {
+      var string = $('<div>').html(s).text();
+      return string;
+    },
     htmlEscape: function htmlEscape(str) {
         return String(str)
             .replace(/&/g, '&amp;')
