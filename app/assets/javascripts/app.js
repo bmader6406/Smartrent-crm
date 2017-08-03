@@ -866,7 +866,7 @@ App.UI = {
       App.Debug.log("UI - Setup Ajax intercept");
       jQuery.ajaxSetup({
         dataFilter: function (data, type) {
-          if (type == 'json') {
+          if (type == 'json' && data) {
             var jSONData = JSON.parse(data);
             if (jSONData && jSONData.status && jSONData.status.code == 401) {
               window.location.href = App.Config.LOGIN_URL;
