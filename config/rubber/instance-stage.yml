@@ -61,7 +61,7 @@
   - !ruby/object:Rubber::Configuration::RoleItem
     name: monit
     options: {}
-  instance_id: i-3260f68e
+  instance_id: i-08e4aa18080a9a96d
   image_type: m4.large
   image_id: ami-7e9b7c11
   security_groups:

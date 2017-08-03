@@ -21,6 +21,12 @@ class Comment < ActiveRecord::Base
   
   after_update :archive_notification
   
+  before_validation :sanitize_xss
+
+  def sanitize_xss
+    SanitizeXss.sanitize(self)
+  end
+
   def resident
     if defined?(@resident) #prevent query executed when record not found
       @resident
