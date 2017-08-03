@@ -37,7 +37,9 @@ Crm.Views.ResidentTicket = Backbone.View.extend({
     var ticket = this.model;
     //manual set model url
     ticket.url = Crm.collInst.tickets.url + '/' + ticket.get('id');
-    
+    //removing entity names in description
+    description = ticket["attributes"]["description"];
+    ticket["attributes"]["description"] = App.Utils.htmlDecode(description);
     this.$el.html( new Crm.Views.TicketEdit({ model: ticket }).render().el );
     
     return false;
