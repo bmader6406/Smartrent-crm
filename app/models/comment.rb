@@ -24,7 +24,8 @@ class Comment < ActiveRecord::Base
   before_validation :sanitize_xss
 
   def sanitize_xss
-    SanitizeXss.sanitize(self)
+    exclude_list = ["ancestry"]
+    SanitizeXss.sanitize(self, exclude_list)
   end
 
   def resident
