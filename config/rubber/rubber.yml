@@ -369,5 +369,5 @@ stop_on_error_cmd: "function error_exit { exit 99; }; trap error_exit ERR"
 
 hosts:
   crm-smartrent-stg:
-    env_name: crm-test
-    domain: bozzuto.com
+    env_name: crm-stg
+    domain: bozzuto.com 
