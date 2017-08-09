@@ -22,7 +22,7 @@ class Email < ActiveRecord::Base
   before_create :generate_token
   
   def reply_to
-    "bozzuto_conversation+rep#{token}@#{EMAIL_DOMAIN}"
+    "crm.conversation+rep#{token}@#{EMAIL_DOMAIN}"
   end
   
   def generate_token(length=10)
