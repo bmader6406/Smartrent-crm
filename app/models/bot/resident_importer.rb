@@ -803,7 +803,7 @@ CRM Help Team
     # stage, test will be converted
     # for e.g: johndoe@gmail.com will be changed to bozzuto_ops+johndoe_at_gmail.com@hy.ly
     
-    return "bozzuto_ops+#{ email.gsub("@", "_at_") }@#{EMAIL_DOMAIN}"
+    return "admin+#{ email.gsub("@", "_at_") }@#{EMAIL_DOMAIN}"
   end
   
 end

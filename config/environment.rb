@@ -39,7 +39,7 @@ EMAIL_DOMAIN = "bozzutosmartrent.com"
 ADMIN_EMAIL = "admin@#{EMAIL_DOMAIN}"
 HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
 
-SMARTRENT_EMAIL = "smartrent@bozzuto.com"
+SMARTRENT_EMAIL = "admin@#{EMAIL_DOMAIN}"
 
 # Resident stream - email conversation
 CONVO_EMAIL = "crm.conversation@#{EMAIL_DOMAIN}"
