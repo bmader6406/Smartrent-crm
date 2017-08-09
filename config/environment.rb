@@ -34,20 +34,21 @@ TWILIO_NUMBER = "+1 240-245-2373"
 TWILIO_P2P_SID = Rails.env.production? ? "APcdc45777f146399459e86d1c8d4ac982" : "AP72efd2192c606511cdbca4870bb47a6c"
 
 # email config
-EMAIL_DOMAIN = "bozzuto.com"
-ADMIN_EMAIL = "tn+admin@#{EMAIL_DOMAIN}"
-HELP_EMAIL = "crm-help@#{EMAIL_DOMAIN}"
+EMAIL_DOMAIN = "bozzutosmartrent.com"
+
+ADMIN_EMAIL = "admin@#{EMAIL_DOMAIN}"
+HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
 
 SMARTRENT_EMAIL = "smartrent@bozzuto.com"
 
 # Resident stream - email conversation
-CONVO_EMAIL = "bozzuto_conversation@#{EMAIL_DOMAIN}"
-CONVO_PWD = "B0zzut0!@#conv"
+CONVO_EMAIL = "crm.conversation@#{EMAIL_DOMAIN}"
+CONVO_PWD = "4UrfsV~9A]MpM<?W"
 
 # SES monitor, notification email sender address
-OPS_EMAIL = "bozzuto_ops@#{EMAIL_DOMAIN}"
+OPS_EMAIL = "crm.ops@#{EMAIL_DOMAIN}"
 OPS_PWD = "B0zzut0!@#ops"
-
+    
 # AWS SES & S3
 AWS_KEY = "AKIAICJX5ULNO7BJ3IYA"
 AWS_SECRET = "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"
