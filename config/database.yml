@@ -3,7 +3,7 @@ development:
   adapter: mysql2
   host: localhost
   port: 3306
-  database: smartrent_dev
+  database: crm_production
   username: root
   password: test123.
   socket: /var/run/mysqld/mysqld.sock
@@ -12,10 +12,10 @@ stage:
   adapter: mysql2
   host: localhost
   port: 3306
-  database: crm_stage
+  database: crm_production
   username: root
-  password: 
-  socket: /tmp/mysql.sock
+  password: test123.
+  socket: /var/run/mysqld/mysqld.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
