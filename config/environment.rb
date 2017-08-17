@@ -39,7 +39,7 @@ EMAIL_DOMAIN = "bozzutosmartrent.com"
 ADMIN_EMAIL = "admin@#{EMAIL_DOMAIN}"
 HELP_EMAIL = "help@#{EMAIL_DOMAIN}"
 
-SMARTRENT_EMAIL = "smartrent@bozzuto.com"
+SMARTRENT_EMAIL = "admin@#{EMAIL_DOMAIN}"
 
 # Resident stream - email conversation
 CONVO_EMAIL = "crm.conversation@#{EMAIL_DOMAIN}"
@@ -50,8 +50,12 @@ OPS_EMAIL = "crm.ops@#{EMAIL_DOMAIN}"
 OPS_PWD = "B0zzut0!@#ops"
     
 # AWS SES & S3
-AWS_KEY = "AKIAICJX5ULNO7BJ3IYA"
-AWS_SECRET = "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"
+# AWS_KEY = "AKIAICJX5ULNO7BJ3IYA"
+# AWS_SECRET = "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"
+
+AWS_KEY = "AKIAI6R3R43KYSW44LCQ"
+AWS_SECRET = "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"
+
 
 
 US_STATES = {
