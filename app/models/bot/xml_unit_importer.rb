@@ -126,7 +126,6 @@ class XmlUnitImporter
             property.sunday_open_time = infomsg["OpenTime"] 
             property.sunday_close_time = infomsg["CloseTime"] 
           else
-            puts "it was something else"
           end
         end
 
@@ -142,7 +141,7 @@ class XmlUnitImporter
         property.save
 
         pp ">>> Saved Property"
-        pp property
+        #pp property
 
         errFile = nil
         errCSV = nil
