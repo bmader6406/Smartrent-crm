@@ -93,6 +93,10 @@ class XmlUnitImporter
           property.smartrent_status = Smartrent::Property::STATUS_CURRENT
           property.origin_id=property_origin_id
           property.name=name.downcase
+          region = Region.find_by(:name => property_map[:county])
+          if region
+            property.region_id = region.id
+          end
           pp "Creating new property"
         end
 
