@@ -2,12 +2,12 @@
 development:
   sessions:
     default:
-      database: crm-smartrent_stage
+      database: crm-smartrent_production
       hosts: 
         - localhost:27017
 test:
   sessions:
     default:
-      database: crm-smartrent_stage
+      database: crm-smartrent_production
       hosts: 
         - localhost:27017
