@@ -3,7 +3,7 @@ require 'net/ftp'
 require Rails.root.join("lib/core_ext", "hash.rb")
 
 
-class XmlUnitImporter
+class XmlPropImporter
   extend Resque::Plugins::Retry
   @retry_limit = RETRY_LIMIT
   @retry_delay = RETRY_DELAY
@@ -61,12 +61,12 @@ class XmlUnitImporter
       # :regional_manager => []
 
 
-
-      Net::FTP.open('feeds.livebozzuto.com', 'CRMbozchh', 'NAQpPt41') do |ftp|
+      Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
         ftp.passive = true
         ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
-        puts "Ftp downloaded"
       end
+      
+      puts "Ftp downloaded"
 
       pp "#{TMP_DIR}mits4_1.xml"
 

@@ -14,8 +14,9 @@ class HourlyJob
     #TODO: store the below job in database when it is executed
     # time, class, arguments
     
+    puts ("Hourly Job started >>>>>")
     Resque.enqueue(MetricGenerator, time.to_i)
-
+    
     if time.hour == 0
       Resque.enqueue(ResidentUnitStatusChecker, time)
     end
@@ -25,6 +26,13 @@ class HourlyJob
       Resque.enqueue(PropertyImporter)
     end
     
+    if time.hour == 2
+      # XML import at 2 AM
+      Import.where(:type => "load_xml_prop_importer", :active => true).each do |import|
+        Resque.enqueue(XmlPropImporter, time, import.id)
+      end
+    end
+
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|

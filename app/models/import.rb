@@ -18,6 +18,9 @@ class Import < ActiveRecord::Base
           
         elsif type.include?("load_non_yardi")
           hash = default_non_yardi_ftp_setting
+
+        elsif type.include?("load_xml_prop_importer")
+          hash = default_units_ftp_setting
           
         end
       end
@@ -71,10 +74,17 @@ class Import < ActiveRecord::Base
   def default_units_ftp_setting
     {
       "host" => "feeds.livebozzuto.com",
-      "username" => "CRMbozchh",
-      "password" => "NAQpPt41",
+      "username" => "QBurjimxm3",
+      "password" => "qburst1",
       "file_name" => "mits4_1.xml",
       "recipient" => ADMIN_EMAIL
+
+
+      # "host" => "feeds.livebozzuto.com",
+      # "username" => "CRMbozchh",
+      # "password" => "NAQpPt41",
+      # "file_name" => "mits4_1.xml",
+      # "recipient" => ADMIN_EMAIL
     }
   end
   
@@ -97,7 +107,8 @@ class Import < ActiveRecord::Base
       "recipient" => ADMIN_EMAIL
     }
   end
-  
+ 
+
   def default_yardi_field_map
     {
       "yardi_property_id" => "0",

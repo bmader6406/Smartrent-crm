@@ -50,6 +50,23 @@ class NimdaController < ApplicationController
     @daily_import.save if @daily_import.new_record?
   end
   
+
+  def xml_prop_importer
+    @daily_import = Import.find_or_initialize_by(type: "load_xml_prop_importer")
+
+    @daily_import.save if @daily_import.new_record?
+  end
+
+
+  def load_xml_prop_importer
+    import = Import.find_by_type(params[:type])
+    import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :active => params[:active])
+    Resque.enqueue(XmlPropImporter, Time.now, import.id) if params[:active] == "1"
+    
+    render :json => {:success => true}
+  end
+
+
   def load_non_yardi_master
     import = Import.find_by_type(params[:type])
     import.update_attributes(:ftp_setting => params[:ftp_setting], :field_map => params[:field_map], :active => params[:active])
