@@ -28,7 +28,7 @@ class HourlyJob
     
     if time.hour == 2
       # XML import at 2 AM
-      Import.where(:type => "load_xml_prop_importer", :active => true).each do |import|
+      Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
         Resque.enqueue(XmlPropImporter, time, import.id)
       end
     end

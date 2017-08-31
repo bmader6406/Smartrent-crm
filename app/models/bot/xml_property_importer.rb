@@ -3,7 +3,7 @@ require 'net/ftp'
 require Rails.root.join("lib/core_ext", "hash.rb")
 
 
-class XmlPropImporter
+class XmlPropertyImporter
   extend Resque::Plugins::Retry
   @retry_limit = RETRY_LIMIT
   @retry_delay = RETRY_DELAY
@@ -13,10 +13,10 @@ class XmlPropImporter
   end
 
   def self.perform(time, import_id)
-    puts "Ftp FTP FTP FTP "
     time = Time.parse(time) if time.kind_of?(String)
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
+    pp import
     recipient = ftp_setting["recipient"]
 
     property_map = {
@@ -32,50 +32,16 @@ class XmlPropImporter
       :website_url => ["PropertyID","WebSite"],
       :info => ["Information","OfficeHour"]
     }
-      # :elan_number => [],
-      # :property_status => [], 
-      # :webpage_url =>,
-      # :status => [],
-      # :svp => [],
-      # :region_id => [],
-      # :property_number => [],
-      # :l2l_property_id => [],
-      # :yardi_property_id => [],
-      # :owner_group => [],
-      # :date_opened => [],
-      # :date_closed => [],
-      # :monday_open_time => [Information, OfficeHour, ],
-      # :monday_close_time => [],
-      # :tuesday_open_time => [],
-      # :tuesday_close_time => [],
-      # :wednesday_open_time => [],
-      # :wednesday_close_time => [],
-      # :thursday_open_time => [],
-      # :thursday_close_time => [],
-      # :friday_open_time => [],
-      # :friday_close_time => [],
-      # :saturday_open_time => [],
-      # :saturday_close_time => [],
-      # :sunday_open_time => [],
-      # :sunday_close_time => [],
-      # :regional_manager => []
-
 
       Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
         ftp.passive = true
         ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
       end
       
-      puts "Ftp downloaded"
-
-      pp "#{TMP_DIR}mits4_1.xml"
-
       tmp_file = File.read("#{TMP_DIR}mits4_1.xml")
 
       index, new_prop, existing_prop, errs = 0, 0, 0, []
       properties = Hash.from_xml(tmp_file) 
-      pp ">>>>>>>>>>>><<<<<<<<<<<<<"
-
 
       properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
         name = p.nest(property_map[:name])
@@ -87,17 +53,17 @@ class XmlPropImporter
 
         if !property
           property = Smartrent::Property.new 
-          property.is_smartrent = true
+          property.is_smartrent = false
           property.is_crm = false
           property.updated_by = "mits4_xml_feed"
           property.smartrent_status = Smartrent::Property::STATUS_CURRENT
-          property.origin_id=property_origin_id
-          property.name=name.downcase
+          property.origin_id = property_origin_id
+          property.property_number = property_origin_id
+          property.name = name.downcase
           region = Region.find_by(:name => property_map[:county])
           if region
             property.region_id = region.id
           end
-          pp "Creating new property"
         end
 
 
@@ -158,7 +124,7 @@ class XmlPropImporter
       # for logging only
       log = import.logs.create(:file_path => file_name)
       
-      Notifier.system_message("[CRM] Prpperty Importing Success",
+      Notifier.system_message("[CRM] Property Importing Success",
         email_body(new_prop, existing_prop, errs.length, file_name),
         recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
 
