@@ -16,7 +16,6 @@ class XmlPropertyImporter
     time = Time.parse(time) if time.kind_of?(String)
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
-    pp import
     recipient = ftp_setting["recipient"]
 
     property_map = {
@@ -33,42 +32,43 @@ class XmlPropertyImporter
       :info => ["Information","OfficeHour"]
     }
 
-      Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
-        ftp.passive = true
-        ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
-      end
-      
-      tmp_file = File.read("#{TMP_DIR}mits4_1.xml")
+    Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
+      ftp.passive = true
+      ftp.getbinaryfile("mits4_1.xml","#{TMP_DIR}mits4_1.xml")
+    end
 
-      index, new_prop, existing_prop, errs = 0, 0, 0, []
-      properties = Hash.from_xml(tmp_file) 
+    tmp_file = File.read("#{TMP_DIR}mits4_1.xml")
+    index, new_prop, existing_prop, errs = 0, 0, 0, []
+    properties = Hash.from_xml(tmp_file) 
 
-      properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
-        name = p.nest(property_map[:name])
-        property_origin_id = p.nest(property_map[:origin_id])
+    properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
+      name = p.nest(property_map[:name])
+      property_origin_id = p.nest(property_map[:origin_id])
+      pp ">>> pndx: #{pndx+1}: origin_id: #{property_origin_id}, name: #{name}"
 
-        pp ">>> pndx: #{pndx+1}: origin_id: #{property_origin_id}, name: #{name}"
+      property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
 
-        property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
-
-        if !property
-          property = Smartrent::Property.new 
-          property.is_smartrent = false
-          property.is_crm = false
-          property.updated_by = "mits4_xml_feed"
-          property.smartrent_status = Smartrent::Property::STATUS_CURRENT
-          property.origin_id = property_origin_id
-          property.property_number = property_origin_id
-          property.name = name.downcase
-          region = Region.find_by(:name => property_map[:county])
-          if region
-            property.region_id = region.id
-          end
+      if !property
+        new_prop = new_prop + 1
+        property = Smartrent::Property.new 
+        property.is_smartrent = false
+        property.is_crm = false
+        property.updated_by = "mits4_xml_feed"
+        property.smartrent_status = Smartrent::Property::STATUS_CURRENT
+        property.origin_id = property_origin_id
+        property.property_number = property_origin_id
+        property.name = name.downcase
+        region = Region.find_by(:name => property_map[:county])
+        if region
+          property.region_id = region.id
         end
+      else
+        existing_prop = existing_prop + 1        
+      end
 
 
-        information = p.nest(property_map[:info])
-        information.each do |infomsg|
+      information = p.nest(property_map[:info])
+      information.each do |infomsg|
           case infomsg["Day"] # a_variable is the variable we want to compare
           when "Monday"   #compare to 1
             property.monday_open_time = infomsg["OpenTime"] 
@@ -108,63 +108,66 @@ class XmlPropertyImporter
 
         pp ">>> Saved Property"
         #pp property
+      end
 
-        errFile = nil
-        errCSV = nil
 
-        if errs.length > 0
-          errFile ="errors_#{file_name}"
+      errFile = nil  
+      errCSV = nil
 
-          errCSV = CSV.generate do |csv|
-            errs.each {|row| csv << row}
-          end
+      file_name = ftp_setting["file_name"].gsub("%Y%m%d", time.strftime("%Y%m%d"))
+      recipient = ftp_setting["recipient"]
+
+
+      if errs.length > 0
+        errFile ="errors_#{file_name}"
+
+        errCSV = CSV.generate do |csv|
+          errs.each {|row| csv << row}
         end
+      end
 
 
       # for logging only
       log = import.logs.create(:file_path => file_name)
       
-      Notifier.system_message("[CRM] Property Importing Success",
-        email_body(new_prop, existing_prop, errs.length, file_name),
+      pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
+
+      pp recipient 
+
+      Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
         recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
 
-      pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
-      
-    # rescue Exception => e
-    #   error_details = "#{e.class}: #{e}"
-    #   error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-    #   p "ERROR: #{error_details}"
   end
-end
 
-def self.email_body(new_prop, existing_prop, error_unit, file_name)
-  new_and_existing_prop = new_prop + existing_prop
 
-  return <<-MESSAGE
-  Your file has been loaded:
-  <br>
-  - #{new_and_existing_prop} #{unit_text(new_and_existing_prop)} were imported successfully.
-  <br>
-  - #{new_prop} of #{new_and_existing_prop} imported #{unit_text(new_and_existing_prop)} were added to the units list.
-  <br>
-  - #{existing_prop} of #{new_and_existing_prop} imported #{unit_text(new_and_existing_prop)} replaced existing units.
-  <br>
-  - #{error_unit} #{unit_text(error_unit)} were not imported.
+  def self.email_body(new_prop, existing_prop, error_prop, file_name)
+    new_and_existing_prop = new_prop + existing_prop
 
-  <br> 
-  - Source: #{file_name}.
-  <br>
-  <br>
-  <br>
-  CRM Help Team
-  <br>
-  #{HELP_EMAIL}
+    return <<-MESSAGE
+    Your file has been loaded:
+    <br>
+    - #{new_and_existing_prop} #{prop_text(new_and_existing_prop)} were imported successfully.
+    <br>
+    - #{new_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} were added to the properties list.
+    <br>
+    - #{existing_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} updated existing properties.
+    <br>
+    - #{error_prop} #{prop_text(error_prop)} were not imported.
 
-  MESSAGE
-end
+    <br> 
+    - Source: #{file_name}.
+    <br>
+    <br>
+    <br>
+    CRM Help Team
+    <br>
+    #{HELP_EMAIL}
 
-def self.unit_text(count)
-  count != 1 ? "prop" : "props"
-end
+    MESSAGE
+  end
+
+  def self.prop_text(count)
+    count != 1 ? "property" : "properties"
+  end
 
 end

@@ -24,7 +24,6 @@ class Import < ActiveRecord::Base
           
         end
       end
-      
       hash
     end
   end
@@ -41,7 +40,7 @@ class Import < ActiveRecord::Base
       if hash.empty?
         if type.include?("load_yardi")
           hash = default_yardi_field_map
-        
+
         elsif type.include?("load_non_yardi_master")
           hash = default_non_yardi_master_field_map
           
@@ -49,12 +48,12 @@ class Import < ActiveRecord::Base
           hash = default_non_yardi_field_map
           
         end
-      en
-      
+      end
+
       hash
     end
   end
-  
+
   def field_map=(data)
     #pp ">>>>", data
     self[:field_map] = (@field_map || field_map).merge(data).to_json
@@ -80,13 +79,13 @@ class Import < ActiveRecord::Base
       "recipient" => ADMIN_EMAIL
     }
   end
- 
 
-   def default_xml_ftp_setting
+
+  def default_xml_ftp_setting
     {
       "host" => "feeds.livebozzuto.com",
-      "username" => "QBurjimxm3",
-      "password" => "qburst1",
+      "username" => "QBursheuno",
+      "password" => "qbusrt12",
       "file_name" => "mits4_1.xml",
       "recipient" => ADMIN_EMAIL
     }
@@ -112,7 +111,7 @@ class Import < ActiveRecord::Base
       "recipient" => ADMIN_EMAIL
     }
   end
- 
+
 
   def default_yardi_field_map
     {

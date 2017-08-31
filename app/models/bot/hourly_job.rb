@@ -24,15 +24,14 @@ class HourlyJob
     if time.hour == 3
       # BozzutoLink upload CSV feed at 3 AM
       Resque.enqueue(PropertyImporter)
-    end
-    
-    if time.hour == 2
-      # XML import at 2 AM
+
+            # XML import at 2 AM
       Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
         Resque.enqueue(XmlPropImporter, time, import.id)
       end
+      
     end
-
+    
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
