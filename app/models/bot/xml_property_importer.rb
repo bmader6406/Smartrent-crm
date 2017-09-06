@@ -36,7 +36,7 @@ class XmlPropertyImporter
 
     floor_plans_map = {
       :name => ["Name"],
-      :origin_id => ["Id"],
+      :origin_id => ["IDValue"],
       :url => ["FloorplanAvailabilityURL"],
       :beds => ["Bedrooms"],
       :baths =>["Bathrooms"] ,
@@ -125,7 +125,6 @@ class XmlPropertyImporter
           if floor_plans.kind_of?(Hash) 
             floor_plans = [floor_plans] #push hash to array
           end
-
           floor_plans.each do |fp|
             floor_plan = {}
             roomtypes_list = []
@@ -143,14 +142,13 @@ class XmlPropertyImporter
             property_floor_plans << floor_plan
           end
         end
-
         if property.save
           floor_plan_ids = []
           property_floor_plans.each do |floor_plan|
             fp = Smartrent::FloorPlan.where(:property_id => property.id, :origin_id => floor_plan[:origin_id]).first
 
             if fp
-              fp.update_attributes!(floor_plan)
+              fp.update_attributes(floor_plan)
             else
               fp = property.floor_plans.create(floor_plan)
             end
