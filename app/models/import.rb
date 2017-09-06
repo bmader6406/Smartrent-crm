@@ -36,7 +36,6 @@ class Import < ActiveRecord::Base
   def field_map
     @field_map ||= begin
       hash = JSON.parse(self[:field_map]) rescue {}
-      
       if hash.empty?
         if type.include?("load_yardi")
           hash = default_yardi_field_map
@@ -46,7 +45,10 @@ class Import < ActiveRecord::Base
           
         elsif type.include?("load_non_yardi")
           hash = default_non_yardi_field_map
-          
+
+        elsif type.include?("load_xml_property_importer")
+          hash = default_property_xml_field_map
+
         end
       end
 
@@ -178,4 +180,21 @@ class Import < ActiveRecord::Base
     }
   end
   
+  def default_property_xml_field_map
+    {
+      :origin_id => ["IDValue"],
+      :name => ["PropertyID","MarketingName"],
+      :address_line1 => ["PropertyID","Address","AddressLine1"],
+      :city => ["PropertyID","Address","City"],
+      :state => ["PropertyID","Address","State"],
+      :zip => ["PropertyID","Address","ZipCode"],
+      :county => ["PropertyID","Address","CountyName"],
+      :email => ["PropertyID","Email"],
+      :phone => ["PropertyID","Phone","PhoneNumber"],
+      :website_url => ["PropertyID","WebSite"],
+      :info => ["Information","OfficeHour"],
+      :floor_plans => ["Floorplan"] 
+    }
+  end
+
 end
