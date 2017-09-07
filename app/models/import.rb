@@ -178,7 +178,7 @@ class Import < ActiveRecord::Base
       "tenant_code" => "9",
       "unit_code" => "10"
     }
-  end
+  end 
   
   def default_property_xml_field_map
     {
@@ -193,7 +193,8 @@ class Import < ActiveRecord::Base
       :phone => ["PropertyID","Phone","PhoneNumber"],
       :website_url => ["PropertyID","WebSite"],
       :info => ["Information","OfficeHour"],
-      :floor_plans => ["Floorplan"] 
+      :floor_plans => ["Floorplan"],
+      :features => ["Amenity"]
     }
   end
 

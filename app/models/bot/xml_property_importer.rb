@@ -31,7 +31,8 @@ class XmlPropertyImporter
       :phone => ["PropertyID","Phone","PhoneNumber"],
       :website_url => ["PropertyID","WebSite"],
       :info => ["Information","OfficeHour"],
-      :floor_plans => ["Floorplan"]
+      :floor_plans => ["Floorplan"],
+      :features => ["Amenity"]
     }
 
     floor_plans_map = {
@@ -46,6 +47,9 @@ class XmlPropertyImporter
       :rent_max => ["EffectiveRent", "Max"]
     }
 
+    features_map = {
+      :name => ["GeneralAmenityType"]
+    }
 
     Net::FTP.open(ftp_setting["host"], ftp_setting["username"], ftp_setting["password"]) do |ftp|
       ftp.passive = true
@@ -118,8 +122,29 @@ class XmlPropertyImporter
         property.phone = p.nest(property_map[:phone])
         property.website_url = p.nest(property_map[:website_url])
 
-        property_floor_plans = []
+        # Get list of amenities from the XML
+        property_features = []
+        features = p.nest(property_map[:features])
+        if features.present?
+          if features.kind_of?(Hash) 
+            features = [features]
+          end
+          features.each do |feature|
+            feature_hash = {}
+            features_map.each do |feature_key, feature_value|
+              feature_hash[feature_key]
+              if feature.nest(feature_value).present?
+                feature_hash[feature_key] = feature.nest(feature_value).strip
+              end
+            end
+            if feature_hash.present?
+              property_features << feature_hash
+            end
+          end
+        end
 
+        # Get Floor plans from the XML
+        property_floor_plans = []
         floor_plans = p.nest(property_map[:floor_plans])
         if floor_plans.present?
           if floor_plans.kind_of?(Hash) 
@@ -142,11 +167,22 @@ class XmlPropertyImporter
             property_floor_plans << floor_plan
           end
         end
+        # Save property
         if property.save
+
+          # save all features 
+          feature_ids = []
+          property_features.each do |feature|            
+            s_feature = Smartrent::Feature.where(:name => feature[:name]).first
+            s_feature ||= property.features.create(feature)
+            s=property.property_features.find_or_create_by(:feature_id => s_feature.id)
+            feature_ids << s_feature.id
+          end 
+
+          # Save Floor plans
           floor_plan_ids = []
           property_floor_plans.each do |floor_plan|
             fp = Smartrent::FloorPlan.where(:property_id => property.id, :origin_id => floor_plan[:origin_id]).first
-
             if fp
               fp.update_attributes(floor_plan)
             else
@@ -155,74 +191,77 @@ class XmlPropertyImporter
             floor_plan_ids << fp.id
           end
 
-        #delete previous floor plans to use the new floorplans from the xml
+      #delete previous floor plans to use the new floorplans from the xml
+      floor_plan_ids = floor_plan_ids.uniq
+      pp "deleting floorplan not IN: #{floor_plan_ids}"
+      Smartrent::FloorPlan.where("property_id = ? AND id NOT IN (?)", property.id, floor_plan_ids).delete_all
 
-        floor_plan_ids = floor_plan_ids.uniq
-        pp "deleting floorplan not IN: #{floor_plan_ids}"
-
-        Smartrent::FloorPlan.where("property_id = ? AND id NOT IN (?)", property.id, floor_plan_ids).delete_all
-        pp ">>> Saved Property"
-      end
-    end
-
-
-    errFile = nil  
-    errCSV = nil
-
-    file_name = ftp_setting["file_name"].gsub("%Y%m%d", time.strftime("%Y%m%d"))
-    recipient = ftp_setting["recipient"]
-
-
-    if errs.length > 0
-      errFile ="errors_#{file_name}"
-
-      errCSV = CSV.generate do |csv|
-        errs.each {|row| csv << row}
-      end
-    end
-
-
-      # for logging only
-      log = import.logs.create(:file_path => file_name)
-      
-      pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
-
-      pp recipient 
-
-      Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
-        recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+      #delete previous features to use the new features from the xml
+      pp "deleting feature_ids not IN: #{feature_ids}"
+      Smartrent::PropertyFeature.where("property_id = ? AND feature_id NOT IN (?)", property.id, feature_ids).delete_all
 
     end
-
-
-    def self.email_body(new_prop, existing_prop, error_prop, file_name)
-      new_and_existing_prop = new_prop + existing_prop
-
-      return <<-MESSAGE
-      Your file has been loaded:
-      <br>
-      - #{new_and_existing_prop} #{prop_text(new_and_existing_prop)} were imported successfully.
-      <br>
-      - #{new_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} were added to the properties list.
-      <br>
-      - #{existing_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} updated existing properties.
-      <br>
-      - #{error_prop} #{prop_text(error_prop)} were not imported.
-
-      <br> 
-      - Source: #{file_name}.
-      <br>
-      <br>
-      <br>
-      CRM Help Team
-      <br>
-      #{HELP_EMAIL}
-
-      MESSAGE
-    end
-
-    def self.prop_text(count)
-      count != 1 ? "property" : "properties"
-    end
-
   end
+  pp ">>> Saved Properties"
+
+
+  errFile = nil  
+  errCSV = nil
+
+  file_name = ftp_setting["file_name"].gsub("%Y%m%d", time.strftime("%Y%m%d"))
+  recipient = ftp_setting["recipient"]
+
+
+  if errs.length > 0
+    errFile ="errors_#{file_name}"
+
+    errCSV = CSV.generate do |csv|
+      errs.each {|row| csv << row}
+    end
+  end
+
+
+  # for logging only
+  log = import.logs.create(:file_path => file_name)
+  
+  # pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
+
+  # pp recipient 
+
+  Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
+    recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+
+end
+
+
+def self.email_body(new_prop, existing_prop, error_prop, file_name)
+  new_and_existing_prop = new_prop + existing_prop
+
+  return <<-MESSAGE
+  Your file has been loaded:
+  <br>
+  - #{new_and_existing_prop} #{prop_text(new_and_existing_prop)} were imported successfully.
+  <br>
+  - #{new_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} were added to the properties list.
+  <br>
+  - #{existing_prop} of #{new_and_existing_prop} imported #{prop_text(new_and_existing_prop)} updated existing properties.
+  <br>
+  - #{error_prop} #{prop_text(error_prop)} were not imported.
+
+  <br> 
+  - Source: #{file_name}.
+  <br>
+  <br>
+  <br>
+  CRM Help Team
+  <br>
+  #{HELP_EMAIL}
+
+  MESSAGE
+end
+
+def self.prop_text(count)
+  count != 1 ? "property" : "properties"
+end
+
+end
