@@ -196,7 +196,11 @@ class XmlPropertyImporter
       pp "deleting floorplan not IN: #{floor_plan_ids}"
       Smartrent::FloorPlan.where("property_id = ? AND id NOT IN (?)", property.id, floor_plan_ids).delete_all
 
-      #delete previous features to use the new features from the xml
+      #delete previous features to use the new features from the xml except Smartrent
+      smartrent_id = Smartrent::Feature.where(:name => "Smartrent").last.id
+      if smartrent_id
+        feature_ids << smartrent_id
+      end
       pp "deleting feature_ids not IN: #{feature_ids}"
       Smartrent::PropertyFeature.where("property_id = ? AND feature_id NOT IN (?)", property.id, feature_ids).delete_all
 
@@ -223,7 +227,7 @@ class XmlPropertyImporter
 
   # for logging only
   log = import.logs.create(:file_path => file_name)
-  
+
   # pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
 
   # pp recipient 
