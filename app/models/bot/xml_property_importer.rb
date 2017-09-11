@@ -171,8 +171,9 @@ class XmlPropertyImporter
 
           # save all features 
           feature_ids = []
-          property_features.each do |feature|            
-            s_feature = Smartrent::Feature.where(:name => feature[:name]).first
+          property_features.each do |feature|   
+            feature_name =  feature[:name].downcase.gsub(/[^a-z0-9\s]/i, '')        
+            s_feature = Smartrent::Feature.where(:name => feature_name).first
             s_feature ||= property.features.create(feature)
             s=property.property_features.find_or_create_by(:feature_id => s_feature.id)
             feature_ids << s_feature.id
