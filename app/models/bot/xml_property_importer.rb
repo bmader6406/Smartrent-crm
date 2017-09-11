@@ -63,7 +63,6 @@ class XmlPropertyImporter
     properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
       name = p.nest(property_map[:name])
       property_origin_id = p.nest(property_map[:origin_id])
-      pp ">>> pndx: #{pndx+1}: origin_id: #{property_origin_id}, name: #{name}"
 
       property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
       if !property
@@ -193,7 +192,6 @@ class XmlPropertyImporter
 
       #delete previous floor plans to use the new floorplans from the xml
       floor_plan_ids = floor_plan_ids.uniq
-      pp "deleting floorplan not IN: #{floor_plan_ids}"
       Smartrent::FloorPlan.where("property_id = ? AND id NOT IN (?)", property.id, floor_plan_ids).delete_all
 
       #delete previous features to use the new features from the xml except Smartrent
@@ -201,40 +199,26 @@ class XmlPropertyImporter
       if smartrent_id
         feature_ids << smartrent_id
       end
-      pp "deleting feature_ids not IN: #{feature_ids}"
       Smartrent::PropertyFeature.where("property_id = ? AND feature_id NOT IN (?)", property.id, feature_ids).delete_all
-
     end
   end
-  pp ">>> Saved Properties"
 
 
   errFile = nil  
   errCSV = nil
-
   file_name = ftp_setting["file_name"].gsub("%Y%m%d", time.strftime("%Y%m%d"))
   recipient = ftp_setting["recipient"]
-
-
   if errs.length > 0
     errFile ="errors_#{file_name}"
-
     errCSV = CSV.generate do |csv|
       errs.each {|row| csv << row}
     end
   end
 
-
   # for logging only
   log = import.logs.create(:file_path => file_name)
-
-  # pp ">>>", email_body(new_prop, existing_prop, errs.length, file_name)
-
-  # pp recipient 
-
   Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
     recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
-
 end
 
 
