@@ -116,6 +116,7 @@ Rails.application.routes.draw do
       post :set_status
       post :set_amount
       post :become_buyer
+      post :reset_rewards
     end
   end
   

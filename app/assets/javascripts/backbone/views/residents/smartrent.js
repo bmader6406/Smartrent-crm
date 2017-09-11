@@ -5,6 +5,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
     "click .status-dd li a": "setStatus",
     "click #reset-password button:submit": "resetPassword",
     "click #change-password button:submit": "changePassword",
+    "click #reset-reward button:submit": "resetReward",
     "click .edit-amount": "editAmount",
     "click .update-amount": "updateAmount",
     "click .cancel-amount": "cancelAmount"
@@ -25,19 +26,19 @@ Crm.Views.Smartrent = Backbone.View.extend({
         return false;
       }
     });
-	},
+  },
 
   render: function () {
     //console.log(this.model, "smartrentData");
     this.$el.html( JST["backbone/templates/residents/smartrent"](this.model) );
-  	return this;
+    return this;
   },
 
   setStatus: function(ev){
     var self = this,
-      link = $(ev.target),
-      status = $.trim(link.text()).toLowerCase().replace(" ", "-"),
-      statusDd = link.parents('.status-dd');
+    link = $(ev.target),
+    status = $.trim(link.text()).toLowerCase().replace(" ", "-"),
+    statusDd = link.parents('.status-dd');
 
 
     //use link.attr('data-index') to get the status number
@@ -89,7 +90,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
           error: function(){
             msgbox("There was an error updating your status", "danger");
           }
-         });
+        });
       }
     }
 
@@ -104,7 +105,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
 
   updateAmount: function(ev){
     var self = this,
-      editor = $(ev.target).closest('.amount-editor');
+    editor = $(ev.target).closest('.amount-editor');
 
     $.ajax({
       type: 'POST',
@@ -117,7 +118,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
       error: function(){
         msgbox("There was an error updating your status", "danger");
       }
-     });
+    });
 
   },
 
@@ -174,6 +175,31 @@ Crm.Views.Smartrent = Backbone.View.extend({
         });
       }
     });
-  }
+  },
+
+  resetReward: function(ev) {
+    var form = $('#reset-reward');
+
+    bootbox.confirm("Sure you want to reset the resident's rewards table?", function(result) {
+      if (result) {
+        form.ajaxSubmit({
+          dataType: 'json',
+          beforeSubmit: function(){
+            form.mask('Please wait...');
+          },
+          success: function(data){
+            form.unmask();
+            if(data.success){
+              msgbox('The reset table has been succesfully updated');
+              location.reload();
+            }else {
+              msgbox(data.error, 'danger');
+            }
+          }
+        });
+      }
+      form.submit();
+    });
+  },
 
 });

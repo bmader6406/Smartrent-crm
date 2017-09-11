@@ -10,6 +10,18 @@ class ResidentPasswordsController < ApplicationController
     render :json => {:success => true}
   end
 
+  def reset_rewards
+    resident = @smartrent_resident
+    if (resident.resident_properties.count > 0)
+      if (resident.resident_properties.first.reset_rewards_table)
+        render :json => {:success => true}
+      else
+        render :json => {:success => false, :error => @smartrent_resident.errors.full_messages.join("; ") }
+      end
+    end
+    
+  end
+  
   def update
     if @smartrent_resident.update_attributes(:password => resident_params[:password], :password_confirmation => resident_params[:password_confirmation])
       @smartrent_resident.update_attribute(:confirmed_at, Time.now) if !@smartrent_resident.confirmed_at
