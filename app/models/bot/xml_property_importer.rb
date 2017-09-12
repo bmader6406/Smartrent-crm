@@ -218,8 +218,10 @@ class XmlPropertyImporter
 
   # for logging only
   log = import.logs.create(:file_path => file_name)
-  Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
-    recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+  pp email_body(new_prop, existing_prop, errs.length, file_name)
+  Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name), recipient).deliver_now
+  # Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
+  #   recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
 end
 
 
@@ -227,7 +229,7 @@ def self.email_body(new_prop, existing_prop, error_prop, file_name)
   new_and_existing_prop = new_prop + existing_prop
 
   return <<-MESSAGE
-  Your file has been loaded:
+  Property Importing Success from XML
   <br>
   - #{new_and_existing_prop} #{prop_text(new_and_existing_prop)} were imported successfully.
   <br>
