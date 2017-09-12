@@ -40,35 +40,6 @@
                   <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
                   <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
                 </div>
-
-                <div class="form-group">
-                  <a href="#" class="show-mapping">Import Mapping</a>
-                  <div class="field-mapping" style="display:none">
-                    <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
-                    <table class="table table-bordered table-striped">
-                      <thead>
-                        <th>
-                          CRM field
-                        </th>
-                        <th width="200px">
-                          CSV column
-                        </th>
-                      </thead>
-                      <tbody>
-                        <% @daily_import.field_map.keys.each do |key| %>
-                          <tr>
-                            <td>
-                              <%= key.gsub("_", " ").titleize %>
-                            </td>
-                            <td>
-                              <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
-                            </td>
-                          </tr>
-                        <% end %>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
                 
                 <div class="form-group">
                   <label>
