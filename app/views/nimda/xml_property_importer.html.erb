@@ -124,7 +124,7 @@
         var blanks = [];
 
         form.find('input:visible').each(function(){
-          avimpr input = $(this);
+          var input = $(this);
 
           if( $.trim(input.val()) == "") {
             blanks.push( input );
