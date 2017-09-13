@@ -17,6 +17,10 @@ class HourlyJob
     puts ("Hourly Job started >>>>>")
     Resque.enqueue(MetricGenerator, time.to_i)
     
+    Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
+      Resque.enqueue(XmlPropertyImporter, time, import.id)
+    end
+    
     if time.hour == 0
       Resque.enqueue(ResidentUnitStatusChecker, time)
     end
@@ -26,13 +30,13 @@ class HourlyJob
       Resque.enqueue(PropertyImporter)
 
             # XML import at 2 AM
-      Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
-        Resque.enqueue(XmlPropertyImporter, time, import.id)
-      end
-      
-    end
-    
-    if time.hour == 3
+            Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
+              Resque.enqueue(XmlPropertyImporter, time, import.id)
+            end
+            
+          end
+          
+          if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
         Resque.enqueue(YardiLoader, time, import.id)
