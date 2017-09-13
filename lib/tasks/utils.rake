@@ -158,6 +158,27 @@ namespace :utils do
 			puts "Task finished"
 		end
 	end
+
+	task :resident_rewards_reset do
+	  timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+	  CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
+	  		csv << ["ID","Email","Error"]
+	    Smartrent::Resident.all.order("id DESC").limit(5).each do |r|
+	      begin
+	      	p 5/0
+	        r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
+	        csv << [r.id,r.email,"Success"]
+	      rescue Exception => e
+	      	error_details = ""
+	        error_details = "#{e.class}: #{e}"
+	        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+	        csv << [r.id,r.email,error_details]
+	        next
+	      end
+	    end
+	  end
+	end
+
 end
 
 
