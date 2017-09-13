@@ -17,7 +17,7 @@ class XmlPropertyImporter
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
     recipient = ftp_setting["recipient"]
-    # property_map = import.field_map
+    property_map = import.field_map
     property_map ||= {
       :origin_id => ["IDValue"],
       :name => ["PropertyID","MarketingName"],
