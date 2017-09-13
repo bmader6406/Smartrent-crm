@@ -1,101 +1,101 @@
 <% 
-  csv_columns = [["No update", "9999"]]
-  0.upto(49) do |i|
-    csv_columns << ["Column #{i+1}", i]
-  end
+csv_columns = [["No update", "9999"]]
+0.upto(49) do |i|
+  csv_columns << ["Column #{i+1}", i]
+end
 %>
 <% content_for(:ui_center) do %>
-  <div id="nimda-pane">
-    <div class="ui-layout-content">
-      <div class="main-container card-container import-container">
-        
-        <%= render "nimda/menu_nav" %>
-        
-        <div class="row">
-          <div class="col-md-6">
-            <div class="well">
-              <h3> 
-                Nightly Update from Non-Yardi-Master <br>
-                <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this import do?</a>
-              </h3>
-              <%= form_tag load_non_yardi_master_nimda_path, :method => :post, :class => "import-form" do %>
-                <%= hidden_field_tag "type", "load_non_yardi_master_daily" %>
-                <div class="form-group">
-                  <label> FTP Host </label>
-                  <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
-                </div>
+<div id="nimda-pane">
+  <div class="ui-layout-content">
+    <div class="main-container card-container import-container">
 
-                <div class="form-group">
-                  <label> FTP Username </label>
-                  <%= text_field_tag "ftp_setting[username]", @daily_import.ftp_setting["username"], :class => "form-control" %>
-                </div>
+      <%= render "nimda/menu_nav" %>
 
-                <div class="form-group">
-                  <label> FTP Password </label>
-                  <%= password_field_tag "ftp_setting[password]", @daily_import.ftp_setting["password"], :class => "form-control" %>
-                </div>
-
-                <div class="form-group">
-                  <label> FTP File Name </label>
-                  <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
-                  <p class="help-block">
-                    %Y%m%d will be replaced by the actual date when the import runs ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
-                  </p>
-                </div>
-
-                <div class="form-group">
-                  <label> Import Status Recipient </label>
-                  <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
-                  <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
-                </div>
-
-                <div class="form-group">
-                  <a href="#" class="show-mapping">Import Mapping</a>
-                  <div class="field-mapping" style="display:none">
-                    <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
-                    <table class="table table-bordered table-striped">
-                      <thead>
-                        <th>
-                          CRM field
-                        </th>
-                        <th width="200px">
-                          CSV column
-                        </th>
-                      </thead>
-                      <tbody>
-                        <% @daily_import.field_map.keys.each do |key| %>
-                          <tr>
-                            <td>
-                              <%= key.gsub("_", " ").titleize %>
-                            </td>
-                            <td>
-                              <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
-                            </td>
-                          </tr>
-                        <% end %>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                
-                <div class="form-group">
-                  <label>
-                    <%= hidden_field_tag "active", 0 %>
-                    <%= check_box_tag "active", 1, @daily_import.active?, :style => "margin: 0 4px 0 0;" %>
-                    Import file nightly at 3:00 AM
-                  </label>
-                </div>
-                
-                <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
-                <a href="<%= test_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
-              <% end %>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="well">
+            <h3> 
+              Nightly Update from Non-Yardi-Master <br>
+              <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this import do?</a>
+            </h3>
+            <%= form_tag load_non_yardi_master_nimda_path, :method => :post, :class => "import-form" do %>
+            <%= hidden_field_tag "type", "load_non_yardi_master_daily" %>
+            <div class="form-group">
+              <label> FTP Host </label>
+              <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
             </div>
+
+            <div class="form-group">
+              <label> FTP Username </label>
+              <%= text_field_tag "ftp_setting[username]", @daily_import.ftp_setting["username"], :class => "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <label> FTP Password </label>
+              <%= password_field_tag "ftp_setting[password]", @daily_import.ftp_setting["password"], :class => "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <label> FTP File Name </label>
+              <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
+              <p class="help-block">
+                %Y%m%d will be replaced by the actual date when the import runs ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label> Import Status Recipient </label>
+              <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
+              <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
+            </div>
+
+            <div class="form-group">
+              <a href="#" class="show-mapping">Import Mapping</a>
+              <div class="field-mapping" style="display:none">
+                <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <th>
+                      CRM field
+                    </th>
+                    <th width="200px">
+                      CSV column
+                    </th>
+                  </thead>
+                  <tbody>
+                    <% @daily_import.field_map.keys.each do |key| %>
+                    <tr>
+                      <td>
+                        <%= key.gsub("_", " ").titleize %>
+                      </td>
+                      <td>
+                        <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
+                      </td>
+                    </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <%= hidden_field_tag "active", 0 %>
+                <%= check_box_tag "active", 1, @daily_import.active?, :style => "margin: 0 4px 0 0;" %>
+                Import file nightly at 3:00 AM
+              </label>
+            </div>
+
+            <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
+            <a href="<%= test_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
+            <% end %>
           </div>
         </div>
-        
       </div>
+
     </div>
   </div>
+</div>
 <% end %>
 
 <!-- Modal -->
@@ -177,6 +177,10 @@
               success: function(){
                 form.unmask();
                 msgbox('Nightly Import setting was updated successfully');
+              },
+              error: function(){
+                form.unmask();
+                msgbox('error'); 
               }
             });
           }

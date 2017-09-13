@@ -17,8 +17,7 @@ class XmlPropertyImporter
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
     recipient = ftp_setting["recipient"]
-    property_map = import.field_map
-
+    # property_map = import.field_map
     property_map ||= {
       :origin_id => ["IDValue"],
       :name => ["PropertyID","MarketingName"],
@@ -59,13 +58,15 @@ class XmlPropertyImporter
     tmp_file = File.read("#{TMP_DIR}mits4_1.xml")
     index, new_prop, existing_prop, errs = 0, 0, 0, []
     properties = Hash.from_xml(tmp_file) 
-
     properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
+      pp property_map
       name = p.nest(property_map[:name])
+      pp name
       property_origin_id = p.nest(property_map[:origin_id])
 
       property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
       if !property
+          pp "XML property importer 00"
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
         property.is_smartrent = false

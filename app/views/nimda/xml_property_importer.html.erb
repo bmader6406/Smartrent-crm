@@ -1,3 +1,9 @@
+<% 
+  csv_columns = [["No update", "9999"]]
+  0.upto(49) do |i|
+    csv_columns << ["Column #{i+1}", i]
+  end
+%>
 
 <% content_for(:ui_center) do %>
   <div id="nimda-pane">
@@ -49,6 +55,39 @@
                   </label>
                 </div>
                 
+
+                <div class="form-group">
+                  <a href="#" class="show-mapping">Import Mapping</a>
+                  <div class="field-mapping" style="display:none">
+                    <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <th>
+                          CRM field
+                        </th>
+                        <th width="200px">
+                          CSV column
+                        </th>
+                      </thead>
+                      <tbody>
+                        <% @daily_import.field_map.keys.each do |key| %>
+                          <tr>
+                            <td>
+                              <%=key.to_s.gsub("_", " ").titleize %>
+                            </td>
+                            <td>
+                              <%= select_tag "field_map[#{key}]", options_for_select([csv_columns], :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
+                            </td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+
+
+
                 <%= button_tag "Save", :name => nil, :class => "btn btn-primary" %>
                 <a href="<%= test_ftp_nimda_path %>" class="btn btn-default test"> Test Credentials</a>
               <% end %>
@@ -117,6 +156,10 @@
               success: function(){
                 form.unmask();
                 msgbox('Nightly Import setting was updated successfully');
+              },
+              error:function(jqXHR, textStatus, errorThrown) {
+                form.unmask();
+                msgbox('Unable to save'); 
               }
             });
           }
@@ -134,7 +177,6 @@
           } else {
             msgbox('FTP Credentials are not correct!', 'danger');
           }
-
           form.unmask();
         }, 'json');
 
