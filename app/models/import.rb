@@ -58,7 +58,7 @@ class Import < ActiveRecord::Base
 
   def field_map=(data)
     #pp ">>>>", data
-    self[:field_map] = (@field_map || field_map).merge(data).to_json
+    self[:field_map] = (@field_map || field_map).merge(data).to_json rescue {}
   end
   
   def property_map
