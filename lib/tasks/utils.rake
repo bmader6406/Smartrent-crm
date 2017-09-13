@@ -162,10 +162,12 @@ namespace :utils do
 	task :resident_rewards_reset do
 	  timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
 	  CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
-	  		csv << ["ID","Email","Error"]
-	    Smartrent::Resident.all.order("id DESC").limit(5).each do |r|
+	  		csv << ["ID","Email","Message"]
+	  		query = Smartrent::Resident.all.order("id DESC")
+	  		# query = query.limit(5) #if limit
+	  		# query = Smartrent::Resident.where(:id=>10466) #if id
+	    	query.each do |r|
 	      begin
-	      	p 5/0
 	        r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
 	        csv << [r.id,r.email,"Success"]
 	      rescue Exception => e
