@@ -174,6 +174,9 @@ Rails.application.routes.draw do
     
     get :non_yardi
     post :load_non_yardi
+
+    get :xml_property_importer
+    post :load_xml_property_importer
     
     post :create_non_yardi
     post :delete_non_yardi

@@ -1,9 +1,9 @@
 hourly_job:
-  cron: "0 * * * *"
+  cron: "*/5 * * * *"
   class: HourlyJob
 batch_enqueuer:
-  cron: "*/1 * * * *"
+  cron: "1 * * * *"
   class: BatchEnqueuer
 ses_monitor:
-  cron: "*/6 * * * *"
+  cron: "6 * * * *"
   class: SesMonitor

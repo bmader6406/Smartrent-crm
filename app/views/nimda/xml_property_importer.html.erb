@@ -1,9 +1,4 @@
-<% 
-csv_columns = [["No update", "9999"]]
-0.upto(49) do |i|
-  csv_columns << ["Column #{i+1}", i]
-end
-%>
+
 <% content_for(:ui_center) do %>
 <div id="nimda-pane">
   <div class="ui-layout-content">
@@ -15,11 +10,11 @@ end
         <div class="col-md-6">
           <div class="well">
             <h3> 
-              Nightly Update from Non-Yardi-Master <br>
-              <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this import do?</a>
+              Nightly Update from mits_4 XML <br>
+              <a href="#" data-toggle="modal" data-target="#nightly-import-xml">What does this import do?</a>
             </h3>
-            <%= form_tag load_non_yardi_master_nimda_path, :method => :post, :class => "import-form" do %>
-            <%= hidden_field_tag "type", "load_non_yardi_master_daily" %>
+            <%= form_tag load_xml_property_importer_nimda_path, :method => :post, :class => "import-form" do %>
+            <%= hidden_field_tag "type", "load_xml_property_importer" %>
             <div class="form-group">
               <label> FTP Host </label>
               <%= text_field_tag "ftp_setting[host]", @daily_import.ftp_setting["host"], :class => "form-control" %>
@@ -38,44 +33,12 @@ end
             <div class="form-group">
               <label> FTP File Name </label>
               <%= text_field_tag "ftp_setting[file_name]", @daily_import.ftp_setting["file_name"], :class => "form-control" %>
-              <p class="help-block">
-                %Y%m%d will be replaced by the actual date when the import runs ( i.e. <%= Time.now.yesterday.strftime("%Y%m%d") %>)
-              </p>
             </div>
 
             <div class="form-group">
               <label> Import Status Recipient </label>
               <%= text_field_tag "ftp_setting[recipient]", @daily_import.ftp_setting["recipient"], :class => "form-control", :placehoder => "email@address.com" %>
               <span class="help-block">Enter a comma-separated list of emails to be notified when the import finishes</span>
-            </div>
-
-            <div class="form-group">
-              <a href="#" class="show-mapping">Import Mapping</a>
-              <div class="field-mapping" style="display:none">
-                <b style="display:block; margin-bottom: 5px;">Map CRM fields with CSV column</b>
-                <table class="table table-bordered table-striped">
-                  <thead>
-                    <th>
-                      CRM field
-                    </th>
-                    <th width="200px">
-                      CSV column
-                    </th>
-                  </thead>
-                  <tbody>
-                    <% @daily_import.field_map.keys.each do |key| %>
-                    <tr>
-                      <td>
-                        <%= key.gsub("_", " ").titleize %>
-                      </td>
-                      <td>
-                        <%= select_tag "field_map[#{key}]", options_for_select(csv_columns, :selected => @daily_import.field_map[key].to_s), :class => "form-control"  %>
-                      </td>
-                    </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
             </div>
 
             <div class="form-group">
@@ -99,7 +62,7 @@ end
 <% end %>
 
 <!-- Modal -->
-<div class="modal fade" id="nightly-import-hint" tabindex="-1">
+<div class="modal fade" id="nightly-import-xml" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -108,33 +71,10 @@ end
       </div>
       <div class="modal-body">
         <p>
-          <b>Nightly Update from Yardi</b> has 3 different modes of import: <br>
-          - Tenancy of the unit remains the same <br>
-          - A new tenancy is found <br>
-          - A tenancy is missing.
+          <b>Nightly Update from XML</b>
         </p>
         
         <span style="font-size:15px; text-decoration: underline">These are handled as follows. <br></span>
-        <p>
-          1. If a ​<b>tenancy remains the same</b>​ (that is, unit-code + tenant-code do not change), then the import will update the tenancy fields: <br>
-          - Tenant Status <br>
-          - Move In <br>
-          - Move Out
-        </p>
-        <p>
-          2. If the ​<b>import file has a new tenancy</b>​, that is, we find a new unit-code + tenant-code combination, we will do the following: <br>
-          - Search for the Resident associated with the new Tenant Code using their email<br>
-          - If the email is found, associate this new tenancy with the existing resident.<br>
-          - If the email is not found, create a new resident and associate this new tenancy with the new resident.<br>
-          <br>
-          The existing tenancy is put into the status of "Archive." Note this is different from Current, Future, Notice and Past. 
-          This is because this was a move forced by the appearance of a new tenant code. It was an automated Bozzuto CRM change 
-          and not a Yardi change and hence needs to be marked differently than just "Past". The move in and move out are not changed.
-        </p>
-        <p>
-          3. If the ​<b>import is missing a tenancy</b>​, we alert the property manager of the missing person. Specifically, we find that a "unit-code + tenant-code" 
-          combination is missing from the Yardi feed
-        </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -156,18 +96,16 @@ end
 
         form.find('input:visible').each(function(){
           var input = $(this);
-
           if( $.trim(input.val()) == "") {
             blanks.push( input );
           }
         });
-
         if(blanks.length > 0) {
           msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
           return false;
         }
 
-        bootbox.confirm("Sure you want to load Non-Yardi-Master residents? There is no undo.", function(result) {
+        bootbox.confirm("Sure you want to load properties from XML? There is no undo.", function(result) {
           if (result) {
             form.ajaxSubmit({
               dataType: 'json',
@@ -178,9 +116,9 @@ end
                 form.unmask();
                 msgbox('Nightly Import setting was updated successfully');
               },
-              error: function(){
+              error:function(jqXHR, textStatus, errorThrown) {
                 form.unmask();
-                msgbox('error'); 
+                msgbox(errorThrown); 
               }
             });
           }
@@ -198,7 +136,6 @@ end
           } else {
             msgbox('FTP Credentials are not correct!', 'danger');
           }
-
           form.unmask();
         }, 'json');
 
@@ -206,13 +143,6 @@ end
       });
     });
     
-    $('.show-mapping').click(function(){
-      var t = $(this);
-      t.hide();
-      t.next().slideDown();
-      
-      return false;
-    });
     
     
     App.initPageLayout(null, null, null, true);
