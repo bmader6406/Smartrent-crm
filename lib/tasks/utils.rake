@@ -160,26 +160,45 @@ namespace :utils do
 	end
 
 	task :resident_rewards_reset do
-	  timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-	  CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
-	  		csv << ["ID","Email","Message"]
-	  		query = Smartrent::Resident.all.order("id DESC")
-	  		# query = query.limit(5) #if limit
+		time_start = Time.now
+		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+		CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
+			csv << ["ID","Email","Message"]
+			query = Smartrent::Resident.all.order("id DESC")
+	  		query = query.limit(25) #if limit
 	  		# query = Smartrent::Resident.where(:id=>10466) #if id
-	    	query.each do |r|
-	      begin
-	        r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
-	        csv << [r.id,r.email,"Success"]
-	      rescue Exception => e
-	      	error_details = ""
-	        error_details = "#{e.class}: #{e}"
-	        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-	        csv << [r.id,r.email,error_details]
-	        next
-	      end
-	    end
+	  		r_count = 0
+	  		query.each do |r|
+	  			r_count += 1
+	  			begin
+	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
+	  				csv << [r.id,r.email,"Success"]
+	  			rescue Exception => e
+	  				error_details = ""
+	  				error_details = "#{e.class}: #{e}"
+	  				error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+	  				csv << [r.id,r.email,error_details]
+	  				next
+	  			end
+	  		end
+	  		time_end = Time.now
+	  		pp "Task Completed"
+	  		t_diff = time_end-time_start
+	  		t = (t_diff/1.hour).round.to_s+"hr "+(t_diff/1.minute).round.to_s+"min "+(t_diff/1.second).round.to_s+"sec"
+			seconds_diff = (time_end-time_start).to_i.abs
+			hours = seconds_diff / 3600
+			seconds_diff -= hours * 3600
+			minutes = seconds_diff / 60
+			seconds_diff -= minutes * 60
+			seconds = seconds_diff
+			t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
+	  		pp "Time Taken to complete: #{t}"
+	  		pp "Total Residents:#{r_count}"
+
+	  		csv << ["Total Residents",r_count.to_s,""]
+	  		csv << ["Time Taken",t,""]
+	  	end
 	  end
-	end
 
 end
 

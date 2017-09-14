@@ -180,7 +180,7 @@ Crm.Views.Smartrent = Backbone.View.extend({
   resetReward: function(ev) {
     var form = $('#reset-reward');
 
-    bootbox.confirm("Sure you want to reset the resident's rewards table?", function(result) {
+    bootbox.confirm("Sure you want to recalculate the resident's balance?", function(result) {
       if (result) {
         form.ajaxSubmit({
           dataType: 'json',
