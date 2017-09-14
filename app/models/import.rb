@@ -193,6 +193,9 @@ class Import < ActiveRecord::Base
       :phone => ["PropertyID","Phone","PhoneNumber"],
       :website_url => ["PropertyID","WebSite"],
       :info => ["Information","OfficeHour"],
+      :description => ["Information","LongDescription"],
+      :latitude => ["ILS_Identification","Latitude"],
+      :longitude =>  ["ILS_Identification","Longitude"],
       :floor_plans => ["Floorplan"],
       :features => ["Amenity"]
     }
