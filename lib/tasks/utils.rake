@@ -185,13 +185,14 @@ namespace :utils do
 	  		pp "Task Completed"
 	  		t_diff = time_end-time_start
 	  		t = (t_diff/1.hour).round.to_s+"hr "+(t_diff/1.minute).round.to_s+"min "+(t_diff/1.second).round.to_s+"sec"
+			ms = (((time_end-time_start)-(time_end-time_start).to_i)*1000).to_i
 			seconds_diff = (time_end-time_start).to_i.abs
 			hours = seconds_diff / 3600
 			seconds_diff -= hours * 3600
 			minutes = seconds_diff / 60
 			seconds_diff -= minutes * 60
 			seconds = seconds_diff
-			t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}"
+			t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(2, '0')}"
 	  		pp "Time Taken to complete: #{t}"
 	  		pp "Total Residents:#{r_count}"
 
