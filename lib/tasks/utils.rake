@@ -164,12 +164,16 @@ namespace :utils do
 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
 		CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
 			csv << ["ID","Email","Message"]
-			query = Smartrent::Resident.all.order("id DESC")
+			query = Smartrent::Resident.where("first_move_in <=?",DateTime.new(2017,1,1)).order("id DESC")
 	  		query = query.limit(25) #if limit
+	  		total_residents = query.count
 	  		# query = Smartrent::Resident.where(:id=>10466) #if id
 	  		r_count = 0
+	  		p "Total Residents:#{total_residents}"
+	  		p "Executing Residents..."
 	  		query.each do |r|
 	  			r_count += 1
+	  			print "#{r_count} "
 	  			begin
 	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
 	  				csv << [r.id,r.email,"Success"]
@@ -193,8 +197,8 @@ namespace :utils do
 			seconds_diff -= minutes * 60
 			seconds = seconds_diff
 			t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(2, '0')}"
-	  		pp "Time Taken to complete: #{t}"
-	  		pp "Total Residents:#{r_count}"
+	  		p "Time Taken to complete: #{t}"
+	  		p "Total Residents:#{r_count}"
 
 	  		csv << ["Total Residents",r_count.to_s,""]
 	  		csv << ["Time Taken",t,""]
