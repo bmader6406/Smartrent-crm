@@ -17,19 +17,22 @@ class XmlPropertyImporter
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
     recipient = ftp_setting["recipient"]
-    # property_map = import.field_map
+    property_map = import.field_map
     property_map ||= {
       :origin_id => ["IDValue"],
       :name => ["PropertyID","MarketingName"],
       :address_line1 => ["PropertyID","Address","AddressLine1"],
       :city => ["PropertyID","Address","City"],
       :state => ["PropertyID","Address","State"],
-      :zip => ["PropertyID","Address","ZipCode"],
+      :zip => ["PropertyID","Address","PostalCode"],
       :county => ["PropertyID","Address","CountyName"],
       :email => ["PropertyID","Email"],
       :phone => ["PropertyID","Phone","PhoneNumber"],
       :website_url => ["PropertyID","WebSite"],
       :info => ["Information","OfficeHour"],
+      :description => ["Information","LongDescription"],
+      :latitude => ["ILS_Identification","Latitude"],
+      :longitude =>  ["ILS_Identification","Longitude"],
       :floor_plans => ["Floorplan"],
       :features => ["Amenity"]
     }
@@ -59,23 +62,23 @@ class XmlPropertyImporter
     index, new_prop, existing_prop, errs = 0, 0, 0, []
     properties = Hash.from_xml(tmp_file) 
     properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
-      pp property_map
       name = p.nest(property_map[:name])
-      pp name
       property_origin_id = p.nest(property_map[:origin_id])
 
-      property = Smartrent::Property.where("lower(name) = ? or origin_id=?", name.downcase, property_origin_id).first
+      property = Smartrent::Property.where("origin_id=?",property_origin_id).first
+      property ||= Smartrent::Property.where("REPLACE(REPLACE(LOWER(name),' ',''),'-','')=?",name.downcase.gsub(/[^a-z0-9\w]/i,'')).first
+
       if !property
-          pp "XML property importer 00"
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
         property.is_smartrent = false
         property.is_crm = false
+        property.is_visible = true
         property.updated_by = "mits4_xml_feed"
         property.smartrent_status = Smartrent::Property::STATUS_CURRENT
         property.origin_id = property_origin_id
         property.property_number = property_origin_id
-        property.name = name.downcase
+        property.name = name.titleize
         region = Region.find_by(:name => property_map[:county])
         if region
           property.region_id = region.id
@@ -83,7 +86,6 @@ class XmlPropertyImporter
       else
         existing_prop = existing_prop + 1        
       end
-
 
       information = p.nest(property_map[:info])
       information.each do |infomsg|
@@ -121,6 +123,10 @@ class XmlPropertyImporter
         property.email = p.nest(property_map[:email])
         property.phone = p.nest(property_map[:phone])
         property.website_url = p.nest(property_map[:website_url])
+        property.description = p.nest(property_map[:description])
+        property.latitude = p.nest(property_map[:latitude])
+        property.longitude = p.nest(property_map[:longitude])
+
 
         # Get list of amenities from the XML
         property_features = []
@@ -173,8 +179,8 @@ class XmlPropertyImporter
           # save all features 
           feature_ids = []
           property_features.each do |feature|   
-            feature_name =  feature[:name].downcase.gsub(/[^a-z0-9\s]/i, '')        
-            s_feature = Smartrent::Feature.where(:name => feature_name).first
+            feature_name =  feature[:name].downcase.gsub(/[^a-z0-9\w]/i,'')        
+            s_feature =  Smartrent::Feature.where("REPLACE(REPLACE(LOWER(name),' ',''),'-','')=?",feature_name).first
             s_feature ||= property.features.create(feature)
             s=property.property_features.find_or_create_by(:feature_id => s_feature.id)
             feature_ids << s_feature.id
@@ -197,7 +203,7 @@ class XmlPropertyImporter
       Smartrent::FloorPlan.where("property_id = ? AND id NOT IN (?)", property.id, floor_plan_ids).delete_all
 
       #delete previous features to use the new features from the xml except Smartrent
-      smartrent_id = Smartrent::Feature.where(:name => "Smartrent").last.id
+      smartrent_id = Smartrent::Feature.where("LOWER(name)=?","smartrent").last.id
       if smartrent_id
         feature_ids << smartrent_id
       end
@@ -230,7 +236,7 @@ def self.email_body(new_prop, existing_prop, error_prop, file_name)
   new_and_existing_prop = new_prop + existing_prop
 
   return <<-MESSAGE
-  Property Importing Success from XML
+  Property Import from XML is successful.
   <br>
   - #{new_and_existing_prop} #{prop_text(new_and_existing_prop)} were imported successfully.
   <br>

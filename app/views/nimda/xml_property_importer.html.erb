@@ -10,7 +10,7 @@
         <div class="col-md-6">
           <div class="well">
             <h3> 
-              Nightly Update from mits_4 XML <br>
+              Nightly update from MITS 4 XML <br>
               <a href="#" data-toggle="modal" data-target="#nightly-import-xml">What does this import do?</a>
             </h3>
             <%= form_tag load_xml_property_importer_nimda_path, :method => :post, :class => "import-form" do %>
@@ -70,11 +70,17 @@
         <h4 class="modal-title">What does this import do?</h4>
       </div>
       <div class="modal-body">
+        <b>Nightly Update from MITS 4 XML</b> will: <br>
         <p>
-          <b>Nightly Update from XML</b>
+          - Import property details from MITS Feed.
         </p>
-        
-        <span style="font-size:15px; text-decoration: underline">These are handled as follows. <br></span>
+        <p>
+          - For an existing property, the details are updated. If a property is now not already present in the database, it is created.
+        </p>
+        <b>How does the import work?</b><br>
+        <p>
+          - The MITS 4 XML is processed to get all the properties which is compared individually against the local database. If a property match is found in the database, it is updated  with the values from the XML file. <b>The origin ID or the Bozzuto property ID is used to find a matching property in the database. If no matches are found, property name is used for a secondary look up before a new property is created.</b> Floor plans, Features etc... are also added in a similar way- either a new entry is created or the existing one is updated.
+        </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
