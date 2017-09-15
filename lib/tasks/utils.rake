@@ -22,6 +22,29 @@ def conflicts(record1, record2)
 	true
 end
 
+def last_awarded_month(property)
+  last = false
+  last_rewarded = Smartrent::Reward.where(:property_id => property.id,:type_ => 2)
+  if (last_rewarded.count != 0 )
+    last = last_rewarded.last.period_start.advance(:hours => 5)
+    #pp "=============================>\nName:#{property.name} last_awarded:#{last}\n=============================>\n"
+  end
+  last
+end
+
+def get_time_diff_str(time_start,time_end)
+	t_diff = time_end-time_start
+	ms = (((time_end-time_start)-(time_end-time_start).to_i)*1000).to_i
+	seconds_diff = (time_end-time_start).to_i.abs
+	hours = seconds_diff / 3600
+	seconds_diff -= hours * 3600
+	minutes = seconds_diff / 60
+	seconds_diff -= minutes * 60
+	seconds = seconds_diff
+	t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(2, '0')}"
+	t
+end
+
 namespace :utils do
 	desc "This task does something"
 	task :analyse do
@@ -164,8 +187,8 @@ namespace :utils do
 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
 		CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
 			csv << ["ID","Email","Message"]
-			query = Smartrent::Resident.where("first_move_in <=?",DateTime.new(2017,1,1)).order("id DESC")
-	  		query = query.limit(25) #if limit
+			query = Smartrent::Resident.all.order("id DESC")
+	  		# query = query.limit(5) #if limit
 	  		total_residents = query.count
 	  		# query = Smartrent::Resident.where(:id=>10466) #if id
 	  		r_count = 0
@@ -173,7 +196,7 @@ namespace :utils do
 	  		p "Executing Residents..."
 	  		query.each do |r|
 	  			r_count += 1
-	  			print "#{r_count} "
+	  			print "#{r_count} Time elapsed:#{get_time_diff_str(time_start,Time.now)} \n"
 	  			begin
 	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
 	  				csv << [r.id,r.email,"Success"]
@@ -187,16 +210,7 @@ namespace :utils do
 	  		end
 	  		time_end = Time.now
 	  		pp "Task Completed"
-	  		t_diff = time_end-time_start
-	  		t = (t_diff/1.hour).round.to_s+"hr "+(t_diff/1.minute).round.to_s+"min "+(t_diff/1.second).round.to_s+"sec"
-			ms = (((time_end-time_start)-(time_end-time_start).to_i)*1000).to_i
-			seconds_diff = (time_end-time_start).to_i.abs
-			hours = seconds_diff / 3600
-			seconds_diff -= hours * 3600
-			minutes = seconds_diff / 60
-			seconds_diff -= minutes * 60
-			seconds = seconds_diff
-			t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(2, '0')}"
+			t = get_time_diff_str(time_start,time_end)
 	  		p "Time Taken to complete: #{t}"
 	  		p "Total Residents:#{r_count}"
 
@@ -204,7 +218,24 @@ namespace :utils do
 	  		csv << ["Time Taken",t,""]
 	  	end
 	  end
-
+	task :find_smartrent_change_date do
+        total = 0;
+        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+        CSV.open("tmp/property"+timestamp+".csv", "w") do |csv|
+            column_names = ["id","property_name","last_awarded_date"]
+            csv << column_names
+            properties = Property.all.each do |pr|
+                last = last_awarded_month(pr)
+                if last
+                    value = [pr.id.to_s,pr.name.to_s,last.to_s]
+                    csv << value
+                    total = total+1
+                end
+            end
+            Rails.logger.info("Records count: "+total.to_s)
+            Rails.logger.info("Task finished")
+        end
+    end
 end
 
 
