@@ -24,7 +24,7 @@ class XmlPropertyImporter
       :address_line1 => ["PropertyID","Address","AddressLine1"],
       :city => ["PropertyID","Address","City"],
       :state => ["PropertyID","Address","State"],
-      :zip => ["PropertyID","Address","ZipCode"],
+      :zip => ["PropertyID","Address","PostalCode"],
       :county => ["PropertyID","Address","CountyName"],
       :email => ["PropertyID","Email"],
       :phone => ["PropertyID","Phone","PhoneNumber"],
@@ -65,7 +65,9 @@ class XmlPropertyImporter
       name = p.nest(property_map[:name])
       property_origin_id = p.nest(property_map[:origin_id])
 
-      property = Smartrent::Property.where("REPLACE(REPLACE(LOWER(name),' ',''),'-','')=? or origin_id=?",name.downcase.gsub(/[^a-z0-9\w]/i,''), property_origin_id).first
+      property = Smartrent::Property.where("origin_id=?",property_origin_id).first
+      property ||= Smartrent::Property.where("REPLACE(REPLACE(LOWER(name),' ',''),'-','')=?",name.downcase.gsub(/[^a-z0-9\w]/i,'')).first
+
       if !property
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
@@ -76,7 +78,7 @@ class XmlPropertyImporter
         property.smartrent_status = Smartrent::Property::STATUS_CURRENT
         property.origin_id = property_origin_id
         property.property_number = property_origin_id
-        property.name = name.humanize
+        property.name = name.titleize
         region = Region.find_by(:name => property_map[:county])
         if region
           property.region_id = region.id

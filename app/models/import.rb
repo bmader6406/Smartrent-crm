@@ -187,7 +187,7 @@ class Import < ActiveRecord::Base
       :address_line1 => ["PropertyID","Address","AddressLine1"],
       :city => ["PropertyID","Address","City"],
       :state => ["PropertyID","Address","State"],
-      :zip => ["PropertyID","Address","ZipCode"],
+      :zip => ["PropertyID","Address","PostalCode"],
       :county => ["PropertyID","Address","CountyName"],
       :email => ["PropertyID","Email"],
       :phone => ["PropertyID","Phone","PhoneNumber"],
