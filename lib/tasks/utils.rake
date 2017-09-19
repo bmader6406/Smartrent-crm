@@ -125,6 +125,16 @@ namespace :utils do
 		end
 	end
 
+	task :remove_duplicate_resident_properties do
+		# Resident.all do |resident|
+		resident = Resident.find("1530219662923846628")
+	      resident.units.each do |ru1|
+	      	ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+	        resident.units(unit_code: ru1.unit_code).not_in(id: ru.id.to_s).destroy_all
+	        end
+	    # end
+    end
+
 	task :resident_conflicts do
 		total = 0
 		count = 0
