@@ -34,6 +34,8 @@ def compare_resident_units(ru1,ru2)
 	else
 		(ru1.move_out.nil? ? ru1 : ru2 )
 	end
+end
+
 def last_awarded_month(property)
   last = false
   last_rewarded = Smartrent::Reward.where(:property_id => property.id,:type_ => 2)
@@ -177,7 +179,7 @@ namespace :utils do
 		Resident.all do |resident|
 		# resident = Resident.find("1530219662923846628")
 	      resident.units.each do |ru1|
-	      	ru1(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+	      	ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
 	        resident.units(unit_code: ru1.unit_code).not_in(id: ru.id.to_s).destroy_all
 	      end
           sr = Smartrent::Resident.find_by_crm_resident_id(resident.id)
