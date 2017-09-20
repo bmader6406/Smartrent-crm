@@ -16,7 +16,7 @@ class Rack::Attack
   if File.exist? yml
     host, port = YAML.load_file(yml)[Rails.env].split(":", 2)
   else
-    host, port = "localhost", 6379
+    host, port = "crm.bozzuto.local", 6379
   end
 
   Rack::Attack.cache.store = Rack::Attack::StoreProxy::RedisStoreProxy.new( Redis.new(:host => host, :port => port) )

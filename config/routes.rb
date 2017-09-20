@@ -11,7 +11,6 @@ Rails.application.routes.draw do
         get :tickets
         get :roommates
         get :units
-        
         get :marketing_units
         get :marketing_statuses
         get :smartrent

@@ -22,6 +22,20 @@ def conflicts(record1, record2)
 	true
 end
 
+def compare_resident_units(ru1,ru2)
+	if(ru1.move_out.nil? and ru2.move_out.nil?)
+		if(ru1.updated_at == ru2.updated_at)
+			(ru1.created_at>ru2.created_at) ? ru1 : ru2
+		else
+			(ru1.updated_at>ru2.updated_at) ? ru1 : ru2
+		end
+	elsif(!ru1.move_out.nil? and !ru2.move_out.nil?)
+		(ru1.move_out<ru2.move_out) ? ru1 : ru2
+	else
+		(ru1.move_out.nil? ? ru1 : ru2 )
+	end
+end
+
 namespace :utils do
 	desc "This task does something"
 	task :analyse do
@@ -34,7 +48,7 @@ namespace :utils do
 	   puts "Task finished"
   end
 
-  task :analyse_residents do
+  	task :analyse_residents do
 		total = 0
 		count = 0
 		timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
@@ -125,15 +139,36 @@ namespace :utils do
 		end
 	end
 
+	# task :remove_duplicate_resident_properties do
+	# 	Resident.all do |resident|
+	#       resident.units.each do |ru1|
+	#         resident.units.not_in(id: ru1.id.to_s).each do |ru2|
+	#           if ru1.attributes.except("_id", "created_at", "move_out", "updated_at", "status", "unit_id") == ru2.attributes.except("_id", "created_at", "move_out", "updated_at", "status", "unit_id")
+	#             resident_unit = compare_resident_units(ru1,ru2)
+	#             resident_unit.destroy
+	#           end
+	#         end
+	#       end
+	#     end
+ 	# end
+
 	task :remove_duplicate_resident_properties do
-		# Resident.all do |resident|
-		resident = Resident.find("1530219662923846628")
+		Resident.all do |resident|
+		# resident = Resident.find("1530219662923846628")
 	      resident.units.each do |ru1|
-	      	ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+	      	ru1(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
 	        resident.units(unit_code: ru1.unit_code).not_in(id: ru.id.to_s).destroy_all
-	        end
-	    # end
+	      end
+          sr = Smartrent::Resident.find_by_crm_resident_id(resident.id)
+          if sr
+          	sr.resident_properties.each do |sr1|
+	          	rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
+	          	sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all
+      		end
+     	 end
+	    end
     end
+
 
 	task :resident_conflicts do
 		total = 0

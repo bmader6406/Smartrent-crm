@@ -1,5 +1,5 @@
 class AuthenticationsController < ApplicationController
-  before_action :require_ssl
+  # before_action :require_ssl
   before_action :require_user, :only => [:destroy, :index]
   
   def create
