@@ -163,6 +163,7 @@ namespace :utils do
 	end
 
 	# task :remove_duplicate_resident_properties do
+	# resident = Resident.find("1530219662923846628")
 	# 	Resident.all do |resident|
 	#       resident.units.each do |ru1|
 	#         resident.units.not_in(id: ru1.id.to_s).each do |ru2|
@@ -175,21 +176,29 @@ namespace :utils do
 	#     end
  	# end
 
-	task :remove_duplicate_resident_properties do
-		Resident.all do |resident|
-		# resident = Resident.find("1530219662923846628")
-	      resident.units.each do |ru1|
-	      	ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
-	        resident.units(unit_code: ru1.unit_code).not_in(id: ru.id.to_s).destroy_all
-	      end
-          sr = Smartrent::Resident.find_by_crm_resident_id(resident.id)
-          if sr
-          	sr.resident_properties.each do |sr1|
-	          	rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
-	          	sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all
-      		end
-     	 end
-	    end
+	task :remove_duplicate_resident_properties => :environment do
+    	ActiveRecord::Base.logger.level = 1
+		Resident.all.each do |resident|
+			begin
+				resident.units.each do |ru1|
+					ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+					resident.units(unit_code: ru1.unit_code).not_in(_id: ru.id.to_s).destroy_all if ru
+				end
+				sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+				if sr 
+					sr.resident_properties.each do |sr1|
+						rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
+						sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
+					end
+				end
+			rescue  Exception => e
+				print "FAILURE: #{resident.email}" if resident
+				error_details = "#{e.class}: #{e}"
+				error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+				print "ERROR: #{error_details}"
+			end
+        end
+		print "Successfully completed"
     end
 
 
