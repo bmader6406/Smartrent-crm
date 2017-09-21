@@ -227,7 +227,8 @@ namespace :utils do
 		end
 	end
 
-	task :resident_rewards_reset do
+	task :resident_rewards_reset => :environment do
+    ActiveRecord::Base.logger.level = 1
 		time_start = Time.now
 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
 		CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
