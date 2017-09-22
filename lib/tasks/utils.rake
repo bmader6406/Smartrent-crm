@@ -22,6 +22,19 @@ def conflicts(record1, record2)
 	true
 end
 
+def compare_resident_units(ru1,ru2)
+	if(ru1.move_out.nil? and ru2.move_out.nil?)
+		if(ru1.updated_at == ru2.updated_at)
+			(ru1.created_at>ru2.created_at) ? ru1 : ru2
+		else
+			(ru1.updated_at>ru2.updated_at) ? ru1 : ru2
+		end
+	elsif(!ru1.move_out.nil? and !ru2.move_out.nil?)
+		(ru1.move_out<ru2.move_out) ? ru1 : ru2
+	else
+		(ru1.move_out.nil? ? ru1 : ru2 )
+	end
+end
 def last_awarded_month(property)
   last = false
   last_rewarded = Smartrent::Reward.where(:property_id => property.id,:type_ => 2)
@@ -229,35 +242,46 @@ namespace :utils do
     ActiveRecord::Base.logger.level = 1
 		time_start = Time.now
 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-		CSV.open("tmp/residents_rewards"+timestamp+".csv", "w") do |csv|
+		file_name_csv = "tmp/residents_rewards_"+timestamp+".csv"
+		CSV.open(file_name_csv, "w") do |csv|
 			csv << ["ID","Email","Message"]
-			query = Smartrent::Resident.all.order("id DESC")
+			query = Smartrent::Resident.all.order("id DESC").limit(1000)
 	  		# query = query.limit(5) #if limit
 	  		total_residents = query.count
 	  		# query = Smartrent::Resident.where(:id=>10466) #if id
 	  		r_count = 0
 	  		p "Total Residents:#{total_residents}"
 	  		p "Executing Residents..."
+	  		success_count = 0
+	  		fail_count = 0
 	  		query.each do |r|
 	  			r_count += 1
-	  			print "#{r_count} Time elapsed:#{get_time_diff_str(time_start,Time.now)} \n"
+	  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+	  			now = Time.now
+	  			print "#{r_count}/#{total_residents} (#{percentage}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
 	  			begin
 	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
 	  				csv << [r.id,r.email,"Success"]
+	  				success_count += 1
 	  			rescue Exception => e
 	  				error_details = ""
 	  				error_details = "#{e.class}: #{e}"
 	  				error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
 	  				csv << [r.id,r.email,error_details]
+	  				fail_count += 1
 	  				next
 	  			end
+	  			time_estimate = now+((100-percentage)*((now-time_start)/percentage))
+	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
 	  		end
 	  		time_end = Time.now
 	  		pp "Task Completed"
 			t = get_time_diff_str(time_start,time_end)
 	  		p "Time Taken to complete: #{t}"
 	  		p "Total Residents:#{r_count}"
-
+	  		p "Residents succesfully reset: #{success_count}"
+	  		p "Residents failed to reset: #{fail_count}"
+	  		p "log saved in #{file_name_csv}"
 	  		csv << ["Total Residents",r_count.to_s,""]
 	  		csv << ["Time Taken",t,""]
 	  	end
