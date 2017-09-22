@@ -35,7 +35,6 @@ def compare_resident_units(ru1,ru2)
 		(ru1.move_out.nil? ? ru1 : ru2 )
 	end
 end
-
 def last_awarded_month(property)
   last = false
   last_rewarded = Smartrent::Reward.where(:property_id => property.id,:type_ => 2)
@@ -162,34 +161,46 @@ namespace :utils do
 		end
 	end
 
-	# task :remove_duplicate_resident_properties do
-	# 	Resident.all do |resident|
-	#       resident.units.each do |ru1|
-	#         resident.units.not_in(id: ru1.id.to_s).each do |ru2|
-	#           if ru1.attributes.except("_id", "created_at", "move_out", "updated_at", "status", "unit_id") == ru2.attributes.except("_id", "created_at", "move_out", "updated_at", "status", "unit_id")
-	#             resident_unit = compare_resident_units(ru1,ru2)
-	#             resident_unit.destroy
-	#           end
-	#         end
-	#       end
-	#     end
- 	# end
-
-	task :remove_duplicate_resident_properties do
-		Resident.all do |resident|
-		# resident = Resident.find("1530219662923846628")
-	      resident.units.each do |ru1|
-	      	ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
-	        resident.units(unit_code: ru1.unit_code).not_in(id: ru.id.to_s).destroy_all
-	      end
-          sr = Smartrent::Resident.find_by_crm_resident_id(resident.id)
-          if sr
-          	sr.resident_properties.each do |sr1|
-	          	rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
-	          	sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all
-      		end
-     	 end
-	    end
+	task :remove_duplicate_resident_properties => :environment do
+    	ActiveRecord::Base.logger.level = 1
+    	time_start = Time.now
+    	total_residents = Resident.all.count
+    	pp "Total Residents:#{total_residents}"
+	  	pp "Executing Residents..."
+	  	r_count = 0
+	  	timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+		CSV.open("tmp/residents_properties"+timestamp+".csv", "w") do |csv|
+			csv << ["ID","Email","Message"]
+			Resident.all.each do |resident|
+				r_count += 1
+				pp "#{r_count} Time elapsed:#{get_time_diff_str(time_start,Time.now)}"
+				begin
+					resident.units.each do |ru1|
+						ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+						resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).not_in(_id: ru.id.to_s).destroy_all if ru
+					end
+					sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+					if sr 
+						sr.resident_properties.each do |sr1|
+							rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
+							sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
+						end
+					end
+					csv << [resident.id,resident.email,"Success"]
+				rescue  Exception => e
+					pp "FAILURE: #{resident.email}" if resident
+					error_details = "#{e.class}: #{e}"
+					error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+					pp "ERROR: #{error_details}"
+					csv << [resident.id,resident.email,error_details]
+				end
+        	end
+        end
+		time_end = Time.now
+  		pp "Task Completed"
+		t = get_time_diff_str(time_start,time_end)
+  		pp "Time Taken to complete: #{t}"
+  		pp "Total Residents:#{r_count}"
     end
 
 
