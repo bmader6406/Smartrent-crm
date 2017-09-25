@@ -166,7 +166,7 @@ namespace :utils do
     	time_start = Time.now
 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
 		file_name_csv = "tmp/residents_properties_"+timestamp+".csv"
-		residents = Resident.all.limit(10000)
+		residents = Resident.all
     	total_residents = Array(residents).length
     	r_count = 0
   		p "Total Residents:#{total_residents}"
