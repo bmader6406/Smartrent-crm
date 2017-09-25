@@ -164,43 +164,61 @@ namespace :utils do
 	task :remove_duplicate_resident_properties => :environment do
     	ActiveRecord::Base.logger.level = 1
     	time_start = Time.now
-    	total_residents = Resident.all.count
-    	pp "Total Residents:#{total_residents}"
-	  	pp "Executing Residents..."
-	  	r_count = 0
-	  	timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-		CSV.open("tmp/residents_properties"+timestamp+".csv", "w") do |csv|
+		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+		file_name_csv = "tmp/residents_properties_"+timestamp+".csv"
+		residents = Resident.all.limit(10000)
+    	total_residents = Array(residents).length
+    	r_count = 0
+  		p "Total Residents:#{total_residents}"
+  		p "Executing Residents..."
+  		success_count = 0
+  		fail_count = 0
+		CSV.open(file_name_csv, "w") do |csv|
 			csv << ["ID","Email","Message"]
-			Resident.all.each do |resident|
+			residents.each do |resident|
 				r_count += 1
-				pp "#{r_count} Time elapsed:#{get_time_diff_str(time_start,Time.now)}"
+	  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+	  			now = Time.now
+	  			print "#{r_count}/#{total_residents} (#{percentage}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
 				begin
+					
+					
 					resident.units.each do |ru1|
-						ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(created_at: 'desc').first
+						ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(updated_at: 'desc').first
 						resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).not_in(_id: ru.id.to_s).destroy_all if ru
 					end
 					sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
 					if sr 
 						sr.resident_properties.each do |sr1|
-							rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(created_at: 'desc').first
+							rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(updated_at: 'desc').first
 							sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
 						end
 					end
 					csv << [resident.id,resident.email,"Success"]
+					success_count += 1
 				rescue  Exception => e
-					pp "FAILURE: #{resident.email}" if resident
 					error_details = "#{e.class}: #{e}"
 					error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-					pp "ERROR: #{error_details}"
 					csv << [resident.id,resident.email,error_details]
+					fail_count += 1
+					next
 				end
+				# pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
+				temp = ((100-percentage)*((now-time_start)/percentage))
+				time_estimate = now+temp
+	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
         	end
+        	time_end = Time.now
+	  		pp "Task Completed"
+			t = get_time_diff_str(time_start,time_end)
+	  		p "Time Taken to complete: #{t}"
+	  		p "Total Residents:#{r_count}"
+	  		p "Residents succesfully reset: #{success_count}"
+	  		p "Residents failed to reset: #{fail_count}"
+	  		p "log saved in #{file_name_csv}"
+	  		csv << ["Total Residents",r_count.to_s,""]
+	  		csv << ["Time Taken",t,""]
         end
-		time_end = Time.now
-  		pp "Task Completed"
-		t = get_time_diff_str(time_start,time_end)
-  		pp "Time Taken to complete: #{t}"
-  		pp "Total Residents:#{r_count}"
     end
 
 
