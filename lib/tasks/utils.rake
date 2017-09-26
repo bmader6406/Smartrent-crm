@@ -54,7 +54,7 @@ def get_time_diff_str(time_start,time_end)
 	minutes = seconds_diff / 60
 	seconds_diff -= minutes * 60
 	seconds = seconds_diff
-	t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(2, '0')}"
+	t = "#{hours.to_s.rjust(2, '0')}:#{minutes.to_s.rjust(2, '0')}:#{seconds.to_s.rjust(2, '0')}:#{ms.to_s.rjust(3, '0')}"
 	t
 end
 
@@ -179,7 +179,7 @@ namespace :utils do
 				r_count += 1
 	  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
 	  			now = Time.now
-	  			print "#{r_count}/#{total_residents} (#{percentage}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+	  			print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
 				begin
 					
 					
@@ -203,10 +203,9 @@ namespace :utils do
 					fail_count += 1
 					next
 				end
-				# pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
-				temp = ((100-percentage)*((now-time_start)/percentage))
-				time_estimate = now+temp
-	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+				pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
+				time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+	  	        print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
         	end
         	time_end = Time.now
 	  		pp "Task Completed"
@@ -263,7 +262,7 @@ namespace :utils do
 		file_name_csv = "tmp/residents_rewards_"+timestamp+".csv"
 		CSV.open(file_name_csv, "w") do |csv|
 			csv << ["ID","Email","Message"]
-			query = Smartrent::Resident.all.order("id DESC").limit(1000)
+			query = Smartrent::Resident.all.order("id DESC")
 	  		# query = query.limit(5) #if limit
 	  		total_residents = query.count
 	  		# query = Smartrent::Resident.where(:id=>10466) #if id
@@ -272,11 +271,12 @@ namespace :utils do
 	  		p "Executing Residents..."
 	  		success_count = 0
 	  		fail_count = 0
+	  		total_residents_digits_count = total_residents.to_s.length
 	  		query.each do |r|
 	  			r_count += 1
 	  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
 	  			now = Time.now
-	  			print "#{r_count}/#{total_residents} (#{percentage}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+	  			print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
 	  			begin
 	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
 	  				csv << [r.id,r.email,"Success"]
@@ -289,8 +289,8 @@ namespace :utils do
 	  				fail_count += 1
 	  				next
 	  			end
-	  			time_estimate = now+((100-percentage)*((now-time_start)/percentage))
-	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+	  			time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
 	  		end
 	  		time_end = Time.now
 	  		pp "Task Completed"
