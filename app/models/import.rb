@@ -18,10 +18,12 @@ class Import < ActiveRecord::Base
           
         elsif type.include?("load_non_yardi")
           hash = default_non_yardi_ftp_setting
+
+        elsif type.include?("load_xml_property_importer")
+          hash = default_xml_ftp_setting
           
         end
       end
-      
       hash
     end
   end
@@ -34,27 +36,29 @@ class Import < ActiveRecord::Base
   def field_map
     @field_map ||= begin
       hash = JSON.parse(self[:field_map]) rescue {}
-      
       if hash.empty?
         if type.include?("load_yardi")
           hash = default_yardi_field_map
-        
+
         elsif type.include?("load_non_yardi_master")
           hash = default_non_yardi_master_field_map
           
         elsif type.include?("load_non_yardi")
           hash = default_non_yardi_field_map
-          
+
+        elsif type.include?("load_xml_property_importer")
+          hash = default_property_xml_field_map
+
         end
       end
-      
+
       hash
     end
   end
-  
+
   def field_map=(data)
     #pp ">>>>", data
-    self[:field_map] = (@field_map || field_map).merge(data).to_json
+    self[:field_map] = (@field_map || field_map).merge(data).to_json rescue {}
   end
   
   def property_map
@@ -77,7 +81,19 @@ class Import < ActiveRecord::Base
       "recipient" => ADMIN_EMAIL
     }
   end
-  
+
+
+  def default_xml_ftp_setting
+    {
+      "host" => "feeds.livebozzuto.com",
+      "username" => "QBursheuno",
+      "password" => "qbusrt12",
+      "file_name" => "mits4_1.xml",
+      "recipient" => ADMIN_EMAIL
+    }
+  end
+
+
   def default_yardi_ftp_setting
     {
       "host" => "bozzutofeed.qburst.com",
@@ -97,7 +113,8 @@ class Import < ActiveRecord::Base
       "recipient" => ADMIN_EMAIL
     }
   end
-  
+
+
   def default_yardi_field_map
     {
       "yardi_property_id" => "0",
@@ -161,6 +178,27 @@ class Import < ActiveRecord::Base
       "tenant_code" => "9",
       "unit_code" => "10"
     }
-  end
+  end 
   
+  def default_property_xml_field_map
+    {
+      :origin_id => ["IDValue"],
+      :name => ["PropertyID","MarketingName"],
+      :address_line1 => ["PropertyID","Address","AddressLine1"],
+      :city => ["PropertyID","Address","City"],
+      :state => ["PropertyID","Address","State"],
+      :zip => ["PropertyID","Address","PostalCode"],
+      :county => ["PropertyID","Address","CountyName"],
+      :email => ["PropertyID","Email"],
+      :phone => ["PropertyID","Phone","PhoneNumber"],
+      :website_url => ["PropertyID","WebSite"],
+      :info => ["Information","OfficeHour"],
+      :description => ["Information","LongDescription"],
+      :latitude => ["ILS_Identification","Latitude"],
+      :longitude =>  ["ILS_Identification","Longitude"],
+      :floor_plans => ["Floorplan"],
+      :features => ["Amenity"]
+    }
+  end
+
 end
