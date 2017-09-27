@@ -272,26 +272,28 @@ namespace :utils do
 	  		success_count = 0
 	  		fail_count = 0
 	  		total_residents_digits_count = total_residents.to_s.length
-	  		query.each do |r|
-	  			r_count += 1
-	  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
-	  			now = Time.now
-	  			print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
-	  			begin
-	  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
-	  				csv << [r.id,r.email,"Success"]
-	  				success_count += 1
-	  			rescue Exception => e
-	  				error_details = ""
-	  				error_details = "#{e.class}: #{e}"
-	  				error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-	  				csv << [r.id,r.email,error_details]
-	  				fail_count += 1
-	  				next
-	  			end
-	  			time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-	  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
+	  		query.find_in_batches do |residents|
+		  		residents.each do |r|
+		  			r_count += 1
+		  			percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+		  			now = Time.now
+		  			print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+		  			begin
+		  				r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
+		  				csv << [r.id,r.email,"Success"]
+		  				success_count += 1
+		  			rescue Exception => e
+		  				error_details = ""
+		  				error_details = "#{e.class}: #{e}"
+		  				error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+		  				csv << [r.id,r.email,error_details]
+		  				fail_count += 1
+		  			end
+		  			time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+		  			print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
+		  		end
 	  		end
+	  		print "\n" 
 	  		time_end = Time.now
 	  		pp "Task Completed"
 			t = get_time_diff_str(time_start,time_end)
