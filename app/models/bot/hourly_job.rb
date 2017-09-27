@@ -8,7 +8,7 @@ class HourlyJob
   end
 
   def self.perform(time = Time.now.utc)
-    # time = Time.parse(time) if time.kind_of?(String)
+    time = Time.parse(time) if time.kind_of?(String)
     time = Time.now.in_time_zone('Eastern Time (US & Canada)')
 
     #TODO: store the below job in database when it is executed

@@ -1,5 +1,5 @@
 hourly_job:
-  cron: "*/1 * * * *"
+  cron: "0 * * * *"
   class: HourlyJob
 batch_enqueuer:
   cron: "*/1 * * * *"
