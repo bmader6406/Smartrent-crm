@@ -3,20 +3,20 @@ development:
   adapter: mysql2
   host: localhost
   port: 3306
-  database: crm_development
+  database: crm_stage
   username: root
-  password: password
-  socket: /var/run/mysqld/mysqld.sock
+  password: 
+  socket: /tmp/mysql.sock
 
 
 stage:
   adapter: mysql2
   host: localhost
   port: 3306
-  database: crm_production
+  database: crm_stage
   username: root
-  password: test123.
-  socket: /var/run/mysqld/mysqld.sock
+  password: 
+  socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
