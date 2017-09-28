@@ -20,8 +20,8 @@ Rails.application.configure do
   # Set log level
   config.log_level = :debug
 
-  HOST = "crm.bozzuto.local"
-  SR_HOST = "smartrent.bozzuto.local"
+  HOST = "crm-dev.bozzuto.com"
+  SR_HOST = "smartrent-dev.bozzuto.com"
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
