@@ -37,7 +37,7 @@ module Crm
     # rack-attack gem
     config.middleware.use Rack::Attack
     
-    config.force_ssl = false
+    config.force_ssl = true
     
     # Session timeouts
     config.session_absolute_timeout_duration = 60*60*24 # in seconds
