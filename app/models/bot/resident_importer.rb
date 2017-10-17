@@ -88,7 +88,8 @@ class ResidentImporter
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          email = row[ resident_map["email"] ].to_s.strip
+          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
           
           # Some residents have this email format:
           #- Allie.donovan@hotmail.co.uk; alex.donovan@hilton.com
@@ -389,7 +390,8 @@ class ResidentImporter
           
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          email = row[ resident_map["email"] ].to_s.strip
+          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
 
           if tenant_code.blank?
             tenant_code = [
@@ -590,7 +592,8 @@ class ResidentImporter
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          email = row[ resident_map["email"] ].to_s.strip
+          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
           
           if tenant_code.blank?
             tenant_code = [
