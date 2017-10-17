@@ -293,11 +293,9 @@ namespace :utils do
                 now = Time.now
                 print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
                 begin
-                    
-                    
                     resident.units.each do |ru1|
                         ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(updated_at: 'desc').first
-                        resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).not_in(_id: ru.id.to_s).destroy_all if ru
+                        resident.units.where(unit_code: ru1.unit_code, property_id: ru1.property_id, :_id.nin => ru.id.to_s).destroy_all if ru
                     end
                     sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
                     if sr 
