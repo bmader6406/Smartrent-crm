@@ -269,7 +269,7 @@ namespace :utils do
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
         file_name_csv = "tmp/remove_duplicate_resident_properties_"+timestamp+".csv"
-        residents = Resident.all
+        query = Resident.all
         total_residents = Array(residents).length
         r_count = 0
         p "Total Residents:#{total_residents}"
@@ -278,35 +278,37 @@ namespace :utils do
         fail_count = 0
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            residents.each do |resident|
-                r_count += 1
-                percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
-                now = Time.now
-                print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
-                begin
-                    resident.units.each do |ru1|
-                        ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(updated_at: 'desc').first
-                        resident.units.where(unit_code: ru1.unit_code, property_id: ru1.property_id, :_id.nin => ru.id.to_s).destroy_all if ru
-                    end
-                    sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
-                    if sr 
-                        sr.resident_properties.each do |sr1|
-                            rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(updated_at: 'desc').first
-                            sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
-                        end
-                    end
-                    csv << [resident.id,resident.email,"Success"]
-                    success_count += 1
-                rescue  Exception => e
-                    error_details = "#{e.class}: #{e}"
-                    error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-                    csv << [resident.id,resident.email,error_details]
-                    fail_count += 1
-                    next
-                end
-                pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
-                time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+            query.find_in_batches do |residents|
+              residents.each do |resident|
+                  r_count += 1
+                  percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+                  now = Time.now
+                  print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+                  begin
+                      resident.units.each do |ru1|
+                          ru = resident.units(unit_code: ru1.unit_code, property_id: ru1.property_id).order_by(updated_at: 'desc').first
+                          resident.units.where(unit_code: ru1.unit_code, property_id: ru1.property_id, :_id.nin => ru.id.to_s).destroy_all if ru
+                      end
+                      sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+                      if sr 
+                          sr.resident_properties.each do |sr1|
+                              rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(updated_at: 'desc').first
+                              sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
+                          end
+                      end
+                      csv << [resident.id,resident.email,"Success"]
+                      success_count += 1
+                  rescue  Exception => e
+                      error_details = "#{e.class}: #{e}"
+                      error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+                      csv << [resident.id,resident.email,error_details]
+                      fail_count += 1
+                      next
+                  end
+                  pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
+                  time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+                  print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+              end
             end
             time_end = Time.now
             pp "Task Completed"
