@@ -58,43 +58,59 @@ def get_time_diff_str(time_start,time_end)
     t
 end
 
-def filter_email(email,table)
+def filter_email(email,table = Resident)
+  # filer's email or return false if invalid email(email and unit already exist)
+  msg = ""
   email_temp = email
-  if email.include?(";")
-    email_temp = email.split(";").first.strip
-    email_temp = email.split(";").last.strip if email_temp == ""
-    query = table.where(:email => email_temp)
-    if query.count > 0
-      email_temp = email.split(";").last.strip
-    end
-  end
-
-  if email.include?(",")
-    if email.scan("@").length > 1 || email[-1] == ","
-      email_temp = email.split(",").first.strip
-      email_temp = email.split(",").last.strip if email_temp == "" 
-      query = table.where(:email => email_temp)
-      if query.count > 0
-        email_temp = email.split(";").last.strip
-      end 
-    end
-    if email_temp[-1] != ","
-      email_temp = email_temp.gsub(",", ".").strip
-    end
-  end
-
-  if email_temp.include?(" ")
-    email_temp = email_temp.gsub(" ", "").strip
-  end
-
-  email_temp = email_temp.split(".com").first + ".com" #remove text after .com
-
+  email_temp = email.split(";").first.strip if email.include?(";") && email.scan("@").length > 1 || email[-1] == ";" 
+  email_temp = email.split(",").first.strip if email.include?(",") && email.scan("@").length > 1 || email[-1] == ","
+  return false if email_temp == ""
   query = table.where(:email => email_temp)
-  if query.count > 0 || email_temp == ""
-    query = table.where(:email => email).first.destroy
-    email_temp = false
+  if query.count > 0 && email_temp != email 
+    # if already a resident with the email is present(resident_original) check whether it is same unit
+    # if different unit (resident_property) or different status then copy it to the original resident account
+    # destroy the test email(resident_current) if the unit already exist or all unit has been copied
+    if table == Resident 
+      #Mongodb table
+      resident_original = query.first
+      resident_current = table.where(:email => email).first
+      resident_current.units.each do |unit|
+        unit_exist = resident_original.units.where(:unit_id => unit.unit_id, :property_id => unit.property_id, :status => unit.status).count
+        if unit_exist > 0
+          msg << "[Mongo]Resident::destroy the unit #{unit.unit_id} for #{email}"
+            resident_current.units.find(unit._id.to_s).destroy
+            if resident_current.units.count == 0
+              msg << "[Mongo]Resident::destroy the resident #{email}"
+              resident_current.destroy
+              msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
+              sr = Smartrent::Resident.where(:email => resident_current.email)
+              sr.first.destroy if sr.count > 0
+            end
+        else
+            msg << "[Mongo]Resident::destroy the unit after copying the unit #{unit.unit_id} for #{email}"
+            t = unit.dup
+            resident_original.units << t
+            resident_current.units.find(unit._id.to_s).destroy
+            if resident_current.units.count == 0
+              msg << "[Mongo]Resident::destroy the resident #{email}"
+              resident_current.destroy
+              msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
+              sr = Smartrent::Resident.where(:email => resident_current.email)
+              sr.first.destroy if sr.count > 0
+            end
+        end
+      end
+    end
+  elsif email_temp != email 
+    msg = "Create new Resident" if msg == ""
+    resident_current = Resident.where(:email => email).first
+    resident_current.email = email_temp
+    resident_current.email_lc = email_temp.downcase
+    resident_current.save
   end
-  email_temp
+  msg = "No change" if msg == "" && email_temp == email
+  # email_temp = email_temp.split(".com").first + ".com" #remove text after .com
+  return email_temp, msg
 end
 
 namespace :utils do
@@ -112,17 +128,16 @@ namespace :utils do
         ActiveRecord::Base.logger.level = 1
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/residents_invalid_email_"+timestamp+".csv"
+        file_name_csv = "tmp/remove_invalid_email_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
-            csv << ["ID","Email","Message","Database"]
-            query = Resident.where(:email => /[,;\s]/).order("id DESC")
+            csv << ["ID","Email","Status","Final Email","Message"]
+            query = Resident.where(:email => /[,;]/).order("id DESC")
+            # query = Resident.where(:_id => 1572427447241844299)
             total_residents = query.count
             r_count = 0
             p "Total Residents with invalid email: #{total_residents}"
             p "Filtering email..."
             success_count = 0
-            success_count_mysql = 0
-            success_count_mongodb = 0
             fail_count = 0
             total_residents_digits_count = total_residents.to_s.length
             query.each do |r|
@@ -131,36 +146,14 @@ namespace :utils do
                 now = Time.now
                 print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
                 begin
-                    sr = Smartrent::Resident.find_by_email(r.email)
-                    if sr != nil
-                      email = filter_email(sr.email,Smartrent::Resident)
-                      if email
-                        sr.email = email
-                        sr.save
-                        csv << [sr.id,sr.email,"Success","Mysql",email]
-                      else
-                        csv << [sr.id,sr.email,"Success","Mysql","Removed email"]
-                      end
-                      success_count_mysql += 1
-                    end
-                    email = filter_email(r.email, Resident)
-                    if email
-                      email_lc = email.downcase
-                      r.email = email
-                      r.email_lc = email_lc
-                      r.save
-                      csv << [r.id,r.email,"Success","Mongodb",email,email_lc]
-                    else
-                      csv << [r.id,r.email,"Success","Mongodb","Removed email"]
-                    end  
-                    
-                    success_count_mongodb += 1
+                    email, msg = filter_email(r.email)
+                    csv << [r.id,r.email,"Success",email, msg]
                     success_count += 1
                 rescue Exception => e
                     error_details = ""
                     error_details = "#{e.class}: #{e}"
                     error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-                    csv << [r.id,r.email,error_details]
+                    csv << [r.id,r.email,"Failed",error_details]
                     fail_count += 1
                 end
                 time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
@@ -172,8 +165,6 @@ namespace :utils do
             t = get_time_diff_str(time_start,time_end)
             p "Time Taken to complete: #{t}"
             p "Total Residents: #{r_count}"
-            p "Mongodb Residents: #{success_count_mongodb}"
-            p "Mysql Residents: #{success_count_mysql}"
             p "Residents whose email succesfully filtered: #{success_count}"
             p "Residents failed to filter: #{fail_count}"
             p "log saved in #{file_name_csv}"
@@ -277,9 +268,9 @@ namespace :utils do
         ActiveRecord::Base.logger.level = 1
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/residents_properties_"+timestamp+".csv"
-        residents = Resident.all
-        total_residents = Array(residents).length
+        file_name_csv = "tmp/remove_duplicate_resident_properties_"+timestamp+".csv"
+        # query = Resident.all
+        total_residents = Resident.all.count
         r_count = 0
         p "Total Residents:#{total_residents}"
         p "Executing Residents..."
@@ -287,7 +278,7 @@ namespace :utils do
         fail_count = 0
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            residents.each do |resident|
+            Resident.all.each do |resident|
                 r_count += 1
                 percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
                 now = Time.now
