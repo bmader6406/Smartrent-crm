@@ -103,7 +103,7 @@ class ResidentUnit
   validates :property_id, :status , :move_in, :unit_id, :presence => true
 
   before_save :set_rental_type
-  # before_save :set_unit_status
+  before_save :set_unit_status
   
   after_save :set_unified_status
   after_save :create_or_update_smartrent_resident
@@ -132,15 +132,17 @@ class ResidentUnit
   #====
   
   def set_unit_status
-    if move_out.present? && move_in.present?
-      if move_in <= Time.now && move_out >= Time.now
-        self.status = "Current"
-        
-      elsif move_in >= Time.now && move_out >= Time.now
-        self.status = "Future"
-        
-      elsif move_in <= Time.now && move_out <= Time.now
-        self.status = "Past"
+    if roommate?
+      if move_out.present? && move_in.present?
+        if move_in <= Time.now && move_out >= Time.now
+          self.status = "Current"
+          
+        elsif move_in >= Time.now && move_out >= Time.now
+          self.status = "Future"
+          
+        elsif move_in <= Time.now && move_out <= Time.now
+          self.status = "Past"
+        end
       end
     end
   end
