@@ -72,7 +72,7 @@ class ResidentImporter
     resident_map.keys.each do |k|
       resident_map[k] = resident_map[k].to_i # for array access
     end
-    
+
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
     
@@ -85,12 +85,11 @@ class ResidentImporter
           property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
 
           next if !property_id
-
+          next if check_resident_fullname(row[resident_map["full_name"]])
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
-          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
-          
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
+
           # Some residents have this email format:
           #- Allie.donovan@hotmail.co.uk; alex.donovan@hilton.com
           #- KatCzeck21@hotmail.com, kspedden2005@yahoo.com
@@ -98,19 +97,7 @@ class ResidentImporter
           #- Christian.Motsebo@yahoo,com
           
           # TODO: check if we should cleanup the email or keep yardi data as is
-          # if email.include?(";")
-          #   email = email.split(";").first.strip
-          #   
-          # elsif email.include?(",") && email.scan("@").length > 1
-          #   email = email.split(",").first.strip
-          #   
-          # elsif email.include?(",") && email.scan("@").length == 1
-          #   email = email.gsub(",", ".").strip
-          #   
-          # elsif email.include?(" ")
-          #   email = email.gsub(" ", "").strip
-          #   
-          # end
+          email = email_clean(email)
           
           email_lc = email.to_s.downcase
           fake_email = nil
@@ -146,10 +133,8 @@ class ResidentImporter
             if resident_map[f]
               if ["email"].include?(f)
                 resident.email = email # email can be real or fake email
-                
               elsif ["full_name"].include?(f)
-                resident.full_name = row[resident_map[f]]
-                
+                 resident.full_name = row[resident_map[f]]
               else
                 resident[f] = row[resident_map[f]]
               end
@@ -387,11 +372,11 @@ class ResidentImporter
           pp "index: #{index}, property_id: #{property_id}"
           
           next if !property_id
+          next if check_resident_fullname(row[resident_map["first_name"]].to_s + row[resident_map["last_name"]].to_s)
           
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
-          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
 
           if tenant_code.blank?
             tenant_code = [
@@ -403,6 +388,8 @@ class ResidentImporter
           if unit_code.blank?
             unit_code = "temp-code"
           end
+
+          email = email_clean(email)
 
           email_lc = email.to_s.downcase
           fake_email = nil
@@ -438,7 +425,6 @@ class ResidentImporter
             if resident_map[f]
               if ["email"].include?(f)
                 resident.email = email # email can be real or fake email
-
               else
                 resident[f] = row[resident_map[f]]
               end
@@ -585,15 +571,15 @@ class ResidentImporter
           
           elan_number = row[ resident_map["elan_number"] ].to_s.strip
           property_id = prop_map[elan_number]
-          
           pp "index: #{index}, property_id: #{property_id}, elan_number: #{elan_number}"
           
           next if !property_id
 
+          next if check_resident_fullname(row[resident_map["first_name"]].to_s + row[resident_map["last_name"]].to_s)
+
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
-          email = row[ resident_map["email"] ].to_s.strip
-          # email = safe_email(row[ resident_map["email"] ].to_s.strip)
+          email = safe_email(row[ resident_map["email"] ].to_s.strip)
           
           if tenant_code.blank?
             tenant_code = [
@@ -606,6 +592,7 @@ class ResidentImporter
             unit_code = "temp-code"
           end
 
+          email = email_clean(email)
           email_lc = email.to_s.downcase
           fake_email = nil
 
@@ -640,7 +627,6 @@ class ResidentImporter
             if resident_map[f]
               if ["email"].include?(f)
                 resident.email = email # email can be real or fake email
-
               else
                 resident[f] = row[resident_map[f]]
               end
@@ -808,5 +794,23 @@ CRM Help Team
     
     return "admin+#{ email.gsub("@", "_at_") }@#{EMAIL_DOMAIN}"
   end
-  
+
+  def self.email_clean(email)
+     if email.include?(";")
+      email = email.split(";").first.strip
+    elsif email.include?(",") && email.scan("@").length > 1
+      email = email.split(",").first.strip
+    elsif email.include?(",") && email.scan("@").length == 1
+      email = email.gsub(",", ".").strip
+    elsif email.include?(" ")
+      email = email.gsub(" ", "").strip
+    end
+    return email
+  end
+
+  def self.check_resident_fullname(fullname)
+    full_name = fullname.gsub("-", "").upcase
+    return (full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES") rescue false )
+  end
+
 end
