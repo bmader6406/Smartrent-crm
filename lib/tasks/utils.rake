@@ -269,8 +269,8 @@ namespace :utils do
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
         file_name_csv = "tmp/remove_duplicate_resident_properties_"+timestamp+".csv"
-        # query = Resident.all
         total_residents = Resident.all.count
+        total_residents_digits_count = total_residents.to_s.length
         r_count = 0
         p "Total Residents:#{total_residents}"
         p "Executing Residents..."
@@ -321,56 +321,56 @@ namespace :utils do
         end
     end
 
-task :remove_resident_with_name_nonres => :environment do
-    ActiveRecord::Base.logger.level = 1
-    time_start = Time.now
-    timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-    file_name_csv = "tmp/remove_resident_with_name_nonres_"+timestamp+".csv"
-    residents = Resident.all
-      total_residents = Array(residents).length
-      r_count = 0
-      p "Total Residents:#{total_residents}"
-      p "Executing Residents..."
-      success_count = 0
-      fail_count = 0
-      CSV.open(file_name_csv, "w") do |csv|
-      csv << ["ID","Email","Message"]
-      residents.each do |resident|
-      r_count += 1
-        percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
-        now = Time.now
-        print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
-      begin
-        full_name = (resident.first_name.to_s + " " + resident.last_name.to_s).gsub("-", "").upcase
-        if full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES")
-          sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
-          sr.destroy
-          resident.destroy
-        end
-        csv << [resident.id,resident.email,"Success"]
-        success_count += 1
-      rescue  Exception => e
-        error_details = "#{e.class}: #{e}"
-        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-        csv << [resident.id,resident.email,error_details]
-        fail_count += 1
-        next
-      end
-      pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
-      time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-            print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
-        end
-      time_end = Time.now
-      pp "Task Completed"
-    t = get_time_diff_str(time_start,time_end)
-      p "Time Taken to complete: #{t}"
-      p "Total Residents:#{r_count}"
-      p "Residents succesfully cleared: #{success_count}"
-      p "Residents failed to cleared: #{fail_count}"
-      p "log saved in #{file_name_csv}"
-      csv << ["Total Residents",r_count.to_s,""]
-      csv << ["Time Taken",t,""]
-      end   
+    task :remove_resident_with_name_nonres => :environment do
+        ActiveRecord::Base.logger.level = 1
+        time_start = Time.now
+        timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+        file_name_csv = "tmp/remove_resident_with_name_nonres_"+timestamp+".csv"
+        total_residents = Resident.all.count
+        total_residents_digits_count = total_residents.to_s.length
+        r_count = 0
+        p "Total Residents:#{total_residents}"
+        p "Executing Residents..."
+        success_count = 0
+        fail_count = 0
+        CSV.open(file_name_csv, "w") do |csv|
+          csv << ["ID","Email","Message"]
+          Resident.all.each do |resident|
+            r_count += 1
+            percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+            now = Time.now
+            print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+            begin
+              full_name = (resident.first_name.to_s + " " + resident.last_name.to_s).gsub("-", "").upcase
+              if full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES")
+                sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+                sr.destroy if sr
+                resident.destroy
+              end
+              csv << [resident.id,resident.email,"Success"]
+              success_count += 1
+            rescue  Exception => e
+              error_details = "#{e.class}: #{e}"
+              error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+              csv << [resident.id,resident.email,"Failed",error_details]
+              fail_count += 1
+              next
+            end
+            time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+            print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
+          end
+          print "\n"
+          time_end = Time.now
+          pp "Task Completed"
+          t = get_time_diff_str(time_start,time_end)
+          p "Time Taken to complete: #{t}"
+          p "Total Residents:#{r_count}"
+          p "Residents succesfully cleared: #{success_count}"
+          p "Residents failed to cleared: #{fail_count}"
+          p "log saved in #{file_name_csv}"
+          csv << ["Total Residents",r_count.to_s,""]
+          csv << ["Time Taken",t,""]
+        end   
     end
 
     task :resident_conflicts do
