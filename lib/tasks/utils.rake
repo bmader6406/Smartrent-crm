@@ -305,9 +305,8 @@ namespace :utils do
                     fail_count += 1
                     next
                 end
-                pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
                 time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
             end
             time_end = Time.now
             pp "Task Completed"
@@ -415,7 +414,7 @@ namespace :utils do
         file_name_csv = "tmp/residents_rewards_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            query = Smartrent::Resident.all.order("id DESC")
+            query = Smartrent::Resident.all
             # query = query.limit(5) #if limit
             total_residents = query.count
             # query = Smartrent::Resident.where(:id=>10466) #if id
