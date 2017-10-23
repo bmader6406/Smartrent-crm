@@ -799,14 +799,14 @@ CRM Help Team
   end
 
   def self.email_clean(email)
-     if email.include?(";")
+    if email.include?(";") && email.scan("@").length > 1 || email[-1] == ";"
       email = email.split(";").first.strip
-    elsif email.include?(",") && email.scan("@").length > 1
+    elsif email.include?(",") && email.scan("@").length > 1 || email[-1] == ","
       email = email.split(",").first.strip
-    elsif email.include?(",") && email.scan("@").length == 1
-      email = email.gsub(",", ".").strip
-    elsif email.include?(" ")
-      email = email.gsub(" ", "").strip
+    # elsif email.include?(",") && email.scan("@").length == 1
+    #  email = email.gsub(",", ".").strip
+    # elsif email.include?(" ")
+    #  email = email.gsub(" ", "").strip
     end
     return email
   end
