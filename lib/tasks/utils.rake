@@ -278,24 +278,32 @@ namespace :utils do
         fail_count = 0
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            # Resident.all.each act as find_in_batches in mongo db
             Resident.all.each do |resident|
+            # resident =  Resident.where(email: "Samiralr@yahoo.com").first
                 r_count += 1
                 percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
                 now = Time.now
                 print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
                 begin
+                    to_remove = []
                     resident.units.each do |ru1|
-                        ru = resident.units(unit_id: ru1.unit_id, property_id: ru1.property_id).order_by(updated_at: 'desc').first
-                        resident.units.where(unit_id: ru1.unit_id, property_id: ru1.property_id, :_id.ne => ru.id.to_s).destroy_all if ru
+                        ru = resident.units.where( property_id: ru1.property_id).order_by(updated_at: 'desc')
+                        ru = ru.select{ |unit| unit.unit_code == ru1.unit_code}
+                        tmp = ru.first
+                        to_remove += ru.select{|x| x._id.to_s != tmp._id.to_s}
                     end
-                    sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
-                    if sr 
-                        sr.resident_properties.each do |sr1|
-                            rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(updated_at: 'desc').first
-                            sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
-                        end
+                    if to_remove.count > 0
+                        to_remove.each do |r|
+                            r.destroy
+                        end 
                     end
+                    # sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+                    # if sr 
+                    #     sr.resident_properties.each do |sr1|
+                    #         rp = sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).order(updated_at: 'desc').first
+                    #         sr.resident_properties.where(property_id: sr1.property_id, unit_code: sr1.unit_code).where.not(id: rp.id).destroy_all if rp
+                    #     end
+                    # end
                     csv << [resident.id,resident.email,"Success"]
                     success_count += 1
                 rescue  Exception => e
@@ -305,9 +313,10 @@ namespace :utils do
                     fail_count += 1
                     next
                 end
+                pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
                 time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
-            end
+                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+            # end
             time_end = Time.now
             pp "Task Completed"
             t = get_time_diff_str(time_start,time_end)
@@ -414,7 +423,7 @@ namespace :utils do
         file_name_csv = "tmp/residents_rewards_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            query = Smartrent::Resident.all
+            query = Smartrent::Resident.all.order("id DESC")
             # query = query.limit(5) #if limit
             total_residents = query.count
             # query = Smartrent::Resident.where(:id=>10466) #if id
