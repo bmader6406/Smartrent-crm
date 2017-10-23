@@ -283,7 +283,7 @@ namespace :utils do
                 r_count += 1
                 percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
                 now = Time.now
-                print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+                print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} \r"
                 begin
                     to_remove = []
                     resident.units.each do |ru1|
@@ -316,7 +316,7 @@ namespace :utils do
                 pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
                 time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
                 print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
-            # end
+            end
             time_end = Time.now
             pp "Task Completed"
             t = get_time_diff_str(time_start,time_end)
