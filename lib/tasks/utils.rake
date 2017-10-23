@@ -82,9 +82,9 @@ def filter_email(email,table = Resident)
             if resident_current.units.count == 0
               msg << "[Mongo]Resident::destroy the resident #{email}"
               resident_current.destroy
-              msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
-              sr = Smartrent::Resident.where(:email => resident_current.email)
-              sr.first.destroy if sr.count > 0
+              # msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
+              # sr = Smartrent::Resident.where(:email => resident_current.email)
+              # sr.first.destroy if sr.count > 0
             end
         else
             msg << "[Mongo]Resident::destroy the unit after copying the unit #{unit.unit_id} for #{email}"
@@ -94,9 +94,9 @@ def filter_email(email,table = Resident)
             if resident_current.units.count == 0
               msg << "[Mongo]Resident::destroy the resident #{email}"
               resident_current.destroy
-              msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
-              sr = Smartrent::Resident.where(:email => resident_current.email)
-              sr.first.destroy if sr.count > 0
+              # msg << "[Mysql]Smartrent::Resident::destroy the resident #{email}"
+              # sr = Smartrent::Resident.where(:email => resident_current.email)
+              # sr.first.destroy if sr.count > 0
             end
         end
       end
