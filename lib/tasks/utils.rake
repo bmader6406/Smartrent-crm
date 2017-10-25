@@ -125,58 +125,16 @@ namespace :utils do
     end
 
     task :temporary_task => :environment do
-        ActiveRecord::Base.logger.level = 1
-        time_start = Time.now
-        timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/temporary_task_"+timestamp+".csv"
-        CSV.open(file_name_csv, "w") do |csv|
-            csv << ["ID","Email","Message"]
-            query = Smartrent::Resident.joins(:resident_properties).where("status like ? AND move_out_date < ?","current",DateTime.now.strftime("%Y-%m-%d"))
-            total_residents = query.count
-            r_count = 0
-            p "Total Residents:#{total_residents}"
-            p "Executing Residents..."
-            success_count = 0
-            fail_count = 0
-            total_residents_digits_count = total_residents.to_s.length
-            query.find_in_batches do |residents|
-                residents.each do |r|
-                    r_count += 1
-                    percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
-                    now = Time.now
-                    print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
-                    begin
-                        r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
-                        csv << [r.id,r.email,"Success"]
-                        success_count += 1
-                    rescue Exception => e
-                        error_details = ""
-                        error_details = "#{e.class}: #{e}"
-                        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-                        csv << [r.id,r.email,error_details]
-                        fail_count += 1
-                    end
-                    time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-                    print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
-                end
-            end
-            print "\n" 
-            time_end = Time.now
-            pp "Task Completed"
-            t = get_time_diff_str(time_start,time_end)
-            p "Time Taken to complete: #{t}"
-            p "Total Residents:#{r_count}"
-            p "Residents succesfully reset: #{success_count}"
-            p "Residents failed to reset: #{fail_count}"
-            p "log saved in #{file_name_csv}"
-            csv << ["Total Residents",r_count.to_s,""]
-            csv << ["Time Taken",t,""]
-            if success_count >= total_residents
-                sql = "UPDATE smartrent_resident_properties SET move_out_date=NULL where status like 'current';"
-                ActiveRecord::Base.connection.execute(sql)
-                pp "All move out date of current residents made to null"
-            end
-        end
+      ActiveRecord::Base.logger.level = 1
+      sql = "UPDATE smartrent_resident_properties SET move_out_date=NULL where status like 'current';"
+      ActiveRecord::Base.connection.execute(sql)
+      pp "All move out date of current residents made to null"
+      meta = {"file_name" => "/reporting/yardi/bozzuto_yardi_residents/YardiResidents-Full-20171022.csv"}
+      meta["recipient"]="admin+local@bozzutosmartrent.com"
+      meta["incremental_upload"]=1
+      import = Import.find(2)
+      tmp_file = "/mnt/crm-smartrent/tmp/resident_importer.csv"
+      ResidentImporter.perform(tmp_file, "yardi", import.field_map, meta)
     end
 
     task :remove_invalid_email => :environment do
@@ -338,7 +296,7 @@ namespace :utils do
                 r_count += 1
                 percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
                 now = Time.now
-                print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} \r"
+                print "#{r_count}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
                 begin
                     to_remove = []
                     resident.units.each do |ru1|
@@ -368,10 +326,11 @@ namespace :utils do
                     fail_count += 1
                     next
                 end
-                pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
+                # pp "percentage: #{percentage}|time_start: #{time_start}|now: #{now}"
                 time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\n"
+                print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
             end
+            print "\n"
             time_end = Time.now
             pp "Task Completed"
             t = get_time_diff_str(time_start,time_end)
@@ -523,6 +482,24 @@ namespace :utils do
         end
     end
     
+    task :combined_task => :environment do
+        start = Time.now
+        pp "Starting Non-Res Removal Task..."
+        Rake::Task["utils:remove_resident_with_name_nonres"].invoke
+        pp "Completed Non-Res Task!"
+        pp "Starting email filtering Task..."
+        Rake::Task["utils:remove_invalid_email"].invoke
+        pp "Completed email filtering Task!"
+        pp "Starting duplicate units removal Task..."
+        Rake::Task["utils:remove_duplicate_resident_properties"].invoke
+        pp "Completed duplicate units removal Task!"
+        pp "Starting resident rewards reset Task..."
+        Rake::Task["utils:resident_rewards_reset"].invoke
+        pp "Completed duplicate units removal Task!"
+        pp "Time Taken for complete Task: #{get_time_diff_str(start,Time.now)}"
+
+    end
+
     task :find_smartrent_change_date do
         total = 0;
         timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
