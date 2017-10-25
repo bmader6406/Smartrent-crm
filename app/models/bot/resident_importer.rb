@@ -577,7 +577,7 @@ class ResidentImporter
           
           next if !property_id
 
-          next if check_resident_fullname(row[resident_map["first_name"]].to_s + row[resident_map["last_name"]].to_s)
+          next if check_resident_fullname(row[resident_map["first_name"]].to_s + ' ' +row[resident_map["last_name"]].to_s)
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
@@ -812,7 +812,7 @@ CRM Help Team
   end
 
   def self.check_resident_fullname(fullname)
-    full_name = fullname.gsub("-", "").upcase
+    full_name = fullname.gsub("-", "").upcase.strip
     return (full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES") rescue false )
   end
 
