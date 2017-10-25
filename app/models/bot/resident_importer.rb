@@ -379,7 +379,7 @@ class ResidentImporter
           pp "index: #{index}, property_id: #{property_id}"
           
           next if !property_id
-          next if check_resident_fullname(row[resident_map["first_name"]].to_s + row[resident_map["last_name"]].to_s)
+          next if check_resident_fullname(row[resident_map["first_name"]].to_s + ' ' + row[resident_map["last_name"]].to_s)
           
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
