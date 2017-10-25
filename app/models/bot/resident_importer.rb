@@ -63,7 +63,13 @@ class ResidentImporter
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
       p.yardi_property_id.to_s.split(";").each do |yid| #multiple id separated by ;
         next if yid.blank?
-        prop_map[yid.strip.gsub(/^0*/, '')] = p.id.to_s
+        if yid.include?("/")
+          yid.split("/").each do |id|
+            prop_map[id.strip.gsub(/^0*/, '')] = p.id.to_s
+          end
+        else
+          prop_map[yid.strip.gsub(/^0*/, '')] = p.id.to_s
+        end
       end
     end
     
@@ -799,14 +805,14 @@ CRM Help Team
   end
 
   def self.email_clean(email)
-     if email.include?(";")
+    if email.include?(";") && email.scan("@").length > 1 || email[-1] == ";"
       email = email.split(";").first.strip
-    elsif email.include?(",") && email.scan("@").length > 1
+    elsif email.include?(",") && email.scan("@").length > 1 || email[-1] == ","
       email = email.split(",").first.strip
-    elsif email.include?(",") && email.scan("@").length == 1
-      email = email.gsub(",", ".").strip
-    elsif email.include?(" ")
-      email = email.gsub(" ", "").strip
+    # elsif email.include?(",") && email.scan("@").length == 1
+    #  email = email.gsub(",", ".").strip
+    # elsif email.include?(" ")
+    #  email = email.gsub(" ", "").strip
     end
     return email
   end
