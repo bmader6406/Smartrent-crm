@@ -136,12 +136,81 @@ namespace :utils do
       tmp_file = "/mnt/crm-smartrent/tmp/resident_importer.csv"
       ResidentImporter.perform(tmp_file, "yardi", import.field_map, meta)
     end
+    
+    task :combined_task => :environment do
+        start = Time.now
+        pp "Starting Non-Res Removal Task..."
+        Rake::Task["utils:remove_resident_with_name_nonres"].invoke
+        pp "Completed Non-Res Task!"
+        pp "Starting email filtering Task..."
+        Rake::Task["utils:remove_invalid_email"].invoke
+        pp "Completed email filtering Task!"
+        pp "Starting duplicate units removal Task..."
+        Rake::Task["utils:remove_duplicate_resident_properties"].invoke
+        pp "Completed duplicate units removal Task!"
+        pp "Starting resident rewards reset Task..."
+        Rake::Task["utils:resident_rewards_reset"].invoke
+        pp "Completed duplicate units removal Task!"
+        pp "Time Taken for complete Task: #{get_time_diff_str(start,Time.now)}"
+    end
+
+    task :remove_resident_with_name_nonres => :environment do
+        ActiveRecord::Base.logger.level = 1
+        time_start = Time.now
+        timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+        file_name_csv = TMP_DIR + "task_log/remove_resident_with_name_nonres_"+timestamp+".csv"
+        total_residents = Resident.all.count
+        total_residents_digits_count = total_residents.to_s.length
+        r_count = 0
+        p "Total Residents:#{total_residents}"
+        p "Executing Residents..."
+        success_count = 0
+        fail_count = 0
+        CSV.open(file_name_csv, "w") do |csv|
+          csv << ["ID","Email","Message"]
+          Resident.all.each do |resident|
+            r_count += 1
+            percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
+            now = Time.now
+            print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
+            begin
+              full_name = (resident.first_name.to_s + " " + resident.last_name.to_s).gsub("-", "").upcase
+              if full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES")
+                sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
+                sr.destroy if sr
+                resident.destroy
+              end
+              csv << [resident.id,resident.email,"Success"]
+              success_count += 1
+            rescue  Exception => e
+              error_details = "#{e.class}: #{e}"
+              error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+              csv << [resident.id,resident.email,"Failed",error_details]
+              fail_count += 1
+              next
+            end
+            time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
+            print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
+          end
+          print "\n"
+          time_end = Time.now
+          pp "Task Completed"
+          t = get_time_diff_str(time_start,time_end)
+          p "Time Taken to complete: #{t}"
+          p "Total Residents:#{r_count}"
+          p "Residents succesfully cleared: #{success_count}"
+          p "Residents failed to cleared: #{fail_count}"
+          p "log saved in #{file_name_csv}"
+          csv << ["Total Residents",r_count.to_s,""]
+          csv << ["Time Taken",t,""]
+        end   
+    end
 
     task :remove_invalid_email => :environment do
         ActiveRecord::Base.logger.level = 1
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/remove_invalid_email_"+timestamp+".csv"
+        file_name_csv = TMP_DIR + "task_log/remove_invalid_email_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Status","Final Email","Message"]
             query = Resident.where(:email => /[,;]/).order("id DESC")
@@ -186,102 +255,11 @@ namespace :utils do
         end
     end
 
-    task :analyse_residents do
-        total = 0
-        count = 0
-        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-        puts "Task started"
-        CSV.open("tmp/residents"+timestamp+".csv", "w") do |csv|
-            csv << Smartrent::Resident.column_names
-            Smartrent::Resident.where(:smartrent_status => "Active",).where("balance < 9900").each do |r|
-                total = total + 1
-                if r.monthly_awards_amount == 0 and r.total_months > 0
-                    count = count + 1
-                    puts r.email
-                    csv << r.attributes.values
-                end
-            end
-            p "Residents count: "+total.to_s
-            p "Residents exported: "+count.to_s
-            puts "Task finished"
-        end
-    end
-
-    task :analyse_all_residents do
-        total = 0
-        count = 0
-        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-        puts "Task started"
-        residents_in_multipleunits = Array.new
-        CSV.open("tmp/residents_2_"+timestamp+".csv", "w") do |csv2|
-            # csv1 << Smartrent::Resident.column_names.each {|column| column.humanize } 
-            csv2 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
-                        "expiry date", "first move-in", "current property", "current unit",
-                        "resident status", "move-in date", "move-out date", "unit code"
-                                ]
-            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
-                history = {:applicant => 0, :future => 0, :current => 0, :past => 0}
-                r.resident_properties.each do |h|
-                    history[h.status.downcase.to_sym] += 1 if history.key?(h.status.downcase.to_sym)                    
-                end
-                if history[:current] > 1
-                    puts r.id.to_s+" :: "+r.email
-                    p "    has "+history[:current].to_s+" current type records in resident history"
-                    r.resident_properties.each do |h|
-                        if h.status == "Current"
-                            count = count + 1
-                            csv2 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
-                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
-                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
-                        end
-                    end
-                end
-            end
-            p "Residents count: "+total.to_s
-            p "Residents exported: "+count.to_s
-            puts "Task finished"
-        end
-    end
-
-    task :resident_dupes do
-        total = 0
-        count = 0
-        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-        puts "Task started"
-        CSV.open("tmp/residents_dupes_"+timestamp+".csv", "w") do |csv1|
-            csv1 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
-                        "expiry date", "first move-in", "current property", "current unit",
-                        "resident status", "move-in date", "move-out date", "unit code"
-                                ]
-            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
-                total = total + 1
-                r.resident_properties.each do |h|
-                    r.resident_properties.each do |h2|
-                        unless h==h2
-                            if equals(h,h2)
-                                count = count + 1
-                                p 'Found a duplicate entry ' + count.to_s
-                                csv1 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
-                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
-                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
-                            end
-                        end
-                        
-                    end
-                end
-                
-            end
-            p "Residents count: "+total.to_s
-            p "Records exported: "+count.to_s
-            puts "Task finished"
-        end
-    end
-
     task :remove_duplicate_resident_properties => :environment do
         ActiveRecord::Base.logger.level = 1
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/remove_duplicate_resident_properties_"+timestamp+".csv"
+        file_name_csv = TMP_DIR + "task_log/remove_duplicate_resident_properties_"+timestamp+".csv"
         total_residents = Resident.all.count
         total_residents_digits_count = total_residents.to_s.length
         r_count = 0
@@ -344,97 +322,11 @@ namespace :utils do
         end
     end
 
-    task :remove_resident_with_name_nonres => :environment do
-        ActiveRecord::Base.logger.level = 1
-        time_start = Time.now
-        timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/remove_resident_with_name_nonres_"+timestamp+".csv"
-        total_residents = Resident.all.count
-        total_residents_digits_count = total_residents.to_s.length
-        r_count = 0
-        p "Total Residents:#{total_residents}"
-        p "Executing Residents..."
-        success_count = 0
-        fail_count = 0
-        CSV.open(file_name_csv, "w") do |csv|
-          csv << ["ID","Email","Message"]
-          Resident.all.each do |resident|
-            r_count += 1
-            percentage = (((r_count.to_f/total_residents)*10000).round)/100.to_f
-            now = Time.now
-            print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
-            begin
-              full_name = (resident.first_name.to_s + " " + resident.last_name.to_s).gsub("-", "").upcase
-              if full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES")
-                sr = Smartrent::Resident.find_by_crm_resident_id(resident._id)
-                sr.destroy if sr
-                resident.destroy
-              end
-              csv << [resident.id,resident.email,"Success"]
-              success_count += 1
-            rescue  Exception => e
-              error_details = "#{e.class}: #{e}"
-              error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
-              csv << [resident.id,resident.email,"Failed",error_details]
-              fail_count += 1
-              next
-            end
-            time_estimate = now+((total_residents-r_count)*((now-time_start)/r_count.to_f).round(2)).round
-            print "| Estimated Time Remaining: #{get_time_diff_str(now,time_estimate)}\r"
-          end
-          print "\n"
-          time_end = Time.now
-          pp "Task Completed"
-          t = get_time_diff_str(time_start,time_end)
-          p "Time Taken to complete: #{t}"
-          p "Total Residents:#{r_count}"
-          p "Residents succesfully cleared: #{success_count}"
-          p "Residents failed to cleared: #{fail_count}"
-          p "log saved in #{file_name_csv}"
-          csv << ["Total Residents",r_count.to_s,""]
-          csv << ["Time Taken",t,""]
-        end   
-    end
-
-    task :resident_conflicts do
-        total = 0
-        count = 0
-        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-        puts "Task started"
-        CSV.open("tmp/residents_conflicts_"+timestamp+".csv", "w") do |csv1|
-            csv1 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
-                        "expiry date", "first move-in", "current property", "current unit",
-                        "resident status", "move-in date", "move-out date", "unit code"
-                                ]
-            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
-                total = total + 1
-                r.resident_properties.each do |h|
-                    r.resident_properties.each do |h2|
-                        unless h==h2
-                            if conflicts(h,h2)
-                                count = count + 1
-                                p 'Found conflicting entry ' + count.to_s
-                                csv1 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
-                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
-                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
-                            end
-                        end
-                        
-                    end
-                end
-                
-            end
-            p "Residents count: "+total.to_s
-            p "Records exported: "+count.to_s
-            puts "Task finished"
-        end
-    end
-
     task :resident_rewards_reset => :environment do
         ActiveRecord::Base.logger.level = 1
         time_start = Time.now
         timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
-        file_name_csv = "tmp/residents_rewards_"+timestamp+".csv"
+        file_name_csv = TMP_DIR + "task_log/residents_rewards_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
             query = Smartrent::Resident.all.order("id DESC")
@@ -481,29 +373,11 @@ namespace :utils do
             csv << ["Time Taken",t,""]
         end
     end
-    
-    task :combined_task => :environment do
-        start = Time.now
-        pp "Starting Non-Res Removal Task..."
-        Rake::Task["utils:remove_resident_with_name_nonres"].invoke
-        pp "Completed Non-Res Task!"
-        pp "Starting email filtering Task..."
-        Rake::Task["utils:remove_invalid_email"].invoke
-        pp "Completed email filtering Task!"
-        pp "Starting duplicate units removal Task..."
-        Rake::Task["utils:remove_duplicate_resident_properties"].invoke
-        pp "Completed duplicate units removal Task!"
-        pp "Starting resident rewards reset Task..."
-        Rake::Task["utils:resident_rewards_reset"].invoke
-        pp "Completed duplicate units removal Task!"
-        pp "Time Taken for complete Task: #{get_time_diff_str(start,Time.now)}"
-
-    end
 
     task :find_smartrent_change_date do
         total = 0;
         timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
-        CSV.open("tmp/property"+timestamp+".csv", "w") do |csv|
+        CSV.open(TMP_DIR + "task_log/property"+timestamp+".csv", "w") do |csv|
             column_names = ["id","property_name","last_awarded_date"]
             csv << column_names
             properties = Property.all.each do |pr|
@@ -516,6 +390,131 @@ namespace :utils do
             end
             Rails.logger.info("Records count: "+total.to_s)
             Rails.logger.info("Task finished")
+        end
+    end
+
+    task :resident_conflicts do
+        total = 0
+        count = 0
+        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+        puts "Task started"
+        CSV.open("task_log/residents_conflicts_"+timestamp+".csv", "w") do |csv1|
+            csv1 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
+                        "expiry date", "first move-in", "current property", "current unit",
+                        "resident status", "move-in date", "move-out date", "unit code"
+                                ]
+            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
+                total = total + 1
+                r.resident_properties.each do |h|
+                    r.resident_properties.each do |h2|
+                        unless h==h2
+                            if conflicts(h,h2)
+                                count = count + 1
+                                p 'Found conflicting entry ' + count.to_s
+                                csv1 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
+                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
+                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
+                            end
+                        end
+                        
+                    end
+                end
+                
+            end
+            p "Residents count: "+total.to_s
+            p "Records exported: "+count.to_s
+            puts "Task finished"
+        end
+    end
+
+    task :analyse_residents do
+        total = 0
+        count = 0
+        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+        puts "Task started"
+        CSV.open("task_log/residents"+timestamp+".csv", "w") do |csv|
+            csv << Smartrent::Resident.column_names
+            Smartrent::Resident.where(:smartrent_status => "Active",).where("balance < 9900").each do |r|
+                total = total + 1
+                if r.monthly_awards_amount == 0 and r.total_months > 0
+                    count = count + 1
+                    puts r.email
+                    csv << r.attributes.values
+                end
+            end
+            p "Residents count: "+total.to_s
+            p "Residents exported: "+count.to_s
+            puts "Task finished"
+        end
+    end
+
+    task :analyse_all_residents do
+        total = 0
+        count = 0
+        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+        puts "Task started"
+        residents_in_multipleunits = Array.new
+        CSV.open("task_log/residents_2_"+timestamp+".csv", "w") do |csv2|
+            # csv1 << Smartrent::Resident.column_names.each {|column| column.humanize } 
+            csv2 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
+                        "expiry date", "first move-in", "current property", "current unit",
+                        "resident status", "move-in date", "move-out date", "unit code"
+                                ]
+            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
+                history = {:applicant => 0, :future => 0, :current => 0, :past => 0}
+                r.resident_properties.each do |h|
+                    history[h.status.downcase.to_sym] += 1 if history.key?(h.status.downcase.to_sym)                    
+                end
+                if history[:current] > 1
+                    puts r.id.to_s+" :: "+r.email
+                    p "    has "+history[:current].to_s+" current type records in resident history"
+                    r.resident_properties.each do |h|
+                        if h.status == "Current"
+                            count = count + 1
+                            csv2 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
+                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
+                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
+                        end
+                    end
+                end
+            end
+            p "Residents count: "+total.to_s
+            p "Residents exported: "+count.to_s
+            puts "Task finished"
+        end
+    end
+
+    task :resident_dupes do
+        total = 0
+        count = 0
+        timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
+        puts "Task started"
+        CSV.open("task_log/residents_dupes_"+timestamp+".csv", "w") do |csv1|
+            csv1 << ["id", "email", "first name", "last name", "smartrent status", "balance", 
+                        "expiry date", "first move-in", "current property", "current unit",
+                        "resident status", "move-in date", "move-out date", "unit code"
+                                ]
+            Smartrent::Resident.where("balance >= 0").order(:email).each do |r|
+                total = total + 1
+                r.resident_properties.each do |h|
+                    r.resident_properties.each do |h2|
+                        unless h==h2
+                            if equals(h,h2)
+                                count = count + 1
+                                p 'Found a duplicate entry ' + count.to_s
+                                csv1 << [r.id.to_s+"-"+h.id.to_s, r.email, r.first_name, r.last_name, r.smartrent_status, r.balance, 
+                                r.expiry_date, r.first_move_in, r.current_property_id, r.current_unit_id,
+                                h.status, h.move_in_date, h.move_out_date, h.unit_code]
+                            end
+                        end
+                        
+                    end
+                end
+                
+            end
+            p "Residents count: "+total.to_s
+            p "Records exported: "+count.to_s
+            puts "Task finished"
         end
     end
 end
