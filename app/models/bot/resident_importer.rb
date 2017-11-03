@@ -19,6 +19,9 @@ class ResidentImporter
   end
   
   def self.yardi_import(file_path, resident_map, meta)
+
+    log_output = "/mnt/exim-data/task_log/yardi_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+
     # https://app.asana.com/0/376484593635/62561912450046/f
     # Yardi file format
     # 0   Property Code
@@ -124,8 +127,33 @@ class ResidentImporter
           
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
-          #consolidate resident by email
-          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
+          # consolidate resident by tenant_code if email is changed in feed
+          # Name and other details can also be changed. Currently only email change exists
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code.each do |r|
+            if r && r.email_lc != email_lc
+              resident = r
+              pre_email = resident.email_lc
+              new_email_exist = Resident.with(:consistency => :strong).where(:email => email).first
+              if new_email_exist
+                pp "delete the unit #{unit_code} from this resident"
+                CSV.open(log_output, "a+") do |l|
+                  l << ["Unit Transfer","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]
+                  r.units.where(:tenant_code => tenant_code).first.destroy
+                  if r.units.count == 0 
+                    r.destroy 
+                    l << ["Email Updated","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]
+                  else
+                    sr = Smartrent::Resident.find_by_email r.email
+                    #If a smartrent resident_property is removed there is a chance of rewards getting error
+                    sr.resident_properties.first.reset_rewards_table if sr
+                  end
+                end
+              end
+            end
+          end
+          #consolidate resident by email if no resident with that tenant code exists
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first if !resident
           pp ">>> email_lc: #{email_lc}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
           
           resident = Resident.new if !resident
