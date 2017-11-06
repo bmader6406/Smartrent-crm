@@ -112,6 +112,7 @@ class ResidentUnit
 
   after_destroy :set_unified_status
   after_destroy :decrease_counter_cache
+  before_destroy :destroy_from_smartrent
 
   def property
     @property ||= Property.find_by_id(property_id)
@@ -158,6 +159,14 @@ class ResidentUnit
         Resident.collection.where({"_id" => resident._id}).update({'$inc' => {"units_count" => -1}}, {:multi => true})
       end
     end
+
+    def destroy_from_smartrent
+      if resident
+        sr = Smartrent::Resident.where(:email => resident.email).first
+        property_to_delete_from_smartrent = sr.resident_properties.where(:unit_code => self.unit_code, :property_id => self.property_id)
+        property_to_delete_from_smartrent.first.destroy if property_to_delete_from_smartrent.count == 1
+      end
+    end 
   
     def set_unified_status
       if resident && resident.unified_status != resident.to_unified_status # pure update

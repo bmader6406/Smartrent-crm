@@ -156,6 +156,8 @@ class Resident
 
   before_save :downcase_name_email
   after_save :change_smartrent_email
+
+  before_destroy :destroy_smartrent_resident
   
   index({ email_lc: 1 }, {background: true})
   index({ first_name_lc: 1 }, {background: true})
@@ -518,5 +520,10 @@ class Resident
           sr.update_attributes(:email => email)
         end
       end
+    end
+
+    def destroy_smartrent_resident
+      sr = Smartrent::Resident.find_by_email(email)
+      sr.destroy if sr
     end
 end
