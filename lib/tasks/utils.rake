@@ -333,7 +333,8 @@ namespace :utils do
         file_name_csv = TMP_DIR + "task_log/residents_rewards_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            query = Smartrent::Resident.all.order("id DESC")
+            # query = Smartrent::Resident.all.order("id DESC")
+            query=Smartrent::Resident.where(smartrent_status: "Expired")
             # query = query.limit(5) #if limit
             total_residents = query.count
             # query = Smartrent::Resident.where(:id=>10466) #if id
