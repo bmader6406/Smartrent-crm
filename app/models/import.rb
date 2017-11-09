@@ -81,9 +81,9 @@ class Import < ActiveRecord::Base
   def default_yardi_ftp_setting
     {
       "host" => "bozzutofeed.qburst.com",
-      "username" => "bozzutofc",
-      "password" => "6zxXRETm",
-      "file_name" => "/reporting/yardi/bozzuto_yardi_residents/YardiResidents-Full-%Y%m%d.csv",
+      "username" => "ftpcrm",
+      "password" => "BKyB0vDVd1mlM",
+      "file_name" => "/bozzuto_yardi_residents/YardiResidents-Full-%Y%m%d.csv",
       "recipient" => ADMIN_EMAIL
     }
   end
@@ -91,9 +91,9 @@ class Import < ActiveRecord::Base
   def default_non_yardi_ftp_setting
     {
       "host" => "bozzutofeed.qburst.com",
-      "username" => "bozzutofc",
-      "password" => "6zxXRETm",
-      "path" => "/reporting/nonbozzutopmsdrop/yardi_ta",
+      "username" => "ftpcrm",
+      "password" => "BKyB0vDVd1mlM",
+      "path" => "/non_bozzuto_yardi_residents/noyardiresidents%Y%m%d.csv",
       "recipient" => ADMIN_EMAIL
     }
   end
