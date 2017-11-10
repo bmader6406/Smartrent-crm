@@ -132,15 +132,17 @@ class ResidentUnit
   #====
   
   def set_unit_status
-    if move_out.present? && move_in.present?
-      if move_in <= Time.now && move_out >= Time.now
-        self.status = "Current"
-        
-      elsif move_in >= Time.now && move_out >= Time.now
-        self.status = "Future"
-        
-      elsif move_in <= Time.now && move_out <= Time.now
-        self.status = "Past"
+    if roommate?
+      if move_out.present? && move_in.present?
+        if move_in <= Time.now && move_out >= Time.now
+          self.status = "Current"
+          
+        elsif move_in >= Time.now && move_out >= Time.now
+          self.status = "Future"
+          
+        elsif move_in <= Time.now && move_out <= Time.now
+          self.status = "Past"
+        end
       end
     end
   end

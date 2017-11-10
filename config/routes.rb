@@ -11,7 +11,6 @@ Rails.application.routes.draw do
         get :tickets
         get :roommates
         get :units
-        
         get :marketing_units
         get :marketing_statuses
         get :smartrent
@@ -116,6 +115,7 @@ Rails.application.routes.draw do
       post :set_status
       post :set_amount
       post :become_buyer
+      post :reset_rewards
     end
   end
   
@@ -173,6 +173,9 @@ Rails.application.routes.draw do
     
     get :non_yardi
     post :load_non_yardi
+
+    get :xml_property_importer
+    post :load_xml_property_importer
     
     post :create_non_yardi
     post :delete_non_yardi

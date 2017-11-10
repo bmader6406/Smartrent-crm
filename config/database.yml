@@ -8,6 +8,7 @@ development:
   password: 
   socket: /tmp/mysql.sock
 
+
 stage:
   adapter: mysql2
   host: localhost

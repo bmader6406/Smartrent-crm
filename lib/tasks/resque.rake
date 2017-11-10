@@ -1,4 +1,5 @@
 require 'resque/pool/tasks'
+require 'resque/tasks'
 
 # this task will get called before resque:pool:setup
 # and preload the rails environment in the pool manager
@@ -7,6 +8,7 @@ task "resque:setup" => :environment do
 end
 
 task "resque:pool:setup" do
+	ENV['QUEUE']  = 'crm_*'
   # close any sockets or files in pool manager
   ActiveRecord::Base.connection.disconnect!
   

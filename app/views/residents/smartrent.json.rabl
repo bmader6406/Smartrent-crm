@@ -16,6 +16,7 @@ node do |n|
     :is_admin => current_user.is_admin?,
     :rewards => [],
     
+    :reset_rewards_path => reset_rewards_resident_password_path(n),
     :reset_password_path => reset_resident_password_path(n),
     :update_password_path => resident_password_path(n),
     :set_status_path => set_status_resident_password_path(n),

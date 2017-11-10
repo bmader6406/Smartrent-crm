@@ -16,6 +16,7 @@ class Property < ActiveRecord::Base
   has_many :campaigns
   has_many :audiences, :class_name => "Audience"
   
+  has_paper_trail only: [:is_smartrent]
 
   validates :name, :presence => true, :uniqueness => {:scope => [:elan_number, :deleted_at]}
 
