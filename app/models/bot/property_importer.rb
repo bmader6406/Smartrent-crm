@@ -11,10 +11,10 @@ class PropertyImporter
     user = User.unscoped.order('created_at asc').first
     
     if !file_path # download from BozzutoLink ftp
-      file_name = "/reporting/hyly/property_list/BozzutoGroup-#{Time.now.in_time_zone("Eastern Time (US & Canada)").strftime("%d%m%Y")}.csv"
+      file_name = "/property_list/BozzutoGroup-#{Time.now.in_time_zone("Eastern Time (US & Canada)").strftime("%d%m%Y")}.csv"
       file_path = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
       
-      Net::FTP.open("bozzutofeed.qburst.com", "bozzutofc", "6zxXRETm") do |ftp|
+      Net::FTP.open("bozzutofeed.qburst.com", "ftphyly", "Rj6E0a8nmykts") do |ftp|
         ftp.passive = true
         ftp.getbinaryfile(file_name, file_path)
         puts "Ftp downloaded: #{file_path}"
