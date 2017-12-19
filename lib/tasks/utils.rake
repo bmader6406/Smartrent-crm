@@ -495,7 +495,7 @@ namespace :utils do
         end
     end
 
-  	 	task :resolve_mongo_mysql_mismatch do
+  	 	task :resolve_mongo_mysql_mismatch => :environment do
  		ActiveRecord::Base.logger.level = 1
  		count = 0
  		mismatch = 0
@@ -530,7 +530,7 @@ namespace :utils do
  		print "\nCompleted...with #{mismatch} mismatches and #{dup_mismatch} dup_mismatches from total:#{count}\n"
  	end 
 
- 	task :expire_resident_before_smartrent_programe do
+ 	task :expire_resident_before_smartrent_programe => :environment do
  		ActiveRecord::Base.logger.level = 1
  		time_start = Time.now
  		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
