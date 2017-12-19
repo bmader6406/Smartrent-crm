@@ -333,8 +333,8 @@ namespace :utils do
         file_name_csv = TMP_DIR + "task_log/residents_rewards_"+timestamp+".csv"
         CSV.open(file_name_csv, "w") do |csv|
             csv << ["ID","Email","Message"]
-            # query = Smartrent::Resident.all.order("id DESC")
-            query=Smartrent::Resident.where(smartrent_status: "Expired")
+            query = Smartrent::Resident.all.order("id DESC")
+            # query = Smartrent::Resident.where(smartrent_status: "Expired")
             # query = query.limit(5) #if limit
             total_residents = query.count
             # query = Smartrent::Resident.where(:id=>10466) #if id
@@ -494,4 +494,61 @@ namespace :utils do
             Rails.logger.info("Task finished")
         end
     end
+
+  	 	task :resolve_mongo_mysql_mismatch do
+ 		ActiveRecord::Base.logger.level = 1
+ 		count = 0
+ 		mismatch = 0
+ 		dup_mismatch = 0
+ 		arr = []
+ 		total = Resident.all
+ 		time_start = Time.now
+ 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+ 		file_name_csv = TMP_DIR + "task_log/residents_mismatch_"+timestamp+".csv"
+ 		CSV.open(file_name_csv, "w") do |csv|
+ 			csv << ["ID","Email","Message"]
+ 			Resident.all.each do |r|
+ 				count +=1
+ 				sr = Smartrent::Resident.find_by_email(r.email_lc)
+ 				next if !sr
+ 				r.units.each do |u|
+ 					test = sr.resident_properties.where(:unit_code => u.unit_code, :property_id => u.property_id)
+ 					if test.count > 1 
+ 						csv << [r.id,r.email,"Duplicate"]
+ 						dup_mismatch += 1
+ 						test.destroy_all
+ 						u.save
+ 					elsif test.first and test.first.status != u.status
+ 						csv << [r.id,r.email,"Mismatch"]
+ 						mismatch += 1
+ 						u.save
+ 					end
+ 				end
+ 				print "#{count}/#{total}\r"
+ 			end
+ 		end
+ 		print "\nCompleted...with #{mismatch} mismatches and #{dup_mismatch} dup_mismatches from total:#{count}\n"
+ 	end 
+
+ 	task :expire_resident_before_smartrent_programe do
+ 		ActiveRecord::Base.logger.level = 1
+ 		time_start = Time.now
+ 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+ 		file_name_csv = TMP_DIR + "task_log/residents_expire_"+timestamp+".csv"
+ 		CSV.open(file_name_csv, "w") do |csv|
+ 			srs = Smartrent::Resident.where('balance = ? and smartrent_status = ?', 0, 'Inactive')
+ 			d = DateTime.now.change(:day =>3,:month => 03,:year => 2016)
+ 			srs.each do |resident|
+ 				rps = resident.resident_properties.where('move_out_date != ?', nil)
+ 				date = rps.max_by{|rp| rp.move_out_date }.move_out_date 
+ 				if date and date<d
+ 					csv << [resident.id,r.email,"Mismatch"]
+ 					resident.balance = 0
+ 					resident.smartrent_status = 'Expired'
+ 					resident.save
+ 				end
+ 			end
+ 		end
+ 	end
+
 end
