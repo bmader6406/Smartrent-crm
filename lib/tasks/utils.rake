@@ -495,7 +495,7 @@ namespace :utils do
         end
     end
 
-  	 	task :resolve_mongo_mysql_mismatch => :environment do
+  	task :resolve_mongo_mysql_mismatch => :environment do
  		ActiveRecord::Base.logger.level = 1
  		count = 0
  		mismatch = 0
@@ -536,11 +536,11 @@ namespace :utils do
  		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
  		file_name_csv = TMP_DIR + "task_log/residents_expire_"+timestamp+".csv"
  		CSV.open(file_name_csv, "w") do |csv|
- 			srs = Smartrent::Resident.where('balance = ? and smartrent_status = ?', 0, 'Inactive')
+ 			srs = Smartrent::Resident.where('balance = ? and smartrent_status = ?', 100, 'Inactive')
  			d = DateTime.now.change(:day =>3,:month => 03,:year => 2016)
  			srs.each do |resident|
  				rps = resident.resident_properties.where('move_out_date != ?', nil)
- 				date = rps.max_by{|rp| rp.move_out_date }.move_out_date 
+ 				date = rps.max_by{|rp| rp.move_out_date }.move_out_date if rps.count > 0
  				if date and date<d
  					csv << [resident.id,r.email,"Mismatch"]
  					resident.balance = 0
@@ -548,6 +548,29 @@ namespace :utils do
  					resident.save
  				end
  			end
+ 		end
+ 	end
+
+ 	task :remove_smartrent_credits_of_roommates => :environment do
+ 		ActiveRecord::Base.logger.level = 1
+ 		time_start = Time.now
+ 		timestamp = time_start.strftime('%Y-%m-%d_%H-%M-%S')
+ 		file_name_csv = TMP_DIR + "task_log/roommates_expire_"+timestamp+".csv"
+ 		count = 0
+		residents = Resident.all
+ 		CSV.open(file_name_csv, "w") do |csv|
+	 		ActiveRecord::Base.logger.level = 1
+			residents.each do |r|
+			  	all_roommate = r.units.collect(&:roommate).all?
+			  	if all_roommate
+			    	sr = Smartrent::Resident.find_by_crm_resident_id r._id
+			    	if sr
+			    		csv << [sr.id,sr.email,"Mismatch"]
+				      	count += 1
+				      	sr.delete 
+		    		end
+		 		end
+			end	
  		end
  	end
 
