@@ -539,10 +539,12 @@ namespace :utils do
  			srs = Smartrent::Resident.where('balance = ? and smartrent_status = ?', 100, 'Inactive')
  			d = DateTime.now.change(:day =>3,:month => 03,:year => 2016)
  			srs.each do |resident|
- 				rps = resident.resident_properties.where('move_out_date != ?', nil)
- 				date = rps.max_by{|rp| rp.move_out_date }.move_out_date if rps.count > 0
+ 				rps = resident.resident_properties
+ 				pp rps.count if rps.count>0
+ 				date = rps.max_by{|rp| rp.move_out_date }.move_out_date rescue Time.now
  				if date and date<d
- 					csv << [resident.id,r.email,"Mismatch"]
+ 					pp resident.email
+ 					csv << [resident.id,resident.email,"Mismatch"]
  					resident.balance = 0
  					resident.smartrent_status = 'Expired'
  					resident.save
