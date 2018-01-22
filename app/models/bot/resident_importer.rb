@@ -96,6 +96,7 @@ class ResidentImporter
           next if !property_id
           next if check_resident_fullname(row[resident_map["full_name"]])
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
           # email = safe_email(row[ resident_map["email"] ].to_s.strip)
@@ -114,7 +115,7 @@ class ResidentImporter
           
           #convert blank and ignored email into fake email
           if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
-              fake_email = "#{tenant_code}@noemail.yardi"
+            fake_email = "#{tenant_code}@noemail.yardi"
               email = fake_email # don't not unify fake email or non-existant email
               email_lc = email
           end
@@ -133,8 +134,8 @@ class ResidentImporter
           residents_with_tenant_code.each do |r|
             if r && r.email_lc != email_lc
               resident = r
-              pre_email = resident.email_lc
-              new_email_exist = Resident.with(:consistency => :strong).where(:email => email).first
+              pre_email = resident.email_lc.to_s.strip
+              new_email_exist = Resident.with(:consistency => :strong).where(:email => pre_email).first
               if new_email_exist
                 pp "delete the unit #{unit_code} from this resident"
                 CSV.open(log_output, "a+") do |l|

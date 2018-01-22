@@ -163,8 +163,8 @@ class ResidentUnit
     def destroy_from_smartrent
       if resident
         sr = Smartrent::Resident.where(:email => resident.email).first
-        property_to_delete_from_smartrent = sr.resident_properties.where(:unit_code => self.unit_code, :property_id => self.property_id)
-        property_to_delete_from_smartrent.first.destroy if property_to_delete_from_smartrent.count == 1
+        property_to_delete_from_smartrent = sr.resident_properties.where(:unit_code => self.unit_code, :property_id => self.property_id) if sr
+        property_to_delete_from_smartrent.first.destroy if sr and property_to_delete_from_smartrent.count == 1
       end
     end 
   
