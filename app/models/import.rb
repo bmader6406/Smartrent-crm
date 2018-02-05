@@ -98,7 +98,7 @@ class Import < ActiveRecord::Base
     {
       "host" => "bozzutofeed.qburst.com",
       "username" => "ftpcrm",
-      "password" => "BKyB0vDVd1mlM",
+      "password" => "i9aMkVUGigzpo",
       "file_name" => "/bozzuto_yardi_residents/YardiResidents-Full-%Y%m%d.csv",
       "recipient" => ADMIN_EMAIL
     }
@@ -108,7 +108,7 @@ class Import < ActiveRecord::Base
     {
       "host" => "bozzutofeed.qburst.com",
       "username" => "ftpcrm",
-      "password" => "BKyB0vDVd1mlM",
+      "password" => "i9aMkVUGigzpo",
       "path" => "/non_bozzuto_yardi_residents/noyardiresidents%Y%m%d.csv",
       "recipient" => ADMIN_EMAIL
     }

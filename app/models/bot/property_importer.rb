@@ -14,7 +14,7 @@ class PropertyImporter
       file_name = "/property_list/BozzutoGroup-#{Time.now.in_time_zone("Eastern Time (US & Canada)").strftime("%d%m%Y")}.csv"
       file_path = "#{TMP_DIR}#{file_name.gsub("/", "_").gsub(".csv", "_#{Time.now.to_i}.csv")}"
       
-      Net::FTP.open("bozzutofeed.qburst.com", "ftphyly", "Rj6E0a8nmykts") do |ftp|
+      Net::FTP.open("bozzutofeed.qburst.com", "ftphyly", "YPIBcRK4kxtRM") do |ftp|
         ftp.passive = true
         ftp.getbinaryfile(file_name, file_path)
         puts "Ftp downloaded: #{file_path}"
