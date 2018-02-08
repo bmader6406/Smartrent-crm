@@ -96,6 +96,7 @@ class ResidentImporter
           next if !property_id
           next if check_resident_fullname(row[resident_map["full_name"]])
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
           # email = safe_email(row[ resident_map["email"] ].to_s.strip)
@@ -114,7 +115,7 @@ class ResidentImporter
           
           #convert blank and ignored email into fake email
           if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
-              fake_email = "#{tenant_code}@noemail.yardi"
+            fake_email = "#{tenant_code}@noemail.yardi"
               email = fake_email # don't not unify fake email or non-existant email
               email_lc = email
           end
@@ -133,8 +134,8 @@ class ResidentImporter
           residents_with_tenant_code.each do |r|
             if r && r.email_lc != email_lc
               resident = r
-              pre_email = resident.email_lc
-              new_email_exist = Resident.with(:consistency => :strong).where(:email => email).first
+              pre_email = resident.email_lc.to_s.strip
+              new_email_exist = Resident.with(:consistency => :strong).where(:email => pre_email).first
               if new_email_exist
                 pp "delete the unit #{unit_code} from this resident"
                 CSV.open(log_output, "a+") do |l|
@@ -580,6 +581,8 @@ class ResidentImporter
     
     prop_map = {}
 
+    log_output = "/mnt/exim-data/task_log/non_yardi_master_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
       next if p.elan_number.blank?
       prop_map[p.elan_number.to_s] = p.id.to_s
@@ -614,6 +617,8 @@ class ResidentImporter
           next if check_resident_fullname(row[resident_map["first_name"]].to_s + ' ' +row[resident_map["last_name"]].to_s)
 
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
+
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
           # email = safe_email(row[ resident_map["email"] ].to_s.strip)
@@ -649,6 +654,29 @@ class ResidentImporter
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           #consolidate resident by email
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code.each do |r|    
+            if r && r.email_lc != email_lc    
+              resident = r    
+              pre_email = resident.email_lc.to_s.strip    
+              new_email_exist = Resident.with(:consistency => :strong).where(:email => pre_email).first   
+              if new_email_exist    
+                pp "delete the unit #{unit_code} from this resident"    
+                CSV.open(log_output, "a+") do |l|   
+                  l << ["Unit Transfer","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]   
+                  r.units.where(:tenant_code => tenant_code).first.destroy    
+                  if r.units.count == 0     
+                    r.destroy     
+                    l << ["Email Updated","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]   
+                  else    
+                    sr = Smartrent::Resident.find_by_email r.email    
+                    sr.resident_properties.first.reset_rewards_table if sr    
+                  end   
+                end   
+              end   
+            end   
+          end
+
           resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
           pp ">>> email_lc: #{email_lc}, resident_id: #{resident ? resident.id : ""}, unit_id: #{unit ? unit.id : ""}"
 
