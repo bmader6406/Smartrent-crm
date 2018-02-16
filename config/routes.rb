@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   constraints(DomainSubdomain) do
     mount Smartrent::Engine, :at => "/", :as => "smartrent"
   end
-  
+
+  # get '/residents/export', :to => 'residents#export', defaults: { format: :csv }
+
   # shared
   def resident_resources
     resources :residents do
@@ -19,6 +21,7 @@ Rails.application.routes.draw do
       
       collection do
         get :search
+        get :export
       end
       
       resources :activities do

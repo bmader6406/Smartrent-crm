@@ -181,7 +181,36 @@ class Resident
   # don't set default sort order
   # don't specify sort if not needed on a large set
   # http://stackoverflow.com/questions/11599069/what-does-mongo-sort-on-when-no-sort-order-is-specified
-  
+
+  def self.to_csv
+    column_names = ["Property Name", "Property State", "SmartRent Property?", "Property ZipCode",
+     "Resident Email", "Rommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
+    CSV.generate(headers: true) do |csv|
+      csv << column_names
+      all.each do |resident|
+        unit = resident.units.where(status: "Current").first || resident.units.first
+        # unit = resident.units.first if unit==nil and resident.units.count >0
+        if unit
+          smartrent_resident = Smartrent::Resident.find_by_email resident.email
+          unit_is_smartrent =  unit.property.is_smartrent ? "yes" : "no"
+          roommate_status = resident.roommate ? "Roommate" : "Primary Leaseholder"
+          if smartrent_resident
+            csv << [unit.property.name, unit.property.state.upcase, unit_is_smartrent,  unit.property.zip,
+                    resident.email, roommate_status, resident.first_name, resident.last_name, 
+                    smartrent_resident.smartrent_status, resident.status, resident.gender]
+          else
+            csv << [unit.property.name, unit.property.state.upcase, unit_is_smartrent,  unit.property.zip,
+                    resident.email, roommate_status, resident.first_name, resident.last_name, "NIL", 
+                    resident.status, resident.gender]
+          end
+        else
+          csv << ["NO UNIT", "NO UNIT", "NO UNIT", resident.email, "NO UNIT" ,resident.first_name, resident.last_name,
+                  "NO UNIT", "NO UNIT", resident.gender]
+        end
+      end
+    end
+  end
+
   def self.find_by_id(id)
     Resident.where(:_id => id.to_i).first
   end

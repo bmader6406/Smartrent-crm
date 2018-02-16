@@ -1,4 +1,5 @@
 <script type="text/javascript">
+
 App.vars.propertiesPath = "<%= properties_path %>";
 App.vars.usersPath = "<%= users_path %>";
 App.vars.notificationsPath = "<%= @property ? property_notifications_path(@property) : notifications_path %>";
@@ -9,6 +10,7 @@ App.vars.notificationsPath = "<%= @property ? property_notifications_path(@prope
 
 $(function(){  
   <% if @property %>
+    App.vars.exportPath = "<%= export_property_residents_path(@property) %>";
     App.vars.residentsPath = "<%= property_residents_path(@property) %>";
     App.vars.ticketsPath = "<%= property_tickets_path(@property) %>";
     App.vars.unitsPath = "<%= property_units_path(@property) %>";
@@ -39,6 +41,8 @@ $(function(){
     App.vars.reportsPath = "<%= reports_path %>";
   <% end %>
   
+
+
   App.vars.metricOptions = <%= raw metric_options.to_json %>;
   
 
