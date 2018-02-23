@@ -13,6 +13,7 @@ class XmlPropertyImporter
   end
 
   def self.perform(time, import_id)
+    begin
     time = Time.parse(time) if time.kind_of?(String)
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
@@ -88,6 +89,7 @@ class XmlPropertyImporter
       end
 
       information = p.nest(property_map[:info])
+      if !information.nil?
       information.each do |infomsg|
           case infomsg["Day"] # a_variable is the variable we want to compare
           when "Monday"   #compare to 1
@@ -114,6 +116,7 @@ class XmlPropertyImporter
           else
           end
         end
+      end
 
         property.address_line1 = p.nest(property_map[:address_line1])
         property.city = p.nest(property_map[:city])
@@ -229,6 +232,14 @@ class XmlPropertyImporter
   Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name), recipient).deliver_now
   # Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
   #   recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+  rescue  Exception => e
+    recipient = ftp_setting["recipient"]
+    error_details = "#{e.class}: #{e}"
+    error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+    p "ERROR: #{error_details}"
+    p "[CRM] Property Importing  - FAILURE"
+    Notifier.system_message("[XmlPropertyImporter] FAILURE", "ERROR DETAILS: #{error_details}", recipient).deliver_now
+  end
 end
 
 
