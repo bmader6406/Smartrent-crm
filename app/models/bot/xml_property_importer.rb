@@ -72,7 +72,7 @@ class XmlPropertyImporter
       if !property
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
-        property.is_smartrent = false
+        property.is_smartrent = true
         property.is_crm = false
         property.is_visible = true
         property.updated_by = "mits4_xml_feed"
@@ -129,6 +129,8 @@ class XmlPropertyImporter
         property.description = p.nest(property_map[:description])
         property.latitude = p.nest(property_map[:latitude])
         property.longitude = p.nest(property_map[:longitude])
+        property.is_smartrent = true
+        property.name = name.titleize
 
 
         # Get list of amenities from the XML
@@ -178,7 +180,6 @@ class XmlPropertyImporter
         end
         # Save property
         if property.save
-
           # save all features 
           feature_ids = []
           property_features.each do |feature|   
