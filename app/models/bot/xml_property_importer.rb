@@ -130,7 +130,7 @@ class XmlPropertyImporter
         property.latitude = p.nest(property_map[:latitude])
         property.longitude = p.nest(property_map[:longitude])
         property.is_smartrent = true
-        property.name = name.titleize
+        # property.name = name.titleize
 
 
         # Get list of amenities from the XML
