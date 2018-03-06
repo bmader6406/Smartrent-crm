@@ -21,7 +21,6 @@ Rails.application.routes.draw do
       
       collection do
         get :search
-        get :export
       end
       
       resources :activities do
@@ -184,6 +183,8 @@ Rails.application.routes.draw do
     post :delete_non_yardi
     
     post :test_ftp
+
+    get :export
   end
   
   namespace :nimda do

@@ -126,6 +126,9 @@ class NimdaController < ApplicationController
       render :json => {:success => false}
     end
   end
+
+  def export
+  end
   
   
   protected

@@ -1,7 +1,7 @@
 class ResidentsController < ApplicationController
   before_action :require_user
   before_action :set_property
-  before_action :set_resident, :except => [:index, :new, :create, :search]
+  before_action :set_resident, :except => [:index, :new, :create, :search, :export]
   before_action :set_page_title
   
   def index      
@@ -85,27 +85,6 @@ class ResidentsController < ApplicationController
         format.json { render json: @resident.errors.full_messages, status: :unprocessable_entity }
       end
     end
-  end
-
-  def export
-    pp "params : #{params}"
-    pp " params[:property_id] : #{ params[:property_id]}"
-    # @residents = filter_residents(50)
-    # @residents = Resident.where(email: "Barbara.T,Curtis@comcast.net")
-    file_name = "residents-#{Date.today}.csv"
-    CSV.open(file_name, "w") do |csv|
-      csv = @residents.to_csv
-    end
-    send_file file_name, :x_sendfile => true, :type => 'csv'
-    # @residents = filter_residents(Resident.all.count)
-    # @residents = Resident.all
-    # respond_to do |format|
-    #   # format.csv { send_data @residents.to_csv, filename: "residents-#{Date.today}.csv" }
-    #   format.html {
-    #     render :file => "dashboards/index"
-    #   }
-    # end
-    # redirect_to property_residents_path(params[:property_id]) and return
   end
 
   def update
