@@ -82,12 +82,11 @@ class Import < ActiveRecord::Base
     }
   end
 
-
   def default_xml_ftp_setting
     {
       "host" => "feeds.livebozzuto.com",
-      "username" => "QBursheuno",
-      "password" => "qbusrt12",
+      "username" => "Smarbozkrn",
+      "password" => "jtLQig4W",
       "file_name" => "mits4_1.xml",
       "recipient" => ADMIN_EMAIL
     }

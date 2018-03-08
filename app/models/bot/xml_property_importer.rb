@@ -13,6 +13,7 @@ class XmlPropertyImporter
   end
 
   def self.perform(time, import_id)
+    begin
     time = Time.parse(time) if time.kind_of?(String)
     import = Import.find(import_id)
     ftp_setting = import.ftp_setting
@@ -71,7 +72,7 @@ class XmlPropertyImporter
       if !property
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
-        property.is_smartrent = false
+        property.is_smartrent = true
         property.is_crm = false
         property.is_visible = true
         property.updated_by = "mits4_xml_feed"
@@ -88,6 +89,7 @@ class XmlPropertyImporter
       end
 
       information = p.nest(property_map[:info])
+      if !information.nil?
       information.each do |infomsg|
           case infomsg["Day"] # a_variable is the variable we want to compare
           when "Monday"   #compare to 1
@@ -114,6 +116,7 @@ class XmlPropertyImporter
           else
           end
         end
+      end
 
         property.address_line1 = p.nest(property_map[:address_line1])
         property.city = p.nest(property_map[:city])
@@ -126,6 +129,8 @@ class XmlPropertyImporter
         property.description = p.nest(property_map[:description])
         property.latitude = p.nest(property_map[:latitude])
         property.longitude = p.nest(property_map[:longitude])
+        property.is_smartrent = true
+        # property.name = name.titleize
 
 
         # Get list of amenities from the XML
@@ -175,7 +180,6 @@ class XmlPropertyImporter
         end
         # Save property
         if property.save
-
           # save all features 
           feature_ids = []
           property_features.each do |feature|   
@@ -226,9 +230,15 @@ class XmlPropertyImporter
   # for logging only
   log = import.logs.create(:file_path => file_name)
   pp email_body(new_prop, existing_prop, errs.length, file_name)
-  Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name), recipient).deliver_now
-  # Notifier.system_message("[CRM] Property Importing Success",email_body(new_prop, existing_prop, errs.length, file_name),
-  #   recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+  Notifier.system_message("[CRM] MitsXml Property Importing SUCCESS",email_body(new_prop, existing_prop, errs.length, file_name),
+    recipient, {"from" => OPS_EMAIL, "filename" => errFile, "csv_string" => errCSV}).deliver
+  rescue  Exception => e
+    error_details = "#{e.class}: #{e}"
+    error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+    p "ERROR: #{error_details}"
+    p "[XmlPropertyImporter] Property Importing  - FAILURE"
+    Notifier.system_message("[CRM] MitsXml Property Importing FAILURE", "ERROR DETAILS: #{error_details}", recipient).deliver_now
+  end
 end
 
 

@@ -23,7 +23,7 @@ class HourlyJob
     
     if time.hour == 3
       # BozzutoLink upload CSV feed at 3 AM
-      Resque.enqueue(PropertyImporter)
+      # Resque.enqueue(PropertyImporter)
 
             # XML import at 2 AM
       Import.where(:type => "load_xml_property_importer", :active => true).each do |import|

@@ -99,6 +99,7 @@ class ResidentImporter
           row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
+          
           # email = safe_email(row[ resident_map["email"] ].to_s.strip)
 
           # Some residents have this email format:
@@ -109,6 +110,11 @@ class ResidentImporter
           
           # TODO: check if we should cleanup the email or keep yardi data as is
           email = email_clean(email)
+
+          #temporary fix
+          email_list = ["lmerchan@revolutionmessaging.com", "lmm42689@gmail.com"]
+          email = email_list[1] if email == email_list[0]
+          row[ resident_map["email"] ] = email if email == email_list[0]
           
           email_lc = email.to_s.downcase
           fake_email = nil
