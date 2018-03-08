@@ -130,7 +130,7 @@ class ResidentSource
         if self[f].kind_of?(String) && !self[f].blank?
           attrs[f] = self[f]
           
-        elsif self[f]
+        elsif self[f] || f == :roommate
           attrs[f] = self[f]
           
         end
