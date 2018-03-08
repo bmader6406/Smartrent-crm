@@ -241,9 +241,9 @@ class ResidentImporter
               
               if existing_unit # update status, move in, move out only
                 not_update_resident = true
-                
+
                 unit_attrs.keys.each do |k|
-                  if !["property_id", "unit_id", "roommate", "status", "move_in", "move_out"].include?(k)
+                  if !["property_id", "unit_id", "roommate", "status", "move_in", "move_out", "tenant_code"].include?(k)
                     unit_attrs.delete(k)
                   end
                 end
