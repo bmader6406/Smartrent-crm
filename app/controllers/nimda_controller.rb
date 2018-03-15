@@ -4,7 +4,9 @@ class NimdaController < ApplicationController
   before_action :require_user
   before_action :require_admin
   before_action :set_page_title
-  
+  before_action :set_residents, only: [:load_export_residents]
+  before_action :export_resident_params, only: [:load_export_residents]
+
   layout "application"
   
   def show
@@ -117,7 +119,7 @@ class NimdaController < ApplicationController
       ftp.connect(params[:ftp_setting][:host])
       ftp.login(params[:ftp_setting][:username], params[:ftp_setting][:password])
       ftp.close
-    
+
       render :json => {:success => true}
       
     rescue Exception => e
@@ -127,16 +129,48 @@ class NimdaController < ApplicationController
     end
   end
 
-  def export
+  def export_residents
   end
-  
-  
-  protected
-  
-    def set_page_title
+
+  def load_export_residents
+    file_name = "residents-#{export_resident_params[:property_name]}-#{Date.today}.csv"    
+    column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode",
+   "Resident Email", "Rommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
+    result = CSV.generate(headers: true) do |csv|
+      csv << column_names
+      file_name = "residents-#{Date.today}.csv"
+      if @residents.count > 0
+        @residents.each do |sr|
+         if (sr.smartrent_status == export_resident_params[:smartrent_status] and !sr.get_csv.nil? )
+          csv << sr.get_csv
+         end
+        end
+      end
+    end
+    send_data result, :type => 'text/csv;', :disposition => "filename= #{file_name}"
+  end
+
+   protected
+
+   def set_page_title
       Time.zone = "Eastern Time (US & Canada)" #temp
       
       @page_title = "CRM - Admin"
     end
-  
+
+    private
+
+    def set_residents
+     @residents = []
+     property_list = Property.where("state = ? and name = ?", export_resident_params[:property_state], export_resident_params[:property_name]).collect(&:id)
+     Smartrent::ResidentProperty.where(:property_id => property_list).each do |sr|
+        @residents << sr.resident
+     end 
+     @residents = @residents.uniq.compact
+    end
+
+  def export_resident_params
+    params.permit(:property_name, :property_state, :smartrent_status)
+  end
+
 end

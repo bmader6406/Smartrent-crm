@@ -184,7 +184,8 @@ Rails.application.routes.draw do
     
     post :test_ftp
 
-    get :export
+    get :export_residents
+    post :load_export_residents, defaults: { format: :csv }
   end
   
   namespace :nimda do

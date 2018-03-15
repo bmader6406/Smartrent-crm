@@ -1,0 +1,81 @@
+<% content_for(:ui_center) do %>
+<div id="nimda-pane">
+  <div class="ui-layout-content">
+    <div class="main-container card-container import-container">
+
+      <%= render "nimda/menu_nav" %>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="well">
+            <h3> 
+              Export Resident List <br>
+              <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this export do?</a>
+            </h3>
+            <%= form_tag load_export_residents_nimda_path, :method => :post, :class => "import-form" do %>
+            <%= hidden_field_tag "type", "export_residents" %>
+
+            <div class="form-group">
+              <label> Property Name </label>
+              <%= select_tag 'property_name', options_for_select(property_list_name) , :class => "form-control" %>
+            </div>
+
+            <div class="form-group">
+              <label> Property State </label>
+
+              <%= select_tag 'property_state', options_for_select(property_list_state) , :class => "form-control"%>
+               <p class="help-block"> </p>
+            </div>
+
+            <div class="form-group">
+              <label> Smartrent Status </label>
+              <%= text_field_tag "smartrent_status", '', :class => "form-control"
+              select_tag 'smartrent_status', options_for_select(smartrent_status_list) , :class => "form-control" %>
+            </div>
+
+            <%= button_tag "Export", :name => nil, :class => "btn btn-primary" %>
+            
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<% end %>
+
+<!-- Modal -->
+<div class="modal fade" id="nightly-import-hint" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title">What does this import do?</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          <b>Resident List can be exported based on filters : </b><br>
+          - Property Name <br>
+          - Property State <br>
+          - Smartrent Status
+        </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%= render "dashboards/js_vars" %>
+
+<script type="text/javascript">
+  $(function(){
+
+  	
+    App.initPageLayout(null, null, null, true);
+  });
+</script>

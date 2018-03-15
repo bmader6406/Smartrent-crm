@@ -10,7 +10,6 @@ App.vars.notificationsPath = "<%= @property ? property_notifications_path(@prope
 
 $(function(){  
   <% if @property %>
-    App.vars.exportPath = "<%= export_property_residents_path(@property) %>";
     App.vars.residentsPath = "<%= property_residents_path(@property) %>";
     App.vars.ticketsPath = "<%= property_tickets_path(@property) %>";
     App.vars.unitsPath = "<%= property_units_path(@property) %>";
