@@ -1,6 +1,6 @@
 module NimdaHelper
 
-	def property_list_name
+	def property_list_state
 		['All States'] + Property.all.collect(&:state).compact.uniq.sort 
 	end
 
