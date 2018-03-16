@@ -145,10 +145,8 @@ class NimdaController < ApplicationController
       end
     end
     # send_data result, :type => 'text/csv;', :disposition => "filename= #{file_name}"
-    Notifier.system_message("[CRM] Smartrent Residents Exporting Success",
-      email_body(file_name),
+    Resque.enqueue(SystemMessageMailer, "[CRM] Smartrent Residents Export SUCCESS", email_body(file_name),
       export_resident_params[:email], {"from" => OPS_EMAIL, "filename" => file_name, "csv_string" => result}).deliver_now
-    pp ">>>", email_body(file_name)
     render :json => {:success => true}
   end
 
