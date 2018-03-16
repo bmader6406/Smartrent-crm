@@ -7,39 +7,6 @@
 
       <div class="row">
 
-       <!--  <div class="col-md-6">
-          <div class="well">
-            <h3> 
-              Export Resident List <br>
-              <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this export do?</a>
-            </h3>
-            <%= form_tag load_export_residents_nimda_path, :method => :post, :class => "import-form" do %>
-            <%= hidden_field_tag "type", "export_residents" %>
-
-            <div class="form-group">
-              <label> Property Name </label>
-              <%= select_tag 'property_name', options_for_select(property_list_name) , :class => "form-control" %>
-            </div>
-
-            <div class="form-group">
-              <label> Property State </label>
-
-              <%= select_tag 'property_state', options_for_select(property_list_state) , :class => "form-control"%>
-               <p class="help-block"> </p>
-            </div>
-
-            <div class="form-group">
-              <label> Smartrent Status </label>
-              <%= text_field_tag "smartrent_status", '', :class => "form-control"
-              select_tag 'smartrent_status', options_for_select(smartrent_status_list) , :class => "form-control" %>
-            </div>
-
-            <%= button_tag "Export", :name => nil, :class => "btn btn-primary" %>
-            
-            <% end %>
-          </div>
-        </div> -->
-
         <div class="col-md-6">
           <div class="well">
             <h3> 

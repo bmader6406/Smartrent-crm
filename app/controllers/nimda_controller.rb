@@ -4,7 +4,6 @@ class NimdaController < ApplicationController
   before_action :require_user
   before_action :require_admin
   before_action :set_page_title
-  before_action :set_residents, only: [:load_export_residents]
   before_action :export_resident_params, only: [:load_export_residents]
 
   layout "application"
@@ -133,20 +132,7 @@ class NimdaController < ApplicationController
   end
 
   def load_export_residents
-    file_name = "residents-#{export_resident_params[:property_name]}-#{Date.today}.csv"    
-    column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode",
-   "Resident Email", "Rommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
-    result = CSV.generate(headers: true) do |csv|
-      csv << column_names
-      if @residents.count > 0
-        @residents.each do |sr|
-          csv << sr.get_csv unless sr.get_csv.nil? 
-        end
-      end
-    end
-    # send_data result, :type => 'text/csv;', :disposition => "filename= #{file_name}"
-    Resque.enqueue(SystemMessageMailer, "[CRM] Smartrent Residents Export SUCCESS", email_body(file_name),
-      export_resident_params[:email], {"from" => OPS_EMAIL, "filename" => file_name, "csv_string" => result}).deliver_now
+    Resque.enqueue(ExportResidentMailer, export_resident_params)
     render :json => {:success => true}
   end
 
@@ -160,51 +146,8 @@ class NimdaController < ApplicationController
 
     private
 
-    def set_residents
-      @residents = []
-      if(export_resident_params[:property_state] == 'All States')
-        if export_resident_params[:smartrent_status] == 'All Status'
-          @residents = Smartrent::Resident.all
-        else
-          @residents = Smartrent::Resident.where(smartrent_status: export_resident_params[:smartrent_status])
-        end
-        return
-      elsif export_resident_params[:property_name] == 'All Properties'
-        property_list = Property.where("state = ? ", export_resident_params[:property_name]).collect(&:id)
-      else
-        property_list = Property.where("state = ? and name = ?", export_resident_params[:property_state], export_resident_params[:property_name]).collect(&:id)
-      end
-      Smartrent::ResidentProperty.where(:property_id => property_list).each do |sr|
-        next unless sr.resident 
-        if export_resident_params[:smartrent_status]  == 'All Status'
-          @residents << sr.resident 
-        else
-          @residents << sr.resident if sr.resident.smartrent_status == export_resident_params[:smartrent_status]
-        end 
-      end 
-     @residents = @residents.uniq.compact
-    end
-
   def export_resident_params
     params.permit(:property_name, :property_state, :smartrent_status, :email)
-  end
-
-  def email_body(file_name)
-    return <<-MESSAGE
-            Your file has been loaded:
-            <br>
-            - Total resident count : #{@residents.count}
-
-            <br> 
-            - Source: #{file_name}.
-            <br>
-            <br>
-            <br>
-            CRM Help Team
-            <br>
-            #{HELP_EMAIL}
-
-                MESSAGE
   end
 
 end
