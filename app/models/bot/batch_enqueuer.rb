@@ -18,22 +18,28 @@ class BatchEnqueuer
   end
   
   def self.perform(name = "crm_job_buffer", count = 2000)
+    ActiveRecord::Base.logger.level = 1
+    pp "Enter BatchEnqueuer perform "
+
     
     ConversationMonitor.perform #temp
     
     queue = "queue:#{name}"
     batch = {}
 
+    pp  "queue:#{name}"
+
     count.times do |i|
       json_job = Resque.redis.lpop queue
       
       next if !json_job
-      
+      pp "json_job: #{json_job}"
       job = JSON.parse(json_job)
       
       pp "processing: #{i+1} - #{job["class"]}"
       
       if job["class"] == "CampaignLogger"
+        pp "CampaignLogger"
         campaign_id, action, hash = job["args"]
         
         k = "CampaignLogger___#{campaign_id}___#{action}"
@@ -49,9 +55,9 @@ class BatchEnqueuer
       else #push other jobs to a new queue
         
         new_name = "#{name}_2"
-        
+        pp "else: new queue: new_name"
         Resque.enqueue_to(new_name, "init ui") if !Resque.redis.exists("queue:#{new_name}")
-        
+        pp "init" if !Resque.redis.exists("queue:#{new_name}")
         Resque.redis.rpush "#{queue}_2", json_job
       end
     end
@@ -59,6 +65,7 @@ class BatchEnqueuer
     #enqueue in batches
     batch.keys.each do |k|
       if k.include?("CampaignLogger")
+        pp "if key CampaignLogger"
         clzz, campaign_id, action = k.split("___")
         
         if ["track_open", "track_click"].include?(action)
@@ -76,6 +83,7 @@ class BatchEnqueuer
   end
   
   def self.class_from_string(str)
+    pp "class_from_string"
     str.split('::').inject(Object) do |mod, class_name|
       mod.const_get(class_name)
     end
