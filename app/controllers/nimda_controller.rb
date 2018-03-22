@@ -132,7 +132,8 @@ class NimdaController < ApplicationController
   end
 
   def load_export_residents
-    Resque.enqueue(ExportResidentMailer, export_resident_params.encode('UTF-8'))
+     export_resident_params.each { |k, v|  export_resident_params[k] = v.force_encoding("ISO-8859-1").encode("UTF-8") }
+    Resque.enqueue(ExportResidentMailer, export_resident_params)
     render :json => {:success => true}
   end
 
