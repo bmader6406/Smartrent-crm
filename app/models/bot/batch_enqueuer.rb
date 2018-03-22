@@ -30,6 +30,7 @@ class BatchEnqueuer
     pp  "queue:#{name}"
 
     count.times do |i|
+      pp "enter loop"
       json_job = Resque.redis.lpop queue
       
       next if !json_job
