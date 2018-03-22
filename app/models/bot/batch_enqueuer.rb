@@ -22,7 +22,7 @@ class BatchEnqueuer
     pp "Enter BatchEnqueuer perform "
 
     
-    ConversationMonitor.perform #temp
+    #ConversationMonitor.perform #temp
     
     queue = "queue:#{name}"
     batch = {}
