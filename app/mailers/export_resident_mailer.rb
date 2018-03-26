@@ -36,18 +36,16 @@ class ExportResidentMailer
 
 	def self.set_residents(export_resident_params)
 		residents = []
-		if(export_resident_params['property_state'] == 'All States')
-			if export_resident_params['smartrent_status'] == 'All Status'
-				residents = Smartrent::Resident.all
-			else
-				residents = Smartrent::Resident.where(smartrent_status: export_resident_params['smartrent_status'])
-			end
-			return residents
-		elsif export_resident_params['property_name'] == 'All Properties'
-			property_list = Property.where("state = ? ", export_resident_params['property_name']).collect(&:id)
+		if export_resident_params['property_name'] != 'All Properties'
+			property_list = Property.where("name = ?", export_resident_params['property_name']).collect(&:id)
 		else
-			property_list = Property.where("state = ? and name = ?", export_resident_params['property_state'], export_resident_params['property_name']).collect(&:id)
+			if export_resident_params['property_state'] == 'All States'
+				property_list = Property.all.collect(&:id)
+			else
+				property_list = Property.where("state = ? ", export_resident_params['property_state']).collect(&:id)
+			end
 		end
+
 		Smartrent::ResidentProperty.where(:property_id => property_list).each do |sr|
 			next unless sr.resident 
 			if export_resident_params['smartrent_status']  == 'All Status'
@@ -56,7 +54,8 @@ class ExportResidentMailer
 				residents << sr.resident if sr.resident.smartrent_status == export_resident_params['smartrent_status']
 			end 
 		end 
-		return residents.uniq.compact
+		residents = residents.uniq.compact
+		return residents
 	end
 
 	def self.email_body(file_name, residents)
