@@ -40,7 +40,7 @@ class ExportResidentMailer
 			property_list = Property.where("name = ?", export_resident_params['property_name']).collect(&:id)
 		else
 			if export_resident_params['property_state'] == 'All States'
-				property_list = Property.all.collect(&:id)
+				property_list = Property.where(is_smartrent: true).collect(&:id)
 			else
 				property_list = Property.where("state = ? ", export_resident_params['property_state']).collect(&:id)
 			end
@@ -62,7 +62,7 @@ class ExportResidentMailer
 		return <<-MESSAGE
 		Your file has been loaded:
 		<br>
-		- Total resident count : #{residents.count}
+		- Total smartrent resident count : #{residents.count}
 
 		<br> 
 		- Source: #{file_name}.

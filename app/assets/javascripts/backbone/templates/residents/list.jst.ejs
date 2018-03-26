@@ -1,7 +1,5 @@
 <div class="listing">
-  
   <% if (App.vars.ability.can("cud", "Resident") && App.vars.isPropertyPage) { %>
-  	<a href="<%= App.vars.exportPath %>" class="btn btn-primary add-new"> Export </a>
     <a href="<%= App.vars.residentsPath %>/new" class="btn btn-primary add-new"> Add New Resident </a>
   <% } %>
   <h4 class="total"> </h4>

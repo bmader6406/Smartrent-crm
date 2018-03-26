@@ -30,7 +30,6 @@ class BatchEnqueuer
     pp  "queue:#{name}"
 
     count.times do |i|
-      pp "enter loop"
       json_job = Resque.redis.lpop queue
       
       next if !json_job
@@ -56,7 +55,6 @@ class BatchEnqueuer
       else #push other jobs to a new queue
         
         new_name = "#{name}_2"
-        pp "else: new queue: new_name"
         Resque.enqueue_to(new_name, "init ui") if !Resque.redis.exists("queue:#{new_name}")
         pp "init" if !Resque.redis.exists("queue:#{new_name}")
         Resque.redis.rpush "#{queue}_2", json_job
@@ -79,7 +77,6 @@ class BatchEnqueuer
       end
     end
     
-    pp "llen #{Resque.redis.llen(queue)}"
     Resque.enqueue(self, name, count) if Resque.redis.llen(queue) > 0    
   end
   
