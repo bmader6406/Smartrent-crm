@@ -13,7 +13,7 @@ class ExportResidentMailer
 			time_start = Time.now
 			timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
 			file_name = TMP_DIR + "residents-#{export_resident_params['property_name']}-"+timestamp+".csv"
-			column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode","Resident Email", "Rommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
+			column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode","Resident Email", "Roommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
 			result = CSV.generate(headers: true) do |csv|
 				csv << column_names
 				if residents.count > 0
