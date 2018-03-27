@@ -9,7 +9,8 @@ module NimdaHelper
 	end
 
 	def smartrent_status_list
-		['All Status'] + Smartrent::Resident.all.collect(&:smartrent_status).uniq
+		['All Status', 'Active', 'Expired']
+		# ['All Status'] + Smartrent::Resident.all.collect(&:smartrent_status).uniq
 	end
 
 end

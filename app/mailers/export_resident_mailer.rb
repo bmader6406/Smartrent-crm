@@ -50,6 +50,8 @@ class ExportResidentMailer
 			next unless sr.resident 
 			if export_resident_params['smartrent_status']  == 'All Status'
 				residents << sr.resident 
+			elsif export_resident_params['smartrent_status']  == 'Active'
+				residents << sr.resident if sr.resident.smartrent_status == 'Active' || sr.resident.smartrent_status == 'Inactive'
 			else
 				residents << sr.resident if sr.resident.smartrent_status == export_resident_params['smartrent_status']
 			end 
