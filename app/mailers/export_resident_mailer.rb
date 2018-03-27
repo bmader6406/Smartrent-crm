@@ -23,7 +23,7 @@ class ExportResidentMailer
 				end
 			end
 			email = ADMIN_EMAIL if export_resident_params['email'].blank?
-			message = email_body(file_name, residents)
+			message = email_body(export_resident_params, residents)
 			meta = {"from" => OPS_EMAIL, "filename" => file_name, "csv_string" => result, "to" => export_resident_params['email']}
 			Notifier.system_message("[CRM] Smartrent Residents Export SUCCESS", message, export_resident_params['email'], meta).deliver_now
 		rescue Exception => e
@@ -58,16 +58,21 @@ class ExportResidentMailer
 		return residents
 	end
 
-	def self.email_body(file_name, residents)
+	def self.email_body(export_resident_params, residents)
 		return <<-MESSAGE
 		Your file has been loaded:
 		<br>
 		- Total smartrent resident count : #{residents.count}
-
 		<br> 
-		- Source: #{file_name}.
+		- Filters:
 		<br>
 		<br>
+		   *  Property Name    : #{export_resident_params['property_name']}
+		  <br>
+		   *  Propery State    : #{export_resident_params['property_state']}
+		  <br>
+		   *  Smartrent Status : #{export_resident_params['smartrent_status']}
+		  <br>
 		<br>
 		CRM Help Team
 		<br>
