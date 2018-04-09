@@ -1,7 +1,7 @@
 class ResidentsController < ApplicationController
   before_action :require_user
   before_action :set_property
-  before_action :set_resident, :except => [:index, :new, :create, :search, :export]
+  before_action :set_resident, :except => [:index, :new, :create, :search]
   before_action :set_page_title
   
   def index      

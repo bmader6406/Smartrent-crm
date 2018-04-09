@@ -6,10 +6,11 @@
       <%= render "nimda/menu_nav" %>
 
       <div class="row">
+
         <div class="col-md-6">
           <div class="well">
             <h3> 
-              Export Resident List <br>
+              Export Smartrent Resident List <br>
               <a href="#" data-toggle="modal" data-target="#nightly-import-hint">What does this export do?</a>
             </h3>
             <%= form_tag load_export_residents_nimda_path, :method => :post, :class => "import-form" do %>
@@ -33,11 +34,17 @@
               select_tag 'smartrent_status', options_for_select(smartrent_status_list) , :class => "form-control" %>
             </div>
 
+            <div class="form-group">
+              <label> Export Status Recipient </label>
+              <%= text_field_tag "email", "#{OPS_EMAIL}", :class => "form-control", :class => "form-control" %>
+            </div>
+
             <%= button_tag "Export", :name => nil, :class => "btn btn-primary" %>
             
             <% end %>
           </div>
         </div>
+
       </div>
 
     </div>
@@ -73,9 +80,52 @@
 <%= render "dashboards/js_vars" %>
 
 <script type="text/javascript">
-  $(function(){
+$(function(){
+    $('.import-form').each(function(){
+      var form = $(this);
+      
+      form.on('submit', function(){
+        var blanks = [];
 
-  	
+        form.find('input:visible').each(function(){
+          var input = $(this);
+          if( $.trim(input.val()) == "") {
+            blanks.push( input );
+          }
+        });
+
+        if(blanks.length > 0) {
+          msgbox(_.map(blanks, function(b){ return b.prev().text() + " cannot be blank"}).join(" <br/>"), "danger");
+          return false;
+        }
+
+        bootbox.confirm("Are you sure you want to export the resident list?", function(result) {
+          if (result) {
+            form.ajaxSubmit({
+              dataType: 'json',
+              beforeSerialize: function(){
+                form.mask('Please wait...');
+              },
+              success: function(){
+                form.unmask();
+                msgbox('Resident Export was successfully performed, an email will be sent within a few hours.');
+              },
+              error:function(jqXHR, textStatus, errorThrown) {
+                form.unmask();
+                msgbox(errorThrown); 
+              }
+            });
+          }
+        });
+
+        return false;
+      });
+
+
+    });
+    
+    
     App.initPageLayout(null, null, null, true);
+    
   });
 </script>

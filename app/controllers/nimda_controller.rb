@@ -4,7 +4,6 @@ class NimdaController < ApplicationController
   before_action :require_user
   before_action :require_admin
   before_action :set_page_title
-  before_action :set_residents, only: [:load_export_residents]
   before_action :export_resident_params, only: [:load_export_residents]
 
   layout "application"
@@ -133,21 +132,9 @@ class NimdaController < ApplicationController
   end
 
   def load_export_residents
-    file_name = "residents-#{export_resident_params[:property_name]}-#{Date.today}.csv"    
-    column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode",
-   "Resident Email", "Rommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender"]
-    result = CSV.generate(headers: true) do |csv|
-      csv << column_names
-      file_name = "residents-#{Date.today}.csv"
-      if @residents.count > 0
-        @residents.each do |sr|
-         if (sr.smartrent_status == export_resident_params[:smartrent_status] and !sr.get_csv.nil? )
-          csv << sr.get_csv
-         end
-        end
-      end
-    end
-    send_data result, :type => 'text/csv;', :disposition => "filename= #{file_name}"
+     export_resident_params.each { |k, v|  export_resident_params[k] = v.force_encoding("ISO-8859-1").encode("UTF-8") }
+    Resque.enqueue(ExportResidentMailer, export_resident_params)
+    render :json => {:success => true}
   end
 
    protected
@@ -160,17 +147,8 @@ class NimdaController < ApplicationController
 
     private
 
-    def set_residents
-     @residents = []
-     property_list = Property.where("state = ? and name = ?", export_resident_params[:property_state], export_resident_params[:property_name]).collect(&:id)
-     Smartrent::ResidentProperty.where(:property_id => property_list).each do |sr|
-        @residents << sr.resident
-     end 
-     @residents = @residents.uniq.compact
-    end
-
   def export_resident_params
-    params.permit(:property_name, :property_state, :smartrent_status)
+    params.permit(:property_name, :property_state, :smartrent_status, :email)
   end
 
 end
