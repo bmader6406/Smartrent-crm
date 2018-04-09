@@ -61,6 +61,8 @@ class XmlPropertyImporter
 
     tmp_file = File.read("#{TMP_DIR}mits4_1.xml")
     index, new_prop, existing_prop, errs = 0, 0, 0, []
+    smartrent_property_ids = []
+
     properties = Hash.from_xml(tmp_file) 
     properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
       name = p.nest(property_map[:name])
@@ -180,6 +182,7 @@ class XmlPropertyImporter
         end
         # Save property
         if property.save
+          smartrent_property_ids << property.id
           # save all features 
           feature_ids = []
           property_features.each do |feature|   
@@ -213,6 +216,12 @@ class XmlPropertyImporter
       end
       Smartrent::PropertyFeature.where("property_id = ? AND feature_id NOT IN (?)", property.id, feature_ids).delete_all
     end
+  end
+
+  if !smartrent_property_ids.empty?
+    pp "found: #{smartrent_property_ids.length} smartrent property"
+    Property.unscoped.where("id IN (?)", smartrent_property_ids).update_all(:is_smartrent => 1, :is_visible => 1, :smartrent_status => Smartrent::Property::STATUS_CURRENT)
+    Property.unscoped.where("id NOT IN (?)", smartrent_property_ids).update_all(:is_smartrent => 0, :is_visible => 0, :smartrent_status => nil)
   end
 
 
