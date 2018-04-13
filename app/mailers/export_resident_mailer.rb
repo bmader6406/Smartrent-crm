@@ -13,7 +13,7 @@ class ExportResidentMailer
 			time_start = Time.now
 			timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
 			file_name = TMP_DIR + "residents-#{export_resident_params['property_name']}-"+timestamp+".csv"
-			column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode","Resident Email", "Roommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender", "Address", "Balance"]
+			column_names = ["Current Property Name", "Current Property State", "SmartRent Property?", "Current Property ZipCode","Resident Email", "Roommate Status", "First Name", "Last Name", "SmartRent Status", "Resident Status", "Gender", "Address", "Smartrent Balance"]
 			result = CSV.generate(headers: true) do |csv|
 				csv << column_names
 				if residents.count > 0
@@ -37,12 +37,12 @@ class ExportResidentMailer
 	def self.set_residents(export_resident_params)
 		residents = []
 		if export_resident_params['property_name'] != 'All Properties'
-			property_list = Property.where("name = ?", export_resident_params['property_name']).collect(&:id)
+			property_list = Property.where("name = ? and is_smartrent = ? ", export_resident_params['property_name'], true).collect(&:id)
 		else
 			if export_resident_params['property_state'] == 'All States'
 				property_list = Property.where(is_smartrent: true).collect(&:id)
 			else
-				property_list = Property.where("state = ? ", export_resident_params['property_state']).collect(&:id)
+				property_list = Property.where("state = ? and is_smartrent = ?  ", export_resident_params['property_state'], true).collect(&:id)
 			end
 		end
 
