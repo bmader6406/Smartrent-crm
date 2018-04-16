@@ -10,6 +10,7 @@ class ExportResidentMailer
 	def self.perform(export_resident_params)
 		begin
 			residents = set_residents(export_resident_params)
+			resident_count = 0
 			time_start = Time.now
 			timestamp = Time.now.strftime('%Y-%m-%d_%H-%M-%S')
 			file_name = TMP_DIR + "residents-#{export_resident_params['property_name']}-"+timestamp+".csv"
@@ -18,12 +19,15 @@ class ExportResidentMailer
 				csv << column_names
 				if residents.count > 0
 					residents.each do |sr|
-						csv << sr.get_csv unless sr.get_csv.nil? 
+						unless sr.get_csv.nil?
+							csv << sr.get_csv 
+							resident_count = resident_count + 1 
+						end
 					end
 				end
 			end
 			email = ADMIN_EMAIL if export_resident_params['email'].blank?
-			message = email_body(export_resident_params, residents)
+			message = email_body(export_resident_params, resident_count)
 			meta = {"from" => OPS_EMAIL, "filename" => file_name, "csv_string" => result, "to" => export_resident_params['email']}
 			Notifier.system_message("[CRM] Smartrent Residents Export SUCCESS", message, export_resident_params['email'], meta).deliver_now
 		rescue Exception => e
@@ -60,11 +64,11 @@ class ExportResidentMailer
 		return residents
 	end
 
-	def self.email_body(export_resident_params, residents)
+	def self.email_body(export_resident_params, resident_count)
 		return <<-MESSAGE
 		Your file has been loaded:
 		<br>
-		- Total smartrent resident count : #{residents.count}
+		- Total smartrent resident count : #{resident_count}
 		<br> 
 		- Filters:
 		<br>
