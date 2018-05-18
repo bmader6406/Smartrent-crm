@@ -176,7 +176,7 @@ class ResidentImporter
             #pp "property field: #{f}, #{unit_attrs[f]}"
 
             if ["signing_date", "move_in", "move_out"].include?(f) && unit_attrs[f]
-              unit_attrs[f] = Date.strptime(unit_attrs[f], '%Y%m%d') rescue nil
+              unit_attrs[f] = Date.strptime(unit_attrs[f], '%m/%d/%Y') rescue nil
             end
 
             if ["unit_id"].include?(f)
