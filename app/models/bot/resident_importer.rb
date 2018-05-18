@@ -19,48 +19,11 @@ class ResidentImporter
   end
   
   def self.yardi_import(file_path, resident_map, meta)
+    # 0"Elan ID",1"Property ID",2"Property Name",3"First Name",4"Last Name",5"Email Address",
+    #6"Move-in Date",7"Move-out Date",8"Tenant Status",9"Unit #",10"Tenant Code"
 
     log_output = "/mnt/exim-data/task_log/yardi_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
-
-    # https://app.asana.com/0/376484593635/62561912450046/f
-    # Yardi file format
-    # 0   Property Code
-    # 1   Unit Code
-    # 2   Tenant Code
-    # 3   Tenant Name
-    # 4   Tenant Address 1
-    # 5   Tenant Address 2
-    # 6   City
-    # 7   State
-    # 8   Zip Code
-    # 9   Unit Status
-    # 10  Email
-    # 11  Move In
-    # 12  Move Out
-    # 13  Household Size
-    # 14  Pets
-    # 15  Rent
-    # 16  Lead Type
-    # 17  Gender
-    # 18  Birthday
-    # 19  Last 4 digits of Social Security Number
-    # 20  Household Size
-    # 21  Household Status
-    # 22  Previous Residence (Address1, Address2, City, State, ZIP)
-    # 23  Moving From
-    # 24  Pets Count
-    # 25  Pet Type
-    # 26  Pet Breed
-    # 27  Occupation Type
-    # 28  Employer
-    # 29  Employer City
-    # 30  Employer State
-    # 31  Annual Income
-    # 32  Minutes to Work
-    # 33  Transportation to Work
-    # 34  License Plate 1
-    # 35  Number of Vehicles
-    
+  
     prop_map = {}
 
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
@@ -92,14 +55,15 @@ class ResidentImporter
           next if row.join.blank?
 
           property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
+          pp property_id
 
           next if !property_id
-          next if check_resident_fullname(row[resident_map["full_name"]])
+          next if check_resident_fullname(row[resident_map["first_name"]] + row[resident_map["last_name"]])
+          pp "success"
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           email = row[ resident_map["email"] ].to_s.strip
-          
           # email = safe_email(row[ resident_map["email"] ].to_s.strip)
 
           # Some residents have this email format:
@@ -175,8 +139,10 @@ class ResidentImporter
             if resident_map[f]
               if ["email"].include?(f)
                 resident.email = email # email can be real or fake email
-              elsif ["full_name"].include?(f)
-                 resident.full_name = row[resident_map[f]]
+              elsif ["last_name"].include?(f)
+                 resident.last_name = row[resident_map[f]]
+              elsif ["first_name"].include?(f)
+                 resident.first_name = row[resident_map[f]]
               else
                 resident[f] = row[resident_map[f]]
               end
