@@ -35,7 +35,8 @@ class XmlPropertyImporter
       :latitude => ["ILS_Identification","Latitude"],
       :longitude =>  ["ILS_Identification","Longitude"],
       :floor_plans => ["Floorplan"],
-      :features => ["Amenity"]
+      :features => ["Amenity"],
+      :sync_property_id => ["PropertyID","SyncPropertyID"]
     }
 
     floor_plans_map = {
@@ -74,6 +75,8 @@ class XmlPropertyImporter
       if !property
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
+
+        property.sync_property_id = p.nest(property_map[:sync_property_id])
         property.is_smartrent = true
         property.is_crm = false
         property.is_visible = true
@@ -120,6 +123,7 @@ class XmlPropertyImporter
         end
       end
 
+        property.sync_property_id = p.nest(property_map[:sync_property_id])
         property.address_line1 = p.nest(property_map[:address_line1])
         property.city = p.nest(property_map[:city])
         property.state = p.nest(property_map[:state])

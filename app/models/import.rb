@@ -175,7 +175,8 @@ class Import < ActiveRecord::Base
       :latitude => ["ILS_Identification","Latitude"],
       :longitude =>  ["ILS_Identification","Longitude"],
       :floor_plans => ["Floorplan"],
-      :features => ["Amenity"]
+      :features => ["Amenity"],
+      :sync_property_id => ["PropertyID","SyncPropertyID"]
     }
   end
 
