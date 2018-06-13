@@ -23,6 +23,8 @@ class ResidentImporter
     #6"Move-in Date",7"Move-out Date",8"Tenant Status",9"Unit #",10"Tenant Code"
 
     log_output = "/mnt/exim-data/task_log/yardi_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+
+    resident_list = []
   
     prop_map = {}
 
@@ -238,6 +240,7 @@ class ResidentImporter
               errs << ["#{index}, #{tenant_code}, #{email}, " + resident.errors.full_messages.join(", ")]
             end
           end
+          resident_list << resident.id
         end #/csv parse
 
       rescue Exception => e
@@ -245,7 +248,11 @@ class ResidentImporter
         error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
         pp ">>> line: #{line}, ERROR:", error_details
       end
+
     end
+
+    #change status of all resident units not present in the yardi csv to past
+    # change_status_to_past(resident_list.uniq)
     
     errFile = nil
     errCSV = nil
@@ -555,6 +562,8 @@ class ResidentImporter
 
     log_output = "/mnt/exim-data/task_log/non_yardi_master_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
+    resident_list = []
+
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
       next if p.elan_number.blank?
       prop_map[p.elan_number.to_s] = p.id.to_s
@@ -746,6 +755,9 @@ class ResidentImporter
       end
     end
 
+    #change status of all resident units not present in the non-yardi csv to past
+    # change_status_to_past(resident_list.uniq)
+
     errFile = nil
     errCSV = nil
     file_name = meta["file_name"]
@@ -848,6 +860,16 @@ CRM Help Team
   def self.check_resident_fullname(fullname)
     full_name = fullname.gsub("-", "").upcase.strip
     return (full_name ==  "NONRES" or full_name.start_with?("NONRES ") or full_name.end_with?(" NONRES") or full_name.start_with?("NON RES") rescue false )
+  end
+
+  def self.change_status_to_past(resident_list)
+    residents_status_to_past = Resident.where(:id.nin => resident_list)
+    residents_status_to_past.each do |res|
+      res.units.where(:status.nin => "Past").each do |unit|
+        unit.status = "Past"
+        unit.save
+      end
+    end
   end
 
 end
