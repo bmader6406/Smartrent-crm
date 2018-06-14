@@ -28,8 +28,14 @@ class YardiLoader
       end
       
       meta = { "file_name" => file_name, "recipient" => recipient }
-      meta["incremental_upload"] = 1
+     
+      if import.type == "load_yardi_daily"
+        meta["incremental_upload"] = 1
 
+      elsif import.type == "load_yardi_one_time"
+        meta["full_upload"] = 1
+      end
+      
       # for logging only
       log = import.logs.create(:file_path => file_name)
       
