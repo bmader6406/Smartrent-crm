@@ -24,7 +24,7 @@ node do |n|
     :become_buyer_path => become_buyer_resident_password_path(n)
   }
 
-  n.rewards.order("created_at desc, id desc").each do |reward|
+  n.rewards.order("period_start desc, id desc").each do |reward|
     r = {
       :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],

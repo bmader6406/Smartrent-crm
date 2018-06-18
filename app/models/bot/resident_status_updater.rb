@@ -63,20 +63,26 @@ class ResidentStatusUpdater
     end
 
     File.foreach(file_path) do |line|
-      CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
-        next if row.join.blank?
-        tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
-        email = row[ resident_map["email"] ].to_s.strip
-        email = email_clean(email)
-        email_lc = email.to_s.downcase
-        resident = Resident.where(email_lc: email_lc).last
-        if resident
-          if resident_list.has_key?(resident.id) 
-            resident_list[resident.id] <<  tenant_code
-          else
-            resident_list[resident.id] = [tenant_code]
+      begin
+        CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
+          next if row.join.blank?
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          email = row[ resident_map["email"] ].to_s.strip
+          email = email_clean(email)
+          email_lc = email.to_s.downcase
+          resident = Resident.where(email_lc: email_lc).last
+          if resident
+            if resident_list.has_key?(resident.id) 
+              resident_list[resident.id] <<  tenant_code
+            else
+              resident_list[resident.id] = [tenant_code]
+            end
           end
         end
+      rescue Exception => e
+        error_details = "#{e.class}: #{e}"
+        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+        pp ">>> line: #{line}, ERROR:", error_details
       end
     end
     resident_list
@@ -94,9 +100,20 @@ class ResidentStatusUpdater
   def self.change_status_to_past(resident_list)
     resident_list.each do |key, val|
       res = Resident.where(_id: key).last
-      res.units.where(tenant_code: key).each do |unit|
-        unit.status = "Past"
-        unit.save
+      res.units.where(:tenant_code.nin => val).each do |unit|
+        if unit.status != "Past"
+          unit.status = "Past"
+          unit.save
+        end
+      end
+    end
+    residents_status_to_past = Resident.where(:id.nin => resident_list.keys)
+    residents_status_to_past.each do |res|
+      res.units.each do |unit|
+        if unit.status != "Past"
+          unit.status = "Past"
+          unit.save
+        end
       end
     end
   end
@@ -104,9 +121,12 @@ class ResidentStatusUpdater
   def self.change_smartrent_status_to_inactive(resident_list, time)
     residents_status_to_inactive = Resident.where(:id.nin => resident_list)
     residents_status_to_inactive.each do |r|
-      sr = r.smartrent_resident
-      sr.smartrent_status = Smartrent::Resident::STATUS_INACTIVE
-      sr.expiry_date = time + 2.years
+      sr = Smartrent::Resident.find_by_crm_resident_id r.id
+      if sr and sr.smartrent_status == Smartrent::Resident::STATUS_ACTIVE
+        sr.smartrent_status = Smartrent::Resident::STATUS_INACTIVE
+        sr.expiry_date = time + 2.years
+        sr.save
+      end
     end
   end
 
