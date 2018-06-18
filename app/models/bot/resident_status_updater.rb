@@ -26,6 +26,10 @@ class ResidentStatusUpdater
       resident_list = collect_resident_unit_list_from_file(tmp_yardi_file, {}, import_yardi.field_map)
       resident_list = collect_resident_unit_list_from_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
 
+    CSV.open('/mnt/exim-data/task_log/resident_list.csv', "w") do |csv|
+      csv << resident_list
+    end
+
       change_status_to_past(resident_list)
 
       change_smartrent_status_to_inactive(resident_list.keys, time)
@@ -98,21 +102,25 @@ class ResidentStatusUpdater
   end
 
   def self.change_status_to_past(resident_list)
-    resident_list.each do |key, val|
-      res = Resident.where(_id: key).last
-      res.units.where(:tenant_code.nin => val).each do |unit|
-        if unit.status != "Past"
-          unit.status = "Past"
-          unit.save
+    CSV.open('/mnt/exim-data/task_log/change_status_to_past.csv', "w") do |csv|
+      resident_list.each do |key, val|
+        res = Resident.where(_id: key).last
+        res.units.where(:tenant_code.nin => val).each do |unit|
+          if unit.status != "Past"
+            csv << [res.email, unit.tenant_code]
+            unit.status = "Past"
+            unit.save
+          end
         end
       end
-    end
-    residents_status_to_past = Resident.where(:id.nin => resident_list.keys)
-    residents_status_to_past.each do |res|
-      res.units.each do |unit|
-        if unit.status != "Past"
-          unit.status = "Past"
-          unit.save
+      residents_status_to_past = Resident.where(:id.nin => resident_list.keys)
+      residents_status_to_past.each do |res|
+        res.units.each do |unit|
+          if unit.status != "Past"
+            csv << [res.email, unit.tenant_code]
+            unit.status = "Past"
+            unit.save
+          end
         end
       end
     end
@@ -120,12 +128,15 @@ class ResidentStatusUpdater
 
   def self.change_smartrent_status_to_inactive(resident_list, time)
     residents_status_to_inactive = Resident.where(:id.nin => resident_list)
-    residents_status_to_inactive.each do |r|
-      sr = Smartrent::Resident.find_by_crm_resident_id r.id
-      if sr and sr.smartrent_status == Smartrent::Resident::STATUS_ACTIVE
-        sr.smartrent_status = Smartrent::Resident::STATUS_INACTIVE
-        sr.expiry_date = time + 2.years
-        sr.save
+    CSV.open('/mnt/exim-data/task_log/change_smartrent_status_to_inactive.csv', "w") do |csv|
+      residents_status_to_inactive.each do |r|
+        sr = Smartrent::Resident.find_by_crm_resident_id r.id
+        if sr and sr.smartrent_status == Smartrent::Resident::STATUS_ACTIVE
+          csv << [sr.email]
+          sr.smartrent_status = Smartrent::Resident::STATUS_INACTIVE
+          sr.expiry_date = time + 2.years
+          sr.save
+        end
       end
     end
   end
