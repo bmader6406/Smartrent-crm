@@ -26,10 +26,7 @@ class ResidentStatusUpdater
       resident_list = collect_resident_unit_list_from_file(tmp_yardi_file, {}, import_yardi.field_map)
       resident_list = collect_resident_unit_list_from_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
 
-    CSV.open('/mnt/exim-data/task_log/resident_list.csv', "w") do |csv|
-      csv << resident_list
-    end
-
+File.open('/mnt/exim-data/task_log/resident_list.txt', 'w') {|f| f.write(resident_list) }
       change_status_to_past(resident_list)
 
       change_smartrent_status_to_inactive(resident_list.keys, time)
