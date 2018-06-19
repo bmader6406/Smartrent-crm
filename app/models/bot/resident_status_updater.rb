@@ -21,7 +21,7 @@ class ResidentStatusUpdater
       tmp_yardi_file = file_download(time - 1.day, import_yardi)
 
       import_noyardi = Import.where(:type => "load_non_yardi_master_daily", :active => true).last
-      tmp_noyardi_file = file_download(time, import_noyardi)
+      tmp_noyardi_file = file_download(time -1.day, import_noyardi)
 
       resident_list = collect_resident_unit_list_from_file(tmp_yardi_file, {}, import_yardi.field_map)
       resident_list = collect_resident_unit_list_from_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
