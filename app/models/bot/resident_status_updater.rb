@@ -28,19 +28,21 @@ class ResidentStatusUpdater
 
       File.open('/mnt/exim-data/task_log/resident_list.txt', 'w') {|f| f.write(resident_list) }
 
+      pp "resident_list #{resident_list.count}"
+      pp "change_status_to_past"
       change_status_to_past(resident_list)
-
+      pp "change_smartrent_status_to_inactive"
       change_smartrent_status_to_inactive(resident_list.keys, time)
-
+      pp "update_smartrent_status"
       update_smartrent_status(time)
-      
+      pp "success"
     rescue Exception => e
       error_details = "#{e.class}: #{e}"
       error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
       p "ERROR: #{error_details}"
 
       Notifier.system_message("[CRM] ResidentStatusUpdater FAILURE", "ERROR DETAILS: #{error_details}",
-        "teena@qburst.com", {"from" => OPS_EMAIL}).deliver
+        ADMIN_EMAIL, {"from" => OPS_EMAIL}).deliver
         
     end
   end
@@ -142,18 +144,16 @@ class ResidentStatusUpdater
   end
 
   def self.update_smartrent_status(time)
-    Smartrent::Resident.include(:resident_properties).last(5).each do |sr|
-
+    Smartrent::Resident.includes(:resident_properties).all.each do |sr|
       sr.resident_properties.where(status: Smartrent::ResidentProperty::STATUS_CURRENT).each do |rp|
-        if rp.property.property.is_smartrent == true and sr.smartrent_status != Smartrent::Resident::STATUS_ACTIVE
+        if rp.property.is_smartrent == true and sr.smartrent_status != Smartrent::Resident::STATUS_ACTIVE
           sr.smartrent_status = Smartrent::Resident::STATUS_ACTIVE
           sr.expiry_date = nil
           sr.save
           break
         end
       end
-
-      if sr.expiry_date.beginning_of_day == time.beginning_of_day
+      if sr.expiry_date and sr.expiry_date.beginning_of_day == time.beginning_of_day
         sr.smartrent_status = Smartrent::Resident::EXPIRED
         sr.save
       end
