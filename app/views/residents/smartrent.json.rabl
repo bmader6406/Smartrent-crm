@@ -24,7 +24,7 @@ node do |n|
     :become_buyer_path => become_buyer_resident_password_path(n)
   }
 
-  n.rewards.order("period_start desc, id desc").each do |reward|
+  n.rewards.where(type_: [2,3,4]).order("period_start desc, id desc").each do |reward|
     r = {
       :id => reward.id,
       :type_ => Smartrent::Reward.types[reward.type_],
@@ -40,6 +40,20 @@ node do |n|
       r[:period_end] = reward.period_end.strftime("%m/%d/%Y")
     end
     
+    hash[:rewards] << r
+  end
+
+  n.rewards.where(type_: [0,1]).order("created_at desc, id desc").each do |reward| 
+    r = {
+      :id => reward.id,
+      :type_ => Smartrent::Reward.types[reward.type_],
+      :period_start => (reward.period_start.to_s(:utc_short_date) rescue nil),
+      :period_end => (reward.period_end.to_s(:utc_short_date) rescue nil),
+      :property_name => (reward.property.name rescue nil),
+      :amount => number_to_currency(reward.amount, :precision => 0),
+      :months_earned => reward.months_earned
+    }
+
     hash[:rewards] << r
   end
   
