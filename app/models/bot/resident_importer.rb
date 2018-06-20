@@ -173,7 +173,8 @@ class ResidentImporter
 
           Resident::UNIT_FIELDS.each do |f|
             f = f.to_s # must f convert to string
-            unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
+            unit_attrs[f] = row[resident_map[f]] if resident_map[f] 
+            # && !row[resident_map[f]].blank?
 
             #pp "property field: #{f}, #{unit_attrs[f]}"
 
@@ -206,7 +207,6 @@ class ResidentImporter
               
             elsif meta["incremental_upload"]
               existing_unit = resident.units.detect{|u| u.unit_id.to_s == unit.id.to_s }
-              
               if existing_unit # update status, move in, move out only
                 not_update_resident = true
 
@@ -223,8 +223,6 @@ class ResidentImporter
             end
             
           end
-          
-          #pp ">>> before saving:", resident.attributes
           
           if create_or_update
             if not_update_resident || resident.save # if not_update_resident is true, resident.save will NOT be called
@@ -341,7 +339,7 @@ class ResidentImporter
     end
     
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
-    Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
+    # Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
     
     Notifier.system_message("#{}[CRM] Yardi Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),

@@ -129,17 +129,21 @@ class ResidentSource
       Resident::UNIT_FIELDS.each do |f|
         if self[f].kind_of?(String) && !self[f].blank?
           attrs[f] = self[f]
-          
         elsif self[f] || f == :roommate
           attrs[f] = self[f]
           
         end
       end
     
+      if attrs[:move_out].nil?
+        attrs[:move_out] = self[:move_out]
+      end
+
       if !status_date.blank? && !status.blank?
         attrs[:status] = status
         attrs[:status_date] = status_date
       end
+
       
       ##Code to cater the minimum move in
       # TODO: check smartrent to see why we need to have minimum_move_in
