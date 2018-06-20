@@ -31,6 +31,8 @@ class ResidentStatusUpdater
       change_status_to_past(resident_list)
 
       change_smartrent_status_to_inactive(resident_list.keys, time)
+
+      update_smartrent_status(time)
       
     rescue Exception => e
       error_details = "#{e.class}: #{e}"
@@ -136,6 +138,26 @@ class ResidentStatusUpdater
           sr.save
         end
       end
+    end
+  end
+
+  def self.update_smartrent_status(time)
+    Smartrent::Resident.include(:resident_properties).last(5).each do |sr|
+
+      sr.resident_properties.where(status: Smartrent::ResidentProperty::STATUS_CURRENT).each do |rp|
+        if rp.property.property.is_smartrent == true and sr.smartrent_status != Smartrent::Resident::STATUS_ACTIVE
+          sr.smartrent_status = Smartrent::Resident::STATUS_ACTIVE
+          sr.expiry_date = nil
+          sr.save
+          break
+        end
+      end
+
+      if sr.expiry_date.beginning_of_day == time.beginning_of_day
+        sr.smartrent_status = Smartrent::Resident::EXPIRED
+        sr.save
+      end
+
     end
   end
 
