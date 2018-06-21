@@ -6,6 +6,7 @@ class ResidentImporter
   end
 
   def self.perform(file_path, type = "yardi", resident_map = {}, meta = {})
+    puts "Enter ResidentImporter perform "
     if type == "yardi"
       yardi_import(file_path, resident_map, meta)
       
@@ -21,7 +22,7 @@ class ResidentImporter
   def self.yardi_import(file_path, resident_map, meta)
     # 0"Elan ID",1"Property ID",2"Property Name",3"First Name",4"Last Name",5"Email Address",
     #6"Move-in Date",7"Move-out Date",8"Tenant Status",9"Unit #",10"Tenant Code"
-
+    puts "Enter yardi_import"
     log_output = "/mnt/exim-data/task_log/yardi_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
     resident_list = []
@@ -338,6 +339,7 @@ class ResidentImporter
       
     end
     
+    puts "completed yardi perform"
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
     # Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
     

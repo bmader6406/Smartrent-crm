@@ -11,6 +11,7 @@ class YardiLoader
   end
 
   def self.perform(time, import_id);
+    pp "Enter Yardi Perform"
     time = Time.parse(time) if time.kind_of?(String)
     time = time - 1.day # yardi file is 1 day behind
     import = Import.find(import_id)
@@ -38,7 +39,7 @@ class YardiLoader
       
       # for logging only
       log = import.logs.create(:file_path => file_name)
-      
+      puts "Going to perform ResidentImporter"
       Resque.enqueue(ResidentImporter, tmp_file, "yardi", import.field_map, meta)
       
     rescue Exception => e
