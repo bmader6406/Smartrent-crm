@@ -351,7 +351,7 @@ namespace :utils do
                     now = Time.now
                     print "#{r_count.to_s.rjust(total_residents_digits_count,'0')}/#{total_residents} (#{sprintf("%.2f",percentage).to_s.rjust(5,'0')}%) | Time elapsed: #{get_time_diff_str(time_start,now)} "
                     begin
-                        r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
+                        # r.resident_properties.first.reset_rewards_table if (r.resident_properties.count > 0)
                         csv << [r.id,r.email,"Success"]
                         success_count += 1
                     rescue Exception => e

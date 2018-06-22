@@ -120,7 +120,7 @@ class ResidentImporter
                   else
                     sr = Smartrent::Resident.find_by_email r.email
                     #If a smartrent resident_property is removed there is a chance of rewards getting error
-                    sr.resident_properties.first.reset_rewards_table if sr
+                    # sr.resident_properties.first.reset_rewards_table if sr
                   end
                 end
               end
@@ -174,8 +174,7 @@ class ResidentImporter
 
           Resident::UNIT_FIELDS.each do |f|
             f = f.to_s # must f convert to string
-            unit_attrs[f] = row[resident_map[f]] if resident_map[f] 
-            # && !row[resident_map[f]].blank?
+            unit_attrs[f] = row[resident_map[f]] if resident_map[f]  && !row[resident_map[f]].blank?
 
             #pp "property field: #{f}, #{unit_attrs[f]}"
 
@@ -339,7 +338,6 @@ class ResidentImporter
       
     end
     
-    puts "completed yardi perform"
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
     # Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
     
@@ -575,8 +573,6 @@ class ResidentImporter
       resident_map[k] = resident_map[k].to_i # for array access
     end
     
-    pp ">>>>> resident_map", resident_map
-    
     index, new_resident, existing_resident, errs = 0, 0, 0, []
     ok_row = 0
 
@@ -651,7 +647,7 @@ class ResidentImporter
                     l << ["Email Updated","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]   
                   else    
                     sr = Smartrent::Resident.find_by_email r.email    
-                    sr.resident_properties.first.reset_rewards_table if sr    
+                    #sr.resident_properties.first.reset_rewards_table if sr    
                   end   
                 end   
               end   
@@ -693,9 +689,9 @@ class ResidentImporter
 
           Resident::UNIT_FIELDS.each do |f|
             f = f.to_s # must f convert to string
-            unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
 
-            #pp "property field: #{f}, #{unit_attrs[f]}"
+            unit_attrs[f] = row[resident_map[f]] if resident_map[f] && !row[resident_map[f]].blank?
+            # pp "property field: #{f}, #{unit_attrs[f]}"
 
             if ["signing_date", "move_in", "move_out"].include?(f) && unit_attrs[f]
               date = Date.strptime(unit_attrs[f], '%Y%m%d') rescue nil
@@ -781,7 +777,7 @@ class ResidentImporter
     })
 
     # run the monthly status to correct the status of the immediate status, this task will not create any rewards
-    Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
+    #Resque.enqueue_at(Time.now + 12.hours, Smartrent::MonthlyStatusUpdater, Time.now.prev_month, false, Time.now - 1.day)
 
     Notifier.system_message("[CRM] Non-Yardi-Master Importing Success",
       email_body(new_resident, existing_resident, total_missing, errs.length, file_name),

@@ -13,11 +13,11 @@ class ResidentPasswordsController < ApplicationController
   def reset_rewards
     resident = @smartrent_resident
     if (resident.resident_properties.count > 0)
-      if (resident.resident_properties.first.reset_rewards_table)
+      # if (resident.resident_properties.first.reset_rewards_table)
         render :json => {:success => true}
-      else
-        render :json => {:success => false, :error => @smartrent_resident.errors.full_messages.join("; ") }
-      end
+      # else
+        # render :json => {:success => false, :error => @smartrent_resident.errors.full_messages.join("; ") }
+      # end
     end
     
   end
