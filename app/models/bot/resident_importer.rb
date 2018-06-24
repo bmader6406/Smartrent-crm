@@ -561,9 +561,21 @@ class ResidentImporter
     resident_list = []
 
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
-      next if p.elan_number.blank?
-      prop_map[p.elan_number.to_s] = p.id.to_s
+      p.elan_property_id.to_s.split(";").each do |eid| #multiple id separated by ;
+        next if eid.blank?
+        if eid.include?("/")
+          eid.split("/").each do |id|
+            prop_map[id.strip.gsub(/^0*/, '')] = p.id.to_s
+          end
+        else
+          prop_map[eid.strip.gsub(/^0*/, '')] = p.id.to_s
+        end
+      end
     end
+    # Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
+    #   next if p.elan_number.blank?
+    #   prop_map[p.elan_number.to_s] = p.id.to_s
+    # end
 
     pp ">>>> prop_map: ", prop_map
 
