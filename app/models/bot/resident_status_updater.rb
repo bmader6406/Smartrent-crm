@@ -18,10 +18,12 @@ class ResidentStatusUpdater
     begin
      
       import_yardi = Import.where(:type => "load_yardi_daily", :active => true).last
-      tmp_yardi_file = file_download(time - 1.day, import_yardi)
+      # tmp_yardi_file = file_download(time - 1.day, import_yardi)
+      tmp_yardi_file = "/mnt/exim-data/_bozzuto_yardi_residents_YardiResidents-Full-20180624_1529940230.csv"
 
       import_noyardi = Import.where(:type => "load_non_yardi_master_daily", :active => true).last
-      tmp_noyardi_file = file_download(time -1.day, import_noyardi)
+      # tmp_noyardi_file = file_download(time -1.day, import_noyardi)
+      tmp_noyardi_file = "/mnt/exim-data/_non_bozzuto_yardi_residents_noyardiresidents20180624_1529945999.csv"
 
       resident_list = collect_resident_unit_list_from_file(tmp_yardi_file, {}, import_yardi.field_map)
       resident_list = collect_resident_unit_list_from_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
