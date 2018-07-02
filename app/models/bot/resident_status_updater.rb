@@ -25,8 +25,8 @@ class ResidentStatusUpdater
       # tmp_noyardi_file = file_download(time -1.day, import_noyardi)
       tmp_noyardi_file = "/mnt/exim-data/_non_bozzuto_yardi_residents_noyardiresidents20180624_1529945999.csv"
 
-      resident_list = collect_resident_unit_list_from_file(tmp_yardi_file, {}, import_yardi.field_map)
-      resident_list = collect_resident_unit_list_from_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
+      resident_list = collect_resident_unit_list_from_yardi_file(tmp_yardi_file, {}, import_yardi.field_map)
+      resident_list = collect_resident_unit_list_from_non_yardi_file(tmp_noyardi_file, resident_list, import_noyardi.field_map)
 
       File.open('/mnt/exim-data/task_log/resident_list.txt', 'w') {|f| f.write(resident_list) }
 
@@ -63,8 +63,83 @@ class ResidentStatusUpdater
     tmp_file
   end
 
-  def self.collect_resident_unit_list_from_file(file_path, resident_list = {}, resident_map={})
+  def self.collect_resident_unit_list_from_yardi_file(file_path, resident_list = {}, resident_map={})
     index = 0
+
+    prop_map = {}
+
+      Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
+        p.yardi_property_id.to_s.split(";").each do |yid| #multiple id separated by ;
+          next if yid.blank?
+          if yid.include?("/")
+            yid.split("/").each do |id|
+              prop_map[id.strip.gsub(/^0*/, '')] = p.id.to_s
+            end
+          else
+            prop_map[yid.strip.gsub(/^0*/, '')] = p.id.to_s
+          end
+        end
+      end
+    
+    resident_map.keys.each do |k|
+      resident_map[k] = resident_map[k].to_i # for array access
+    end
+
+    File.foreach(file_path) do |line|
+      begin
+        CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
+
+          next if row.join.blank?
+
+          property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
+          next if !property_id
+
+          unit_code = row[ resident_map["unit_code"] ].to_s.strip
+          if unit_code.blank?
+            unit_code = "temp-code"
+          end
+
+          unit = Unit.where(property_id: property_id, code: unit_code).last
+
+          email = row[ resident_map["email"] ].to_s.strip
+          email = email_clean(email)
+          email_lc = email.to_s.downcase
+          resident = Resident.where(email_lc: email_lc).last
+
+          if resident and unit
+            if resident_list.has_key?(resident.id) 
+              resident_list[resident.id] <<  unit.id
+            else
+              resident_list[resident.id] = [unit.id]
+            end
+          end
+        end
+      rescue Exception => e
+        error_details = "#{e.class}: #{e}"
+        error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
+        pp ">>> line: #{line}, ERROR:", error_details
+      end
+    end
+    resident_list
+  end
+
+  def self.collect_resident_unit_list_from_non_yardi_file(file_path, resident_list = {}, resident_map={})
+    index = 0
+
+    prop_map = {}
+
+    Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
+      p.elan_property_id.to_s.split(";").each do |eid| #multiple id separated by ;
+        next if eid.blank?
+        if eid.include?("/")
+          eid.split("/").each do |id|
+            prop_map[id.strip.gsub(/^0*/, '')] = p.id.to_s
+          end
+        else
+          prop_map[eid.strip.gsub(/^0*/, '')] = p.id.to_s
+        end
+      end
+    end
 
     resident_map.keys.each do |k|
       resident_map[k] = resident_map[k].to_i # for array access
@@ -74,16 +149,30 @@ class ResidentStatusUpdater
       begin
         CSV.parse(line.gsub('"\",', '"",').gsub(' \",', ' ",').gsub('\"', '""')) do |row|
           next if row.join.blank?
-          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+
+          elan_number = row[ resident_map["elan_number"] ].to_s.strip
+          property_id = prop_map[elan_number]
+
+          next if !property_id
+
+          unit_code = row[ resident_map["unit_code"] ].to_s.strip
+
+          if unit_code.blank?
+            unit_code = "temp-code"
+          end
+
+          unit = Unit.where(property_id: property_id, code: unit_code)
+
           email = row[ resident_map["email"] ].to_s.strip
           email = email_clean(email)
           email_lc = email.to_s.downcase
           resident = Resident.where(email_lc: email_lc).last
-          if resident
+
+          if resident and unit.count > 0
             if resident_list.has_key?(resident.id) 
-              resident_list[resident.id] <<  tenant_code
+              resident_list[resident.id] <<  unit.all.collect(&:id)
             else
-              resident_list[resident.id] = [tenant_code]
+              resident_list[resident.id] = unit.all.collect(&:id)
             end
           end
         end
@@ -109,9 +198,9 @@ class ResidentStatusUpdater
     CSV.open('/mnt/exim-data/task_log/change_status_to_past.csv', "w") do |csv|
       resident_list.each do |key, val|
         res = Resident.where(_id: key).last
-        res.units.where(:tenant_code.nin => val).each do |unit|
+        res.units.where(:unit_id.nin => val).each do |unit|
           if unit.status != "Past"
-            csv << [res.email, unit.tenant_code]
+            csv << [res.email, unit.unit_id]
             unit.set(status: "Past")
             unit.save
           end
@@ -121,7 +210,7 @@ class ResidentStatusUpdater
       residents_status_to_past.each do |res|
         res.units.each do |unit|
           if unit.status != "Past"
-            csv << [res.email, unit.tenant_code]
+            csv << [res.email, unit.unit_id]
             unit.set(status: "Past")
             unit.save
           end
@@ -147,7 +236,7 @@ class ResidentStatusUpdater
 
   def self.update_smartrent_status(time)
     Smartrent::Resident.includes(:resident_properties).all.each do |sr|
-      sr.resident_properties.where(status: Smartrent::ResidentProperty::STATUS_CURRENT).each do |rp|
+      sr.resident_properties.where('status IN (?)', [Smartrent::ResidentProperty::STATUS_CURRENT, Smartrent::ResidentProperty::STATUS_NOTICE] ).each do |rp|
         if rp.property.is_smartrent == true and sr.smartrent_status != Smartrent::Resident::STATUS_ACTIVE
           sr.smartrent_status = Smartrent::Resident::STATUS_ACTIVE
           sr.expiry_date = nil
