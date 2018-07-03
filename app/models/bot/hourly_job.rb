@@ -14,11 +14,11 @@ class HourlyJob
     #TODO: store the below job in database when it is executed
     # time, class, arguments
     
-    # Resque.enqueue(MetricGenerator, time.to_i)
+    Resque.enqueue(MetricGenerator, time.to_i)
     puts ("Hourly Job started >>>>>")
       
     if time.hour == 0
-      # Resque.enqueue(ResidentUnitStatusChecker, time)
+      Resque.enqueue(ResidentUnitStatusChecker, time)
     end
     
     if time.hour == 3
@@ -27,7 +27,7 @@ class HourlyJob
 
             # XML import at 2 AM
       Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
-        # Resque.enqueue(XmlPropertyImporter, time, import.id)
+        Resque.enqueue(XmlPropertyImporter, time, import.id)
       end
       
     end
@@ -35,13 +35,15 @@ class HourlyJob
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
-        # Resque.enqueue(YardiLoader, time, import.id)
+        Resque.enqueue(YardiLoader, time, import.id)
       end
       
       Import.where(:type => "load_non_yardi_master_daily", :active => true).each do |import|
-        # Resque.enqueue(NonYardiMasterLoader, time, import.id)
+        Resque.enqueue(NonYardiMasterLoader, time, import.id)
       end
       
+      Resque.enqueue(ResidentStatusUpdater)
+
       # disabled on 2017-Jan-20
       # Import.where(:type => "load_non_yardi_daily", :active => true).each do |import|
       #   Resque.enqueue(NonYardiLoader, time, import.id)
@@ -49,13 +51,13 @@ class HourlyJob
       # 
       if time.wday == 0 # run weekly at 3AM on Sunday
         Import.where(:type => "load_units_weekly", :active => true).each do |import|
-          # Resque.enqueue(UnitLoader, time, import.id)
+          Resque.enqueue(UnitLoader, time, import.id)
         end
       end
     end
 
     # hourly job smartrent engine
-    # Smartrent::HourlyJob.perform(time)
+    Smartrent::HourlyJob.perform(time)
 
   end
 end
