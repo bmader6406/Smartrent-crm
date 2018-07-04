@@ -27,7 +27,7 @@ class HourlyJob
 
             # XML import at 2 AM
       Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
-        Resque.enqueue(XmlPropertyImporter, time, import.id)
+        # Resque.enqueue(XmlPropertyImporter, time, import.id)
       end
       
     end
@@ -35,14 +35,14 @@ class HourlyJob
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
-        Resque.enqueue(YardiLoader, time, import.id)
+        # Resque.enqueue(YardiLoader, time, import.id)
       end
       
       Import.where(:type => "load_non_yardi_master_daily", :active => true).each do |import|
-        Resque.enqueue(NonYardiMasterLoader, time, import.id)
+        # Resque.enqueue(NonYardiMasterLoader, time, import.id)
       end
       
-      Resque.enqueue(ResidentStatusUpdater)
+      # Resque.enqueue(ResidentStatusUpdater)
 
       # disabled on 2017-Jan-20
       # Import.where(:type => "load_non_yardi_daily", :active => true).each do |import|
