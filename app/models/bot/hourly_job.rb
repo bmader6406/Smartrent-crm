@@ -35,15 +35,13 @@ class HourlyJob
     if time.hour == 3
       # run yardi import daily at 3AM
       Import.where(:type => "load_yardi_daily", :active => true).each do |import|
-        # Resque.enqueue(YardiLoader, time, import.id)
+        Resque.enqueue(YardiLoader, time, import.id)
       end
       
       Import.where(:type => "load_non_yardi_master_daily", :active => true).each do |import|
-        # Resque.enqueue(NonYardiMasterLoader, time, import.id)
+        Resque.enqueue(NonYardiMasterLoader, time, import.id)
       end
       
-      # Resque.enqueue(ResidentStatusUpdater)
-
       # disabled on 2017-Jan-20
       # Import.where(:type => "load_non_yardi_daily", :active => true).each do |import|
       #   Resque.enqueue(NonYardiLoader, time, import.id)
@@ -54,6 +52,10 @@ class HourlyJob
           Resque.enqueue(UnitLoader, time, import.id)
         end
       end
+    end
+
+    if time.hour == 7
+      Resque.enqueue(ResidentStatusUpdater)
     end
 
     # hourly job smartrent engine
