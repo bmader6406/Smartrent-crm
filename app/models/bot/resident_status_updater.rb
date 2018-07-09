@@ -10,9 +10,8 @@ class ResidentStatusUpdater
     :crm_immediate
   end
 
-  def self.perform(time = Time.now)
+  def self.perform(time = Date.today)
     time = Time.parse(time) if time.kind_of?(String)
-    time = time.in_time_zone('Eastern Time (US & Canada)')
     resident_list = {}
 
     begin
@@ -242,11 +241,10 @@ class ResidentStatusUpdater
           break
         end
       end
-      if sr.expiry_date and sr.expiry_date.beginning_of_day == time.beginning_of_day
-        sr.smartrent_status = Smartrent::Resident::EXPIRED
+      if sr.expiry_date and sr.expiry_date.beginning_of_day <= time.beginning_of_day and sr.smartrent_status != Smartrent::Resident::STATUS_EXPIRED
+        sr.smartrent_status = Smartrent::Resident::STATUS_EXPIRED
         sr.save
       end
-
     end
   end
 
