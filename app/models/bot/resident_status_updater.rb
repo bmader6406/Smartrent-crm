@@ -111,7 +111,7 @@ class ResidentStatusUpdater
               email_lc = email
           end
 
-          resident = Resident.where(email_lc: email_lc).last
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
 
           if resident and unit
             if resident_list.has_key?(resident.id) 
@@ -173,7 +173,17 @@ class ResidentStatusUpdater
           email = row[ resident_map["email"] ].to_s.strip
           email = email_clean(email)
           email_lc = email.to_s.downcase
-          resident = Resident.where(email_lc: email_lc).last
+
+          fake_email = nil
+
+          #convert blank and ignored email into fake email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+            fake_email = "#{tenant_code}@noemail.non-yardi"
+            email = fake_email # don't not unify fake email or non-existant email
+            email_lc = email
+          end
+
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
 
           if resident and unit.count > 0
             if resident_list.has_key?(resident.id) 
