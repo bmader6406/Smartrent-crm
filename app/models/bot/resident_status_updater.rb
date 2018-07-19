@@ -101,6 +101,16 @@ class ResidentStatusUpdater
           email = row[ resident_map["email"] ].to_s.strip
           email = email_clean(email)
           email_lc = email.to_s.downcase
+
+          fake_email = nil
+          
+          #convert blank and ignored email into fake email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+            fake_email = "#{tenant_code}@noemail.yardi"
+              email = fake_email # don't not unify fake email or non-existant email
+              email_lc = email
+          end
+
           resident = Resident.where(email_lc: email_lc).last
 
           if resident and unit
@@ -246,6 +256,17 @@ class ResidentStatusUpdater
         sr.save
       end
     end
+  end
+
+  def self.convert_fake_email?(email_lc)
+    return true if [" @", "noemail", "nomail", "notgiven", "didnotgive", "donothave", 
+      "donotreply", "notgiven", "nonegiven", "noexist", "noreply",
+      "@email.com", "@none.net", "@na.com", "@non.com", "efused@yahoo.com", "@test.com"
+    ].any?{|e| email_lc.include?(e) }
+    
+    return true if ["na@", "no@", "non@", "none@", "unknown@", "no@", "test@"].any?{|e| email_lc.match(/^#{e}/) }
+    return true if ["refuse", "refused", "decline", "declined"].any?{|e| email_lc.match(/^#{e}\d*@/) }
+    return false
   end
 
 end
