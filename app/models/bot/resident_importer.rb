@@ -101,7 +101,7 @@ class ResidentImporter
 
           # consolidate resident by tenant_code if email is changed in feed
           # Name and other details can also be changed. Currently only email change exists
-          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code, property_id: property_id} } }).unify_ordered
           residents_with_tenant_code.each do |r|
             if r && r.email_lc != email_lc
               resident = r
@@ -641,11 +641,11 @@ class ResidentImporter
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           #consolidate resident by email
-          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code, property_id: property_id} } }).unify_ordered
           residents_with_tenant_code.each do |r|    
             if r && r.email_lc != email_lc    
               resident = r    
-              pre_email = resident.email_lc.to_s.strip    
+              pre_email = resident.email_lc.to_s.strip
               new_email_exist = Resident.with(:consistency => :strong).where(:email => pre_email).first   
               if new_email_exist    
                 pp "delete the unit #{unit_code} from this resident"    
