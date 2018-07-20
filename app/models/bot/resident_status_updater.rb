@@ -91,6 +91,14 @@ class ResidentStatusUpdater
           property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
           next if !property_id
 
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank? }.join("-")
+          end
+
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           if unit_code.blank?
             unit_code = "temp-code"
@@ -101,7 +109,17 @@ class ResidentStatusUpdater
           email = row[ resident_map["email"] ].to_s.strip
           email = email_clean(email)
           email_lc = email.to_s.downcase
-          resident = Resident.where(email_lc: email_lc).last
+
+          fake_email = nil
+          
+          #convert blank and ignored email into fake email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+            fake_email = "#{tenant_code}@noemail.yardi"
+              email = fake_email # don't not unify fake email or non-existant email
+              email_lc = email
+          end
+
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
 
           if resident and unit
             if resident_list.has_key?(resident.id) 
@@ -152,6 +170,14 @@ class ResidentStatusUpdater
 
           next if !property_id
 
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank? }.join("-")
+          end
+
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
 
           if unit_code.blank?
@@ -163,7 +189,17 @@ class ResidentStatusUpdater
           email = row[ resident_map["email"] ].to_s.strip
           email = email_clean(email)
           email_lc = email.to_s.downcase
-          resident = Resident.where(email_lc: email_lc).last
+
+          fake_email = nil
+
+          #convert blank and ignored email into fake email
+          if email.blank? || !email.include?("@") || convert_fake_email?(email_lc)
+            fake_email = "#{tenant_code}@noemail.non-yardi"
+            email = fake_email # don't not unify fake email or non-existant email
+            email_lc = email
+          end
+
+          resident = Resident.with(:consistency => :strong).where(:email_lc => email_lc ).unify_ordered.first
 
           if resident and unit.count > 0
             if resident_list.has_key?(resident.id) 
@@ -246,6 +282,17 @@ class ResidentStatusUpdater
         sr.save
       end
     end
+  end
+
+  def self.convert_fake_email?(email_lc)
+    return true if [" @", "noemail", "nomail", "notgiven", "didnotgive", "donothave", 
+      "donotreply", "notgiven", "nonegiven", "noexist", "noreply",
+      "@email.com", "@none.net", "@na.com", "@non.com", "efused@yahoo.com", "@test.com"
+    ].any?{|e| email_lc.include?(e) }
+    
+    return true if ["na@", "no@", "non@", "none@", "unknown@", "no@", "test@"].any?{|e| email_lc.match(/^#{e}/) }
+    return true if ["refuse", "refused", "decline", "declined"].any?{|e| email_lc.match(/^#{e}\d*@/) }
+    return false
   end
 
 end
