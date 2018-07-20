@@ -91,6 +91,14 @@ class ResidentStatusUpdater
           property_id = prop_map[row[ resident_map["yardi_property_id"] ].to_s.strip.gsub(/^0*/, '') ]
           next if !property_id
 
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank? }.join("-")
+          end
+
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
           if unit_code.blank?
             unit_code = "temp-code"
@@ -161,6 +169,14 @@ class ResidentStatusUpdater
           property_id = prop_map[elan_number]
 
           next if !property_id
+
+          tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
+          if tenant_code.blank?
+            tenant_code = [
+              row[ resident_map["first_name"] ].to_s.downcase.strip,
+              row[ resident_map["last_name"] ].to_s.downcase.strip
+            ].reject{|a| a.blank? }.join("-")
+          end
 
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
 
