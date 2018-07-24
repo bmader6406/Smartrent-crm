@@ -114,6 +114,10 @@ class ResidentSource
     @property = prop
   end
 
+  def logger
+    @logger ||= Logger.new('/mnt/exim-data/task_log/yardi-non_yardi.log')
+  end
+
   private
 
     def create_activity
@@ -123,6 +127,7 @@ class ResidentSource
     
     def create_unit
       #pp ">>> create_unit"
+      logger.info("create/update unit for property: #{property_id} -- resident: #{resident.email_lc}")
       attrs = { :property_id => property_id }
       
       # save & update NOT BLANK unit fields only
@@ -154,6 +159,7 @@ class ResidentSource
 
       if existing
         existing.update_attributes(attrs)
+        logger.info("existing unit updated: porperty: #{existing.property_id} -- Unit: #{existing.unit_id}")
         
         if !existing.errors.empty?
           pp "resident_id: #{resident.id} > create_unit > update error:", existing.errors.full_messages.join(", ")
@@ -161,6 +167,7 @@ class ResidentSource
         
       else
         unit = resident.units.create(attrs)
+        logger.info("New units created for resident: #{resident.email} -- #{attrs}")
         
         if !unit.errors.empty?
           pp "resident_id: #{resident.id} > create_unit > create error:", unit.errors.full_messages.join(", ")
