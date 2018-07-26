@@ -27,14 +27,17 @@ class ResidentStatusUpdater
 
       File.open('/mnt/exim-data/task_log/resident_list.txt', 'w') {|f| f.write(resident_list) }
 
-      pp "resident_list #{resident_list.count}"
-      pp "change_status_to_past"
+      pp "Total Resident present in CSVs(Yardi+NonYardi) : #{resident_list.count}."
+      pp "Change resident status for those residents not present in CSV to Past."
       change_status_to_past(resident_list)
-      pp "change_smartrent_status_to_inactive"
+      pp "Change smartrent status for those residents whose all units are Past to Inactive."
       change_smartrent_status_to_inactive(resident_list.keys, time)
-      pp "update_smartrent_status"
+      pp "Update smartrent status for those residents whose expiry date is set less than today to Expired."
       update_smartrent_status(time)
-      pp "success"
+      pp "Successfully completed status updation."
+      message = "Total resident list from CSV: #{resident_list.count}. "
+      Notifier.system_message("[CRM] ResidentStatusUpdater SUCCESS", "DETAILS: #{message}",
+        ADMIN_EMAIL, {"from" => OPS_EMAIL}).deliver
     rescue Exception => e
       error_details = "#{e.class}: #{e}"
       error_details += "\n#{e.backtrace.join("\n")}" if e.backtrace
