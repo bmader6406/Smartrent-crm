@@ -66,17 +66,18 @@ class XmlPropertyImporter
 
     properties = Hash.from_xml(tmp_file) 
     properties["PhysicalProperty"]["Property"].each_with_index do |p, pndx|
-      name = p.nest(property_map[:name])
+      name = p.nest(property_map[:name]).to_s
       property_origin_id = p.nest(property_map[:origin_id])
+      sync_property_id = p.nest(property_map[:sync_property_id])
 
-      property = Smartrent::Property.where("origin_id=?",property_origin_id).first
+      property = Smartrent::Property.where("sync_property_id=?",sync_property_id).first
       property ||= Smartrent::Property.where("REPLACE(REPLACE(LOWER(name),' ',''),'-','')=?",name.downcase.gsub(/[^a-z0-9\w]/i,'')).first
 
       if !property
         new_prop = new_prop + 1
         property = Smartrent::Property.new 
 
-        property.sync_property_id = p.nest(property_map[:sync_property_id])
+        property.sync_property_id = sync_property_id
         property.is_smartrent = true
         property.is_crm = false
         property.is_visible = true
@@ -123,7 +124,6 @@ class XmlPropertyImporter
         end
       end
 
-        property.sync_property_id = p.nest(property_map[:sync_property_id])
         property.address_line1 = p.nest(property_map[:address_line1])
         property.city = p.nest(property_map[:city])
         property.state = p.nest(property_map[:state])
@@ -136,7 +136,7 @@ class XmlPropertyImporter
         property.latitude = p.nest(property_map[:latitude])
         property.longitude = p.nest(property_map[:longitude])
         property.is_smartrent = true
-        # property.name = name.titleize
+        property.name = name.titleize
 
 
         # Get list of amenities from the XML
