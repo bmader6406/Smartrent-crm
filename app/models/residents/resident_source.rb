@@ -115,7 +115,7 @@ class ResidentSource
   end
 
   def logger
-    @logger ||= Logger.new('/mnt/exim-data/task_log/yardi-non_yardi.log')
+    @logger ||= Logger.new("/mnt/exim-data/task_log/yardi-non-yardi_resident_sources_#{Date.today}.log")
   end
 
   private
@@ -127,6 +127,7 @@ class ResidentSource
     
     def create_unit
       #pp ">>> create_unit"
+      logger.info("Resident Importer running for #{Date.today} - Time : #{Time.now}")
       logger.info("create/update unit for property: #{property_id} -- resident: #{resident.email_lc}")
       attrs = { :property_id => property_id }
       
