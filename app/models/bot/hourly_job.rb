@@ -27,7 +27,7 @@ class HourlyJob
 
             # XML import at 2 AM
       Import.where(:type => "load_xml_property_importer", :active => true).each do |import|
-        # Resque.enqueue(XmlPropertyImporter, time, import.id)
+        Resque.enqueue(XmlPropertyImporter, time, import.id)
       end
       
     end
