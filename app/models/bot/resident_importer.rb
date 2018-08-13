@@ -17,11 +17,21 @@ class ResidentImporter
 
     end
   end
+
+  def self.yardi_logger
+    @@yardi_logger ||= Logger.new("/mnt/exim-data/task_log/yardi_#{Date.today}.log")
+  end
+
+  def self.non_yardi_logger
+    @@non_yardi_logger ||= Logger.new("/mnt/exim-data/task_log/non-yardi_#{Date.today}.log")
+  end
   
   def self.yardi_import(file_path, resident_map, meta)
     # 0"Elan ID",1"Property ID",2"Property Name",3"First Name",4"Last Name",5"Email Address",
     #6"Move-in Date",7"Move-out Date",8"Tenant Status",9"Unit #",10"Tenant Code"
     log_output = "/mnt/exim-data/task_log/yardi_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+
+    yardi_logger.info("Resident Importer started for Date: #{Date.today} -- Time: #{Time.now}")
 
     resident_list = []
   
@@ -61,6 +71,7 @@ class ResidentImporter
           next if !property_id
           next if check_resident_fullname(row[resident_map["first_name"]] + row[resident_map["last_name"]])
           pp "success"
+          yardi_logger.info("PropertyID: #{property_id} -- Resident: #{row[resident_map['first_name']] + row[resident_map['last_name']]}" )
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
           unit_code = row[ resident_map["unit_code"] ].to_s.strip
@@ -90,18 +101,24 @@ class ResidentImporter
               email = fake_email # don't not unify fake email or non-existant email
               email_lc = email
           end
+
+          yardi_logger.info("Resident Email : #{email_lc} Email in CSV  : #{row[ resident_map["email"] ]}")
           
           ok_row += 1
           # UnitLoader use the mits4_1.xml, this file contains unit details
           # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
           unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
           unit.save(:validate => false)
+
+          yardi_logger.info("Unit Updated : Property: #{property_id} -- Unit ID: #{unit.id} -- Unit Code: #{unit_code}")
           
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           # consolidate resident by tenant_code if email is changed in feed
           # Name and other details can also be changed. Currently only email change exists
-          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code, property_id: property_id} } }).unify_ordered
+          yardi_logger.info("Residents exist for tenant_code #{tenant_code}")
+          yardi_logger.info("Residents count with email: #{residents_with_tenant_code.count} #{residents_with_tenant_code.collect(&:email_lc)}")
           residents_with_tenant_code.each do |r|
             if r && r.email_lc != email_lc
               resident = r
@@ -111,8 +128,10 @@ class ResidentImporter
                 pp "delete the unit #{unit_code} from this resident"
                 CSV.open(log_output, "a+") do |l|
                   l << ["Unit Transfer","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]
+                  yardi_logger.info("Unit destroyed #{r.email_lc} -- tenant_code: #{tenant_code}")
                   r.units.where(:tenant_code => tenant_code).first.destroy
                   if r.units.count == 0 
+                    yardi_logger.info("Resident destroyed #{r.email_lc}")
                     r.destroy 
                     l << ["Email Updated","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]
                   else
@@ -223,12 +242,16 @@ class ResidentImporter
           end
           
           if create_or_update
+            yardi_logger.info("Update/create resident")
             if not_update_resident || resident.save # if not_update_resident is true, resident.save will NOT be called
+              yardi_logger.info("Updated / Created")
               resident.sources.create(unit_attrs) if unit_attrs["property_id"]
             
               if new_record
+                yardi_logger.info("New Resident Created : #{resident.email}")
                 new_resident += 1
               else
+                yardi_logger.info("Resident Updated : #{resident.email}")
                 existing_resident += 1
               end
               
@@ -558,6 +581,8 @@ class ResidentImporter
 
     log_output = "/mnt/exim-data/task_log/non_yardi_master_importer_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
+    non_yardi_logger.info("Resident Importer started for Date: #{Date.today} -- Time: #{Time.now}")
+
     resident_list = []
 
     Property.where("is_crm = 1 OR is_smartrent = 1").each do |p|
@@ -603,6 +628,8 @@ class ResidentImporter
 
           next if check_resident_fullname(row[resident_map["first_name"]].to_s + ' ' +row[resident_map["last_name"]].to_s)
 
+          non_yardi_logger.info("PropertyID: #{property_id} -- Resident: #{row[resident_map['first_name']] + row[resident_map['last_name']]}" )
+
           tenant_code = row[ resident_map["tenant_code"] ].to_s.strip
           row[ resident_map["tenant_code"] ]= row[ resident_map["tenant_code"] ].to_s.strip
 
@@ -632,27 +659,36 @@ class ResidentImporter
             email_lc = email
           end
 
+          non_yardi_logger.info("Resident Email : #{email_lc} Email in CSV  : #{row[ resident_map["email"] ]}")
+
           ok_row += 1
           # UnitLoader use the mits4_1.xml, this file contains unit details
           # Yardi import should create the unit if the unit details is not populated (aka UnitLoader has not run yet)
           unit = Unit.find_or_initialize_by(property_id: property_id, code: unit_code)
           unit.save(:validate => false)
 
+          non_yardi_logger.info("Unit Updated : Property: #{property_id} -- Unit ID: #{unit.id} -- Unit Code: #{unit_code}")
+
           pp "#{ok_row}/#{index}, property id: #{property_id}, email: #{email}, unit code: #{unit_code}"
 
           #consolidate resident by email
-          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code} } }).unify_ordered
+          residents_with_tenant_code = Resident.with(:consistency => :strong).where({ units: { '$elemMatch' => {tenant_code: tenant_code, property_id: property_id} } }).unify_ordered
+          non_yardi_logger.info("Residents exist for tenant_code #{tenant_code}")
+          non_yardi_logger.info("Residents count with email: #{residents_with_tenant_code.count} #{residents_with_tenant_code.collect(&:email_lc)}")
+
           residents_with_tenant_code.each do |r|    
             if r && r.email_lc != email_lc    
               resident = r    
-              pre_email = resident.email_lc.to_s.strip    
+              pre_email = resident.email_lc.to_s.strip
               new_email_exist = Resident.with(:consistency => :strong).where(:email => pre_email).first   
               if new_email_exist    
                 pp "delete the unit #{unit_code} from this resident"    
                 CSV.open(log_output, "a+") do |l|   
                   l << ["Unit Transfer","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]   
+                  non_yardi_logger.info("Unit destroyed #{r.email_lc} -- tenant_code: #{tenant_code}")
                   r.units.where(:tenant_code => tenant_code).first.destroy    
-                  if r.units.count == 0     
+                  if r.units.count == 0   
+                    non_yardi_logger.info("Resident destroyed #{r.email_lc}") 
                     r.destroy     
                     l << ["Email Updated","from",pre_email,"to",email_lc,"unit_code",unit_code,"time",Time.now]   
                   else    
@@ -739,12 +775,16 @@ class ResidentImporter
           #pp ">>> before saving:", resident.attributes
 
           if create_or_update
+            non_yardi_logger.info("Update/create resident")
             if not_update_resident || resident.save # if not_update_resident is true, resident.save will NOT be called
+              non_yardi_logger.info("Updated / Created")
               resident.sources.create(unit_attrs) if unit_attrs["property_id"]
 
               if new_record
+                non_yardi_logger.info("New Resident Created : #{resident.email}")
                 new_resident += 1
               else
+                non_yardi_logger.info("Resident Updated : #{resident.email}")
                 existing_resident += 1
               end
 
