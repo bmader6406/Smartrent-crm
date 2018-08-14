@@ -130,6 +130,7 @@ class ResidentStatusUpdater
             else
               resident_list[resident.id] = [unit.id]
             end
+            resident_list[resident.id] = resident_list[resident.id].flatten
           end
         end
       rescue Exception => e
@@ -210,6 +211,7 @@ class ResidentStatusUpdater
             else
               resident_list[resident.id] = unit.all.collect(&:id)
             end
+            resident_list[resident.id] = resident_list[resident.id].flatten
           end
         end
       rescue Exception => e
@@ -231,7 +233,7 @@ class ResidentStatusUpdater
   end
 
   def self.change_status_to_past(resident_list)
-    CSV.open('/mnt/exim-data/task_log/change_status_to_past.csv', "w") do |csv|
+    CSV.open("/mnt/exim-data/task_log/change_status_to_past_#{Time.now}.csv", "w") do |csv|
       resident_list.each do |key, val|
         res = Resident.where(_id: key).last
         res.units.where(:unit_id.nin => val).each do |unit|
