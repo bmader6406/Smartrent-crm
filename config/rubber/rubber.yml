@@ -58,8 +58,8 @@ cloud_providers:
     
     # REQUIRED The amazon keys and account ID (digits only, no dashes) used to access the AWS API
     # key for backups only
-    access_key: AKIAICJX5ULNO7BJ3IYA
-    secret_access_key: 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
+    access_key: AKIAI6R3R43KYSW44LCQ
+    secret_access_key: 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
     account: 137725445953
 
     # REQUIRED:  The name of the amazon keypair and location of its private key
