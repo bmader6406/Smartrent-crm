@@ -224,8 +224,12 @@ class XmlPropertyImporter
 
   if !smartrent_property_ids.empty?
     pp "found: #{smartrent_property_ids.length} smartrent property"
-    Property.unscoped.where("id IN (?)", smartrent_property_ids).update_all(:is_smartrent => 1, :is_visible => 1, :smartrent_status => Smartrent::Property::STATUS_CURRENT)
-    Property.unscoped.where("id NOT IN (?)", smartrent_property_ids).update_all(:is_smartrent => 0, :is_crm => 0, :is_visible => 0, :smartrent_status => nil)
+    Property.unscoped.where("id IN (?)", smartrent_property_ids).find_each { |sp| 
+      sp.update_attributes(:is_smartrent => 1, :is_visible => 1, :smartrent_status => Smartrent::Property::STATUS_CURRENT)
+    }
+    Property.unscoped.where("id NOT IN (?)", smartrent_property_ids).find_each { |sp| 
+      sp.update_attributes(:is_smartrent => 0, :is_crm => 0, :is_visible => 0, :smartrent_status => nil
+    }
   end
 
 
